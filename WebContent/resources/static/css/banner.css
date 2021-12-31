@@ -1,0 +1,21 @@
+#logo-main {
+	background-color: #F2EFE7;
+	height: 76px;
+	color: #FFF;
+}
+
+/* Togliere il commento alle direttive sottostanti in caso di presenza loghi PON - UE - Agenzia entrate in HTML_PRE_BANNER */
+/*
+@media ( max-width : 1050px) {
+	#loghi-pre-banner {
+		display:none !important;
+	}
+}
+#htmlprebanner{
+	background-color: transparent !important;
+}
+
+#htmlprebanner a:hover{
+	background-color: transparent !important;
+}
+*/

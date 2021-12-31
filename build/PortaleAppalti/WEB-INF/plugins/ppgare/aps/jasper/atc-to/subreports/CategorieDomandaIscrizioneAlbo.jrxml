@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.464100000000001"/>
+	<property name="ireport.x" value="20"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="IMPORTO_FINO_A" class="java.lang.Boolean" isForPrompting="false">
+		<parameterDescription><![CDATA[TRUE stampa le categorie con importo fino a 150.000
+FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescription>
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/categorieIscrizionde/categoria]]>
+	</queryString>
+	<field name="categoria" class="java.lang.String">
+		<fieldDescription><![CDATA[categoria]]></fieldDescription>
+	</field>
+	<field name="classificaMinima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+	</field>
+	<field name="classificaMassima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+	</field>
+	<field name="nota" class="java.lang.String">
+		<fieldDescription><![CDATA[nota]]></fieldDescription>
+	</field>
+	<group name="titoloCategoria">
+		<groupExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></groupExpression>
+		<groupHeader>
+			<band>
+				<printWhenExpression><![CDATA[((!$P{IMPORTO_FINO_A} &&
+  !($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+    || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+ ||
+ ($P{IMPORTO_FINO_A} &&
+  ($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+   || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+)]]></printWhenExpression>
+			</band>
+		</groupHeader>
+	</group>
+	<title>
+		<band height="30">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="0" width="160" height="30" forecolor="#000000" backcolor="#999999"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Opaque" x="160" y="0" width="251" height="30" forecolor="#000000" backcolor="#999999"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="160" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Categoria dei lavori]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="160" y="0" width="251" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Classifica]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<printWhenExpression><![CDATA[((!$P{IMPORTO_FINO_A} &&
+  !($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+    || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+ ||
+ ($P{IMPORTO_FINO_A} &&
+  ($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+   || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+)
+&&
+"1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))]]></printWhenExpression>
+			<rectangle>
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="160" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="160" y="0" width="251" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="165" y="0" width="240" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{classificaMinima} != null ? "" : "") +
+($F{classificaMassima} != null ? "classifica " + $F{classificaMassima} : "") +
+($F{nota} != null && !$F{nota}.isEmpty() ? "" : "")]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="423" y="0" width="118" height="13">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="5" y="0" width="150" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 )
+    .substring(
+        1,
+        $F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 ).indexOf( ")" )
+    )
++ " -" +
+$F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 )
+    .substring(
+        $F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 ).indexOf( ")" ) + 1
+    )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

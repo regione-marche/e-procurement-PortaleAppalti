@@ -1,0 +1,504 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="oggettoSociale">
+		<field-validator type="stringlength">
+			<param name="maxLength">2000</param>
+			<param name="trim">false</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+	</field>
+
+	<field name="iscrittoCCIAA">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[( "0".equals(iscrittoCCIAA) || "1".equals(iscrittoCCIAA) )]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="numIscrizioneCCIAA">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && numIscrizioneCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneCCIAA">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && dataIscrizioneCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="numRegistroDitteCCIAA">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && numRegistroDitteCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="dataDomandaIscrizioneCCIAA">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && dataDomandaIscrizioneCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="provinciaIscrizioneCCIAA">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && provinciaIscrizioneCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="dataNullaOstaAntimafiaCCIAA">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!( !("0".equals(iscrittoCCIAA)) && obblDataNullaOstaAntimafiaCCIAA && dataNullaOstaAntimafiaCCIAA.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="soggettoNormativeDURC">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblSoggettoNormativeDURC && soggettoNormativeDURC.trim().length() == 0)]]></param>
+			<message key="requiredstringSoggettoDURC" />
+		</field-validator>
+	</field>	
+
+	<field name="settoreProduttivoDURC">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && settoreProduttivoDURC.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+	</field>
+
+	<field name="numIscrizioneINPS">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && numIscrizioneINPS.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneINPS">
+<!--
+ 		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && dataIscrizioneINPS.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+ -->
+ 		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="localitaIscrizioneINPS">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && localitaIscrizioneINPS.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+	</field>
+	
+	<field name="numIscrizioneINAIL">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && numIscrizioneINAIL.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneINAIL">
+<!-- 
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && dataIscrizioneINAIL.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+ -->
+ 		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="localitaIscrizioneINAIL">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(soggettoNormativeDURC) && localitaIscrizioneINAIL.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstringDURC" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneCassaEdile">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="altriIstitutiPrevidenziali">
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="maxLength">500</param>
+			<param name="trim">false</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaTriennaleSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="dataVerificaTriennaleSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaIntermediaSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaQuinquennaleSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="dataUltimaRichiestaIscrizioneSOA">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="dataScadenzaISO">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="iscrittoWhitelistAntimafia">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(iscrittoWhitelistAntimafia.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="sedePrefetturaWhitelistAntimafia">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(iscrittoWhitelistAntimafia) && sedePrefetturaWhitelistAntimafia.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+<!-- 
+	la validazione nella action... 
+	<field name="sezioniIscrizioneWhitelistAntimafia">
+		<field-validator type="fieldexpression">
+			<param name="expression">
+			<![CDATA[!("1".equals(iscrittoWhitelistAntimafia) && sezioniIscrizioneWhitelistAntimafia.trim().length() == 0)]]></param>
+			<message key="required1ZonaAttivita" />
+		</field-validator>
+	</field>
+ -->
+ 
+	<field name="dataIscrizioneWhitelistAntimafia">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(iscrittoWhitelistAntimafia) && dataIscrizioneWhitelistAntimafia.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaIscrizioneWhitelistAntimafia">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(iscrittoWhitelistAntimafia) && dataScadenzaIscrizioneWhitelistAntimafia.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="iscrittoAnagrafeAntimafiaEsecutori">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblIscrittoAnagrafeAntimafiaEsecutori && iscrittoAnagrafeAntimafiaEsecutori.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="dataScadenzaIscrizioneAnagrafeAntimafiaEsecutori">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(iscrittoAnagrafeAntimafiaEsecutori) && dataScadenzaIscrizioneAnagrafeAntimafiaEsecutori.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="rinnovoIscrizioneInCorsoAnagrafeAntimafiaEsecutori">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(iscrittoAnagrafeAntimafiaEsecutori) && rinnovoIscrizioneInCorsoAnagrafeAntimafiaEsecutori.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<!-- obbligatorio se "IscrittoAnagrafeAntimafiaEsecutori" e' obbligatorio -->
+	<field name="iscrittoElencoSpecialeProfessionisti">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblIscrittoAnagrafeAntimafiaEsecutori && iscrittoElencoSpecialeProfessionisti.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="possiedeRatingLegalita">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblPossiedeRatingLegalita && possiedeRatingLegalita.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="ratingLegalita">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(possiedeRatingLegalita) && ratingLegalita.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaPossessoRatingLegalita">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!("1".equals(possiedeRatingLegalita) && dataScadenzaPossessoRatingLegalita.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+	
+	<field name="aggiornamentoRatingLegalita">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!("1".equals(possiedeRatingLegalita) && aggiornamentoRatingLegalita.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="altreCertificazioniAttestazioni">
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="maxLength">2000</param>
+			<param name="trim">false</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+	</field>
+	
+	<field name="soggettiAbilitatiCCDedicato">
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="maxLength">2000</param>
+			<param name="trim">false</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+	</field>
+	
+	<field name="settoreAttivitaEconomica">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblSettoreAttivitaEconomica && settoreAttivitaEconomica.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="dataScadenzaAbilitPreventiva">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblDataScadenzaAbilitPreventiva && dataScadenzaAbilitPreventiva.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="dataRichRinnovoAbilitPreventiva">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(visSezAbilitPreventiva && !(("1".equals(rinnovoAbilitPreventiva.trim()) && dataRichRinnovoAbilitPreventiva.trim().length() > 0) || (!"1".equals(rinnovoAbilitPreventiva.trim()) && dataRichRinnovoAbilitPreventiva.trim().length() == 0)))]]></param>
+			<message key="richiestaRinnovo" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="zoneAttivita">
+		<field-validator type="fieldexpression">
+			<param name="expression">
+			<![CDATA[!(obblZoneAttivita && !(
+			"1".equals(zoneAttivita[0]) || "1".equals(zoneAttivita[1]) || "1".equals(zoneAttivita[2]) ||
+			"1".equals(zoneAttivita[3]) || "1".equals(zoneAttivita[4]) || "1".equals(zoneAttivita[5]) ||
+			"1".equals(zoneAttivita[6]) || "1".equals(zoneAttivita[7]) || "1".equals(zoneAttivita[8]) ||
+			"1".equals(zoneAttivita[9]) || "1".equals(zoneAttivita[10]) || "1".equals(zoneAttivita[11]) ||
+			"1".equals(zoneAttivita[12]) || "1".equals(zoneAttivita[13]) || "1".equals(zoneAttivita[14]) ||
+			"1".equals(zoneAttivita[15]) || "1".equals(zoneAttivita[16]) || "1".equals(zoneAttivita[17]) ||
+			"1".equals(zoneAttivita[18]) || "1".equals(zoneAttivita[19])))
+			]]></param>
+			<message key="required1ZonaAttivita" />
+		</field-validator>
+	</field>
+	
+	<field name="assunzioniObbligate">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblAssunzioniObbligate && assunzioniObbligate.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="strNumDipendenti[0]">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblDipendentiTriennio && strNumDipendenti[0].trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression"><![CDATA[[0-9]{0,5}]]></param>
+			<message key="wrongNumDipendenti" />
+		</field-validator>
+	</field>
+	
+	<field name="strNumDipendenti[1]">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblDipendentiTriennio && strNumDipendenti[1].trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression"><![CDATA[[0-9]{0,5}]]></param>
+			<message key="wrongNumDipendenti" />
+		</field-validator>
+	</field>
+
+	<field name="strNumDipendenti[2]">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblDipendentiTriennio && strNumDipendenti[2].trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression"><![CDATA[[0-9]{0,5}]]></param>
+			<message key="wrongNumDipendenti" />
+		</field-validator>
+	</field>
+	
+	<field name="classeDimensioneDipendenti">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!(obblClasseDimensione && classeDimensioneDipendenti.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="ulterioriDichiarazioni">
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="maxLength">2000</param>
+			<param name="trim">false</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+	</field>
+	
+	<field name="codiceBICCCDedicato">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(codiceBICCCDedicato.trim().length() != 0 && codiceBICCCDedicato.trim().length() != 8 && codiceBICCCDedicato.trim().length() != 11)]]></param>
+			<message key="codbiclength" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression"><![CDATA[^[a-zA-Z0-9]+$]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+		
+</validators>

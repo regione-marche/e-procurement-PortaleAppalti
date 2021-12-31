@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OffertaEconomicaFooter" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1167"/>
+	<parameter name="ITER_GARA" class="java.lang.String"/>
+	<queryString language="xPath">
+		<![CDATA[/ReportOffertaEconomica]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="174">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="89" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="2" width="467" height="87"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Alla voce “Costi della sicurezza aziendale” vanno indicati i costi aziendali concernenti l’adempimento delle disposizioni in materia di salute e sicurezza sui luoghi di lavoro. Tali costi, non soggetti a ribasso, sono già ricompresi nell’importo offerto e pertanto non sono sommabili ad esso.
+Si precisa che i costi per la sicurezza da rischio specifico o aziendale, previsti dall'art. 95 comma 10 del D.Lgvo 50/2016 non sono da confondersi con gli oneri per la sicurezza da rischio interferenziale, fissati dall'Amministrazione e già specificati, se previsti, nell'apposito campo.]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="87" width="467" height="87"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Per i costi della manodopera, come previsto dall'art. 95 c. 10 del D.Lgs 50/2016 nell'offerta economica l'operatore deve indicare i propri costi della manodopera e gli oneri aziendali concernenti l'adempimento delle disposizioni in materia di salute e sicurezza sui luoghi di lavoro ad esclusione delle forniture senza posa in opera, dei servizi di natura intellettuale e degli affidamenti ai sensi dell'art. 36, comma 2 lettera a). Le stazioni appaltanti, relativamente ai costi della manodopera, prima dell'aggiudicazione procedono a verificare il rispetto di quanto previsto all'articolo 97, comma 5, lettera d).  ]]></text>
+			</staticText>
+		</band>
+		<band height="41">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="41"/>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="41"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[In caso di discordanza tra l’importo offerto nel presente documento e la somma degli importi riportati in un eventuale elenco di dettaglio delle voci oggetto di offerta, prevale quanto riportato in questo documento.]]></text>
+			</staticText>
+		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="20"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="20"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Dichiarazione necessaria per la partecipazione alla Richiesta di Offerta]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="42">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="42" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="42"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore è pienamente a conoscenza di quanto previsto dalle Regole per l'accesso e l'utilizzo del Mercato Elettronico dell'Università degli Studi di Padova relativamente alla procedura di acquisto mediante Richiesta di Offerta.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="42">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="42" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="42"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il presente documento costituisce una proposta contrattuale rivolta al Punto Ordinante dell'Amministrazione richiedente ai sensi dell'art. 1329 del codice civile, che rimane pertanto valida, efficace ed irrevocabile per i giorni di validità dell'Offerta sopra riportati.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="21">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="21" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="20"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore dichiara che l'offerta è onnicomprensiva di tutti gli oneri ed obblighi contrattuali.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="67">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="67" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="66"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore dichiara di aver preso piena conoscenza della documentazione predisposta ed inviata dal Punto Ordinante in allegato alla Richiesta di Offerta e prende atto che il relativo Contratto sarà regolato dalle Condizioni Generali di Contratto applicabili al/ai Bene/i Servizio/i offerto/i, nonché dalle eventuali Condizioni particolari di Contratto predisposte e inviate dal Punto Ordinante, obbligandosi, in caso di aggiudicazione, ad osservarle in ogni loro parte.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="53">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="53" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="53"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore dichiara che con riferimento alla presente Richiesta di Offerta non ha in corso né ha praticato intese e/o pratiche restrittive della concorrenza e del mercato vietate ai sensi della normativa applicabile, ivi inclusi gli articoli 81 e ss. del Trattato CE e gli articoli 2 e ss. della Legge n. 287/1990, e che l'offerta è stata predisposta nel pieno rispetto di tale normativa.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="78">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="78"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- Il Fornitore ai sensi dell’art. 80 co. 5 lettera “m” del D.Lgs. 50/2016, dichiara che non si trova rispetto ad un altro partecipante alla medesima procedura di affidamento, in una situazione di controllo di cui all'art. 2359 c.c. o in una qualsiasi relazione, anche di fatto, se la situazione di controllo o la relazione comporti che le offerte sono imputabili ad un unico centro decisionale. Il Fornitore che si trova in una situazione di controllo ex art. 2359 c.c. o in una relazione di fatto con un altro partecipante allega una dichiarazione volta a dimostrare che l’offerta economica è formulata in maniera autonoma.]]></text>
+			</staticText>
+		</band>
+		<band height="43">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="43"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- Il Fornitore dichiara di non avere alle proprie dipendenze, ai sensi dell’art 53 c. 16 ter del D.Lgs. 165/2001, personale cessato dal rapporto di pubblico impiego da meno di tre anni, che abbia esercitato poteri autoritativi o negoziali per conto di codesto Ente.]]></text>
+			</staticText>
+		</band>
+		<band height="29">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="29" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="29"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore dichiara che non si trova in alcuna situazione di controllo di cui all'art. 2359 c.c. con alcun soggetto, e di aver formulato l'offerta autonomamente.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="91">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="76" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="76"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[- Il Fornitore è consapevole che, qualora fosse accertata la non veridicità  del contenuto della presente dichiarazione, l'Impresa verrà esclusa dalla procedura per la quale è rilasciata, o, se risultata aggiudicataria, decadrà dalla aggiudicazione medesima la quale verrà annullata e/o revocata, inoltre, qualora la non veridicità del contenuto della presente dichiarazione fosse accertata dopo la stipula, questa potrà essere risolta di diritto dalla Amministrazione titolare della presente Richiesta di Offerta ai sensi dell'art. 1456 cod. civ.
+]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="76" width="467" height="15"/>
+			</frame>
+		</band>
+		<band height="95">
+			<printWhenExpression><![CDATA["6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="55" width="467" height="40"/>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="75"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="75"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Per quanto non espressamente indicato si rinvia a quanto disposto dalle Regole per l'accesso e l'utilizzo del Mercato Elettronico dell'Università degli Studi di Padova, al Contratto sarà in ogni caso applicabile la disciplina generale e speciale che regolamenta gli acquisti della Pubblica Amministrazione. Il presente documento di offerta è esente da registrazione ai sensi del Testo Unico del 22/12/1986  n. 917,  art. 6 e s.m.i.,  salvo che in  caso d'uso ovvero da quanto diversamente e preventivamente esplicitato dall'Amministrazione nelle Condizioni Particolari di Fornitura della Richiesta di Offerta.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="86">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="85"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Indicare ai sensi dell’art. 95, comma 10 del D.Lgs. 50/2016: 1) i costi della sicurezza propri aziendali; 2) i propri costi della manodopera (ad esclusione delle forniture senza posa in opera, dei servizi di natura intellettuale e degli affidamenti ai sensi dell’art. 36, comma 2, lett. a).
+Detti costi sono ricompresi nell’offerta complessiva.
+I costi della sicurezza propri aziendali non sono da confondersi con gli oneri per la sicurezza da rischio interferenziale, fissati dalla Stazione Appaltante e già specificati, se previsti, nell’apposito campo.
+]]></text>
+			</staticText>
+		</band>
+		<band height="35">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="35"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[In caso di discordanza tra l’importo offerto nel presente documento e la somma degli importi riportati in un eventuale elenco di dettaglio delle voci oggetto di offerta, prevale quanto riportato in questo documento. ]]></text>
+			</staticText>
+		</band>
+		<band height="21">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="20"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dichiarazione necessaria per la partecipazione alla procedura di gara]]></text>
+			</staticText>
+		</band>
+		<band height="49">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="48"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified" markup="none">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- Il presente documento costituisce una proposta contrattuale ai sensi dell'art. 1329 del codice civile; detta proposta rimane pertanto valida, efficace ed irrevocabile per i giorni di validità dell'Offerta sopra riportati.
+]]></text>
+			</staticText>
+		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="20"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- l’Operatore economico dichiara che l'offerta è onnicomprensiva di tutti gli oneri ed obblighi contrattuali. ]]></text>
+			</staticText>
+		</band>
+		<band height="81">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="81"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- l'Operatore economico non si trova rispetto ad un altro partecipante alla presente procedura di affidamento, in una situazione di controllo di cui all'articolo 2359 del codice civile o in una qualsiasi relazione, anche di fatto, che comporti che le offerte sono imputabili ad un unico centro decisionale. L’Operatore economico che si trova  in una situazione di controllo ex art. 2359 c.c. o in una relazione di fatto con altro partecipante allega una dichiarazione volta a dimostrare che l’offerta economica è formulata in maniera autonoma.]]></text>
+			</staticText>
+		</band>
+		<band height="50">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="48"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- l’Operatore economico dichiara di non avere alle proprie dipendenze, ai sensi dell’art 53 c. 16 ter del D.Lgs. 165/2001, personale cessato dal rapporto di pubblico impiego da meno di tre anni, che abbia esercitato poteri autoritativi o negoziali per conto di codesto Ente. ]]></text>
+			</staticText>
+		</band>
+		<band height="47">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="46"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- l’Operatore economico dichiara di aver preso piena conoscenza della documentazione predisposta ed inviata tramite il Portale dalla Stazione Appaltante con riferimento alla presente procedura e si obbliga, in caso di aggiudicazione ad osservarla in ogni sua parte.]]></text>
+			</staticText>
+		</band>
+		<band height="95">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="93"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[- l’Operatore economico è consapevole che, qualora fosse accertata la non veridicità del contenuto della presente dichiarazione, l'Impresa verrà esclusa dalla procedura per la quale è rilasciata, o, se risultata aggiudicataria, decadrà dalla aggiudicazione medesima la quale verrà annullata e/o revocata, e l’Amministrazione titolare della presente procedura provvederà ad escutere l’eventuale garanzia provvisoria; inoltre, qualora la non veridicità del contenuto della presente dichiarazione fosse accertata dopo la stipula, questa potrà essere risolta di diritto dalla Amministrazione titolare della presente Offerta ai sensi dell'art. 1456 cod. civ. ]]></text>
+			</staticText>
+		</band>
+		<band height="85">
+			<printWhenExpression><![CDATA[!"6".equals($P{ITER_GARA})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="83"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Al Contratto sarà in ogni caso applicabile la disciplina generale e speciale che regolamenta gli acquisti della Pubblica Amministrazione, in particolare il D. Lgs. 50/2016 s.m.i e il D.P.R. 207/2010 s.m.i. per la parte vigente.
+Il presente documento di offerta è esente da registrazione ai sensi del Testo Unico del 22/12/1986 n. 917, art. 6 e s.m.i., salvo che in caso d'uso ovvero da quanto diversamente e preventivamente esplicitato dall'Amministrazione nella documentazione di gara.
+]]></text>
+			</staticText>
+		</band>
+		<band height="51">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="51"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="49"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[----------------------------
+ATTENZIONE: QUESTO DOCUMENTO NON HA VALORE SE PRIVO DELLA SOTTOSCRIZIONE A MEZZO FIRMA DIGITALE
+]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

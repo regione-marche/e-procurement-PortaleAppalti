@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="512" pageHeight="70" whenNoDataType="AllSectionsNoDetail" columnWidth="512" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="STAMPA" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/categorieIscrizionde/categoria]]>
+	</queryString>
+	<field name="categoria" class="java.lang.String">
+		<fieldDescription><![CDATA[categoria]]></fieldDescription>
+	</field>
+	<field name="classificaMinima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+	</field>
+	<field name="classificaMassima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+	</field>
+	<variable name="CATEGORIA_ROW_COUNT" class="java.lang.Integer">
+		<variableExpression><![CDATA[("1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )))
+    ? ($V{CATEGORIA_ROW_COUNT} != null ? $V{CATEGORIA_ROW_COUNT}.intValue() + 1 : 0)
+    : ($V{CATEGORIA_ROW_COUNT} != null ? $V{CATEGORIA_ROW_COUNT}.intValue() : 0)
+)   ]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="titoloCategoria">
+		<groupExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></groupExpression>
+		<groupHeader>
+			<band height="44">
+				<printWhenExpression><![CDATA[$P{STAMPA}]]></printWhenExpression>
+				<staticText>
+					<reportElement positionType="Float" x="287" y="15" width="186" height="27" isPrintWhenDetailOverflows="true" forecolor="#FF0000"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[(da compilare da parte del professionista)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="80" height="44"/>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="80" y="0" width="208" height="44"/>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="288" y="0" width="186" height="44"/>
+				</rectangle>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="77" height="30"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Codice]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="80" y="0" width="208" height="30"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrizione]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="287" y="0" width="186" height="30"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Importo dei lavori]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="25">
+			<printWhenExpression><![CDATA[$P{STAMPA}]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="471" height="19"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Categorie e prestazioni selezionate:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<printWhenExpression><![CDATA["1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="474" height="30">
+					<printWhenExpression><![CDATA[$P{STAMPA}]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="288" y="0" width="186" height="30"/>
+					<box leftPadding="0" rightPadding="0"/>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="80" height="30"/>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="80" y="0" width="208" height="30"/>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="288" y="0" width="186" height="30"/>
+				</rectangle>
+				<textField>
+					<reportElement x="0" y="0" width="77" height="30" isPrintWhenDetailOverflows="true"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="2" rightPadding="5"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring($F{categoria}.lastIndexOf("(")+1,$F{categoria}.lastIndexOf(")"))]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="80" y="0" width="208" height="30" isPrintWhenDetailOverflows="true"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="2" rightPadding="5"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring($F{categoria}.lastIndexOf(") ")+2,$F{categoria}.length())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="288" y="0" width="186" height="30"/>
+					<box leftPadding="0" rightPadding="0"/>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="441" y="0" width="32" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{CATEGORIA_ROW_COUNT}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

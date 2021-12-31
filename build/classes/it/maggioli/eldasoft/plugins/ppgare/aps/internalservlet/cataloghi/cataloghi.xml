@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Cataloghi" namespace="/do/FrontEnd/Cataloghi"
+					 extends="pp-common">
+
+		<action name="listAllCataloghi" class="cataloghiFinderAction" method="listAll">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/cataloghiList.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="viewIscrizione" class="cataloghiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/catalogoView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiElencoOperatori,statiIscrAlbo</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="viewCategorieIscrizione" class="cataloghiAction" method="viewCategorie">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/categorieIscrizioneView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo</param>
+			</interceptor-ref>
+		</action>
+				
+		<action name="viewCategorieIscrizioneOperatore" class="cataloghiAction" method="viewCategorieOperatore">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/categorieIscrizioneOperView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo,classifLavoriIscrAlbo,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf</param>
+			</interceptor-ref> 			
+		</action>
+	
+		<action name="*Articoli" class="articoliFinderAction" method="{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/articoliView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiArticolo</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadArticoliFiltrati" class="articoliFinderAction" method="downloadArticoliFiltrati">
+			<result type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="*Articolo" class="articoliAction" method="{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/articoloView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openGestioneProdotti" class="gestioneProdottiAction" method="openGestioneProdotti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/gestioneProdotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="*Prodotti*" class="gestioneProdottiAction" method="{1}Prodotti{2}">
+			<result type="dispatcher" name="prodottiSistema">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/prodottiSistema.jsp
+			</result>
+			<result type="dispatcher" name="prodottiCarrello">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/prodottiCarrello.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="*Prodotto" class="prodottiAction" method="{1}Prodotto">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/prodottoView.jsp
+			</result>
+			<result type="chain" name="gestioneProdotti">openGestioneProdotti</result>
+			<result type="chain" name="prodottiSistema">viewProdottiSistema</result>
+			<result type="chain" name="prodottiCarrello">viewProdottiCarrello</result>
+			<result type="chain" name="dettaglioProdotto">viewProdotto</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="inserProdottoChoices" class="inserProdottoChoicesAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/insertProdottoChoices.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="initProdottoWizard" class="initProdottoWizardAction" method="initWizard">
+			<result type="chain">openPageSelezioneArticolo</result>
+			<result type="chain" name="block">
+				<param name="actionName">viewArticolo</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Selezione articolo -->
+		<action name="openPageSelezioneArticolo" class="openPageSelezioneArticoloAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepArticolo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Confermo selezione articolo -->
+		<action name="processPageSelezioneArticolo" class="processPageSelezioneArticoloAction">
+			<result type="chain">openPageDefinizioneProdotto</result>
+			<result type="chain" name="input">openPageSelezioneArticolo</result>
+			<result type="chain" name="cancel">questionCancelWizardProdotto</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<!---	Definizione prodotto -->
+		<action name="openPageDefinizioneProdotto" class="openPageDefinizioneProdottoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepProdotto.jsp
+			</result>
+			<result name="input" type="chain">viewProdotto</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,statiProdotto,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageDefinizioneProdottoAfterError" class="openPageDefinizioneProdottoAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepProdotto.jsp
+			</result>
+			<result name="input" type="chain">viewProdotto</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,statiProdotto,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Confermo dati prodotto -->
+		<action name="processPageDefinizioneProdotto" class="processPageDefinizioneProdottoAction">
+			<result type="chain">openPageDocumenti</result>
+			<result type="chain" name="input">openPageDefinizioneProdottoAfterError</result>
+			<result type="chain" name="back">openPageSelezioneArticolo</result>
+			<result type="chain" name="cancel">questionCancelWizardProdotto</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<!-- Allegati -->
+		<action name="openPageDocumenti*" class="openPageDocumentiProdottoAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- Confermo gli allegati -->
+		<action name="processPageDocumenti" class="processPageDocumentiProdottoAction">
+			<result type="chain">openPageRiepilogoProdotto</result>
+			<result type="chain" name="backToDocumenti">openPageDocumentiClear</result>
+			<result type="chain" name="input">openPageDocumenti</result>
+			<result type="chain" name="back">openPageDefinizioneProdotto</result>
+			<result type="chain" name="cancel">questionCancelWizardProdotto</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">15728640</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- Riepilogo -->
+		<action name="openPageRiepilogoProdotto" class="openPageRiepilogoProdottoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,statiProdotto,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- Fine wizard -->
+		<action name="endWizard" class="endWizardProdottoAction">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/prodottoOk.jsp
+			</result>
+			<result type="dispatcher" name="successBozza">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/bozzaProdottoOk.jsp
+			</result>
+			<result type="dispatcher" name="successUpdate">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/updateProdottoOk.jsp
+			</result>
+			<result type="dispatcher" name="successUpdateBozza">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/updateBozzaProdottoOk.jsp
+			</result>
+			<result type="chain" name="input">openPageRiepilogoProdotto</result>
+			<result type="chain" name="errorWS">openPageRiepilogoProdotto</result>
+			<result type="chain" name="back">openPageDocumenti</result>
+			<result type="chain" name="cancel">questionCancelWizardProdotto</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+
+		<!-- Apri pagina richiesta annullamento wizard -->
+		<action name="questionCancelWizardProdotto" class="cancelWizardProdottoAction" method="question">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/abortInsProdotto.jsp
+			</result>
+			<result name="successCancAggProdotto" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/abortAggProdotto.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelWizardProdotto" class="cancelWizardProdottoAction" method="cancel">
+			<result type="chain">
+				<param name="actionName">openGestioneProdotti</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<result type="chain" name="successProdotto">
+				<param name="actionName">viewProdotto</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<result type="chain" name="successArticolo">
+				<param name="actionName">viewArticolo</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadAllegato*" class="allegatoProdottoAction" method="downloadAllegato{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+
+		<action name="*eleteAllegato*" class="allegatoProdottoAction" method="{1}eleteAllegato{2}">
+			<result type="chain">openPageDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+			
+		<action name="openPageInviaModificheProdotti" class="openPageInviaModificheProdottiAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/firmaRiepilogoModificheProdotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="*eleteRiepilogo" class="riepilogoModificheAction" method="{1}eleteRiepilogo">
+			<result type="chain">openPageInviaModificheProdotti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadRiepilogoFirmato" class="riepilogoModificheAction" method="downloadRiepilogoFirmato">
+			<result name="success" type="stream">
+				<param name="contentType">application/pkcs7-mime</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result type="chain" name="input">openPageInviaModificheProdotti</result>
+		</action>
+		
+		<action name="processModificheProdotti" class="processPageInviaModificheAction" method="{1}">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/inviaModificheProdottoOk.jsp
+			</result>
+			<result name="addRiepilogo" type="chain">openPageInviaModificheProdotti</result>
+			<result name="input" type="chain">openPageInviaModificheProdotti</result>
+			<result type="chain" name="cancel">openGestioneProdotti</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">15728640</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createModificheProdottiPdf" class="genPdfModificheProdottiAction" method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Selezione articoli per generazione excel inserimento massivo -->
+		<action name="openPageSelezioneArticoli" class="openPageSelezioneArticoliAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/stepArticoli.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Confermo selezione articoli per generazione excel inserimento massivo -->
+		<action name="processPageSelezioneArticoli" class="processPageSelezioneArticoliAction">
+			<result type="chain">openPageExportArticles</result>
+			<result type="chain" name="input">openPageSelezioneArticoli</result>
+			<result type="chain" name="back">openGestioneProdotti</result>
+			<result type="chain" name="cancel">openGestioneProdotti</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<!-- Riepilogo articoli selezionati -->		
+		<action name="*ExportArticles" class="exportArticoliAction" method="{1}">
+			<result name="open" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/exportArticoli.jsp
+			</result>
+			<result type="chain" name="back">openPageSelezioneArticoli</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<!--  ed export excel per inserimento massivo di prodotti -->
+		<action name="createExcelExportArticoli" class="exportArticoliAction">
+			<result type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Selezione articoli per generazione excel inserimento massivo -->
+		<action name="openPageImportProducts" class="openPageImportProductsAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/importProdotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="importProducts" class="importProductsAction" method="{1}">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/importProdottiResult.jsp
+			</result>
+			<result name="input" type="chain">openPageImportProducts</result>
+			<result type="chain" name="cancel">openGestioneProdotti</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">15728640</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="variazionePrezziScadenzeChoices" class="variazionePrezziScadenzeChoicesAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/variazionePrezziScadenzeChoices.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="createVariazioneScadenzePrezziExcel" class="genExcelPrezziScadenzeAction" method="createExcel">
+			<result type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<!---	Importazione variazioni prezzi e scadenze -->
+		<action name="openPageImportVariazionePrezziScadenze" class="openPageImportVariazionePrezziScadenzeAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/importVariazionePrezziScadenze.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="importVariazionePrezziScadenze" class="importVariazionePrezziScadenzeAction" method="{1}">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/cataloghi/importVariazionePrezziScadenzeResult.jsp
+			</result>
+			<result name="input" type="chain">openPageImportVariazionePrezziScadenze</result>
+			<result type="chain" name="cancel">openGestioneProdotti</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">15728640</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">statiProdotto,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaConsorzio,checkPILiberoProf,tipiArticolo,tipiPrezzoArtRiferitoA,tipiUnitaMisura,tipiUnitaMisuraTempiConsegna,aliquoteIVA</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="importVariazionePrezziScadenzeAsync" class="importVariazionePrezziScadenzeAsyncAction" method="load">
+  			<result type="stream">
+				<param name="contentType">application/json</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>		 
+		
+ 	</package>
+</struts>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OffertaEconomicaFooter" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0000000000000002"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="xPath">
+		<![CDATA[/ReportOffertaEconomica]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="47">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="47" isPrintWhenDetailOverflows="true"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="46"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Alla voce “Costi della sicurezza aziendale” vanno indicati i costi aziendali concernenti l’ adempimento delle disposizioni in materia di salute e sicurezza sui luoghi di lavoro. Tali costi, non soggetti a ribasso, sono già ricompresi nell’importo offerto e pertanto non sono sommabili ad esso.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="106">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="41"/>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="41"/>
+				<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[In caso di discordanza tra l’importo offerto nel presente documento e la somma degli importi riportati in un eventuale elenco di dettaglio delle voci oggetto di offerta, prevale quanto riportato in questo documento.]]></text>
+			</staticText>
+		</band>
+		<band height="51">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="467" height="51"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="467" height="49"/>
+					<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[----------------------------
+ATTENZIONE: QUESTO DOCUMENTO NON HA VALORE SE PRIVO DELLA SOTTOSCRIZIONE A MEZZO FIRMA DIGITALE
+]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

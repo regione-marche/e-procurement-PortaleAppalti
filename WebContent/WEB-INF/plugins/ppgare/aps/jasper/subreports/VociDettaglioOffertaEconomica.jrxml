@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="VociDettaglio" language="groovy" pageWidth="483" pageHeight="842" columnWidth="483" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Error" isIgnorePagination="true">
+	<property name="ireport.zoom" value="1.502629601803157"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Wed Feb 05 15:49:26 CET 2014"/>
+	<subDataset name="dettaglioOfferta" whenResourceMissingType="Error">
+		<parameter name="CODICE_COMPO" class="java.lang.String"/>
+		<parameter name="DESCRIZIONE_COMPO" class="java.lang.String"/>
+		<queryString language="xPath">
+			<![CDATA[/ReportOffertaEconomica/offerta/listaComponentiDettaglio/componenteDettaglio/attributoAggiuntivo]]>
+		</queryString>
+		<field name="codiceVoceDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[codice]]></fieldDescription>
+		</field>
+		<field name="valoreStringaDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreStringa]]></fieldDescription>
+		</field>
+		<field name="valoreNumericoDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreNumerico]]></fieldDescription>
+		</field>
+		<field name="valoreDataDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreData]]></fieldDescription>
+		</field>
+		<field name="tipoVoceDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[tipo]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:/progetti/PortaleAlice/WebContent/WEB-INF/plugins/ppgare/aps/jasper/subreports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/ReportGestioneProdotti"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CATALOGO" class="java.lang.String">
+		<parameterDescription><![CDATA[Titolo del catalogo in esame]]></parameterDescription>
+		<defaultValueExpression><![CDATA["Catalogo 2013, versione A.02 per Lavori e Servizi"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/ReportVociDettaglio]]>
+	</queryString>
+	<field name="codiceComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[codice]]></fieldDescription>
+	</field>
+	<field name="descrizioneComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizione]]></fieldDescription>
+	</field>
+	<field name="sentinellaAttributoAggiuntivo" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/codice]]></fieldDescription>
+	</field>
+	<field name="voceComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[voce]]></fieldDescription>
+	</field>
+	<field name="codice" class="java.lang.String">
+		<fieldDescription><![CDATA[codice]]></fieldDescription>
+	</field>
+	<field name="unitaMisura" class="java.lang.String">
+		<fieldDescription><![CDATA[unitaMisura]]></fieldDescription>
+	</field>
+	<field name="qta" class="java.lang.String">
+		<fieldDescription><![CDATA[quantita]]></fieldDescription>
+	</field>
+	<field name="prezzoBase" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitarioBaseGara]]></fieldDescription>
+	</field>
+	<field name="prezzo" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+	</field>
+	<field name="importo" class="java.lang.String">
+		<fieldDescription><![CDATA[importo]]></fieldDescription>
+	</field>
+	<field name="descrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizione]]></fieldDescription>
+	</field>
+	<field name="voce" class="java.lang.String">
+		<fieldDescription><![CDATA[voce]]></fieldDescription>
+	</field>
+	<field name="codiceVoceDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/codice]]></fieldDescription>
+	</field>
+	<field name="valoreNumericoDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreNumerico]]></fieldDescription>
+	</field>
+	<field name="valoreDataDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreData]]></fieldDescription>
+	</field>
+	<field name="valoreStringaDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreStringa]]></fieldDescription>
+	</field>
+	<field name="peso" class="java.lang.String">
+		<fieldDescription><![CDATA[peso]]></fieldDescription>
+	</field>
+	<field name="ribassoPercentuale" class="java.lang.String">
+		<fieldDescription><![CDATA[ribasso]]></fieldDescription>
+	</field>
+	<field name="ribassoPesato" class="java.lang.String">
+		<fieldDescription><![CDATA[ribassoPesato]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="37" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="483" height="20" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="483" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["LAVORAZIONE E FORNITURA " + ($F{codice} != null ? $F{codice} : "")]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="20" width="483" height="17" backcolor="#CCCCCC"/>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="217" height="17"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrizione]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="217" y="0" width="266" height="17" isPrintWhenDetailOverflows="true"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{voce} != null ? $F{voce} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band splitType="Prevent">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+		</band>
+		<band height="9" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{sentinellaAttributoAggiuntivo}!= null]]></printWhenExpression>
+			<componentElement>
+				<reportElement key="table" positionType="Float" x="0" y="0" width="483" height="9" isPrintInFirstWholeBand="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dettaglioOfferta">
+						<datasetParameter name="CODICE_COMPO">
+							<datasetParameterExpression><![CDATA[$F{codiceComponente}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="DESCRIZIONE_COMPO">
+							<datasetParameterExpression><![CDATA[$F{voceComponente} + "\n\n" + $F{descrizioneComponente}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("componenteDettaglio/attributoAggiuntivo")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:columnGroup width="483">
+						<jr:columnGroup width="483">
+							<jr:column width="217">
+								<jr:detailCell height="19" rowSpan="1">
+									<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="217" height="19" isPrintWhenDetailOverflows="true"/>
+										<box leftPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceVoceDatoAgg}]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+							<jr:column width="266">
+								<jr:detailCell height="19" rowSpan="1">
+									<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression class="java.lang.String"><![CDATA[(($F{valoreStringaDatoAgg} == null || $F{valoreStringaDatoAgg} == "") ? "" : $F{valoreStringaDatoAgg})]]></textFieldExpression>
+									</textField>
+									<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression class="java.util.Date"><![CDATA[($F{valoreDataDatoAgg} != null && $F{valoreDataDatoAgg} != "") ? (new SimpleDateFormat("yyyy-MM-dd")).parse($F{valoreDataDatoAgg}.substring(0,10)) : null]]></textFieldExpression>
+									</textField>
+									<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression class="java.lang.String"><![CDATA[( $F{tipoVoceDatoAgg} == "2" ? ($F{valoreNumericoDatoAgg}!= null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{valoreNumericoDatoAgg})) : null) : ( $F{valoreNumericoDatoAgg} != null ? new java.text.DecimalFormat("#,##0.#####",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{valoreNumericoDatoAgg})) : null ) )]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+						</jr:columnGroup>
+					</jr:columnGroup>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="86">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="17"/>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="217" height="17"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="false"/>
+					</textElement>
+					<text><![CDATA[UM]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="217" y="0" width="266" height="17" isPrintWhenDetailOverflows="true"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{unitaMisura} != null ? $F{unitaMisura} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement x="0" y="17" width="483" height="49"/>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{qta} != null ? new java.text.DecimalFormat("#,##0.00",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{qta})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="402" y="0" width="81" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Totale (IVA escl.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Qtà]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="335" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="false">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="402" y="30" width="81" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{importo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{importo})) : ""]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="335" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{prezzo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzo})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="201" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Ribasso percentuale %]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="201" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ribassoPercentuale} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{ribassoPercentuale})) : null]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="134" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{peso} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{peso})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="134" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Peso]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="268" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ribassoPesato} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{ribassoPesato})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="268" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Ribasso pesato %]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="67" y="30" width="67" height="17"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{prezzoBase} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzoBase})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="67" y="0" width="67" height="30"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario base di gara]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

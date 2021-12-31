@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE taglib
+ PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+ "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>eldasoft-common-core</short-name>
+	<uri>/eldasoft-common-core</uri>
+	<display-name>eldasoft common core tag library</display-name>
+	<description>eldasoft common core tag library</description>
+
+	<tag>
+		<name>ntpDate</name>
+		<tag-class>it.maggioli.eldasoft.plugins.ppcommon.aps.tags.NtpOfficialDateTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Carica la data e ora ufficiale da un server NTP.
+    	</description>
+		<attribute>
+			<name>var</name>
+			<required>yes</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>
+				Nome della variabile in cui memorizzare un oggetto della
+				classe
+				it.maggioli.eldasoft.common.aps.tags.NtpOfficialDate
+      		</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>checkCustomization</name>
+		<tag-class>it.maggioli.eldasoft.plugins.ppcommon.aps.tags.CheckCustomizationTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Calcola e salva in una variabile l'attivazione di una
+			configurazione applicativa.
+    	</description>
+		<attribute>
+			<name>var</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Nome della variabile in cui memorizzare un oggetto
+				booleano
+      		</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>no</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Scope della variabile:
+				- page (default)
+				- request
+				- session
+				- application
+      		</description>
+		</attribute>
+		<attribute>
+			<name>objectId</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Oggetto del quale analizzare la configurazione
+      		</description>
+		</attribute>
+		<attribute>
+			<name>attribute</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Attributo dell'oggetto del quale analizzare la
+				configurazione
+      		</description>
+		</attribute>
+		<attribute>
+			<name>feature</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Configurazione da verificare:
+				- VIS: visibilita'
+				- MAN:
+				obbligatorieta'
+      		</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>getAppParam</name>
+		<tag-class>it.maggioli.eldasoft.plugins.ppcommon.aps.tags.GetApplicationParamTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Estrae il parametro di configurazione della verticalizzazione Eldasoft.
+    	</description>
+		<attribute>
+			<name>var</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Nome della variabile in cui memorizzare il parametro estratto
+      		</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>no</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Scope della variabile:
+				- page (default)
+				- request
+				- session
+				- application
+      		</description>
+		</attribute>
+		<attribute>
+			<name>name</name>
+			<required>yes</required>
+			<rtexprvalue>no</rtexprvalue>
+			<description>
+				Oggetto del quale estrarre la configurazione
+      		</description>
+		</attribute>
+	</tag>
+</taglib>

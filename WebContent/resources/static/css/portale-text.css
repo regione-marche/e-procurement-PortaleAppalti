@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css?family=Titillium+Web:400,600,700");
+body {
+    font-family: Titillium Web, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif !important;
+    font-size: 16px;
+}
+
+/* =LAYOUT */
+
+html, 
+body {
+	border: 0;
+	margin: .25em;
+	padding: 0;	
+}
+
+
+/* =HEADER */
+
+/* =FOOTER */
+
+#footer {
+	padding: .5em 0;
+}
+
+/* =MAIN-CONTENT */
+
+/* =ELEMENTS */
+
+img {
+	display: none;
+}
+
+h1 {
+	font-size: 2em;
+	margin: 0;
+}
+
+h2 {
+	font-size: 1.1em;
+	margin: .5em 0 0 0;
+}
+
+h3, h4, h5, h6 {
+	font-size: .9em;
+	margin: .5em 0 0 0;
+}
+
+menu, 
+ol, 
+p {
+	margin: 0;
+	padding: .5em 0;	
+}
+
+ul {
+	list-style-type: square;
+}
+
+li {
+	margin: 0 .5em;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+}
+
+/* =LINKS */
+
+a:link, 
+a:visited {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+a:hover, 
+a:active, 
+a:focus {
+	text-decoration: none;
+}
+
+/* =INPUTS-AND-BUTTONS */
+
+input.button {
+	font-size: 1.1em;
+}
+
+/* =TABLES */
+
+caption, table td, table th {
+	font-size: .9em;
+}
+
+.wrong {
+	border: 1px solid red;
+}
+
+/* =OTHERS */
+
+.important {
+	font-weight: bold;
+}
+
+.no-editable {
+	background-color: #CFCFCF;
+}
+
+/* =HEADER-MENU */
+
+#style-sub-menu li {
+	display: inline;
+}
+
+#date-time {
+	padding: .5em 0;
+}
+
+/* =BREADCRUMBS */
+
+#breadcrumbs {
+	font-size: .9em;
+}
+
+/* =LATERAL-MENU */
+
+.menu-box {
+	margin: 0 .1em;
+	padding: 0 0 .2em 0;
+}
+
+.menu-box ul {
+	margin: 0;
+	padding: 0;
+}
+
+.menu-box li {
+	margin: .1em 0;
+	padding: .2em 15px;	
+}
+
+.menu-box a {
+	font-weight: normal;
+}
+
+.menu-box span.current a {
+	font-weight: bold;
+}

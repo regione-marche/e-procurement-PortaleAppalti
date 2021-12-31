@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	
+	<bean id="abstractBaseAction" abstract="true" class="com.agiletec.apsadmin.system.BaseAction">
+		<property name="langManager" ref="LangManager" />
+		<property name="authorizationManager" ref="AuthorizationManager" />
+		<property name="i18nManager" ref="I18nManager" />
+	</bean>
+	
+	<bean id="baseCommonAction" class="com.agiletec.apsadmin.common.BaseCommonAction" scope="prototype" 
+			parent="abstractBaseAction">
+		<property name="userManager" ref="UserManager"/>
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="dispatchAction" scope="prototype" 
+			class="com.agiletec.apsadmin.common.DispatchAction" parent="abstractBaseAction">
+		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
+		<property name="eventManager" ref="EventManager" />
+		<property name="userManager" ref="UserManager"/>
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+	</bean>
+	
+	<bean id="abstractBaseActionHelper" abstract="true" class="com.agiletec.apsadmin.system.BaseActionHelper">
+		<property name="groupManager" ref="GroupManager" />
+		<property name="authorizationManager" ref="AuthorizationManager" />
+		<property name="langManager" ref="LangManager" />
+	</bean>
+	
+</beans>

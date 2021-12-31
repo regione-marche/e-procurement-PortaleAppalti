@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/GareTel" namespace="/do/FrontEnd/GareTel" extends="pp-common">
+		
+		<action name="openGestioneBuste" class="openGestioneBusteAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneBuste.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openGestioneBusteDistinte" class="openGestioneBusteDistinteAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneBusteDistinte.jsp
+			</result>
+		<!--   <result type="chain" name="input">openGestioneBusteDistinte</result> -->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+				
+		<action name="openGestioneListaOfferte" class="openGestioneListaOfferteAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneListaOfferte.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageDocumenti*" class="openPageDocumentiBustaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepDocumenti.jsp
+			</result>
+			<result type="chain" name="successBustaTecnica">initOffTec</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageDocumenti" class="processPageDocumentiBustaAction">
+			<result type="chain">openGestioneBuste</result>
+			<result type="chain" name="backToBusteTecnicheLotti">openPageListaBusteTecnicheDistinte</result>
+			<result type="chain" name="backToBusteEconomicheLotti">openPageListaBusteEconomicheDistinte</result>
+			<result type="chain" name="backToGestioneBusteDistinte">openGestioneBusteDistinte</result>
+			<result type="chain" name="backToDocumenti">openPageDocumentiClear</result>
+			<result type="chain" name="input">openPageDocumenti</result>
+			<result type="chain" name="error">openPageDocumenti</result>
+			<result type="chain" name="back">openGestioneBuste</result>
+			<result type="chain" name="cancel">questionCancelDocumenti</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="downloadAllegato*" class="documentoBustaAction" method="downloadAllegato{1}">
+			<result type="chain" name="error">openPageDocumenti</result>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+
+		<action name="*eleteAllegato*" class="documentoBustaAction" method="{1}eleteAllegato{2}">
+			<result type="chain">openPageDocumenti</result>
+			<result type="chain" name="error">openPageDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+			
+		<action name="confirmInvioOfferteDistinte" class="sendBusteOfferteDistinteAction" method="confirmInvio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/confirmInvio.jsp
+			</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/invioBusteSuccess.jsp
+			</result>
+			<result type="chain" name="reopen">openGestioneBusteDistinte</result>
+			<result type="chain" name="input">openGestioneBusteDistinte</result>
+			<result type="chain" name="error">openGestioneBusteDistinte</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="invioOfferteDistinte" class="sendBusteOfferteDistinteAction" method="invio">
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/invioBusteSuccess.jsp
+			</result>
+			<result type="chain" name="input">openGestioneBusteDistinte</result>
+			<result type="chain" name="error">openGestioneBusteDistinte</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="*nvio" class="sendBusteAction" method="{1}nvio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/confirmInvio.jsp
+			</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/invioBusteSuccess.jsp
+			</result>
+			<result type="chain" name="reopen">openGestioneBuste</result>
+			<result type="chain" name="input">openGestioneBuste</result>
+			<result type="chain" name="error">openGestioneBuste</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- POST INVIO -->
+		
+		<action name="openRiepilogoOfferta" class="riepilogoOffertaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/riepilogoOfferta.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="riepilogoOfferteDistinte" class="riepilogoOfferteDistinteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/riepilogoOfferteDistinte.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openRiepilogo" class="openRiepilogoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepRiepilogo.jsp
+			</result>
+			<result type="chain" name="back">openGestioneBuste</result>
+			<result type="chain" name="error">openGestioneBuste</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openRiepilogoOfferteDistinte" class="openRiepilogoOfferteDistinteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepRiepilogoOfferteDistinte.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="downloadBusta" class="riepilogoOffertaAction" method="download">
+			<result name="success" type="stream">
+				<param name="contentType">application/zip</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+		</action>
+		
+		<action name="*ettificaOfferteDistinte" class="rettificaOfferteDistinteAction" method="{1}ettifica">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/confirmRettificaOfferta.jsp
+			</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/rettificaOffertaSuccess.jsp
+			</result>
+			<result type="chain" name="reopen">${nextResultAction}</result>
+			<result type="chain" name="error">${nextResultAction}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="*ettificaOfferta" class="rettificaOffertaAction" method="{1}ettifica">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/confirmRettificaOfferta.jsp
+			</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/rettificaOffertaSuccess.jsp
+			</result>
+			<result type="chain" name="reopen">openRiepilogoOfferta</result>
+			<result type="chain" name="error">openRiepilogoOfferta</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- OFFERTA TECNICA -->
+				
+		<action name="initOffTec" class="initOffertaTecnicaAction" method="initOffertaTecnica">
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageOffTecOfferta*" class="openPageOffertaTecnicaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepOffertaTecnica.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageOffTecScaricaOfferta*" class="openPageScaricaOffertaTecnicaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepScaricaOffertaTecnica.jsp
+			</result>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,province,nazioni,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,sesso,titoliSoggetto</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageOffTecDocumenti" class="openPageDocumentiOffertaTecnicaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepDocumentiOffertaTecnica.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageOffTecOfferta" class="processPageOffertaTecnicaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageOffTecOffertaAfterError</result>
+			<result type="chain" name="cancel">questionCancelOffTec</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageOffTecScaricaOfferta" class="processPageScaricaOffertaTecnicaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelOffTec</result>
+			<result type="chain" name="input">openPageOffTecScaricaOffertaAfterErrorMandante</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageOffTecDocumenti" class="processPageDocumentiOffertaTecnicaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageOffTecDocumenti</result>
+			<result type="chain" name="backToDocumenti">openPageOffTecDocumenti</result>
+			<result type="chain" name="cancel">questionCancelOffTec</result>
+			<result type="chain" name="quit">openGestioneBuste</result>
+			<result type="chain" name="quitToGestionBusteDistinte">openPageListaBusteTecnicheDistinte</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="nuovaOffertaListaOfferte" class="processPageGestioneListaOfferteAction" >
+			<result type="chain">openGestioneBusteDistinte</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="annullaOffertaListaOfferte" class="processPageGestioneListaOfferteAction" method="annullaOfferta">
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="*ancelOffTec" class="cancelOffertaTecnicaAction" method="{1}ancel">
+			<result type="dispatcher" name="confirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/abortOffertaTecnica.jsp
+			</result>
+			<result type="chain" name="openPageListaBusteTecnicheDistinte">openPageListaBusteTecnicheDistinte</result>
+			<result type="chain">openGestioneBuste</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createOffTecPdf" class="genPdfRiepilogoOffertaTecnicaAction" method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+ 			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAggiudicazione,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,settoriProduttivi</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="downloadOffTecAllegato*" class="documentoOffertaAction" method="downloadAllegato{1}">
+			<result type="chain" name="error">openPageOffTecDocumenti</result>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+		 
+		<action name="*eleteOffTecAllegato*" class="documentoOffertaAction" method="{1}eleteAllegato{2}">
+			<result type="chain">openPageOffTecDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+ 		
+		<action name="editFirmatarioTec*" class="processPageScaricaOffertaTecnicaAction" method="editFirmatario{1}">
+			<result type="chain" name="modifyFirmatarioMandataria">openPageOffTecScaricaOffertaEditFirmatarioMandataria</result>
+			<result type="chain" name="modifyFirmatarioMandante">openPageOffTecScaricaOffertaEditFirmatarioMandante</result>
+		</action>
+		
+		<action name="saveFirmatarioTec*" class="processPageScaricaOffertaTecnicaAction" method="saveFirmatario{1}">
+			<result type="chain" name="saveFirmatarioMandataria">openPageOffTecScaricaOfferta</result>
+			<result type="chain" name="saveFirmatarioMandante">openPageOffTecScaricaOfferta</result>
+			<result type="chain" name="input">openPageOffTecScaricaOffertaAfterErrorMandante</result>
+		</action>
+		
+		<action name="openPageListaBusteTecnicheDistinte" class="openPageListaBusteDistinteAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/viewBusteTecniche.jsp
+			</result>
+		</action>
+		
+		<!-- OFFERTA ECONOMICA -->
+		
+		<action name="initOffTel" class="initOffertaEconomicaAction" method="initOfferta">
+			<result type="chain" name="ricreabusta">confermaRicreaBustaEco</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="confermaRicreaBustaEco" class="initOffertaEconomicaAction" method="confermaRicreaBusta">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/confirmRicreaBustaEco.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="ricreaBustaEco" class="initOffertaEconomicaAction" method="ricreaBusta">
+			<result type="chain" name="success">initOffTel</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageOffTelPrezziUnitari" class="openPagePrezziUnitariAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepPrezziUnitari.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">sino</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageOffTelOfferta*" class="openPageOffertaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepOfferta.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageOffTelScaricaOfferta*" class="openPageScaricaOffertaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepScaricaOfferta.jsp
+			</result>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,province,nazioni,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,sesso,titoliSoggetto</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageOffTelDocumenti" class="openPageDocumentiOffertaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/stepDocumentiOfferta.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageOffTelPrezziUnitari" class="processPagePrezziUnitariAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageOffTelPrezziUnitari</result>
+			<result type="chain" name="cancel">questionCancelOffTel</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageOffTelOfferta" class="processPageOffertaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageOffTelOffertaAfterError</result>
+			<result type="chain" name="cancel">questionCancelOffTel</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageOffTelScaricaOfferta" class="processPageScaricaOffertaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelOffTel</result>
+			<result type="chain" name="input">openPageOffTelScaricaOffertaAfterErrorMandante</result>
+			<result type="chain" name="error">openPageOffTelScaricaOfferta</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageOffTelDocumenti" class="processPageDocumentiOffertaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageOffTelDocumenti</result>
+			<result type="chain" name="backToDocumenti">openPageOffTelDocumenti</result>
+			<result type="chain" name="cancel">questionCancelOffTel</result>
+			<result type="chain" name="quit">openGestioneBuste</result>
+			<result type="chain" name="quitToGestionBusteDistinte">openPageListaBusteEconomicheDistinte</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="*ancelOffTel" class="cancelOffertaEconomicaAction" method="{1}ancel">
+			<result type="dispatcher" name="confirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/abortOfferta.jsp
+			</result>
+			<result type="chain" name="openPageListaBusteEconomicheDistinte">openPageListaBusteEconomicheDistinte</result>
+			<result type="chain">openGestioneBuste</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createOffTelPdf" class="genPdfRiepilogoOffertaEconomicaAction" method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+ 			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAggiudicazione,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,settoriProduttivi</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="downloadOffertaAllegato*" class="documentoOffertaAction" method="downloadAllegato{1}">
+			<result type="chain" name="error">openPageOffTelDocumenti</result>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+		
+		<action name="*eleteOffertaAllegato*" class="documentoOffertaAction" method="{1}eleteAllegato{2}">
+			<result type="chain">openPageOffTelDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="editFirmatario*" class="processPageScaricaOffertaAction" method="editFirmatario{1}">
+			<result type="chain" name="modifyFirmatarioMandataria">openPageOffTelScaricaOffertaEditFirmatarioMandataria</result>
+			<result type="chain" name="modifyFirmatarioMandante">openPageOffTelScaricaOffertaEditFirmatarioMandante</result>
+		</action>
+		
+		<action name="saveFirmatario*" class="processPageScaricaOffertaAction" method="saveFirmatario{1}">
+			<result type="chain" name="saveFirmatarioMandataria">openPageOffTelScaricaOfferta</result>
+			<result type="chain" name="saveFirmatarioMandante">openPageOffTelScaricaOfferta</result>
+			<result type="chain" name="input">openPageOffTelScaricaOffertaAfterErrorMandante</result>
+		</action>
+		
+		<action name="openPageListaBusteEconomicheDistinte" class="openPageListaBusteDistinteAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/viewBusteEconomiche.jsp
+			</result>
+		</action>
+		
+		<action name="espletGaraFasi" class="espletGaraFasiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraFasi.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="espletGaraViewDocAmm" class="espletGaraViewDocAmmAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewDocAmm.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="espletGaraViewDocAmmOperatore" class="espletGaraViewDocAmmOperatoreAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewDocAmmOperatore.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="espletGaraViewValTecLotti" class="espletGaraViewValTecLottiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewValTecLotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="espletGaraViewValTec" class="espletGaraViewValTecAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewValTec.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewValTecOperatore" class="espletGaraViewValTecOperatoreAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewValTecOperatore.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewOffEcoLotti" class="espletGaraViewOffEcoLottiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewOffEcoLotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+				
+		<action name="espletGaraViewOffEco" class="espletGaraViewOffEcoAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewOffEco.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewOffEcoOperatore" class="espletGaraViewOffEcoOperatoreAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewOffEcoOperatore.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewGraduatoriaLotti" class="espletGaraViewGraduatoriaLottiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewGraduatoriaLotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewGraduatoria" class="espletGaraViewGraduatoriaAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewGraduatoria.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+	</package>
+
+</struts>

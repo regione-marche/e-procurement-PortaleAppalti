@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Comunicazioni" namespace="/do/FrontEnd/Comunicazioni"
+		extends="pp-common">
+
+		<action name="openPageComunicazioniRicevute" class="comunicazioniRicevuteAction" method="openPageComunicazioniRicevute">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioniRicevuteList.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageComunicazioniArchiviate" class="comunicazioniRicevuteAction" method="openPageComunicazioniArchiviate">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioniRicevuteList.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageSoccorsiIstruttori" class="comunicazioniRicevuteAction" method="openPageSoccorsiIstruttori">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioniRicevuteList.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageComunicazioniInviate" class="comunicazioniInviateAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioniInviateList.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageDettaglioComunicazioneRicevuta" class="dettaglioComunicazioniAction" method="openPageRicevute">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageDettaglioSoccorsoIstruttorio" class="dettaglioComunicazioniAction" method="openPageSoccorsoIstruttorio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageDettaglioComunicazioneInviata" class="dettaglioComunicazioniAction" method="openPageInviate">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="testoComunicazione" class="nuovaComunicazioneAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+ 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageNuovaComunicazioneAfterError" class="nuovaComunicazioneAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref> 
+		</action>
+		
+		<action name="documenti" class="openPageDocumentiNuovaComunicazioneAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>		
+		
+		<action name="inviaComunicazione" class="openPageRiepilogoNuovaComunicazioneAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="inviaComunicazioneAfterError" class="openPageRiepilogoNuovaComunicazioneAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="aggiungiAllegatoComunicazione" class="processPageDocumentiNuovaComunicazioneAction" method="addUltDoc">
+			<result type="chain" name="backToDocumenti">documenti</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="downloadAllegatoNuovaComunicazione" class="processPageDocumentiNuovaComunicazioneAction" method="downloadAllegato">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+
+		<action name="confirmDeleteAllegato" class="processPageDocumentiNuovaComunicazioneAction" method="confirmDeleteAllegato">
+			<result type="chain">documenti</result>
+			<interceptor-ref name="tokenFreeStack"/>
+		</action>
+
+		<action name="deleteAllegato" class="processPageDocumentiNuovaComunicazioneAction" method="deleteAllegato">
+			<result type="chain" name="backToDocumenti">documenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelDeleteAllegato" class="processPageDocumentiNuovaComunicazioneAction" method="cancel">
+			<result type="chain" name="cancel">documenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageConfermaInvio" class="nuovaComunicazioneAction" method="confirmInvio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="initNuovaComunicazione" class="initNuovaComunicazioneAction" method="initNuovaComunicazione">
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="processPageNuovaComunicazione" class="processPageNuovaComunicazioneAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovaComunicazione</result>
+			<result type="chain" name="input">openPageNuovaComunicazioneAfterError</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageDocumentiNuovaComunicazione" class="processPageDocumentiNuovaComunicazioneAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovaComunicazione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogoNuovaComunicazione" class="processPageRiepilogoNuovaComunicazioneAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">inviaComunicazioneAfterError</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<result type="chain" name="cancel">questionCancelNuovaComunicazione</result>
+		</action>
+
+		<action name="*ancelNuovaComunicazione" class="cancelNuovaComunicazioneAction" method="{1}ancel">
+			<result type="dispatcher" name="confirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/abortComunicazione.jsp
+			</result>
+			<result type="chain" name="backToComunicazione">
+				<param name="actionName">openPageDettaglioComunicazioneRicevuta</param>
+				<param name="namespace">/do/FrontEnd/Comunicazioni</param>
+			</result>
+			 <result type="chain" name="backToDettaglio">
+				<param name="actionName">${actionName}</param>
+				<param name="namespace">${namespace}</param>
+			</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+<!-- 
+		<action name="sendNuovaComunicazione" class="processPageRiepilogoNuovaComunicazioneAction" method="send">
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<result type="chain" name="input">inviaComunicazioneAfterError</result>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+ -->
+
+		<action name="elencoRichieste" class="richiesteInviateAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/richiesteInviateList.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazione,statiComunicazione</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="dettaglioRichiesta" class="dettaglioRichiestaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/richiestaView.jsp
+			</result>
+			<result type="chain" name="backToElencoRichieste">elencoRichieste</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazione,statiComunicazione</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadAllegatoRichiesta" class="dettaglioRichiestaAction" method="downloadAllegato">		
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		    <result type="chain" name="successFirmato">
+		    	<param name="actionName">viewFile</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+			</result> 
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="news" class="newsAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/news.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazione,statiComunicazione</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- SOCCORSO ISTRUTTORIO -->
+		
+		<action name="testoSoccorso" class="nuovoSoccorsoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+ 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageNuovoSoccorsoAfterError" class="nuovoSoccorsoAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref> 
+		</action>
+		
+		<action name="openPageConfermaInvioSoccorso" class="nuovoSoccorsoAction" method="confirmInvio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="documentiSoccorso" class="openPageDocumentiNuovoSoccorsoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="inviaSoccorso" class="openPageRiepilogoNuovoSoccorsoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="inviaSoccorsoAfterError" class="openPageRiepilogoNuovoSoccorsoAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+				
+		<action name="aggiungiAllegatoSoccorso" class="processPageDocumentiNuovoSoccorsoAction" method="addUltDoc">
+			<result type="chain" name="backToDocumenti">documentiSoccorso</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="aggiungiAllegatoSoccorsoRichiesto" class="processPageDocumentiNuovoSoccorsoAction" method="addDocRich">
+			<result type="chain" name="backToDocumenti">documentiSoccorso</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="downloadAllegatoSoccorso*" class="processPageDocumentiNuovoSoccorsoAction" method="downloadAllegato{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+		
+		<action name="confirmDeleteAllegatoSoccorso*" class="processPageDocumentiNuovoSoccorsoAction" method="confirmDeleteAllegato{1}">
+			<result type="chain">documentiSoccorso</result>
+			<interceptor-ref name="tokenFreeStack"/>
+		</action>
+
+		<action name="deleteAllegatoSoccorso*" class="processPageDocumentiNuovoSoccorsoAction" method="deleteAllegato{1}">
+			<result type="chain" name="backToDocumenti">documentiSoccorso</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelDeleteAllegatoSoccorso*" class="processPageDocumentiNuovoSoccorsoAction" method="cancel{1}">
+			<result type="chain" name="cancel">documentiSoccorso</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageNuovoSoccorso" class="processPageNuovoSoccorsoAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovoSoccorso</result>
+			<result type="chain" name="input">openPageNuovoSoccorsoAfterError</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageDocumentiNuovoSoccorso" class="processPageDocumentiNuovoSoccorsoAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovoSoccorso</result>
+			<result type="chain" name="input">documentiSoccorso</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogoNuovoSoccorso" class="processPageRiepilogoNuovoSoccorsoAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">inviaSoccorsoAfterError</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<result type="chain" name="cancel">questionCancelNuovoSoccorso</result>
+		</action>
+		
+		<action name="*ancelNuovoSoccorso" class="cancelNuovoSoccorsoAction" method="{1}ancel">
+			<result type="dispatcher" name="confirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/abortComunicazione.jsp
+			</result>
+			<result type="chain" name="backToComunicazione">
+				<param name="actionName">openPageDettaglioSoccorsoIstruttorio</param>
+				<param name="namespace">/do/FrontEnd/Comunicazioni</param>
+			</result>
+			 <result type="chain" name="backToDettaglio">
+				<param name="actionName">${actionName}</param>
+				<param name="namespace">${namespace}</param>
+			</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+	</package>
+</struts>

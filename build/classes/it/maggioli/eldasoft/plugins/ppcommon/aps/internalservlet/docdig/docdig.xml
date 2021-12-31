@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+    	
+	<package name="portgare_do/FrontEnd/DocDig" namespace="/do/FrontEnd/DocDig"
+		extends="pp-common">
+		
+		<action name="view*" class="downloadAllegatoAction" method="view{1}">
+			<result type="chain" name="successFirmaDigitaleInvito">		    	
+		        <param name="actionName">viewInvito</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+			<result type="chain" name="successFirmaDigitaleRiservato">		    	
+		        <param name="actionName">viewRiservato</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+		    <result type="chain" name="successFirmaDigitalePubblico">		    	
+		        <param name="actionName">viewPubblico</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+		</action>
+		
+		<action name="download*" class="downloadAllegatoAction" method="download{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+						
+			<result type="chain" name="successFirmaDigitaleRiservato">		    	
+		        <param name="actionName">viewRiservato</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+		    <result type="chain" name="successFirmaDigitalePubblico">		    	
+		        <param name="actionName">viewPubblico</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+		</action>
+		
+	</package>
+
+</struts>

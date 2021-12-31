@@ -1,0 +1,7 @@
+#search-form {
+	text-align: right;
+}
+
+#search-form input.text {
+	width: 7em;
+}

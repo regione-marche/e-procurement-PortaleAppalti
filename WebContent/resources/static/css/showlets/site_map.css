@@ -1,0 +1,18 @@
+#site-map ul {
+	line-height: 150%;
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#site-map ul li a {
+	padding-left: 20px;
+}
+
+#site-map ul ul {
+	padding-left: 20px;
+}
+
+#site-map ul li ul li a {
+	padding-left: 10px;
+}

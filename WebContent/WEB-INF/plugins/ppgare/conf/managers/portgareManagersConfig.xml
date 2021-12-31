@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:jee="http://www.springframework.org/schema/jee"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+				http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd" >
+
+	<bean id="WSGareAppalto" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.WSGareAppaltoWrapper" >
+		<property name="proxyWSGare">
+			<bean class="it.eldasoft.www.sil.WSGareAppalto.WSGareAppaltoSoapProxy" >
+				<property name="endpoint">
+					<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+		         		<constructor-arg value="wsGareAppalto"/>
+		      		</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="WSBandiEsitiAvvisi" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.WSBandiEsitiAvvisiWrapper" >
+		<property name="proxyWSBandiEsitiAvvisi">
+			<bean class="it.eldasoft.www.appalti.WSBandiEsitiAvvisi.WSBandiEsitiAvvisiProxy" >
+				<property name="endpoint">
+					<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+		         		<constructor-arg value="wsBandiEsitiAvvisi"/>
+		      		</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="WSAste" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.aste.WSAsteWrapper" >
+		<property name="proxyWSAste">
+			<bean class="it.eldasoft.www.sil.WSAste.WSAsteSoapProxy" >
+				<property name="endpoint">
+					<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+		         		<constructor-arg value="wsAste"/>
+		      		</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="WSAuthServiceSPID" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.WSAuthServiceSPIDWrapper" >
+		<property name="proxyWSAuthService">
+			<bean class="it.cedaf.authservice.service.AuthServiceProxy" >
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="WSOrdiniNSO" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.eorders.WSOrdiniNSOWrapper" >
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="endpoint">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="nso.baseUrl"/>
+      		</bean>
+		</property>
+	</bean>
+	
+	<bean id="AsteManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.aste.AsteManager" 
+			parent="abstractService" >
+		<property name="wsAste" ref="WSAste" />
+	</bean>	
+
+	<bean id="BandiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.BandiManager" 
+			parent="abstractService" >
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+	</bean>
+	
+	<bean id="EsitiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.EsitiManager" 
+			parent="abstractService" >
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+	</bean>
+	
+	<bean id="AvvisiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.AvvisiManager" 
+			parent="abstractService" >
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+	</bean>
+	
+	<bean id="ContrattiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.ContrattiManager" 
+			parent="abstractService" >
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+	</bean>
+
+	<bean id="OrdiniManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.eorders.OrdiniManager" 
+			parent="abstractService" >
+		<property name="wsOrdiniNSO" ref="WSOrdiniNSO" />
+	</bean>
+
+	<bean id="DPCM26042011Manager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.DPCM26042011Manager" 
+			parent="abstractService" >
+		<property name="wsBandiEsitiAvvisi" ref="WSBandiEsitiAvvisi" />
+	</bean>
+	
+	<bean id="LeggeTrasparenzaManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.LeggeTrasparenzaManager" 
+			parent="abstractService" >
+		<property name="wsBandiEsitiAvvisi" ref="WSBandiEsitiAvvisi" />
+	</bean>
+	
+	<bean id="LeggeAnticorruzioneManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.LeggeAnticorruzioneManager" 
+			parent="abstractService" >
+		<property name="wsBandiEsitiAvvisi" ref="WSBandiEsitiAvvisi" />
+	</bean>
+	
+	<bean id="DatasetAppaltiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.dsappalti.DatasetAppaltiManager" parent="abstractService">
+		<property name="configService" ref="BaseConfigManager" />
+	</bean>
+	
+	<bean id="RSSBandiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.rssbandi.RSSBandiManager" parent="abstractService">
+		<property name="configService" ref="BaseConfigManager" />
+	</bean>
+	
+	<bean id="CataloghiManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.CataloghiManager" 
+			parent="abstractService" >
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+	</bean>
+	
+	<bean id="DatiImpresaChecker" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker">
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="userRegManager" ref="jpuserregUserRegManager" />			
+	</bean> 
+
+	<bean id="ppgareRegImpresaEntityTypeDom" 
+			class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.parse.TempRegImpresaProfileTypeDOM" parent="baseEntityTypeDom" >
+	</bean>
+	
+	<bean id="ppgareRegImpresaProfileManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.RegImpresaProfileManager" parent="abstractEntityManager" >
+		<property name="entityClassName" value="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.model.TempRegImpresaProfile"/>
+		<property name="configItemName" value="jpuserprofileProfileType" />
+		<property name="xmlAttributeRootElementName" value="profile" />
+		<property name="entityTypeDom" ref="ppgareRegImpresaEntityTypeDom" />
+		<property name="profileDAO" >
+			<bean class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.RegImpresaProfileDAO" parent="abstractEntityDAO">
+				<property name="dataSource" ref="servDataSource" />
+			</bean>
+		</property>
+		<property name="entitySearcherDAO" >
+			<bean class="com.agiletec.plugins.jpuserprofile.aps.system.services.profile.UserProfileSearcherDAO">
+				<property name="dataSource" ref="servDataSource" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="RegistrazioneImpresaManager" class="it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.RegistrazioneImpresaManager" 
+			parent="jpuserregUserRegManager" >
+		<property name="datiImpresaChecker" ref="DatiImpresaChecker" />
+		<property name="userDAO" >
+			<bean class="com.agiletec.aps.system.services.user.UserDAO">
+				<property name="dataSource" ref="servDataSource" />
+				<property name="encrypter">
+					<bean class="com.agiletec.aps.util.DefaultApsEncrypter"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="regImpresaProfileManager" ref="ppgareRegImpresaProfileManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
+	</bean>
+	
+	<bean id="AuthServiceSPIDManager" 
+		class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.AuthServiceSPIDManager" 
+		parent="abstractService" >
+		<property name="wsAuthServiceSPID" ref="WSAuthServiceSPID" />
+	</bean>
+
+</beans>

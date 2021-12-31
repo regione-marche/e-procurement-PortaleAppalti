@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	<package name="portgare_do/FrontEnd/AdminAccess" namespace="/do/FrontEnd/AdminAccess"
+		extends="pp-common">
+
+		<action name="adminAccessAction" class="adminAccessAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/adminaccess/adminAccess.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="loginPortoken" class="adminAccessAction" method="loginPortoken">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="loginMtoken" class="adminAccessAction" method="loginMtoken">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>	
+	</package>
+</struts>

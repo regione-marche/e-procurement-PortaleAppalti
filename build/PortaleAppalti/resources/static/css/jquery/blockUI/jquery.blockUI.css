@@ -1,0 +1,20 @@
+div.blockMsg {
+	border: 3px solid #AAAAAA;
+	border-radius: 10px;
+	color: #000000;
+	cursor: wait;
+	width: 30%;
+	top: 30%;
+	left: 34%;
+	margin: 0;
+	padding: 15px 15px 15px 40px;
+	text-align: center;
+	background-color: #FFFFFF;
+	font-size: 1.3em;
+}
+
+div.blockMsg img{
+	height: 40px;
+	width: 40px;
+	margin-right: 20px;
+}

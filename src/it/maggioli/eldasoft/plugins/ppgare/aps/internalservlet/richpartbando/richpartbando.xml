@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/RichPartBando" namespace="/do/FrontEnd/RichPartBando"
+		extends="pp-common">
+
+		<action name="new*" class="initPartBandoAction" method="new{1}">
+			<result type="chain">openPageImpresa</result>
+			<result type="chain" name="block">
+				<param name="actionName">view</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageImpresa" class="openPageImpresaPartBandoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/stepImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRTI" class="openPageRTIPartBandoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/stepRTI.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiRaggruppamento</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageComponenti*" class="openPageComponentiPartBandoAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/stepComponenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaSociale,checkPILiberoProf,checkPIImprSociale,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,nazioni,sesso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageLotti" class="openPageLottiPartBandoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/stepLotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageRiepilogo" class="openPageRiepilogoPartBandoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageImpresa" class="processPageImpresaPartBandoAction">
+			<result type="chain" name="success">openPageRTI</result>
+			<result type="chain" name="successSkipRTI">openPageComponentiClear</result>
+			<result type="chain" name="successSkipComponenti">openPageLotti</result>
+			<result type="chain" name="successSkipLotti">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageImpresa</result>
+			<result type="chain" name="cancel">questionCancelPartecipazione</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRTI" class="processPageRTIPartBandoAction">
+			<result type="chain">openPageComponentiClear</result>
+			<result type="chain" name="input">openPageRTI</result>
+			<result type="chain" name="successSkipComponenti">openPageLotti</result>
+			<result type="chain" name="successSkipLotti">openPageRiepilogo</result>
+			<result type="chain" name="back">openPageImpresa</result>
+			<result type="chain" name="cancel">questionCancelPartecipazione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageComponenti" class="processPageComponentiPartBandoAction">
+			<result type="chain">openPageLotti</result>
+			<result type="chain" name="input">openPageComponenti</result>
+			<result type="chain" name="successSkipLotti">openPageRiepilogo</result>
+			<result type="chain" name="back">openPageRTI</result>
+			<result type="chain" name="backSkipRTI">openPageImpresa</result>
+			<result type="chain" name="cancel">questionCancelPartecipazione</result>
+			<result type="chain" name="refresh">openPageComponentiClear</result>
+			<result type="chain" name="modify">openPageComponentiModify</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="modifyComponente" class="processPageComponentiPartBandoAction" method="modify">
+			<result type="chain" name="modify">openPageComponentiModify</result>
+		</action>
+
+		<action name="*eleteComponente" class="processPageComponentiPartBandoAction" method="{1}elete">
+			<result type="chain" name="refresh">openPageComponentiClear</result>
+		</action>
+
+		<action name="processPageLotti" class="processPageLottiPartBandoAction">
+			<result type="chain">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageLotti</result>
+			<result type="chain" name="back">openPageComponentiClear</result>
+			<result type="chain" name="backSkipComponenti">openPageRTI</result>
+			<result type="chain" name="backSkipRTI">openPageImpresa</result>
+			<result type="chain" name="cancel">questionCancelPartecipazione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogo" class="processPageRiepilogoPartBandoAction">
+			<result type="dispatcher">
+			/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/partecipazioneOk.jsp
+			</result>
+			<result type="chain" name="successGT">
+				<param name="actionName">openGestioneBuste</param>
+				<param name="namespace">/do/FrontEnd/GareTel</param>
+			</result>
+			<result type="chain" name="successGTOfferteDistinte">
+				<param name="actionName">openGestioneBusteDistinte</param>
+				<param name="namespace">/do/FrontEnd/GareTel</param>
+			</result>
+			<result type="chain" name="input">openPageRiepilogo</result>
+			<result type="chain" name="errorWS">openPageRiepilogo</result>
+			<result type="chain" name="back">openPageLotti</result>
+			<result type="chain" name="backSkipLotti">openPageComponentiClear</result>
+			<result type="chain" name="backSkipComponenti">openPageRTI</result>
+			<result type="chain" name="backSkipRTI">openPageImpresa</result>
+			<result type="chain" name="cancel">questionCancelPartecipazione</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="questionCancelPartecipazione" class="cancelPartBandoAction" method="questionCancelPartecipazione">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/abortPartecipazione.jsp
+			</result>
+			<result type="dispatcher" name="successInvioOfferta">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/abortInvioOfferta.jsp
+			</result>
+			<result type="dispatcher" name="successComprovaRequisiti">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/richpartbando/abortComprovaRequisiti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelPartecipazione" class="cancelPartBandoAction" method="cancelPartecipazione">
+			<result type="chain">
+				<param name="actionName">view</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<result type="chain" name="openGestioneBuste">
+				<param name="actionName">openGestioneBuste</param>
+				<param name="namespace">/do/FrontEnd/GareTel</param>
+			</result>
+			<result type="chain" name="openGestioneBusteDistinte">
+				<param name="actionName">openGestioneBusteDistinte</param>
+				<param name="namespace">/do/FrontEnd/GareTel</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="createPdfBarcode" class="processPageEsitoPartBandoAction" method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="Barcode.pdf"</param>
+			</result>
+		</action>
+		
+	</package>
+
+</struts>

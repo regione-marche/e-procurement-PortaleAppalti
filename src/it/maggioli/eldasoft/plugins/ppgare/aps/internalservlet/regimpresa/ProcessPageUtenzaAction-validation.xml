@@ -1,0 +1,72 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="username">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">20</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[([a-zA-Z0-9\.])+]]></param>
+			<param name="trim">false</param>
+			<message key="wrongCharactersUsername" />
+		</field-validator>
+	</field>
+
+	<field name="usernameConfirm">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">20</param>
+			<message key="localstrings.stringlength" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[([a-zA-Z0-9\.])+]]></param>
+			<param name="trim">false</param>
+			<message key="wrongCharactersUsername" />
+		</field-validator>
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression">(username == usernameConfirm)</param>
+			<message key="wrongUsernameConfirm" />
+		</field-validator>
+	</field>
+
+	<field name="soggettoRichiedente">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(soggettoRichiedente.trim().length() > 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="utilizzoPiattaforma">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(utilizzoPiattaforma == 1)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<param name="min">1</param>
+			<param name="max">1</param>
+			<message key="utilizzoPiattaformaBlocked" />
+		</field-validator>
+	</field>
+
+	<field name="privacy">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[((visConsensoPrivacy && privacy == 1) || !visConsensoPrivacy)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<param name="min">1</param>
+			<param name="max">1</param>
+			<message key="privacyBlocked" />
+		</field-validator>
+	</field>
+
+</validators>

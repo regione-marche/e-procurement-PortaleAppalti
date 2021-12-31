@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd" >
+	
+	<aop:aspectj-autoproxy />
+	
+	<bean id="jpuserregUserRegManager"
+			class="com.agiletec.plugins.jpuserreg.aps.system.services.userreg.UserRegManager"
+			parent="abstractService">
+		<property name="authorizationManager" ref="AuthorizationManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="roleManager" ref="RoleManager" />
+		<property name="groupManager" ref="GroupManager" />
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="configManager" ref="BaseConfigManager" />
+		<property name="langManager" ref="LangManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="userRegDAO" >
+			<bean class="com.agiletec.plugins.jpuserreg.aps.system.services.userreg.UserRegDAO">
+				<property name="dataSource" ref="servDataSource" />
+			</bean>
+		</property>
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+</beans>

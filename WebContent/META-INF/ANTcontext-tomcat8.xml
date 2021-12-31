@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context path="/@webapp@" docBase="./@webapp@" debug="1" reloadable="true" useHttpOnly="true">
+	
+	<Environment name="logName" value="entando" type="java.lang.String" override="false" />
+	
+	<Environment name="configVersion" value="production" type="java.lang.String" override="false" />
+	
+	<Environment name="applicationBaseURL" value="@applicationBaseURL@" type="java.lang.String" override="false" />
+	<Environment name="resourceRootURL" value="@resourceRootURL@" type="java.lang.String" override="false" />
+	<Environment name="protectedResourceRootURL" value="@protectedResourceRootURL@" type="java.lang.String" override="false" />
+	
+	<Environment name="resourceDiskRootFolder" value="@resourceDiskRootFolder@" type="java.lang.String" override="false" />
+	<Environment name="protectedResourceDiskRootFolder" value="@protectedResourceDiskRootFolder@" type="java.lang.String" override="false" />
+	<Environment name="indexDiskRootFolder" value="@indexDiskRootFolder@" type="java.lang.String" override="false" />
+	<Environment name="cacheDiskRootFolder" value="@cacheDiskRootFolder@" type="java.lang.String" override="false" />
+	
+	<Resource name="jdbc/portDataSource" auth="Container" 
+		type="javax.sql.DataSource" driverClassName="org.postgresql.Driver" 
+		maxTotal="8" maxIdle="4" 
+		username="@pg_username_port@" password="@pg_password_port@" 
+		url="jdbc:postgresql://@pg_host@:@pg_port@/@webapp@Port" />
+	
+	<Resource name="jdbc/servDataSource" auth="Container" 
+		type="javax.sql.DataSource" driverClassName="org.postgresql.Driver" 
+		maxTotal="8" maxIdle="4" 
+		username="@pg_username_serv@" password="@pg_password_serv@" 
+		url="jdbc:postgresql://@pg_host@:@pg_port@/@webapp@Serv" />
+	
+ </Context>

@@ -1,0 +1,1610 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+				http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
+
+	<bean id="bandiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="bandiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="asteManager" ref="AsteManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="initNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.InitNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="ntpManager" ref="NtpManager" />
+	</bean>
+
+	<bean id="comunicazioniRicevuteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ComunicazioniRicevuteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="comunicazioniInviateAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ComunicazioniInviateAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="dettaglioComunicazioniAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.DettaglioComunicazioniAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="contrattiManager" ref="ContrattiManager" />
+		<property name="avvisiManager" ref="AvvisiManager" />
+	</bean>
+
+	<bean id="nuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="abstractProcessPageComunicazioneAction" abstract="true"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.AbstractProcessPageComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="contrattiManager" ref="ContrattiManager" />
+		<property name="avvisiManager" ref="AvvisiManager" />
+	</bean>
+
+	<bean id="processPageNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageNuovaComunicazioneAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageDocumentiNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageDocumentiNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageDocumentiNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageDocumentiNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageRiepilogoNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageRiepilogoNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageRiepilogoNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageRiepilogoNuovaComunicazioneAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+		<!--  <property name="i18nManager" ref="I18nManager" />-->
+	</bean>
+
+	<bean id="cancelNuovaComunicazioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.CancelNuovaComunicazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="richiesteInviateAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.RichiesteInviateAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+	
+	<bean id="dettaglioRichiestaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.DettaglioRichiestaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="newsAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.NewsAction"
+		parent="abstractBaseAction" scope="prototype">
+	<!-- <property name="appParamManager" ref="AppParamManager" /> -->
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+	
+	
+	<!-- SOCCORSO ISTRUTTORIO -->
+	
+	<bean id="nuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageNuovoSoccorsoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageDocumentiNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageDocumentiNuovoSoccorsoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageRiepilogoNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageRiepilogoNuovoSoccorsoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="processPageNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageNuovoSoccorsoAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageDocumentiNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageDocumentiNuovoSoccorsoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageRiepilogoNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageRiepilogoNuovoSoccorsoAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+		<!--  <property name="i18nManager" ref="I18nManager" />-->
+	</bean>		
+	
+	<bean id="cancelNuovoSoccorsoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.CancelNuovoSoccorsoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	
+	<bean id="tabIndicizzazioneDPCMAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.TabellaIndicizzazioneDPCMAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="dpcmManager" ref="DPCM26042011Manager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="avvisiManager" ref="AvvisiManager" />
+		<property name="esitiManager" ref="EsitiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="bandiIscrizioneFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiIscrizioneFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="bandiIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="esitiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.esiti.EsitiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="esitiManager" ref="EsitiManager" />
+	</bean>
+
+	<bean id="esitiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.esiti.EsitiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="esitiManager" ref="EsitiManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="pageManager" ref="PageManager" />
+	</bean>
+
+	<bean id="avvisiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.avvisi.AvvisiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="avvisiManager" ref="AvvisiManager" />
+	</bean>
+
+	<bean id="avvisiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.avvisi.AvvisiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="avvisiManager" ref="AvvisiManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="cataloghiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.CataloghiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="cataloghiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.CataloghiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="impresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageDatiPrincImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageDatiPrincipaliImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageIndirizziImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageIndirizziImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageAltriDatiAnagrImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageAltriDatiAnagraficiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageSoggettiImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageSoggettiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageDatiUltImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageDatiUlterioriImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageRiepilogoAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="openRiepilogoOfferteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageRiepilogoOfferteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="processPageDatiPrincImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageDatiPrincipaliImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="codificheManager" ref="CodificheManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="datiImpresaChecker" ref="DatiImpresaChecker" />
+	</bean>
+
+	<bean id="processPageIndirizziImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageIndirizziImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageAltriDatiAnagrImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageAltriDatiAnagraficiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageSoggettiImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageSoggettiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageDatiUltImpresaAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageDatiUlterioriImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="cancelAggImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.CancelAggiornamentoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="aggiornamentoImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageRiepilogoImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="datiImpresaChecker" ref="DatiImpresaChecker" />
+	</bean>
+
+	<bean id="genPdfDatiImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.GenPDFDatiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<!-- <property name="customReportManager" ref="CustomReportManager" /> -->
+		<property name="appParamManager" ref="AppParamManager" />
+		<!-- <property name="eventManager" ref="EventManager" /> -->
+	</bean>
+
+	<bean id="richVariazioneDatiImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.RichiediVariazioneDatiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="initRegistrazioneImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.InitRegistrazioneImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageTipoRegistrazioneImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageTipoRegistrazioneImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageDatiPrincImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageDatiPrincipaliImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageIndirizziImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageIndirizziImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageAltriDatiAnagrImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageAltriDatiAnagraficiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageSoggettiImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageSoggettiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageDatiUltImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageDatiUlterioriImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageUtenzaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageUtenzaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageRiepilogoRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="openPageImportImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.OpenPageImportImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+
+	<bean id="processPageDatiPrincImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageDatiPrincipaliImpresaAction"
+		parent="processPageDatiPrincImpresaAggImpresaAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageIndirizziImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageIndirizziImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageAltriDatiAnagrImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageAltriDatiAnagraficiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageSoggettiImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageSoggettiImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageDatiUltImpresaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageDatiUlterioriImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageUtenzaRegImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageUtenzaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="userManager" ref="UserManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="cancelRegistrImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.CancelRegistrazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="urlManager" ref="URLManager"/>
+	</bean>
+
+	<bean id="registrazioneImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.RegistrazioneImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+	
+	<bean id="processPageImportImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.ProcessPageImportImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+
+	<bean id="initIscrizioneAlboAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="initRinnovoIscrizioneAlboAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitRinnovoAction"
+		parent="initIscrizioneAlboAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageIscrAlboImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageRinnovoImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRinnovoImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<!-- <bean id="openPageSAIscrAlboAction" class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageSAAction" 
+		parent="abstractBaseAction" scope="prototype"> <property name="bandiManager" 
+		ref="BandiManager" /> </bean> -->
+	<bean id="openPageIscrAlboRTIAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRTIAction"
+		parent="openPageRTIPartBandoAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageIscrAlboComponentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageComponentiAction"
+		parent="openPageComponentiPartBandoAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageIscrAlboCategorieAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageCategorieAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="openPageIscrAlboRiepilogoCategorieAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRiepilogoCategorieAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="openPageIscrAlboScaricaRichiestaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageScaricaDomandaIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageRinnovoScaricaRichiestaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageScaricaDomandaRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageIscrAlboDocumentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageDocumentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageIscrAlboRiepilogoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="processPageIscrAlboImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageRinnovoImpresaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageRinnovoImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<!-- <bean id="processPageSAIscrAlboAction" class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageSAAction" 
+		parent="abstractBaseAction" scope="prototype"> </bean> -->
+
+	<bean id="processPageIscrAlboRTIAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageRTIAction"
+		parent="processPageRTIPartBandoAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageIscrAlboComponentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageComponentiAction"
+		parent="processPageComponentiPartBandoAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageIscrAlboCategorieAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageCategorieAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="processPageIscrAlboRiepilogoCategorieAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageRiepilogoCategorieAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageIscrAlboScaricaRichiestaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageScaricaDomandaIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageRinnovoScaricaRichiestaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageScaricaDomandaRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageIscrAlboDocumentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageDocumentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="saveIscrAlboAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.SaveWizardIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="cancelIscrAlboAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.CancelIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="cancelRinnovoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.CancelRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="downloadAllegatoIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.DownloadAllegatoIscrizioneAction"
+		scope="prototype">
+	</bean>
+
+	<bean id="deleteAllegatoIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.DeleteAllegatoIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="genPdfRiepilogoIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.GenPDFRiepilogoIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<!-- <property name="customReportManager" ref="CustomReportManager" /> -->
+		<property name="appParamManager" ref="AppParamManager" />
+		<!-- <property name="eventManager" ref="EventManager" /> -->		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="genPdfDomandaIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.GenPDFDomandaIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="customReportManager" ref="CustomReportManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="initPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.InitPartecipazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<!-- questo bean in realta' e' una clonazione di quello presente per l'iscrizione 
+		albo, pertanto la classe e' la medesima -->
+	<bean id="openPageImpresaPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="processPageImpresaPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageImpresaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageRTIPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageRTIAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="processPageRTIPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageRTIAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageComponentiPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageComponentiAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageComponentiPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageComponentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="openPageLottiPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageLottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="processPageLottiPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageLottiAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageRiepilogoPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="processPageRiepilogoPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageEsitoPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageEsitoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="barcodeManager" ref="BarcodeManager" />
+	</bean>
+
+	<bean id="cancelPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.CancelPartecipazioneAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="soggettiBeneficiariFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.SoggettiBeneficiariFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="downloadDocumentiSoggettiBeneficiariAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.DownloadDocumentiSoggettiBeneficiariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="anticorruzioneFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.AnticorruzioneFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeAnticorruzioneManager" ref="LeggeAnticorruzioneManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="contrattiAnticorruzioneFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.ContrattiAnticorruzioneFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+ 		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
+ 		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+	
+	<bean id="anticorruzioneListaAdempimentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.AnticorruzioneListaAdempimentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeAnticorruzioneManager" ref="LeggeAnticorruzioneManager" />
+	</bean>
+	
+	<bean id="dettaglioContrattoAnticorruzioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp.DettaglioContrattoAnticorruzioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
+	</bean>
+
+	<bean id="articoliFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ArticoliFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="articoliAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ArticoliAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="gestioneProdottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.GestioneProdottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="inserProdottoChoicesAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.InsertProdottoChoicesAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="initProdottoWizardAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.InitProdottoWizardAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="prodottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProdottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageSelezioneArticoloAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageSelezioneArticoloAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="processPageSelezioneArticoloAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProcessSelezioneArticoloAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="openPageDefinizioneProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageDefinizioneProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
+	</bean>
+
+	<bean id="processPageDefinizioneProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProcessDefinizioneProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageDocumentiProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageDocumentiProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="processPageDocumentiProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProcessPageDocumentiProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageRiepilogoProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageRiepilogoProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="endWizardProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.EndWizardProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="cancelWizardProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.CancelWizardProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="allegatoProdottoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.AllegatoProdottoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageInviaModificheProdottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageInviaModificheProdottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="riepilogoModificheAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.RiepilogoModificheAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageInviaModificheAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProcessPageInviaModificheAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="genPdfModificheProdottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.GenPDFModificheProdottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="openGestioneBusteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenGestioneBusteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="openGestioneBusteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenGestioneBusteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openGestioneListaOfferteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenGestioneListaOfferteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageDocumentiBustaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageDocumentiBustaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="processPageDocumentiBustaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageDocumentiBustaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="documentoBustaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.DocumentoBustaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openRiepilogoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+	<!-- <property name="comunicazioniManager" ref="ComunicazioniManager" /> -->
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="sendBusteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.SendBusteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="sendBusteOfferteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.SendBusteOfferteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="riepilogoOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.RiepilogoOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="riepilogoOfferteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.RiepilogoOfferteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="rettificaOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.RettificaOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="rettificaOfferteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.RettificaOfferteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="initOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.InitOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="openPageOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageScaricaOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageScaricaOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageDocumentiOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageDocumentiOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="processPageOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageScaricaOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageScaricaOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="processPageDocumentiOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageDocumentiOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="processPageGestioneListaOfferteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageGestioneListaOfferteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="cancelOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.CancelOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="genPdfRiepilogoOffertaTecnicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.GenPDFOffertaTecnicaAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="initOffertaEconomicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.InitOffertaEconomicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="openPagePrezziUnitariAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPagePrezziUnitariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<!-- <property name="codificheManager" ref="CodificheManager" /> -->
+	</bean>
+
+	<bean id="openPageOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageScaricaOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageScaricaOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+	</bean>
+
+	<bean id="openPageDocumentiOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageDocumentiOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="processPagePrezziUnitariAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPagePrezziUnitariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageScaricaOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageScaricaOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="genPdfRiepilogoOffertaEconomicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.GenPDFOffertaEconomicaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="processPageDocumentiOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageDocumentiOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="cancelOffertaEconomicaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.CancelOffertaEconomicaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+
+	<bean id="openPageRinnovoDocumentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openPageRinnovoRiepilogoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.OpenPageRinnovoRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="processPageRinnovoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageRinnovoDocumentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.ProcessPageRinnovoDocumentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="rinnovoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.RinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="genPdfDomandaRinnovoIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.GenPDFDomandaRinnovoIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="customReportManager" ref="CustomReportManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+		
+	<bean id="documentoRinnovoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.DocumentoRinnovoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="genPDFAggiornamentoIscrizioneAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.GenPDFAggiornamentoIscrizioneAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="customReportManager" ref="CustomReportManager" />
+	</bean>
+
+	<bean id="contrattiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.contratti.ContrattiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="contrattiManager" ref="ContrattiManager" />
+	</bean>
+
+	<bean id="contrattiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.contratti.ContrattiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="contrattiManager" ref="ContrattiManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="openPageSelezioneArticoliAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageSelezioneArticoliAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="processPageSelezioneArticoliAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ProcessSelezioneArticoliAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="exportArticoliAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ExportArticoliAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="openPageImportProductsAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageImportProductsAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="importProductsAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ImportProductsAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="variazionePrezziScadenzeChoicesAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.VariazionePrezziScadenzeChoicesAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="genExcelPrezziScadenzeAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.GenExcelPrezziScadenzeAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="openPageImportVariazionePrezziScadenzeAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.OpenPageImportVariazionePrezziScadenzeAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="importVariazionePrezziScadenzeAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ImportVariazionePrezziScadenzeAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="documentoOffertaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.DocumentoOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="openPageListaBusteDistinteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.OpenPageListaBusteDistinteAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="importVariazionePrezziScadenzeAsyncAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.ImportVariazionePrezziScadenzeAsyncAction"
+		parent="abstractBaseAction"	scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+	</bean>
+
+	<bean id="openLottiDistintiAstaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenLottiDistintiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+	</bean>
+	
+	<bean id="classificaAstaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ClassificaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />		
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="reloadAstaAsyncAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ReloadAstaAsyncAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="asteManager" ref="AsteManager" />
+		<property name="ntpManager" ref="NtpManager" />
+	</bean>
+
+	<bean id="riepilogoAstaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.RiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+				
+	<bean id="rilancioAstaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.RilancioAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+
+	<bean id="rilancioPrezziUnitariAstaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.RilancioPrezziUnitariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="openPageDatiOperatoreAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenPageDatiOperatoreAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="openPageDatiOffertaAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenPageDatiOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="openPageFirmatariAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenPageFirmatariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="codificheManager" ref="CodificheManager" />		
+	</bean>
+		
+	<bean id="openPageUploadPdfAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenPageUploadPdfAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />		
+	</bean>
+	
+	<bean id="openPageRiepilogoAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+			
+	<bean id="processPageDatiOperatoreAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ProcessPageDatiOperatoreAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="processPageDatiOffertaAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ProcessPageDatiOffertaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="processPageFirmatariAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ProcessPageFirmatariAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="processPageUploadPdfAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ProcessPageUploadPdfAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="processPageRiepilogoAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.ProcessPageRiepilogoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />
+<!-- 		<property name="customConfigManager" ref="CustomConfigManager" /> -->
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />		
+		<property name="eventManager" ref="EventManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+	</bean>
+	
+	<bean id="genPdfRiepilogoOffertaAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.GenPDFOffertaAstaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="ntpManager" ref="NtpManager" />		
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />		
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="cancelOffertaAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.CancelOffertaAstaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>	
+	
+	<bean id="documentiAsteAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.DocumentiAstaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="asteManager" ref="AsteManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+		
+	<bean id="espletGaraFasiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraFasiAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="espletGaraViewDocAmmAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewDocAmmAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="espletGaraViewDocAmmOperatoreAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewDocAmmOperatoreAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="espletGaraViewValTecLottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewValTecLottiAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>		
+		
+	<bean id="espletGaraViewValTecAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewValTecAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="espletGaraViewValTecOperatoreAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewValTecOperatoreAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>		
+
+	<bean id="espletGaraViewOffEcoLottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewOffEcoLottiAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>		
+	
+	<bean id="espletGaraViewOffEcoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewOffEcoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="espletGaraViewOffEcoOperatoreAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewOffEcoOperatoreAction"
+		parent="abstractBaseAction" scope="prototype">		
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>		
+	
+	<bean id="espletGaraViewGraduatoriaLottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewGraduatoriaLottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+	
+	<bean id="espletGaraViewGraduatoriaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewGraduatoriaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+	
+	<bean id="fileUploadAsyncAction" 
+		class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.fileupload.FileUploadAsyncAction" 
+		parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+		
+	<bean id="openSearchDelibereAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.OpenSearchDelibereAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+		
+	<bean id="consulentiCollaboratoriFinderAction" 
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.consulenti.ConsulentiCollaboratoriFinderAction" 
+		parent="abstractBaseAction" scope="prototype">
+		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
+		<property name="configManager" ref="BaseConfigManager"/>
+	</bean>
+	
+	<bean id="openSearchSommeUrgenzeAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.OpenSearchSommeUrgenzeAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="ordiniFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.eorders.OrdiniFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ordiniManager" ref="OrdiniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="ordiniAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.eorders.OrdiniAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="ordiniManager" ref="OrdiniManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+		
+</beans>

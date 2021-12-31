@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/IscrAlbo" namespace="/do/FrontEnd/IscrAlbo"
+		extends="pp-common">
+
+		<!-- ISCRIZIONE -->
+
+		<action name="*Iscrizione" class="initIscrizioneAlboAction"
+			method="{1}Iscrizione">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="block">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageIscrAlboImpresa" class="openPageIscrAlboImpresaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboImpresaClear" class="openPageIscrAlboImpresaAction" method="clear">
+			<result type="chain">openPageIscrAlboImpresa</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboRTI" class="openPageIscrAlboRTIAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepRTI.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageIscrAlboComponenti*" class="openPageIscrAlboComponentiAction"
+			method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepComponenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaSociale,checkPILiberoProf,checkPIImprSociale,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,nazioni,sesso</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboCategorie*" class="openPageIscrAlboCategorieAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepCategorie.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo,classifLavoriIscrAlbo,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,sino</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboRiepilogoCategorie" class="openPageIscrAlboRiepilogoCategorieAction"
+			method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepRiepilogoCategorie.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppaltoIscrAlbo,classifLavoriIscrAlbo,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboGeneraPdfRichiesta*" class="openPageIscrAlboScaricaRichiestaAction"
+			method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepScaricaRichiesta.jsp
+			</result>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,province,nazioni,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,sesso</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboDocumenti*" class="openPageIscrAlboDocumentiAction"
+			method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="openPageIscrAlboRiepilogo" class="openPageIscrAlboRiepilogoAction"
+			method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboImpresa" class="processPageIscrAlboImpresaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageIscrAlboImpresa</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboRTI" class="processPageIscrAlboRTIAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageIscrAlboRTI</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboComponenti" class="processPageIscrAlboComponentiAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageIscrAlboComponenti</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<result type="chain" name="refresh">openPageIscrAlboComponentiClear</result>
+			<result type="chain" name="modify">openPageIscrAlboComponentiModify</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="modifyComponente" class="processPageIscrAlboComponentiAction" method="modify">
+			<result type="chain" name="modify">openPageIscrAlboComponentiModify</result>
+		</action>
+		
+		<action name="*eleteComponente" class="processPageIscrAlboComponentiAction" method="{1}elete">
+			<result type="chain" name="refresh">openPageIscrAlboComponentiClear</result>
+		</action>
+		
+		<action name="processPageIscrAlboCategorie" class="processPageIscrAlboCategorieAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageIscrAlboCategorie</result>
+			<result type="chain" name="filter">openPageIscrAlboCategorieFiltrato
+			</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<!-- 
+			NB:
+			Per utilizzare l'interfaccia IEncodedData è necessario utilizzare "tokenFreeValidationStack" 
+			dopo l'interceptor "encodedData". Questo perchè con "tokenFreeValidationStack" si attiva 
+			il "validate" prima della valorizzazione di "maps" di "encodedData" 
+			-->	
+			<interceptor-ref name="encodedData">
+				<param name="types">classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboRiepilogoCategorie" class="processPageIscrAlboRiepilogoCategorieAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboGeneraPdf" class="processPageIscrAlboScaricaRichiestaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageAggAlboGeneraPdf" class="processPageAggAlboScaricaRichiestaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageIscrAlboDocumenti" class="processPageIscrAlboDocumentiAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="backToDocumenti">openPageIscrAlboDocumentiClear
+			</result>
+			<result type="chain" name="input">openPageIscrAlboDocumenti</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="endWizard" class="saveIscrAlboAction">
+			<result type="dispatcher" name="successIscrizione">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/iscrizioneOk.jsp
+			</result>
+			<result type="dispatcher" name="successBozza">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/bozzaIscrizioneOk.jsp
+			</result>
+			<result type="dispatcher" name="successUpdate">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/updateIscrizioneOk.jsp
+			</result>
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageIscrAlboRiepilogo</result>
+			<result type="chain" name="errorWS">openPageIscrAlboRiepilogo</result>
+			<result type="chain" name="cancel">questionCancelIscrizione</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="questionCancelIscrizione" class="cancelIscrAlboAction"
+			method="questionCancelIscrizione">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/abortIscrizione.jsp
+			</result>
+			<result name="successCancAggIscrizione" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/abortAggIscrizione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelIscrizione" class="cancelIscrAlboAction"
+			method="cancelIscrizione">
+			<result type="chain">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<result type="chain" name="successCatalogo">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createDomandaPdf*" class="genPdfDomandaIscrizioneAction"
+			method="createPdf{1}">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createRiepilogoPdf*" class="genPdfRiepilogoIscrizioneAction"
+			method="createPdf{1}">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadAllegato*" class="downloadAllegatoIscrizioneAction"
+			method="downloadAllegato{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+
+		<action name="*eleteAllegato*" class="deleteAllegatoIscrizioneAction"
+			method="{1}eleteAllegato{2}">
+			<result type="chain">openPageIscrAlboDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="editFirmatario*" class="processPageIscrAlboScaricaRichiestaAction"
+			method="editFirmatario{1}">
+			<result type="chain" name="modifyFirmatarioMandataria">openPageIscrAlboGeneraPdfRichiestaEditFirmatarioMandataria</result>
+			<result type="chain" name="modifyFirmatarioMandante">openPageIscrAlboGeneraPdfRichiestaEditFirmatarioMandante</result>
+		</action>
+		
+		<action name="saveFirmatario*" class="processPageIscrAlboScaricaRichiestaAction"
+			method="saveFirmatario{1}">
+			<result type="chain" name="saveFirmatarioMandataria">openPageIscrAlboGeneraPdfRichiesta</result>
+			<result type="chain" name="saveFirmatarioMandante">openPageIscrAlboGeneraPdfRichiesta</result>
+			<result type="chain" name="input">openPageIscrAlboGeneraPdfRichiestaAfterErrorMandante</result>
+		</action>
+
+		<!-- RINNOVO -->
+		
+		<action name="*Rinnovo" class="initRinnovoIscrizioneAlboAction"
+			method="{1}Rinnovo">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="block">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRinnovoImpresa" class="openPageRinnovoImpresaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRinnovoGeneraPdfRichiesta*" class="openPageRinnovoScaricaRichiestaAction"
+			method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepScaricaRichiesta.jsp
+			</result>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,province,nazioni,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,sesso</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageRinnovoDocumenti" class="openPageRinnovoDocumentiAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/rinnovoIscrizione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRinnovoDocumentiClear" class="openPageRinnovoDocumentiAction"
+			method="openPageClear">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/rinnovoIscrizione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRinnovoRiepilogo" class="openPageRinnovoRiepilogoAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso,stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="processPageRinnovoImpresa" class="processPageRinnovoImpresaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageRinnovoImpresa</result>
+			<result type="chain" name="cancel">questionCancelRinnovo</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRinnovo" class="processPageRinnovoAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="backToDocumenti">openPageRinnovoDocumentiClear</result>
+			<result type="chain" name="input">openPageRinnovoDocumenti</result>
+			<result type="chain" name="error">openPageRinnovoDocumenti</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageRinnovoGeneraPdf" class="processPageRinnovoScaricaRichiestaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelRinnovo</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="*eleteDocRinnovo*" class="documentoRinnovoAction"
+			method="{1}eleteDoc{2}">
+			<result type="chain">openPageRinnovoDocumenti</result>
+			<result type="chain" name="error">openPageRinnovoDocumenti</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,sesso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="questionCancelRinnovo" class="cancelRinnovoAction"
+			method="questionCancelRinnovo">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/abortIscrizione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelRinnovo" class="cancelRinnovoAction"
+			method="cancelRinnovo">
+			<result type="chain">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
+			<result type="chain" name="successCatalogo">
+				<param name="actionName">viewIscrizione</param>
+				<param name="namespace">/do/FrontEnd/Cataloghi</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="confirmDocumenti" class="processPageRinnovoDocumentiAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageRinnovoDocumenti</result>
+			<result type="chain" name="error">openPageRinnovoDocumenti</result>
+			<result type="chain" name="cancel">questionCancelRinnovo</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+<!-- 		
+		<action name="confirmRinnovo" class="rinnovoAction" method="confirmRinnovo">
+			<result type="dispatcher" name="questionConfirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/confirmRinnovoIscrizione.jsp
+			</result>
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">openPageRinnovoDocumenti</result>
+			<result type="chain" name="error">openPageRinnovoDocumenti</result>
+			<result type="chain" name="cancel">questionCancelRinnovo</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+ -->
+ 
+		<action name="rinnovo" class="rinnovoAction" method="rinnovo">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelRinnovo</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/iscralbo/rinnovoIscrizioneSuccess.jsp
+			</result>
+			<result type="chain" name="input">openPageRinnovoRiepilogo</result>
+			<result type="chain" name="error">openPageRinnovoRiepilogo</result>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadDocRinnovo*" class="documentoRinnovoAction"
+			method="downloadDoc{1}">
+			<result type="chain" name="error">openPageRinnovo</result>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createDomandaRinnovoPdf*" class="genPdfDomandaRinnovoIscrizioneAction"
+			method="createPdf{1}">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="editRinnovoFirmatario*" class="processPageRinnovoScaricaRichiestaAction"
+			method="editRinnovoFirmatario{1}">
+			<result type="chain" name="modifyFirmatarioMandataria">openPageRinnovoGeneraPdfRichiestaEditRinnovoFirmatarioMandataria</result>
+			<result type="chain" name="modifyFirmatarioMandante">openPageRinnovoGeneraPdfRichiestaEditRinnovoFirmatarioMandante</result>
+		</action>
+
+		<action name="saveRinnovoFirmatario*" class="processPageRinnovoScaricaRichiestaAction"
+			method="saveRinnovoFirmatario{1}">
+			<result type="chain" name="saveFirmatarioMandataria">openPageRinnovoGeneraPdfRichiesta</result>
+			<result type="chain" name="saveFirmatarioMandante">openPageRinnovoGeneraPdfRichiesta</result>
+			<result type="chain" name="input">openPageRinnovoGeneraPdfRichiestaRinnovoAfterErrorMandante</result>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createAggiornamentoIscrizionePdf" class="genPDFAggiornamentoIscrizioneAction"
+			method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica</param>
+			</interceptor-ref>
+		</action>
+		
+	</package>
+</struts>

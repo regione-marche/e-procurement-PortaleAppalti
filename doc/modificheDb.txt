@@ -1,0 +1,17 @@
+--################# DB PORT ##################
+
+-- inserimento del parametro "urlStyle" nell'xml del parametro "params" nella tabella sysconfig
+
+--	.....
+--	<Param name="urlStyle">classic</Param>
+--	.....
+
+--################# DB SERV ##################
+
+-- Aggiunta nuovo permesso manageCategories 24/06/2009 (Matteo)
+
+INSERT INTO authpermissions (permissionname, descr) VALUES ('manageCategories', 'Operazioni su Categorie');
+
+-- Ampliamento della colonna delle password 09/07/2009
+
+ALTER TABLE authusers ALTER COLUMN passwd TYPE CHARACTER VARYING(40);

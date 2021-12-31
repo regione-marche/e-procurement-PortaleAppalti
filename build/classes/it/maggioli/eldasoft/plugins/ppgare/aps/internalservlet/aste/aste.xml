@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Aste" namespace="/do/FrontEnd/Aste"
+		extends="pp-common">
+
+		<action name="openAsta" class="openLottiDistintiAstaAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/gestioneLottiDistinti.jsp
+			</result>
+			<result type="chain" name="successClassifica">classifica</result>
+			<result type="chain" name="successRiepilogo">riepilogo</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="riepilogo" class="riepilogoAstaAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/riepilogo.jsp
+			</result>
+<!-- 			<result type="chain" name="successConfermaOfferta">confirmOfferta</result>			 -->
+			<result type="chain" name="successConfermaOfferta">classifica</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">terminiAsta,tipiClassificaAsta,tipiAppalto,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>		
+		
+		<action name="confirmOfferta" class="openPageDatiOperatoreAsteAction" method="openPage">
+			<result type="chain">openPageDatiOperatore</result>			
+			<result type="chain" name="successRiepilogo">riepilogo</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">terminiAsta,tipiClassificaAsta,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="classifica" class="classificaAstaAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/classifica.jsp
+			</result>			
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">terminiAsta,tipiClassificaAsta,tipiAppalto</param>
+			</interceptor-ref>
+		</action>		
+
+<!-- 		<action name="reloadAstaAsync" class="reloadAstaAsyncAction" method="reload"> -->
+<!--   			<result type="stream"> -->
+<!-- 				<param name="contentType">application/json</param> -->
+<!-- 				<param name="inputName">inputStream</param> -->
+<!-- 			</result> -->
+<!-- 		</action>		  -->
+
+		<action name="rilancio" class="rilancioAstaAction" method="rilancio">
+			<result type="chain">classifica</result>
+			<result type="chain" name="input">openRilancio</result>
+			<result type="chain" name="cancel">questionCancelOfferta</result>
+<!-- 			<interceptor-ref name="tokenFreeStack"></interceptor-ref> -->
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="rilancioPrezziUnitari" class="rilancioPrezziUnitariAstaAction">
+			<result type="chain">openRilancio</result>
+			<result type="chain" name="save">openRilancioPrezziUnitari</result>
+			<result type="chain" name="undo">openRilancioPrezziUnitari</result>			
+			<result type="chain" name="input">openRilancioPrezziUnitari</result>
+			<result type="chain" name="cancel">classifica</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="backPrezziUnitari" class="rilancioAstaAction" method="back">
+			<result type="chain">openRilancioPrezziUnitari</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>		
+
+		<action name="annullaRilancio" class="rilancioAstaAction" method="cancel">
+			<result type="chain">classifica</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>		
+		
+		<action name="openRilancio" class="rilancioAstaAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/rilancio.jsp
+			</result>
+			<result type="chain" name="annullaOpenRilancio">annullaRilancio</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openRilancioPrezziUnitari" class="rilancioPrezziUnitariAstaAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/rilancioPrezziUnitari.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+						
+		<action name="listRilanci" class="rilancioAstaAction" method="listRilanci">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/storiaRilanci.jsp
+			</result>
+			<result type="chain" name="openRilanci">openRilancio</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageDatiOperatore" class="openPageDatiOperatoreAsteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/stepDatiOperatore.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">terminiAsta,tipiClassificaAsta,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,tipiImpresaIscrAlbo,tipiNaturaGiuridica</param>
+			</interceptor-ref>					
+		</action>
+
+		<action name="openPageDatiOfferta" class="openPageDatiOffertaAsteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/stepDatiOfferta.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="openPageFirmatari*" class="openPageFirmatariAsteAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/stepFirmatari.jsp
+			</result>
+<!-- 			<result type="chain" name="input">openPageFirmatari</result> -->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,province,nazioni,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,sesso,titoliSoggetto</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageUploadPdf" class="openPageUploadPdfAsteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/stepUploadPdf.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiSoggetto,tipiAltraCarica</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRiepilogo" class="openPageRiepilogoAsteAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiSoggetto,tipiAltraCarica</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="processPageDatiOperatore" class="processPageDatiOperatoreAsteAction">
+			<result type="chain">openPageDatiOfferta</result>
+			<result type="chain" name="cancel">questionCancelOfferta</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageDatiOfferta" class="processPageDatiOffertaAsteAction">
+			<result type="chain">openPageFirmatari</result>
+			<result type="chain" name="back">openPageDatiOperatore</result>
+			<result type="chain" name="cancel">questionCancelOfferta</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageFirmatari" class="processPageFirmatariAsteAction">
+			<result type="chain">openPageUploadPdf</result>
+			<result type="chain" name="back">openPageDatiOfferta</result>
+			<result type="chain" name="successSkipGenPdf">openPageRiepilogo</result>			
+			<result type="chain" name="successSkipUploadPdf">openPageRiepilogo</result>
+			<result type="chain" name="cancel">questionCancelOfferta</result>			
+			<result type="chain" name="input">openPageFirmatariAfterErrorMandante</result>
+			<result type="chain" name="error">openPageFirmatari</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+<!-- 		<action name="processPageGeneraPdf" class="processPageGeneraPdfAsteAction"> -->
+<!-- 			<result type="chain">openPageUploadPdf</result> -->
+<!-- 			<result type="chain" name="back">openPageFirmatari</result> -->
+<!-- 			<result type="chain" name="cancel">questionCancelOfferta</result> -->
+<!-- 			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref> -->
+<!-- 		</action> -->
+
+		<action name="editFirmatario*" class="processPageFirmatariAsteAction" method="editFirmatario{1}">
+			<result type="chain" name="modifyFirmatarioMandataria">openPageFirmatariEditFirmatarioMandataria</result>
+			<result type="chain" name="modifyFirmatarioMandante">openPageFirmatariEditFirmatarioMandante</result>
+		</action>
+		
+		<action name="saveFirmatario*" class="processPageFirmatariAsteAction" method="saveFirmatario{1}">
+			<result type="chain" name="saveFirmatarioMandataria">openPageFirmatari</result>
+			<result type="chain" name="saveFirmatarioMandante">openPageFirmatari</result>
+			<result type="chain" name="input">openPageFirmatariAfterErrorMandante</result>
+		</action>
+
+		<action name="processPageUploadPdf" class="processPageUploadPdfAsteAction">
+			<result type="chain">openPageRiepilogo</result>
+			<result type="chain" name="back">openPageFirmatari</result>
+			<result type="chain" name="cancel">questionCancelOfferta</result>
+			<result type="chain" name="backToUpload">openPageUploadPdf</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogo" class="processPageRiepilogoAsteAction">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/invioOfferta.jsp
+			</result>
+			<result type="chain" name="back">openPageUploadPdf</result>
+			<result type="chain" name="backSkipGenPdf">openPageFirmatari</result>			
+			<result type="chain" name="cancel">questionCancelOfferta</result>
+<!-- 			<result type="chain" name="input">openPageRiepilogo</result> -->
+<!-- 			<result type="chain" name="errorWS">openPageRiepilogo</result> -->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="questionCancelOfferta" class="cancelOffertaAsteAction" method="questionCancel">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/abortOffertaAsta.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelOfferta" class="cancelOffertaAsteAction" method="cancel">
+			<result type="chain" >classifica</result>
+			<result type="chain" name="successLottiDistinti">openAsta</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="createOffertaAstaPdf" class="genPdfRiepilogoOffertaAsteAction" method="createPdf">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+ 			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAggiudicazione,tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,stazioniAppaltanti,tipiAppaltoIscrAlbo,classifLavori,classifForniture,classifServizi,classifLavoriSottoSoglia,classifServiziProf,settoriProduttivi</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="aggiungiAllegato" class="processPageUploadPdfAsteAction" method="addUltDoc">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="backToUpload">openPageUploadPdf</result>			
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="confirmDeleteAllegato" class="processPageUploadPdfAsteAction" method="confirmDeleteAllegato">
+			<result type="chain">openPageUploadPdf</result>
+			<interceptor-ref name="tokenFreeStack"/>
+		</action>
+
+		<action name="deleteAllegato" class="processPageUploadPdfAsteAction" method="deleteAllegato">
+			<result type="chain" name="backToUpload">openPageUploadPdf</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelDeleteAllegato" class="processPageUploadPdfAsteAction" method="cancel">
+			<result type="chain" name="cancel">openPageUploadPdf</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+<!-- 		<action name="downloadAllegato" class="processPageUploadPdfAsteAction" method="downloadAllegato"> -->
+<!-- 			<result name="success" type="stream"> -->
+<!-- 				<param name="contentType">${contentType}</param> -->
+<!-- 				<param name="inputName">inputStream</param> -->
+<!-- 				<param name="contentDisposition">attachment;filename="${filename}"</param> -->
+<!-- 			</result> -->
+<!-- 		</action> -->
+		
+		<action name="viewDocumenti" class="documentiAsteAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/documentiAsta.jsp
+			</result>			
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">terminiAsta,tipiClassificaAsta,tipiAppalto</param>
+			</interceptor-ref>
+		</action>		
+						
+	</package>
+</struts>

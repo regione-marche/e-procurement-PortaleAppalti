@@ -1,0 +1,54 @@
+/* ALTO CONTRASTO */
+
+/* STILI COMUNI */
+
+.portgare-list h2, .portgare-view h2 {
+	color: #FFFFFF;
+}
+
+.titolo-sezione {
+	border-bottom: 2px #FFFFFF solid;
+	color: #FFFFFF;
+}
+
+/* STILI PER LE PAGINE DI RICERCA E DI LISTA */
+
+input.button[disabled]{
+	color: #ffffff;
+	background-color: #000066;
+}
+
+table.list th {
+	color: #000066;
+	background-color: #FFFF00;
+}
+
+table.list td {
+	background-color: #00009B;
+}
+
+/* STILI PER IL DETTAGLIO */
+
+div.sottosezione h4 {
+	color: #FFFFFF;
+	border-bottom: 2px #FFFFFF solid;
+}
+
+.portgare-view label {
+	color: #FFFFFF;
+}
+
+/* STILI PER IL DETTAGLIO */
+
+fieldset.sezione {
+	border: 1px solid #FFFFFF; 
+}
+
+fieldset.sezione legend {
+	color:#FFFFFF;
+}
+
+.filetree .item-selected {
+	color: #000066;
+}
+

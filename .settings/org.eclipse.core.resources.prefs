@@ -1,0 +1,12 @@
+#Mon May 16 10:45:48 CEST 2016
+eclipse.preferences.version=1
+encoding//src/com/agiletec=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/EsitoOutType.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAliceSOAPImpl.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAliceSOAPSkeleton.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAliceSOAPStub.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAlice_PortType.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAlice_Service.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/PortaleAlice_ServiceLocator.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/ProtocolloMail.java=UTF-8
+encoding//src/it/maggioli/eldasoft/plugins/ppcommon/ws/RisultatoStringaOutType.java=UTF-8

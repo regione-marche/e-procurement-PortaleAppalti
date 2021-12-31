@@ -1,0 +1,455 @@
+/*	Stylesheet base
+		Last modified date: 21/08/2014
+		By: Marco Perazzetta
+*/
+
+/* Table of Contents
+		=LAYOUT
+		=HEADER
+		=FOOTER
+		=MAIN-CONTENT
+		=2-COLUMN-LAYOUT-LEFT-MENU
+		=2-COLUMN-LAYOUT-RIGHT-MENU
+		=3-COLUMNS-LAYOUT
+		=ELEMENTS
+		=LINKS
+		=INPUTS-AND-BUTTONS
+		=TABLES
+		=OTHERS
+		=HEADER-MENU
+		=BREADCRUMBS		
+		=LATERAL-MENU
+*/
+
+/*
+	NOTE:
+	14px/16px = .875
+	18px/16px = 1.125
+	1em => 16px (normal text);
+	.875em => 14px (small text);
+	1.125em => 18px (big text);
+*/
+
+/* =LAYOUT */
+
+html,
+button,
+input,
+select,
+textarea {
+	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+}
+
+body {
+	color: #000;
+	border: 0;
+	font-size: .75em;
+	line-height: 1.25;
+	margin: 0 auto;
+	min-width: 600px;
+	width: 100%;
+}
+
+#ext-container {
+	margin: 0 auto;
+	max-width: 1024px;	
+}
+
+/* =HEADER */
+
+/* =FOOTER */
+
+#footer {
+	clear: both;
+	margin-top: 1%;
+	padding: .1em 0;
+	width: 100%;
+}
+
+#footer-main {
+	text-align: center;
+}
+
+/*** Footer Fix ***/
+* html body {
+	overflow: hidden;
+}
+
+* html #footer-wrapper {
+	float: left;
+	margin-bottom: -10000px;
+	padding-bottom: 10010px;
+	position: relative;
+	width: 100%;
+}
+/*****************/
+
+/* =MAIN-CONTENT */
+
+.container {
+	clear: both;
+	float: left;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+
+.columns {
+	float: left;
+	position: relative;
+	width: 100%;
+}
+
+.column {
+	float: left;
+	margin-bottom: 1em;
+	overflow: hidden;
+	position: relative;
+}
+
+.content {
+	padding: 15px;
+}
+
+/* =2-COLUMN-LAYOUT-LEFT-MENU */
+
+.two-columns-left-menu .columns {
+	right: 79%;/* right column width */
+}
+
+.two-columns-left-menu .content {
+	left: 101%;/* 100% plus left column left padding */
+	width: 75%;/* right column content width */	
+}
+
+.two-columns-left-menu .menu {
+	left: .9%;/* (right column left and right padding) plus (left column left padding) */
+	width: 20%;/* left column content width (column width minus left and right padding) */
+}
+
+/* =2-COLUMN-LAYOUT-RIGHT-MENU */
+
+.two-columns-right-menu .columns {
+	right: 20%;/* right column width */
+}
+
+.two-columns-right-menu .content {
+	left: 20%;/* (right column width) plus (left column left padding) */
+	width: 75%;/* left column content width (left column width minus left and right padding) */	
+}
+.two-columns-right-menu .menu {
+	left: 21.9%;/* (right column width) plus (left column left and right padding) plus (right column left padding) */
+	width: 20%;/* right column content width (right column width minus left and right padding) */	
+}
+
+/* =3-COLUMNS-LAYOUT */
+
+.three-columns .columns {
+	right: 80%;/* width of the middle column */
+}
+
+.three-columns .content {
+	left: 101%;/* 100% plus left padding of center column */
+	width: 55%;/* width of center column content (column width minus padding on either side) */	
+}
+
+.three-columns .left-menu {
+	left: 21.9%;/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+	width: 20%;/* Width of left column content (column width minus padding on either side) */	
+}
+
+.three-columns .right-menu {
+	left: 81.9%;/* Please make note of the brackets here:
+							 (100% - left column width) plus (center column left and right padding) 
+							 plus (left column left and right padding) plus (right column left padding) */
+	width: 20%;/* Width of right column content (column width minus padding on either side) */
+}
+
+/* =ELEMENTS */
+
+#iedisclaimer {
+	clear: both;
+	text-align: center;
+	margin: 4em;
+}
+
+h1 {
+	font-size: 2em;
+	margin: 0;
+}
+
+h2 {
+	font-size: 1.25em;
+	margin: 0 0 .5em 0;
+}
+
+h3 {
+	font-size: 1.1em;
+	margin: .8em 0 .2em 0;
+}
+
+h4 {
+	font-size: 1em;
+	margin: .8em 0 .2em 0;
+}
+
+dl {
+	font-size: .85em;
+}
+
+ul {
+	list-style-type: none;
+	margin: .5em 0;
+	padding: 0;
+}
+
+li {
+	margin: .5em 0 0 0;
+}
+
+img {
+	height: auto;
+	max-width: 100%;
+	vertical-align: middle;
+}
+
+/* =LINKS */
+
+a {
+	text-decoration: none;
+}
+
+a:hover, 
+a:active, 
+a:focus {
+	text-decoration: underline;
+}
+
+/* =INPUTS-AND-BUTTONS */
+
+.button {
+	font-weight: bold;
+	padding: 2px .8em;
+}
+
+input[type="radio"] {
+	border: 0;
+}
+
+input[type="file"] {
+	cursor: pointer;
+}
+
+.long-text {
+	width: 20em;
+}
+
+/* =TABLES */
+
+table {
+	border: 1px solid #000;
+	margin: .5em auto;
+	width: 100%;
+}
+
+table.info-table {
+	margin: .5em 0;
+}
+
+caption {
+	font-weight: bold;
+	margin: 1em auto 0;
+}
+
+th, td {
+	border: 1px solid #000;
+	margin: .5em;
+	padding: .2em;	
+}
+
+table ul {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.wrong {
+	border: 1px solid red;
+}
+
+/* =OTHERS */
+
+.important {
+	font-weight: bold;
+}
+
+.information {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-top: .5em;
+	padding: 0;
+}
+
+.divider {
+	border-top: 1px solid #ABAA9A;
+	clear: both;
+}
+
+.noscreen {
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	text-indent: 100%;
+	top: -1000em;
+	white-space: nowrap;
+	width: 1px;
+}
+
+.active {
+	font-weight: bold;
+}
+
+.instructions img {
+	vertical-align: top;
+}
+
+.align-left {
+	text-align: left;
+}
+
+.align-right {
+	text-align: right;
+}
+
+.float-right {
+	float: right;
+}
+
+.vertical-middle {
+	vertical-align: middle !important;
+}
+
+/* =HEADER-MENU */
+
+#language-sub-menu {
+	padding: 5px;
+}
+
+#language-sub-menu ul li {
+	display: inline
+}
+
+#menu {
+	line-height: 2.2em;
+	overflow: hidden;
+	position: relative;
+}
+
+.sub-menu {
+	height: 100%;
+	padding: 5px .5em 0
+}
+
+#date-sub-menu {
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 210px;
+}
+
+#style-sub-menu {
+	margin: 0 280px 0 210px;
+	text-align: right;
+}
+
+#style-sub-menu ul{
+	margin-top: -1px;
+}
+
+#style-sub-menu li {
+	display: inline;
+}
+
+#search-sub-menu {
+	position: absolute; 
+	right: 0; 
+	top: 0;
+	width: 260px;
+}
+
+.font-normal {
+	font-size: .8em;
+}
+
+.font-big {
+	font-size: 1em;
+}
+
+.font-very-big {
+	font-size: 1.2em;
+}
+
+/* =BREADCRUMBS */
+
+#breadcrumbs-wrapper {
+	padding: .5em 0;
+}
+
+/* =LATERAL-MENU */
+
+.menu-box {
+	margin-bottom: 1.4em;
+}
+
+.menu-box h2 {
+	display: block;
+	font-size: 1.1em;
+	font-weight: bold;
+	line-height: 1.5em;
+	margin: 0;
+	min-height: 1.5em;
+	padding: 10px 0 10px 15px;
+	word-wrap: break-word;
+}
+
+.menu-box ul {
+	margin: 0 0 .5em 0;
+	padding: 0;
+}
+
+.menu-box li {
+	margin: 0;
+	padding: 0;
+}
+
+.menu-box span {
+	display: block;
+	font-weight: normal;
+	padding: .3em 15px;
+}
+
+.menu-box .current {
+	display: block;
+	font-weight: bold;
+}
+
+/* =JQUERY-UI */
+.ui-widget { font-size: 1em !important; }
+
+/*
+div.dataTables_wrapper {
+        width: 99%;
+}*/
+
+.italia-it-button-size-m  {
+    width: 100% !important;
+    font-size: 1em !important;
+}
+
+.spid-idp-button .spid-idp-button-menu img {
+	height: 3em !important;
+}
+
+.spid-idp-button {
+	position: static !important;
+}

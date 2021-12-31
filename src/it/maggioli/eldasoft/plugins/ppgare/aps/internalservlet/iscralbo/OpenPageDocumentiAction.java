@@ -1,0 +1,258 @@
+package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
+
+import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.apsadmin.system.BaseAction;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+
+/**
+ * Action di gestione dell'apertura della pagina dei documentiRichiesti del
+ * wizard d'iscrizione all'albo
+ *
+ * @author Stefano.Sabbadin
+ */
+public class OpenPageDocumentiAction extends BaseAction implements SessionAware {
+	/**
+	 * UID
+	 */
+	private static final long serialVersionUID = -9152265474737463671L;
+
+	private Map<String, Object> session;
+
+	private IBandiManager bandiManager;
+	private IAppParamManager appParamManager;
+
+	private int dimensioneAttualeFileCaricati;
+
+	private List<DocumentazioneRichiestaType> documentiRichiesti;
+	private List<DocumentazioneRichiestaType> documentiInseriti;
+	private List<DocumentazioneRichiestaType> documentiMancanti;
+
+	private Long docRichiestoId;
+	private String docUlterioreDesc;
+
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session;
+	}
+
+	public void setBandiManager(IBandiManager bandiManager) {
+		this.bandiManager = bandiManager;
+	}
+
+	public void setAppParamManager(IAppParamManager appParamManager) {
+		this.appParamManager = appParamManager;
+	}
+
+	public int getDimensioneAttualeFileCaricati() {
+		return dimensioneAttualeFileCaricati;
+	}
+
+	public List<DocumentazioneRichiestaType> getDocumentiRichiesti() {
+		return documentiRichiesti;
+	}
+
+	public void setDocumentiRichiesti(List<DocumentazioneRichiestaType> documentiRichiesti) {
+		this.documentiRichiesti = documentiRichiesti;
+	}
+
+	public List<DocumentazioneRichiestaType> getDocumentiInseriti() {
+		return documentiInseriti;
+	}
+
+	public void setDocumentiInseriti(
+					List<DocumentazioneRichiestaType> documentiInseriti) {
+		this.documentiInseriti = documentiInseriti;
+	}
+
+	public List<DocumentazioneRichiestaType> getDocumentiMancanti() {
+		return documentiMancanti;
+	}
+
+	public void setDocumentiMancanti(List<DocumentazioneRichiestaType> documentiMancanti) {
+		this.documentiMancanti = documentiMancanti;
+	}
+
+	public Long getDocRichiestoId() {
+		return docRichiestoId;
+	}
+
+	public void setDocRichiestoId(Long docRichiestoId) {
+		this.docRichiestoId = docRichiestoId;
+	}
+
+	public String getDocUlterioreDesc() {
+		return docUlterioreDesc;
+	}
+
+	public void setDocUlterioreDesc(String docUlterioreDesc) {
+		this.docUlterioreDesc = docUlterioreDesc;
+	}
+
+	public int getDOCUMENTO_FORMATO_FIRMATO() {
+		return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO;
+	}
+
+	public int getDOCUMENTO_FORMATO_PDF() {
+		return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF;
+	}
+
+	public int getDOCUMENTO_FORMATO_EXCEL() {
+		return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL;
+	}
+
+	public Integer getLimiteUploadFile() {
+		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+	}
+	
+	public Integer getLimiteTotaleUploadDocIscrizione() {
+		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+	}
+	
+	public String getSTEP_IMPRESA() {
+		return WizardIscrizioneHelper.STEP_IMPRESA;
+	}
+
+	public String getSTEP_DENOMINAZIONE_RTI() {
+		return WizardIscrizioneHelper.STEP_DENOMINAZIONE_RTI;
+	}
+
+	public String getSTEP_DETTAGLI_RTI() {
+		return WizardIscrizioneHelper.STEP_DETTAGLI_RTI;
+	}
+
+	public String getSTEP_SELEZIONE_CATEGORIE() {
+		return WizardIscrizioneHelper.STEP_SELEZIONE_CATEGORIE;
+	}
+	
+	public String getSTEP_RIEPILOGO_CAGTEGORIE() {
+		return WizardIscrizioneHelper.STEP_RIEPILOGO_CATEGORIE;
+	}
+    
+	public String getSTEP_SCARICA_ISCRIZIONE() {
+		return WizardIscrizioneHelper.STEP_SCARICA_ISCRIZIONE;
+	}
+	
+	public String getSTEP_DOCUMENTAZIONE_RICHIESTA() {
+		return WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA;
+	}
+	
+	public String getSTEP_PRESENTA_ISCRIZIONE() {
+		return WizardIscrizioneHelper.STEP_PRESENTA_ISCRIZIONE;
+	}
+	
+	/**
+	 * ...
+	 */
+	public String openPage() {
+		return openPageCommon();
+	}
+	
+	/**
+	 * ...
+	 */
+	public String openPageClear() {
+		String target = openPageCommon();
+		if (SUCCESS.equals(target)) {
+			this.docRichiestoId = null;
+			this.docUlterioreDesc = null;
+		}
+		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, 
+						 WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);
+		return target;
+	}
+
+	/**
+	 * ...
+	 */
+	private String openPageCommon() {
+		// si carica un eventuale errore parcheggiato in sessione, ad esempio in
+		// caso di errori durante il download
+		String errore = (String) session.remove(IDownloadAction.ERROR_DOWNLOAD);
+		if (errore != null) {
+			this.addActionError(errore);
+		}
+
+		String target = SUCCESS;
+		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
+						.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+
+		if (iscrizioneHelper == null) {
+			// la sessione e' scaduta, occorre riconnettersi
+			this.addActionError(this.getText("Errors.sessionExpired"));
+			target = CommonSystemConstants.PORTAL_ERROR;
+		} else {
+			// la sessione non e' scaduta, per cui proseguo regolarmente
+
+//			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
+//							PortGareSystemConstants.WIZARD_ISCRALBO_PAGINA_DOCUMENTI);
+
+			try {
+				List<DocumentazioneRichiestaType> documentiRichiesti = this.bandiManager
+					.getDocumentiRichiestiBandoIscrizione(
+							iscrizioneHelper.getIdBando(), 
+							iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
+							iscrizioneHelper.isRti());
+
+				// con l'elenco dei documentiRichiesti richiesti si creano 2
+				// liste, una
+				// con gli elementi inseriti e una con quelli mancanti
+				WizardDocumentiHelper documentiHelper = iscrizioneHelper.getDocumenti();
+				List<DocumentazioneRichiestaType> documentiMancanti = new ArrayList<DocumentazioneRichiestaType>();
+				List<DocumentazioneRichiestaType> documentiInseriti = new ArrayList<DocumentazioneRichiestaType>();
+				for (int i = 0; i < documentiRichiesti.size(); i++) {
+					DocumentazioneRichiestaType elem = documentiRichiesti.get(i);
+					
+					if (!documentiHelper.getDocRichiestiId().contains(elem.getId())) {
+						// si clona l'elemento in quanto oggetto di modifiche
+						DocumentazioneRichiestaType docDaInserire = new DocumentazioneRichiestaType();
+						// si accorcia il nome in modo da non creare una
+						// combobox troppo estesa
+						docDaInserire.setNome(elem.getNome().substring(0, Math.min(40, elem.getNome().length())));
+						docDaInserire.setId(elem.getId());
+						docDaInserire.setIdfacsimile(elem.getIdfacsimile());
+						docDaInserire.setObbligatorio(elem.isObbligatorio());
+						documentiMancanti.add(docDaInserire);
+					} else {
+						documentiInseriti.add(elem);
+					}
+				}
+				this.setDocumentiMancanti(documentiMancanti);
+				this.setDocumentiInseriti(documentiInseriti);
+				this.setDocumentiRichiesti(documentiRichiesti);
+
+				// si aggiorna il totale dei file finora caricati
+				for (Integer s : documentiHelper.getDocRichiestiSize()) {
+					this.dimensioneAttualeFileCaricati += s;
+				}
+				for (Integer s : documentiHelper.getDocUlterioriSize()) {
+					this.dimensioneAttualeFileCaricati += s;
+				}
+
+			} catch (Throwable t) {
+				ApsSystemUtils.logThrowable(t, this, "openPage");
+				ExceptionUtils.manageExceptionError(t, this);
+				target = CommonSystemConstants.PORTAL_ERROR;
+			}
+			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, 
+							 WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);
+		}
+		return target;
+	}
+	
+}

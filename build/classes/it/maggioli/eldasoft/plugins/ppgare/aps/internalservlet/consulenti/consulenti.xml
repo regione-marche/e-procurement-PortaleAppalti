@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Consulenti" namespace="/do/FrontEnd/Consulenti"
+		extends="pp-common">
+		
+		<action name="view" class="consulentiCollaboratoriFinderAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="find" class="consulentiCollaboratoriFinderAction" method="find">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="downloadDocumenti" class="consulentiCollaboratoriFinderAction" method="downloadDocumenti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<result name="success" type="stream">
+				<param name="contentType">application/zip</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="export" class="consulentiCollaboratoriFinderAction" method="export">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+	</package>
+
+</struts>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context path="/PortaleAppalti" docBase="./PortaleAppalti" debug="1" reloadable="true" useHttpOnly="true">
+	
+	<Environment name="logName" value="entando" type="java.lang.String" override="false" />
+	
+	<Environment name="configVersion" value="production" type="java.lang.String" override="false" />
+	
+	<Environment name="applicationBaseURL" value="http://localhost:8080/PortaleAppalti/" type="java.lang.String" override="false" />
+	<Environment name="resourceRootURL" value="/PortaleAppalti/resources/" type="java.lang.String" override="false" />
+	<Environment name="protectedResourceRootURL" value="/PortaleAppalti/protected/" type="java.lang.String" override="false" />
+	
+	<Environment name="resourceDiskRootFolder" value="C:\\PortaleAppalti\\resources" type="java.lang.String" override="false" />
+	<Environment name="protectedResourceDiskRootFolder" value="C:\\PortaleAppalti\\protected" type="java.lang.String" override="false" />
+	<Environment name="indexDiskRootFolder" value="C:\\PortaleAppalti\\indexdir" type="java.lang.String" override="false" />
+	<Environment name="cacheDiskRootFolder" value="C:\\PortaleAppalti\\cache" type="java.lang.String" override="false" />
+	
+	<Resource name="jdbc/portDataSource" auth="Container" 
+		type="javax.sql.DataSource" driverClassName="org.postgresql.Driver" 
+		maxTotal="8" maxIdle="4" 
+		username="elda_paport" password="" 
+		url="jdbc:postgresql://localhost:5432/PortaleAppaltiPort" />
+	
+	<Resource name="jdbc/servDataSource" auth="Container" 
+		type="javax.sql.DataSource" driverClassName="org.postgresql.Driver" 
+		maxTotal="8" maxIdle="4" 
+		username="elda_paserv" password="" 
+		url="jdbc:postgresql://localhost:5432/PortaleAppaltiServ" />
+	
+ </Context>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/AmmTrasp" namespace="/do/FrontEnd/AmmTrasp"
+		extends="pp-common">
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="exportSoggettiBeneficiari" class="soggettiBeneficiariFinderAction" method="export">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/soggettiBeneficiari.jsp
+			</result>
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="*SoggettiBeneficiari" class="soggettiBeneficiariFinderAction" method="{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/soggettiBeneficiari.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="download*SoggBeneficiari" class="downloadDocumentiSoggettiBeneficiariAction" method="download{1}">
+			<result name="success" type="stream">
+				<param name="contentType">application/zip</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="listaAdempimentiAnticorruzione" class="anticorruzioneListaAdempimentiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/listaAdempimentiAnticorruzione.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="exportAnticorruzione" class="anticorruzioneFinderAction" method="export">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/gareContrattiAnticorruzione.jsp
+			</result>
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">			
+				<param name="types">stazioniAppaltantiL190</param>
+			</interceptor-ref> 	
+		</action>
+		
+		<action name="*Anticorruzione" class="anticorruzioneFinderAction" method="{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/gareContrattiAnticorruzione.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltantiL190</param>
+			</interceptor-ref> 	
+		</action>
+		
+ 		<action name="openSearchContratti" class="contrattiAnticorruzioneFinderAction" method="openSearchContratti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/contrattiList.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">			
+				<param name="types">tipiAppalto,stazioniAppaltanti</param>
+			</interceptor-ref> 			
+		</action>	
+		
+		<action name="searchContratti" class="contrattiAnticorruzioneFinderAction" method="search">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/contrattiList.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">			
+				<param name="types">tipiAppalto,stazioniAppaltanti</param>
+			</interceptor-ref> 			
+		</action>
+		
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="exportContratti" class="contrattiAnticorruzioneFinderAction" method="export">
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref> 	
+		</action>
+
+		<action name="viewContratto" class="dettaglioContrattoAnticorruzioneAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/ammtrasp/contrattoView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref> 
+		</action>
+		
+	</package>
+
+</struts>

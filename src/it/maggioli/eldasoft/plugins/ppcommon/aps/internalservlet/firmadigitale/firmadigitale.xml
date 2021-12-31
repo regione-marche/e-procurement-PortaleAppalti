@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>    	
+
+	<package name="portgare_do/FrontEnd/FirmaDigitale" namespace="/do/FrontEnd/FirmaDigitale"
+		extends="pp-common">
+
+		<action name="view*" class="infoFirmaDigitaleAction" method="view{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/firmadigitale/infoFirmaDigitale.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">sino</param>
+			</interceptor-ref>
+		</action>
+			
+		<action name="download*" class="infoFirmaDigitaleAction" method="download{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result> 
+  			<interceptor-ref name="japsFreeStack"></interceptor-ref>	
+		</action>
+		
+	</package>
+	
+</struts>

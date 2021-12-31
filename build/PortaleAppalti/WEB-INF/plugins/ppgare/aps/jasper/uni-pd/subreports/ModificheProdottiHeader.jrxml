@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TestataModificheProdotti" language="groovy" pageWidth="482" pageHeight="802" columnWidth="482" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="ROOT_TAG" class="java.lang.String"/>
+	<queryString language="xPath">
+		<![CDATA[/ReportGestioneProdotti]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[/ReportGestioneProdotti/datiImpresa/impresa/ragioneSociale]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="81" splitType="Immediate">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="0" width="482" height="41"/>
+				<textElement textAlignment="Justified">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Il presente Catalogo aggiorna ed integra l'offerta del Fornitore " + $F{ragioneSociale} + " nel Mercato Elettronico dell'Università degli Studi di Padova. La pubblicazione del presente Catalogo avverrà solo a seguito dell'inserimento a Sistema del presente documento firmato digitalmente."]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="41" width="482" height="40"/>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,194 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="ragioneSociale">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="tipoImpresa">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="naturaGiuridica">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="codiceFiscale">
+		<field-validator type="requiredstring" short-circuit="true">
+			<param name="expression"><![CDATA["1".equals(ambitoTerritoriale)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+<!-- 		
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[codiceFiscale.length() == 0 || codiceFiscale.length() == 11 || codiceFiscale.length() == 16]]></param>
+			<message key="codfisclength" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[([A-Za-z]{6}[0-9A-Za-z]{2}[ABCDEHLMPRSTabcdehlmprst][0-9A-Za-z]{2}[A-Za-z][0-9A-Za-z]{3}[A-Za-z])|[0-9]{11}]]></param>
+			<message key="wrongDatiFiscaliImpresa" />
+		</field-validator>
+-->
+	</field>
+
+<!-- 
+	<field name="partitaIVA">
+		<field-validator type="requiredstring" short-circuit="true">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="minLength">11</param>
+			<param name="maxLength">11</param>
+			<message key="pivalength" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{11}]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+ -->
+
+
+
+	<field name="indirizzoSedeLegale">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="numCivicoSedeLegale">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="capSedeLegale">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[(
+					("1".equals(ambitoTerritoriale) && capSedeLegale.trim().length() > 0 && "ITALIA".equals(nazioneSedeLegale.trim().toUpperCase())) || 
+			        (!"1".equals(ambitoTerritoriale) && !"ITALIA".equals(nazioneSedeLegale.trim().toUpperCase()))
+			        )]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9a-zA-Z]+]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+		<!-- 
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="minLength">5</param>
+			<param name="maxLength">5</param>
+			<message key="localstrings.caplength" />
+		</field-validator>
+		-->
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(
+				("1".equals(ambitoTerritoriale) && capSedeLegale.trim().length() == 5 && "ITALIA".equals(nazioneSedeLegale.trim().toUpperCase())) ||
+				(!"1".equals(ambitoTerritoriale) && !"ITALIA".equals(nazioneSedeLegale.trim().toUpperCase()))
+				)]]></param>
+			<message key="localstrings.caplength" />
+		</field-validator>
+	</field>
+
+	<field name="comuneSedeLegale">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="provinciaSedeLegale">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[
+					(provinciaSedeLegale.trim().length() > 0 && "ITALIA".equals(nazioneSedeLegale.trim().toUpperCase())) || 
+					(provinciaSedeLegale.trim().length() == 0 && (nazioneSedeLegale.trim().length() == 0 || !"ITALIA".equals(nazioneSedeLegale.trim().toUpperCase())))]]>
+			</param>
+			<message key="localstrings.provinciaForNazioneEstera" />
+		</field-validator>
+	</field>
+
+	<field name="nazioneSedeLegale">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	<!-- 
+	field name="modalitaComunicazioneRecapito">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field 
+	-->
+	<field name="telefonoRecapito">
+		<field-validator type="requiredstring" short-circuit="true">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9 ]+]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+
+	<field name="faxRecapito">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblFaxRecapito && faxRecapito.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<!--
+		field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(faxRecapito.trim().length() > 0 && "2".equals(modalitaComunicazioneRecapito)) || !"2".equals(modalitaComunicazioneRecapito)]]></param>
+			<message key="requiredstring" />
+		</field-validator
+		-->
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]+]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+
+	<field name="cellulareRecapito">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblCellulareRecapito && cellulareRecapito.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>	
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]+]]></param>
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+
+	<field name="emailRecapito">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblEmailRecapito && emailRecapito.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>		
+		<field-validator type="email">
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+
+	<field name="emailPECRecapito">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(
+				(obblEmailPECRecapito && emailPECRecapito.trim().length() == 0 && "ITALIA".equals(nazioneSedeLegale.trim().toUpperCase())) ||
+				(obblEmailPECRecapito && obblPECEstero && emailPECRecapito.trim().length() == 0 && !"ITALIA".equals(nazioneSedeLegale.trim().toUpperCase()))
+			)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[obblEmailPECRecapito || (emailRecapito.trim().length() > 0 || emailPECRecapito.trim().length() > 0)]]></param>
+			<message key="email" />
+		</field-validator>
+		<field-validator type="email">
+			<message key="localstrings.wrongCharacters" />
+		</field-validator>
+	</field>
+
+</validators>

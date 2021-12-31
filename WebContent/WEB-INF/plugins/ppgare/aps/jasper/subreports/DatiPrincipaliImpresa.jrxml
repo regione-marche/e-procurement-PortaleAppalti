@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiPrincipaliImpresa" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dsSedeLegale">
+		<queryString language="xPath">
+			<![CDATA[/impresa/sedeLegale]]>
+		</queryString>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[provincia]]></fieldDescription>
+		</field>
+		<field name="nazione" class="java.lang.String">
+			<fieldDescription><![CDATA[nazione]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsRecapiti">
+		<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/impresa/recapiti]]>
+		</queryString>
+		<field name="telefono" class="java.lang.String">
+			<fieldDescription><![CDATA[telefono]]></fieldDescription>
+		</field>
+		<field name="fax" class="java.lang.String">
+			<fieldDescription><![CDATA[fax]]></fieldDescription>
+		</field>
+		<field name="cellulare" class="java.lang.String">
+			<fieldDescription><![CDATA[cellulare]]></fieldDescription>
+		</field>
+		<field name="email" class="java.lang.String">
+			<fieldDescription><![CDATA[email]]></fieldDescription>
+		</field>
+		<field name="pec" class="java.lang.String">
+			<fieldDescription><![CDATA[pec]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/impresa]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[ragioneSociale]]></fieldDescription>
+	</field>
+	<field name="naturaGiuridica" class="java.lang.String">
+		<fieldDescription><![CDATA[naturaGiuridica]]></fieldDescription>
+	</field>
+	<field name="tipoImpresa" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoImpresa]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="partitaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[partitaIVA]]></fieldDescription>
+	</field>
+	<field name="oggettoSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[oggettoSociale]]></fieldDescription>
+	</field>
+	<field name="sitoWeb" class="java.lang.String">
+		<fieldDescription><![CDATA[sitoWeb]]></fieldDescription>
+	</field>
+	<field name="microPiccolaMediaImpresa" class="java.lang.String">
+		<fieldDescription><![CDATA[microPiccolaMediaImpresa]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="269" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="134" height="30"/>
+				<textElement/>
+				<text><![CDATA[Ragione sociale o denominazione:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="120" y="0" width="435" height="30"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ragioneSociale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="30" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Tipologia :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="120" y="30" width="435" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tipoImpresa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="50" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Forma giuridica :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="120" y="50" width="435" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{naturaGiuridica}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="69" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Codice fiscale :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="120" y="69" width="182" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceFiscale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="89" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Partita IVA :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="120" y="89" width="182" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{partitaIVA} == null ? "" : $F{partitaIVA})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="373" y="70" width="134" height="19">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<text><![CDATA[Micro, piccola, media
+impresa :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="411" y="70" width="134" height="28">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{microPiccolaMediaImpresa} == null ? "" : ($F{microPiccolaMediaImpresa}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="109" width="555" height="20"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dsSedeLegale">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("impresa/sedeLegale")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="20" width="555">
+						<staticText>
+							<reportElement positionType="Float" x="0" y="0" width="134" height="20"/>
+							<textElement/>
+							<text><![CDATA[Sede legale :]]></text>
+						</staticText>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="120" y="0" width="435" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{indirizzo} + " " + $F{numCivico} + ", " + ($F{cap} == null ? "" : $F{cap}) + " " + $F{comune} + ($F{provincia} == null ? "" : " (" + $F{provincia}+ ") ") + " - " + $F{nazione}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="129" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Sito Internet :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="120" y="129" width="435" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{sitoWeb} == null ? "" : $F{sitoWeb})]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="149" width="555" height="80"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dsRecapiti">
+						<datasetParameter name="EMAILRECAPITO">
+							<datasetParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("impresa/recapiti")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="80" width="555">
+						<staticText>
+							<reportElement positionType="Float" x="0" y="0" width="134" height="20"/>
+							<textElement/>
+							<text><![CDATA[Recapiti :]]></text>
+						</staticText>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="120" y="59" width="211" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[($P{EMAILRECAPITO} == 1 ? "Email : " + ($F{email} == null ? "" : $F{email}) : "PEC : " + ($F{pec} == null ? "" : $F{pec}))]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="120" y="39" width="435" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA["Cell. : " + ($F{cellulare} == null ? "" : $F{cellulare})]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="120" y="20" width="435" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA["Fax : " + ($F{fax} == null ? "" : $F{fax})]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="120" y="0" width="435" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA["Tel. : " + ($F{telefono} == null ? "" : $F{telefono})]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="344" y="59" width="211" height="20"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[($P{EMAILRECAPITO} == 1 ? "PEC : " + ($F{pec} == null ? "" : $F{pec}) : "")]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>

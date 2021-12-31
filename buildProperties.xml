@@ -1,0 +1,150 @@
+<project>
+	<!-- 
+		# User properties definition
+		# the file should be in the base dir location
+	 -->
+	<property file="${user.name}.properties"/>
+	
+	
+	<property name="aps.base.dir" location="." />
+	<!-- 
+	# Note: comment out the previous line and use the following
+	# if you're going to use another project - e.g. jAPS core - as
+	# a source for your aps.jar
+	#
+	# <property name="aps.base.dir" location="../jAPS2" /> 
+	-->
+	
+	<property name="webappname" value="PortaleAppalti" />
+	<property name="postgres.hostname" value="localhost" />
+	<property name="postgres.port" value="5432" />
+	<property name="postgres.username.port" value="elda_paport" />
+	<property name="postgres.password.port" value="" />
+	<property name="postgres.username.serv" value="elda_paserv" />
+	<property name="postgres.password.serv" value="" />
+	
+	<property name="applicationBaseURL" value="http://localhost:8080/${webappname}/" />
+	
+	<!-- ##### Properties definitions for Windows machines ##### START -->
+	<property name="tomcat.home.path" value="C:\\apache-tomcat\\tomcat6" />
+	<property name="logLevel" value="INFO" />
+	<property name="cacheDiskRootFolder" value="C:\\${webappname}\\cache" />
+	<property name="resourceDiskRootFolder" value="C:\\${webappname}\\resources" />
+	<property name="protectedResourceDiskRootFolder" value="C:\\${webappname}\\protected" />
+	<property name="indexDiskRootFolder" value="C:\\${webappname}\\indexdir" />
+	
+	<property name="postgres.bin.path" location="D:\Program Files\PostgreSQL\9.0\bin" />
+	<property name="postgres.bin.psql" value="psql.exe" />
+	<property name="postgres.bin.dump" value="pg_dump.exe" />
+	<property name="postgres.bin.restore" value="pg_restore.exe" />	
+	<property name="postgres.bin.drop" value="dropdb.exe" />
+	<property name="postgres.bin.create" value="createdb.exe" />
+	<!-- ##### Properties definitions for Windows machines ##### END -->
+	
+	<!-- ##### Properties definitions for *nix machines ##### START -->
+	<!--
+	<property name="tomcat.home.path" value="/opt/tomcat6" />
+	<property name="logPrefixPath" value="${tomcat.home.path}/logs/${webappname}_log" />
+	<property name="resourceDiskRootFolder" value="${tomcat.home.path}/webapps/${webappname}/resources" />
+	<property name="protectedResourceDiskRootFolder" value="${tomcat.home.path}/webapps/${webappname}/protected" />
+	<property name="indexDiskRootFolder" value="${tomcat.home.path}/webapps/${webappname}/indexdir" />
+	
+	<property name="postgres.bin.path" location="/usr/bin" />
+	<property name="postgres.bin.dump" value="pg_dump" />
+	<property name="postgres.bin.psql" value="psql" />
+	<property name="postgres.bin.restore" value="pg_restore" />	
+	<property name="postgres.bin.drop" value="dropdb" />
+	<property name="postgres.bin.create" value="createdb" />
+	-->
+	<!-- ##### Properties definitions for *nix machines ##### END -->
+	
+	<!-- You should never need to configure the properties below this line -->
+	<property name="resourceRootURL" value="/${webappname}/resources/" />
+	<property name="protectedResourceRootURL" value="/${webappname}/protected/" />
+	<property name="src.path" location="src" />
+	<property name="build.path" location="build" />
+	<property name="dist.path" location="dist" />
+	<property name="workdir.path" location="WebContent" />
+	<property name="test.marker" value="" />
+	<property name="test.path" value="${build.path}/test" />
+	<property name="test-results.path" location="${dist.path}/test-results" />
+	<property name="tomcat.deploy.path" location="${tomcat.home.path}/webapps" />
+	
+	<!-- Please do not touch this if you are not in the mantainer team :-) -->
+	<property name="version.jAPS" value="2.0.10"/>
+	
+	<!-- configurazioni per buildEldasoft.xml -->
+	<property name="webapp.lib.path" location="/WEB-INF/lib" />
+	<property name="supporto.path" location="D:/Sviluppo/SVN/Supporto"  />
+	<echo message="Using supporto.path=${supporto.path}" level="info" ></echo>
+	
+	<property name="spring-dao.versione" value="2.0.8" />
+	<property name="spring-jdbc.versione" value="2.5.6" />
+	<property name="slf4j.versione" value="1.7.7" />
+	<property name="axis.versione" value="1.4" />
+	<property name="wss4j.versione" value="1.5.6" />
+	<property name="xmlsec.versione" value="1.4.2" />
+	<property name="mail.versione" value="1.5.1" />
+	<property name="discovery.versione" value="0.2" />
+	<property name="jaxrpc.versione" value="1.1" />
+	<property name="jaxb.versione" value="2.2.11" />
+	<property name="commons.net.versione" value="2.0" />
+	<property name="commons.codec.versione" value="1.5" />
+	<property name="commons.lang.versione" value="2.6" />
+	<property name="commons.fileupload.versione" value="1.3.3" />
+	<property name="commons.io.versione" value="2.5" />
+	<property name="enventry.versione" value="1.0" />
+	<property name="saxon.versione" value="8.6.1" />
+	<property name="xmlbeans.versione" value="2.6.0" />
+	<property name="dom4j.versione" value="1.6.1" />
+	<property name="avalon.versione" value="4.2.0" />
+	<property name="barcode4j.versione" value="2.0" />
+	<property name="groovy.versione" value="1.7.5" />
+	<property name="itext.versione" value="2.1.7" />
+	<property name="itextpdf.versione" value="5.5.13.1" />
+	<property name="jasperreports.versione" value="4.0.0" />
+	<property name="pdfbox.versione" value="2.0.17" />
+	<property name="xalan.versione" value="2.6.0" />
+	<property name="bc.versione" value="jdk15on" />
+	<property name="fonts.versione" value="1.0" />
+	<property name="apache-poi.versione" value="3.10.1" />
+	<property name="apache-poi-ooxml.versione" value="3.10.1" />
+	<property name="apache-poi-ooxml-schemas.versione" value="3.10.1" />
+	<property name="odfdom-java.versione" value="0.8.7" />
+	<property name="iride.wsbacheca-client.versione" value="1.0.0" />
+	<property name="ezmorph.versione" value="1.0.4" />
+	<property name="json-lib.versione" value="2.2" />
+	<property name="aopalliance.versione" value="2.2.0" />
+	<property name="hk2.versione" value="2.2.0" />
+	<property name="jackson.versione" value="2.6.7" />
+	<property name="jackson.annotations.versione" value="2.6.0" />
+	<property name="javassist.versione" value="3.18.1" />
+	<property name="javax-annotation.versione" value="1.2" />
+	<property name="javax-validation.versione" value="1.1.0" />
+	<property name="javax.ws.rs-api.versione" value="2.0" />
+	<property name="jersey.versione" value="2.6" />
+	<property name="mimepull.versione" value="1.9.3" />
+	<property name="osgi-resource-locator.versione" value="1.0.1" />
+	<property name="eldasoft.utils.versione" value="2.0.26" />
+	<property name="eldasoft.wscommondata.versione" value="1.0.0" />
+	<property name="eldasoft.wsopgene-client.versione" value="1.9.0" />
+	<property name="eldasoft.port-gare.versione" value="3.13.0" />
+	<property name="eldasoft.wsgare-client.versione" value="3.13.0" />
+	<property name="eldasoft.wsreport-client.versione" value="1.0.0" />
+	<property name="eldasoft.wsreport-data.versione" value="1.0.0" />
+	<property name="eldasoft.wsbandi-client.versione" value="1.10.0" />
+	<property name="eldasoft.hda-client.versione" value="1.0.0" />
+	<property name="eldasoft.wsdm-client.versione" value="1.20.0" />
+	<property name="eldasoft.encryption-utils.versione" value="1.2.0" />
+	<property name="eldasoft.wsspid-client.versione" value="1.0.0" />
+	<property name="simplecaptcha.versione" value="1.2.1" />
+	<property name="eldasoft.portoken-client.versione" value="1.0.0" />
+	<property name="eldasoft.mtoken.versione" value="1.1.0" />
+	<!-- librerie per client rest NSO -->
+	<property name="nsointegration-client.versione" value="1.1.0" />
+	<property name="jackson-core-asl.versione" value="1.9.13" />
+	<property name="jackson-mapper-asl.versione" value="1.9.13" />
+	<property name="jackson-xc.versione" value="1.9.13" />
+	<property name="jackson-jaxrs.versione" value="1.9.13" />
+	<property name="jersey-media-json-jackson.versione" value="2.6" />
+</project>

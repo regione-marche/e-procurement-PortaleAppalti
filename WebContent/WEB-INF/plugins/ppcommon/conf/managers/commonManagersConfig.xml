@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:jee="http://www.springframework.org/schema/jee"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+				http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd" >
+	
+	<bean id="springAppContext" class="it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext" />
+
+	<bean id="AppParamManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager" parent="abstractService" >
+		<property name="appParamDAO">
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamDAO">
+				<property name="dataSource" ref="portDataSource" />
+			</bean>
+		</property>
+		<property name="wsdmParams">
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.WSDMAppParams">
+			</bean>
+		</property>	
+		<!-- 
+		<property name="jndiEnvironments">
+			<map>
+				<entry key="layoutStyle"><jee:jndi-lookup jndi-name="java:comp/env/layoutStyle" /></entry>
+				<entry key="ntpServer"><jee:jndi-lookup jndi-name="java:comp/env/ntpServer" /></entry>
+				<entry key="ntpTimeout"><jee:jndi-lookup jndi-name="java:comp/env/ntpTimeout" /></entry>
+				<entry key="wsOperazioniGenerali"><jee:jndi-lookup jndi-name="java:comp/env/wsOperazioniGenerali" /></entry>
+				<entry key="wsGareAppalto"><jee:jndi-lookup jndi-name="java:comp/env/wsGareAppalto" /></entry>
+				<entry key="wsBandiEsitiAvvisi"><jee:jndi-lookup jndi-name="java:comp/env/wsBandiEsitiAvvisi" /></entry>
+				<entry key="wsReport"><jee:jndi-lookup jndi-name="java:comp/env/wsReport" /></entry>
+				<entry key="protocollo.mail.destinatari"><jee:jndi-lookup jndi-name="java:comp/env/mailDestinatariProtocollo" /></entry>
+				<entry key="protocollo.mail.allegaFile"><jee:jndi-lookup jndi-name="java:comp/env/allegaFileMailDestinatariProtocollo" /></entry>
+				<entry key="wsBandiEsitiAvvisiAuthenticationToken"><jee:jndi-lookup jndi-name="java:comp/env/wsBandiEsitiAvvisiAuthenticationToken" /></entry>
+				<entry key="limiteUploadFile"><jee:jndi-lookup jndi-name="java:comp/env/limiteUploadFile" /></entry>
+				<entry key="limiteTotaleUploadDocIscrizione"><jee:jndi-lookup jndi-name="java:comp/env/limiteTotaleUploadDocIscrizione" /></entry>
+			</map>
+		</property>
+		 -->		
+	</bean>
+
+	<bean id="WSOperazioniGenerali" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.WSOperazioniGeneraliWrapper" >
+		<property name="proxyWSOPGenerali">
+			<bean class="it.eldasoft.www.WSOperazioniGenerali.WSOperazioniGeneraliSoapProxy" >
+				<property name="endpoint">
+					<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+		         		<constructor-arg value="wsOperazioniGenerali"/>
+		      		</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="ComunicazioniManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.ComunicazioniManager" >
+		<property name="wsOpGenerali" ref="WSOperazioniGenerali" />
+	</bean>
+		
+	<bean id="DocumentiDigitaliManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.DocumentiDigitaliManager" >
+		<property name="wsOpGenerali" ref="WSOperazioniGenerali" />
+	</bean>
+		
+	<bean id="WSReport" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.report.WSReportWrapper" >
+		<property name="proxyWSReport">
+			<bean class="it.eldasoft.www.Report.ReportProxy" >
+				<property name="endpoint">
+					<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+		         		<constructor-arg value="wsReport"/>
+		      		</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+		
+	<bean id="ReportManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.report.ReportManager" 
+			parent="abstractService" >
+		<property name="wsReport" ref="WSReport" />
+	</bean>
+
+	<bean id="AuthServiceSPIDManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.AuthServiceSPIDManager" 
+			parent="abstractService" >
+		<property name="wsAuthServiceSPID" ref="WSAuthServiceSPID" />
+	</bean>
+
+	<bean id="WSDM" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.WSDMWrapper" >
+		<property name="appParamManager" ref="AppParamManager" />
+<!-- 
+		<property name="endpoint">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.url"/>
+      		</bean>
+      	</property>
+		<property name="username">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.username"/>
+      		</bean>
+      	</property>
+		<property name="password">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.password"/>
+      		</bean>
+      	</property>
+		<property name="cognome">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.cognome"/>
+      		</bean>
+      	</property>
+		<property name="nome">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.nome"/>
+      		</bean>
+      	</property>
+		<property name="ruolo">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.ruolo"/>
+      		</bean>
+      	</property>
+		<property name="codiceUO">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.codiceUO"/>
+      		</bean>
+      	</property>
+      	<property name="idUtente">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.idUtente"/>
+      		</bean>
+      	</property>      	
+      	<property name="idUnitaOperativa">
+			<bean factory-bean="AppParamManager" factory-method="getConfigurationValue">
+         		<constructor-arg value="protocollazione.wsdm.idUnitaOperativa"/>
+      		</bean>
+      	</property>
+ -->
+	</bean>
+		
+	<bean id="WSDMManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.WSDMManager" 
+			parent="abstractService" >
+		<property name="wsDM" ref="WSDM" />
+	</bean>
+
+	<bean id="NtpManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.NtpManager" 
+			parent="abstractService" >
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="CodificheManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.codifiche.CodificheManager" 
+			parent="abstractService" />
+
+	<bean id="BarcodeManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.barcode.BarcodeManager" >
+	</bean>
+		
+	<bean id="CustomConfigManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager" parent="abstractService" >
+		<property name="customConfigDAO" >
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigDAO">
+				<property name="dataSource" ref="portDataSource" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="CustomReportManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomReportManager" parent="abstractService" >
+		<property name="customReportDAO" >
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomReportDAO">
+				<property name="dataSource" ref="portDataSource" />
+			</bean>
+		</property>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="ConfigParamSistemaManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.sysparams.ConfigParamSistemaManager" parent="abstractService" >
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="wsGareAppalto" ref="WSGareAppalto" />
+		<property name="codificheManager" ref="CodificheManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+	
+	<bean id="EventManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.EventManager" parent="abstractService" >
+		<property name="eventDAO" >
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.EventDAO">
+				<property name="dataSource" ref="servDataSource" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="MonitoraggioManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.monitoraggio.MonitoraggioManager" parent="abstractService" >
+		<property name="monitoraggioDAO" >
+			<bean class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.monitoraggio.MonitoraggioDAO">
+				<property name="dataSource" ref="servDataSource" />
+			</bean>
+		</property>
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean> 
+	
+	<bean id="SuspendedIP" class="java.util.HashMap"></bean>
+	
+	<bean id="RegistrazioneSoggettoSSOManager" class="it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.regsoggsso.RegistrazioneSoggettoSSOManager">
+		<property name="userDAO" >
+			<bean class="com.agiletec.aps.system.services.user.UserDAO">
+				<property name="dataSource" ref="servDataSource" />
+				<property name="encrypter">
+					<bean class="com.agiletec.aps.util.DefaultApsEncrypter"></bean>
+				</property>
+			</bean>
+		</property>
+		<property name="userManager" ref="UserManager" />
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="groupManager" ref="GroupManager" />
+	</bean>
+</beans>

@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42" uuid="7f144f71-403e-4269-8322-23992b987ec2">
+	<property name="ireport.zoom" value="1.4641000000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="308"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dsLR" uuid="c672d835-5552-4164-9cc9-af13562d454e">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsDT" uuid="2d79b592-33a6-4efc-8760-520c7a0268f2">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsAltreCariche" uuid="0c8047d2-fb4c-4490-9ce8-30174f94d012">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCollaboratori" uuid="dd9ee351-725f-4cd2-bb87-b69923048057">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCategorie" uuid="e5b0b722-223d-437d-a2d9-1a21cf239c44">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
+		</queryString>
+		<field name="categoria" class="java.lang.String">
+			<fieldDescription><![CDATA[categoria]]></fieldDescription>
+		</field>
+		<field name="classificaMinima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+		</field>
+		<field name="classificaMassima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\progetti_eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\com-bari\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_SA" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si gestiscono più SA, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_CAT" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si sono presenti categorie, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/IscrizioneImpresaElencoOperatori"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRIZIONE" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se iscrizione, 0 se aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LIBERO_PROFESSIONISTA" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se l'impresa e' un libero professionista, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGES_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente le immagini]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Users\\Stefano.Sabbadin\\Documents\\images\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RTI" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se è presente una RTI, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ELENCO" class="java.lang.String">
+		<parameterDescription><![CDATA[Oggetto dell'elenco]]></parameterDescription>
+		<defaultValueExpression><![CDATA["prova nuova iscrizione"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/IscrizioneImpresaElencoOperatori]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/ragioneSociale]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="partitaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/partitaIVA]]></fieldDescription>
+	</field>
+	<field name="indirizzoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/numCivico]]></fieldDescription>
+	</field>
+	<field name="capSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/cap]]></fieldDescription>
+	</field>
+	<field name="comuneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/provincia]]></fieldDescription>
+	</field>
+	<field name="nazioneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/nazione]]></fieldDescription>
+	</field>
+	<field name="telefonoRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/telefono]]></fieldDescription>
+	</field>
+	<field name="faxRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/fax]]></fieldDescription>
+	</field>
+	<field name="emailRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/email]]></fieldDescription>
+	</field>
+	<field name="pecRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/pec]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="provinciaIscrizioneCCIAA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cciaa/provinciaIscrizione]]></fieldDescription>
+	</field>
+	<field name="dataIscrizioneSOA" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="organismoCertificatoreSOA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/organismoCertificatore]]></fieldDescription>
+	</field>
+	<field name="cognome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/cognome]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/nome]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleLR" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="dataNascita" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="indirizzoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/numCivico]]></fieldDescription>
+	</field>
+	<field name="capResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/cap]]></fieldDescription>
+	</field>
+	<field name="comuneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="nazioneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/nazione]]></fieldDescription>
+	</field>
+	<field name="qualifica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/qualifica]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleFirmatario" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscaleFirmatario]]></fieldDescription>
+	</field>
+	<field name="dataNascitaLiberoProfessionista" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="nomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/nome]]></fieldDescription>
+	</field>
+	<field name="cognomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/cognome]]></fieldDescription>
+	</field>
+	<field name="provinciaNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="provinciaNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="naturaGiuridica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/naturaGiuridica]]></fieldDescription>
+	</field>
+	<field name="denominazioneRTI" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/denominazioneRTI]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="101" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<staticText>
+				<reportElement positionType="Float" x="131" y="67" width="220" height="34" uuid="1072fa86-e152-4973-8dc6-a134a3f12e33">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ripartizione Stazione Unica Appaltante, Contratti e Gestione Lavori Pubblici
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="50" width="136" height="20" uuid="fb226b52-b572-47c3-b1b1-744313a9a315"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AL COMUNE di BARI]]></text>
+			</staticText>
+			<image>
+				<reportElement positionType="Float" x="216" y="-10" width="50" height="50" uuid="165c9ac0-4eae-4438-a1ec-2582aacb9c7e"/>
+				<imageExpression><![CDATA[$P{IMAGES_DIR} + "cbari.png"]]></imageExpression>
+			</image>
+		</band>
+		<band height="24">
+			<staticText>
+				<reportElement x="0" y="0" width="483" height="24" uuid="11648fdd-fe70-406d-98cf-2531cba5f821">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Allegato A]]></text>
+			</staticText>
+		</band>
+		<band height="22">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="22" uuid="200443b3-0bbb-4c21-a356-eed19cd70c67">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Domanda di iscrizione]]></text>
+			</staticText>
+		</band>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="482" height="20" uuid="eed77f10-b913-4450-8940-a1b8f1222307">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["OGGETTO: "  + $P{ELENCO}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle>
+				<reportElement x="0" y="0" width="100" height="10" forecolor="rgba(0, 0, 0, 0.0)" uuid="27fb65f8-4d12-4e80-b9cf-382e5ef538f4">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+		<band height="28" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="483" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="b8a4287b-30a0-4779-a8d2-08284b8f2a7b"/>
+				<box topPadding="0"/>
+				<textElement textAlignment="Justified" verticalAlignment="Bottom">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Il/La sottoscritto/a "
++
+($P{LIBERO_PROFESSIONISTA}
+     ? ($F{cognomeLiberoProfessionista} + " " + $F{nomeLiberoProfessionista})
+     : (($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))
+) +
+", nato/a a "
++
+($P{LIBERO_PROFESSIONISTA}
+    ? $F{comuneNascitaLiberoProfessionista}
+    : $F{comuneNascita}
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? ($F{provinciaNascitaLiberoProfessionista} == null
+        ? ""
+        : " (" + $F{provinciaNascitaLiberoProfessionista} + ")")
+    : ($F{provinciaNascita} == null
+        ? ""
+        : " (" + $F{provinciaNascita} + ")")
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascitaLiberoProfessionista})
+    : " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita})
+) + ", codice fiscale " + $F{codiceFiscaleFirmatario} +
+($P{LIBERO_PROFESSIONISTA}
+    ? ", in qualità di Libero Professionista"
+    : ", in qualità di " + $F{qualifica}
+) +
+("Procuratore".equals($F{qualifica})
+    ? " (come da copia della procura allegata) "
+    : ""
+) +
+" dell'operatore " + $F{ragioneSociale} + " " +
+($F{naturaGiuridica} != null ? $F{naturaGiuridica} : "") +
+($F{comuneSedeLegale} != null ?  ", con sede legale in "+ $F{comuneSedeLegale} : "") +
+($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale}+ ") ") +
+($F{capSedeLegale} != null ? "  C.A.P. " +  $F{capSedeLegale} : "") +
+($F{indirizzoSedeLegale} != null ? ", " +  $F{indirizzoSedeLegale}  : "") +
+($F{numCivicoSedeLegale} != null ? " n. civ. " +  $F{numCivicoSedeLegale} : "") +
+($F{codiceFiscale} ? ", codice fiscale " + $F{codiceFiscale} : "") +
+($F{partitaIVA} != null ? ", partita I.V.A " + $F{partitaIVA} : "") +
+($F{emailRecapito} != null ? ", email " + $F{emailRecapito}:  "") +
+($F{pecRecapito} != null ? ", PEC " + $F{pecRecapito}: "") +
+($P{RTI}
+    ? ", mandatario per il raggruppamento \"" + $F{denominazioneRTI} + "\" composto dai seguenti operatori economici mandanti:"
+    : ""
+)]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="25">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="25" uuid="0996352a-f471-4403-893c-ead0853fb425">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DICHIARA]]></text>
+			</staticText>
+		</band>
+		<band height="30">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="30" uuid="fec83865-ed35-4d14-975b-62ffa7e2cd6a">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[di manifestare il proprio interesse all’iscrizione presso l’Elenco aperto di medici per il conferimento di incarichi in qualità di Consulente tecnico di parte per il Comune di Bari.]]></text>
+			</staticText>
+		</band>
+		<band height="37">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="37" uuid="1f9f0653-ae02-4433-8238-95f37398f951">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[In particolare, manifesta il proprio interesse all’iscrizione nella seguente sottosezione dell’Elenco:]]></text>
+			</staticText>
+		</band>
+		<band height="47">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="4" width="483" height="43" uuid="e81b2620-5773-4e24-8542-1fc2c2f2d061">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizioneMedici.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="50">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="2" width="483" height="48" uuid="a96a2fe4-030c-49cb-82c8-1f9119b71a12"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[A tale scopo, consapevole delle responsabilità penali derivanti da dichiarazioni mendaci, falsità negli atti, uso di atti falsi, ai sensi degli arti 46 e 47 del D.P.R. del 28 dicembre 2000, n. 445]]></text>
+			</staticText>
+		</band>
+		<band height="19">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="19" uuid="591acc69-0f61-4eaa-acdb-dd01d25b2a45">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[DICHIARA]]></text>
+			</staticText>
+		</band>
+		<band height="20">
+			<frame>
+				<reportElement x="0" y="0" width="293" height="20" uuid="8ac04a76-4981-4972-a3eb-4d254dac7961"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="290" height="20" uuid="55cf9ac1-f5eb-44e0-b324-aa1b09e78526">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[di possedere i seguenti requisiti di carattere generale]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="0" width="10" height="20" uuid="c910773b-dba4-43c4-b695-31962b4ec57d">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="40">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="40" uuid="aee7eee9-b49e-47ad-b056-82cd4df87f17">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[a) essere in possesso della cittadinanza italiana o di altro Stato membro dell'Unione Europea;]]></text>
+			</staticText>
+		</band>
+		<band height="50">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="50" uuid="57fb42cd-6a8a-4c42-8852-c6433e678f35">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[b) non aver riportato condanne penali passate in giudicato, decreti penali di condanna irrevocabili o sentenze di applicazione della pena su richiesta (art. 444 c.p.c.) per reati contro la PA o che incidono sulla moralità professionale;]]></text>
+			</staticText>
+		</band>
+		<band height="24">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="24" uuid="c151249b-a710-4f12-9803-18b2c68a472f">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[c) insussistenza di cause ostative a contrarre con la Pubblica Amministrazione;]]></text>
+			</staticText>
+		</band>
+		<band height="24">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="24" uuid="7b25d17c-6125-4eee-bc80-5b1afcb80c1d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[d) assenza di contenziosi in corso contro il Comune di Bari;]]></text>
+			</staticText>
+		</band>
+		<band height="24">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="24" uuid="1e9695ef-ce29-4074-8daa-1de145f5e0c8">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[e) non aver in corso incarichi di consulenza contro il Comune di Bari;]]></text>
+			</staticText>
+		</band>
+		<band height="33">
+			<frame>
+				<reportElement x="0" y="0" width="483" height="25" uuid="5cc3d497-a644-414d-be73-bf9916c11fde">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement x="293" y="0" width="186" height="20" uuid="5581a4c4-86c6-407a-b81d-3b7ff0713dac">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12"/>
+					</textElement>
+					<text><![CDATA[(da compilare la parte]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="320" height="20" uuid="70af0ef8-d2b6-4066-abba-5f26a267ce76">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[di possedere i seguenti requisiti di ordine professionale]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="14" width="186" height="15" uuid="3310823d-a0dd-4d2d-800a-3f88ba62b6f7">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12"/>
+					</textElement>
+					<text><![CDATA[corrispondente): ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="98">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="98" uuid="89bfa4b0-c691-4d9f-8eff-00f68f7ded34">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+					<paragraph lineSpacing="Double" lineSpacingSize="1.0" spacingAfter="0"/>
+				</textElement>
+				<text><![CDATA[a) Laurea in:
+- Medicina e Chirurgia, conseguita in data _____________________________________
+presso l’Università ________________________________________________________
+con specializzazione in (barrare l’opzione corrispondente):]]></text>
+			</staticText>
+		</band>
+		<band height="20">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="20" uuid="8faadfe9-b6ce-461b-bd4f-e8d29ebb12ce">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="17" y="0" width="466" height="20" uuid="a730c8d7-ca82-4ded-bbd2-57fd6af2f5a5">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Ortopedia e traumatologia 	]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="5" width="8" height="8" uuid="9b2c3ae5-bf21-40bf-9c41-2e38ba79f533"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+			</frame>
+		</band>
+		<band height="20">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="20" uuid="5b036b65-8759-4fb8-88a8-66cab2fbc672">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="17" y="0" width="466" height="20" uuid="50224aa6-952a-4a33-a706-198373a61c4a">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Medicina Legale/Medicina Legale delle Assicurazioni ]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="5" width="8" height="8" uuid="ca58441c-7b7e-419b-aa8a-1b6fc601e67b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+			</frame>
+		</band>
+		<band height="20">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="20" uuid="16a18e94-2144-4b6a-81ad-c00efd6c2dc3">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<rectangle>
+					<reportElement x="0" y="5" width="8" height="8" uuid="5bf7995f-9a85-461b-8dfd-a5ef362e6f23"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement positionType="Float" x="17" y="0" width="466" height="20" uuid="14e711a2-641c-4c18-9518-f7cd45eea66d">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Chirurgia plastica, ricostruttiva ed estetica ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="20">
+			<frame>
+				<reportElement x="0" y="0" width="483" height="20" uuid="c5d5892d-1b11-4c0f-92be-16afc0fabafc">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="17" y="0" width="466" height="20" uuid="fffe14ee-f814-4d0f-970a-5e826757f8f2">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Chirurgia maxillo-facciale ]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="5" width="8" height="8" uuid="df2648fc-c3df-4481-a977-6d9806a54d66">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+			</frame>
+		</band>
+		<band height="150">
+			<frame>
+				<reportElement x="0" y="0" width="483" height="150" uuid="2b3341a1-4408-4eec-85dc-cb26710e5ae3">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="17" y="0" width="465" height="150" uuid="9a701122-cda6-4a6e-9298-a651f28aba60">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="12" isBold="false"/>
+						<paragraph lineSpacing="Double"/>
+					</textElement>
+					<text><![CDATA[titoli equipollenti alle predette specializzazioni ai sensi della normativa vigente: 
+- ____________________________________________________________________
+conseguita in data ______________________________________________________
+presso l’Università ______________________________________________________
+- oppure in Odontoiatria, conseguita in data __________________________________
+presso l’Università ______________________________________________________
+]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="5" width="8" height="8" uuid="0c158eab-b3ab-4d3f-8ca7-e9612da48ca7">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+			</frame>
+		</band>
+		<band height="100">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="90" uuid="9284dbc6-e214-4663-87f3-36c4eb759683">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+					<paragraph lineSpacing="Double"/>
+				</textElement>
+				<text><![CDATA[b) iscrizione all’Ordine dei Medici Chirurghi ed Odontoiatri:
+N. iscrizione: ___________________________________________________________
+Anno di iscrizione: _______________________________________________________
+Ordine della provincia di: __________________________________________________]]></text>
+			</staticText>
+		</band>
+		<band height="496">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="69" width="483" height="40" uuid="f7597302-1ef6-446c-9d08-afb2d01f60ee"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[- che tutti i requisiti prescritti e autocertificati devono essere mantenuti per tutta la durata dell'iscrizione nell'elenco;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="49" width="483" height="20" uuid="408d0946-08c3-47c2-bef2-d323037f673b">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[In particolare:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="109" width="483" height="50" uuid="962dc4b4-1b9b-4927-977c-9a01d46e3aaa"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[- che la perdita anche di uno solo di detti requisiti comporta la cancellazione dall’elenco con ogni eventuale conseguenza negativa anche sul mantenimento degli incarichi già conferiti;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="159" width="483" height="61" uuid="f7e04306-131e-40aa-aad9-198c8058b41a"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[- che l'inserimento negli elenchi non comporta alcun diritto o aspettativa ad ottenere un incarico dall'Ente, non sussistendo per quest'ultimo alcun obbligo di avvalersi delle prestazioni degli iscritti nella lista, né l'obbligo di chiamata nei confronti di tutti i nominativi inseriti;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="220" width="483" height="40" uuid="50fcde6e-fc57-4a6a-a0d1-fdc64cb9ce9b"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[- che l’Ente si riserva il diritto di affidare gli incarichi professionali secondo le proprie specifiche esigenze.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="260" width="483" height="20" uuid="5e418575-fb2f-4822-a6ee-b98d637ce392"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Si allega alla presente:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="280" width="483" height="40" uuid="4c7bd15a-c929-4c08-b3ff-40f1600bb071"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[- copia fotostatica di un proprio documento di riconoscimento in corso di validità (fronte/retro);]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="320" width="483" height="20" uuid="34d4e16f-5b8b-423a-9b97-f6eab78e9992"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[- copia della tessera sanitaria (fronte/retro).]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="340" width="483" height="40" uuid="9f9ec925-3b0a-427d-b3b9-a8c03a44da80"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Ai sensi dell’informativa di cui all’art. 13 del regolamento (UE) 2016/679, si autorizza al trattamento dei dati personali.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="19" width="483" height="30" uuid="c704fca6-ed7e-48b2-a2d8-1bdf03bee981">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Il sottoscritto dichiara – altresì – di essere edotto e di accettare integralmente tutte le condizioni di cui all’avviso pubblico.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="410" width="200" height="30" uuid="bf4af284-6a2c-4393-b84c-0dfd283e4559"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comuneSedeLegale} + ", " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="255" y="430" width="215" height="66" uuid="63ecf6af-a948-4fca-8064-93606d22570e"/>
+				<line>
+					<reportElement positionType="Float" x="0" y="50" width="215" height="1" uuid="1656ddf0-3882-47b5-8d1b-9e188cb6a9ed"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="17" y="0" width="180" height="30" uuid="734377e1-79b0-48d4-96be-9ad396761611"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome} + " "  + $F{cognome}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="36">
+			<textField>
+				<reportElement x="270" y="16" width="200" height="20" uuid="8a246d52-9b6d-4a20-9381-b74eaf1fff46"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Allegato A - Pagina " + $V{PAGE_NUMBER} + " di "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="471" y="16" width="12" height="20" uuid="f1a9706c-b459-4b56-916a-0be0a4319a02"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

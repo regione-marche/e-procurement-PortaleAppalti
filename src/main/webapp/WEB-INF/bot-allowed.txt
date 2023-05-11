@@ -1,0 +1,12 @@
+################################################################
+# INSERIRE GLI IP OPPURE GLI USER AGENT DEI BOT PER LA WHITELIST
+#
+# 127.0.0.1
+# 192.168.1.1	# ip
+# googlebot		# user agent
+
+googlebot
+bingbot
+PRTG
+robot190
+healthcheck

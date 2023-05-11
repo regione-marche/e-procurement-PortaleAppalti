@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	
+	<package name="portgare_do/FrontEnd/EOrders" namespace="/do/FrontEnd/EOrders"
+		extends="pp-common">
+
+		<action name="ordini*" class="ordiniFinderAction" method="listOrdini{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/ordiniFind.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="view" class="ordiniAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/ordineView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- accetta, rifiuta -->
+		<action name="confermaOrdine" class="ordiniAction">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/ordineView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- fatturazione -->
+		<action name="fattura" class="fatturaAction">			
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaCrea.jsp
+			</result>
+			<result type="chain" name="error">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			
+			<result name="successUpload" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaUpload.jsp
+			</result>
+			<result type="chain" name="cancelToOrder">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="fileUpload"><param name="maximumSize">10485760</param></interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="fatturaCrea" class="fatturaAction" method="crea">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaCrea.jsp
+			</result>
+			<result type="chain" name="error">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="saveHeader" class="fatturaAction" method="next">
+			<result type="chain" name="reload">fatturaCrea</result>
+			<result type="chain" name="success">elaboraLinee</result>
+			<result type="chain" name="error">fatturaCrea</result>
+			<result type="chain" name="cancelToOrder">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="elaboraLinee" class="fatturaAction" method="elaboraLinee">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaCreaLinee.jsp
+			</result>
+			<result type="chain" name="back">fatturaCrea</result>
+			<result type="chain" name="last">datiRiepilogo</result>
+			<result type="chain" name="error">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="saveLinee" class="fatturaAction">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaCreaLinee.jsp
+			</result>
+			<result type="chain" name="back">fatturaCrea</result>
+			<result type="chain" name="last">datiRiepilogo</result>
+			<result type="chain" name="error">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="datiRiepilogo" class="fatturaAction" method="riepilogo">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaRiepilogo.jsp
+			</result>
+			<result type="chain" name="back">elaboraLinee</result>
+			<result type="chain" name="error">elaboraLinee</result>
+			<result type="chain" name="cancelToOrder">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="downloadXml" class="fatturaAction" method="download">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaRiepilogo.jsp
+			</result>
+			<result type="chain" name="error">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result> 
+			<result name="export" type="stream">
+				<param name="contentType">application/xml</param>
+				<param name="contentCharSet">UTF-8</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<!-- <interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, statiOrdineNso, nazioniCodificate</param>
+			</interceptor-ref> -->
+		</action>
+		
+		<action name="upload" class="fatturaAction" method="upload">
+			<result type="dispatcher" name="successUpload">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fatturaUpload.jsp
+			</result>
+			<result type="chain" name="cancelToOrder">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="fileUpload"><param name="maximumSize">10485760</param></interceptor-ref><!-- maximun Size = 10 Mb -->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="inviaFattura" class="fatturaAction" method="inviaFattura">
+			<result type="chain" name="success">upload</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="archivioFatture" class="fatturaArchivioAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/eorders/fattureArchivio.jsp
+			</result>
+			<result type="chain" name="cancelToOrder">
+				<param name="id">${id}</param>
+				<param name="actionName">view</param>
+				<param name="backLink">ordiniConfermati</param>
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+	</package>
+</struts>

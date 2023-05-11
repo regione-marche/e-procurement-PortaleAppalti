@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="499" leftMargin="0" rightMargin="56" topMargin="0" bottomMargin="0" uuid="c30d3030-97a9-4c26-8597-c7560f81ee7b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="xPath">
+		<![CDATA[/categorieIscrizionde/categoria]]>
+	</queryString>
+	<field name="categoria" class="java.lang.String">
+		<fieldDescription><![CDATA[categoria]]></fieldDescription>
+	</field>
+	<field name="classificaMinima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+	</field>
+	<field name="classificaMassima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+	</field>
+	<group name="titoloCategoria">
+		<groupExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></groupExpression>
+		<groupHeader>
+			<band height="23">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				<textField textAdjust="StretchHeight">
+					<reportElement x="0" y="0" width="478" height="15" forecolor="#000000" uuid="19b793ba-d3be-415c-8a1f-4144c84fae92"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<printWhenExpression><![CDATA["1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))]]></printWhenExpression>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="478" height="16" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="ff2157a2-8d44-4d2d-9543-c1692cb39c36"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-" + $F{categoria}.substring( $F{categoria}.lastIndexOf( "*" ) + 1 )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

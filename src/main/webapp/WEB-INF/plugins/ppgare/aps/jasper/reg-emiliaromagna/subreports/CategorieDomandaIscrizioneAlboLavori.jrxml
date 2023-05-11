@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="450" pageHeight="802" columnWidth="450" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="soloLavori" class="java.lang.Boolean" isForPrompting="false">
+		<parameterDescription><![CDATA[soloLavori]]></parameterDescription>
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<parameter name="stampa" class="java.lang.Boolean" isForPrompting="false">
+		<parameterDescription><![CDATA[stampa]]></parameterDescription>
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/categorieIscrizionde/categoria]]>
+	</queryString>
+	<field name="categoria" class="java.lang.String">
+		<fieldDescription><![CDATA[categoria]]></fieldDescription>
+	</field>
+	<field name="classificaMinima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+	</field>
+	<field name="classificaMassima" class="java.lang.String">
+		<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+	</field>
+	<field name="nota" class="java.lang.String">
+		<fieldDescription><![CDATA[nota]]></fieldDescription>
+	</field>
+	<variable name="isCategoriaLavori" class="java.lang.Boolean">
+		<variableExpression><![CDATA["LAVORI".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI".length()) ) ||
+"LAVORI FINO A 150.000".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI FINO A 150.000".length()) )]]></variableExpression>
+		<initialValueExpression><![CDATA[new Boolean(false)]]></initialValueExpression>
+	</variable>
+	<variable name="categorieCount" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[(
+ (!$P{soloLavori} || ($P{soloLavori} && $V{isCategoriaLavori}))
+ &&
+ !"".equals($V{categorieCount})
+ &&
+ "1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+ ))
+ ? 1
+ : 0
+)]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<group name="titoloCategoria">
+		<groupExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></groupExpression>
+		<groupHeader>
+			<band height="13">
+				<printWhenExpression><![CDATA[$P{stampa}
+&& (
+  (!$P{soloLavori} &&
+   !("LAVORI".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI".length()) ) ||
+     "LAVORI FINO A 150.000".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI FINO A 150.000".length()) ))
+  ) ||
+  ($P{soloLavori} &&
+    ("LAVORI".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI".length()) ) ||
+     "LAVORI FINO A 150.000".equalsIgnoreCase( $F{categoria}.substring(0, "LAVORI FINO A 150.000".length()) ))
+  )
+)]]></printWhenExpression>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="0" width="450" height="13"/>
+					<textElement>
+						<font fontName="Arial" size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{stampa}
+&&
+((!$P{soloLavori} && !$V{isCategoriaLavori}) || ($P{soloLavori} && $V{isCategoriaLavori}))
+&&
+"1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="30" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[•]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="30" y="0" width="420" height="13"/>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring( $F{categoria}.lastIndexOf( "*" ) + 1 ) +
+($F{classificaMinima} != null ? " dalla classifica " + $F{classificaMinima} : "") +
+($F{classificaMassima} != null ? " fino alla classifica " + $F{classificaMassima} : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="347" y="0" width="103" height="13">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{categorieCount}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{stampa}
+&&
+((!$P{soloLavori} && !$V{isCategoriaLavori}) || ($P{soloLavori} && $V{isCategoriaLavori}))
+&&
+"1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))
+&&
+$F{nota} !=  null]]></printWhenExpression>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="169" y="0" width="281" height="13"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nota}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="60" y="0" width="109" height="13"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Ulteriori informazioni: "]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

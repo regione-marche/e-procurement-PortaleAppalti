@@ -1,0 +1,87 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="importoOfferto">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblImportoOfferto && importoOfferto.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d*(\.\d{1,5})?$]]></param>
+			<message key="localstrings.wrongCurrency" />
+		</field-validator>
+	</field>
+
+	<field name="ribasso">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d+)?$]]></param>
+			<message key="localstrings.wrongPercentuale" />
+		</field-validator>
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[ribasso <= 100.0]]></param>
+			<message key="localstrings.wrongRibasso" />
+		</field-validator>
+	</field>
+
+	<field name="aumento">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d*(\.\d+)?$]]></param>
+			<message key="localstrings.wrongPercentuale" />
+		</field-validator>
+	</field>
+
+	<field name="costiSicurezzaAziendali">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(costiManodoperaObbligatori && costiSicurezzaAziendali.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d{1,2})?$]]></param>
+			<message key="localstrings.wrongCurrency" />
+		</field-validator>
+	</field>
+
+	<field name="importoManodopera">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(costiManodoperaObbligatori && !percentualeManodoperaVisibile && importoManodopera.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d{1,2})?$]]></param>
+			<message key="localstrings.wrongCurrency" />
+		</field-validator>
+	</field>
+	
+	<field name="percentualeManodopera">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(costiManodoperaObbligatori && percentualeManodoperaVisibile && percentualeManodopera.trim().length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d+)?$]]></param>
+			<message key="localstrings.wrongPercentuale" />
+		</field-validator>
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[percentualeManodopera >= 0.0 && percentualeManodopera <= 100.0]]></param>
+			<message key="localstrings.wrongRibasso" />
+		</field-validator>
+	</field>
+		
+	<field name="importoOffertoPerPermuta">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d{1,2})?$]]></param>
+			<message key="localstrings.wrongCurrency" />
+		</field-validator>
+	</field>
+	
+	<field name="importoOffertoCanoneAssistenza">
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[^\d+(\.\d{1,2})?$]]></param>
+			<message key="localstrings.wrongCurrency" />
+		</field-validator>
+	</field>
+	
+</validators>

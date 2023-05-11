@@ -781,6 +781,7 @@ BEGIN
     IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.4.0') THEN
 	-- INIZIO AGGIORNAMENTI
 	ALTER TABLE authusers ADD COLUMN crc VARCHAR(64);
+	
 		
 	-- AGGIORNAMENTO DELLE VERSIONI
 	UPDATE ppcommon_ver SET version = '3.5.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.4.0';
@@ -1001,6 +1002,269 @@ BEGIN
 
 	-- AGGIORNAMENTO DELLE VERSIONI
 	UPDATE ppcommon_ver SET version = '3.13.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.12.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.13.0_to_3.13.7
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.13.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	update authusers set passwd = 'bHl5qFBExyI197Ah6ZYVzvdwox5q7EdQ' where passwd = 'hmAkKomZ7zA=';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.13.7', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.13.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.13.7_to_3.14.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.13.7') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	update authusers set passwd = 'bHl5qFBExyI197Ah6ZYVzvdwox5q7EdQ' where passwd = 'hmAkKomZ7zA=';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.13.7';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.14.0_to_3.15.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.14.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	ALTER TABLE authusers ADD acceptance_version integer;
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.15.0_to_3.16.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.15.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	UPDATE authusers SET passwd = 'njBnHz0lgNmfba5HO6NsPA==', crc = '2b8a84219d181c980c6ee0937b4f862f4121cd8f9c67633b0641a6ccefe3ee26' WHERE username = 'admin';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.16.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.16.0_to_3.17.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.16.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.17.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.16.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.17.0_to_3.18.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.17.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.18.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.17.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.18.0_to_3.19.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.18.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.19.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.18.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.19.0_to_3.20.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.19.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.20.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.20.0_to_3.21.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.20.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	ALTER TABLE authusers ALTER COLUMN passwd TYPE VARCHAR(64);  
+	ALTER TABLE ppcommon_passwords ALTER COLUMN passwd TYPE VARCHAR(64);  
+	
+	ALTER TABLE ppcommon_accesses ADD COLUMN sessionid VARCHAR(100);  
+	
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.21.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.20.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.21.0_to_3.22.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.21.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.21.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.22.0_to_3.23.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.22.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.23.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.23.0_to_3.24.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.23.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.24.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.23.0';
 
 	-- FINE AGGIORNAMENTI
 	END IF;

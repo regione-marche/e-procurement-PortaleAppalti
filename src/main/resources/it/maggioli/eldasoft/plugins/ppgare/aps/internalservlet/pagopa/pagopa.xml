@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	
+	<package name="portgare_do/FrontEnd/PagoPA" namespace="/do/FrontEnd/PagoPA"
+		extends="pp-common">
+		<!-- Nuovo Pagamento -->
+		<action name="nuovoPagamento" class="pagoPaActionCrea" method="nuovo">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/pagopa/pagamentoNuovo.jsp
+			</result>
+			<result name="creato">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/pagopa/pagamentoCreato.jsp
+			</result>
+			<result name="listaPagamenti" type="redirectAction" >listaEffettuati</result>
+			<result name="follow" type="redirect" >${followLink}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		<action name="dettaglioPagamento" class="pagoPaActionCrea" method="dettaglio">
+			<result name="success">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/pagopa/pagamentoCreato.jsp
+			</result>
+			<result name="listaPagamenti" type="redirectAction" >listaEffettuati</result>
+			<result name="follow" type="redirect" >${followLink}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="scaricaRicevuta" class="pagoPaActionCrea" method="scaricaRicevuta">
+			<result name="success" type="stream">
+				<param name="contentType">application/xml</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="error" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="getRiferimentoProcedura" class="pagoPaRifProcAction" method="getRiferimentoProcedura">
+			<result name="success" type="stream">
+				<param name="contentType">application/json</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentCharSet">UTF-8</param>
+			</result>
+			<result name="failure" type="stream">
+				<param name="contentType">application/json</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentCharSet">UTF-8</param>
+			</result>
+			<result name="error" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- Lista Pagamenti -->
+		<action name="lista*" class="pagoPaActionLista" method="lista{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/pagopa/pagamentoLista.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<!-- URL di callback -->
+		<action name="actionOk" class="pagoPaActionCallBack" method="ok">
+			<!-- <result type="redirectAction" >listaEffettuati</result> -->
+<!-- 			<result type="redirectAction" >
+				<param name="actionName">dettaglioPagamento</param> -->
+			<result type="redirect" >
+				<param name = "location">${urlRedirect}</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		<action name="actionKo" class="pagoPaActionCallBack" method="ko">
+			<result type="redirect" >
+				<param name = "location">${urlRedirect}</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		<action name="actionS2S" class="pagoPaActionCallBack" method="stos">
+			<result type="stream">
+				<param name="contentType">application/json</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentCharSet">UTF-8</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		<action name="actionCancel" class="pagoPaActionCallBack" method="cancel">
+			<result type="redirect" >
+				<param name = "location">${urlRedirect}</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+	</package>
+</struts>

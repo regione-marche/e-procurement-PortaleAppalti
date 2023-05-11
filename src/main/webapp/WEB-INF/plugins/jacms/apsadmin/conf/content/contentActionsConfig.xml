@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	
+	<bean id="jacmsContentActionHelper" parent="entityActionHelper" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.helper.ContentActionHelper" >
+		<property name="extraAttributeManagers">
+			<map>
+				<entry key="Link"><ref bean="jacmsLinkAttributeManager" /></entry>
+				<entry key="Hypertext"><ref bean="jacmsHypertextAttributeManager" /></entry>
+				<entry key="Image"><ref bean="jacmsResourceAttributeManager" /></entry>
+				<entry key="Attach"><ref bean="jacmsResourceAttributeManager" /></entry>
+			</map>
+		</property>
+		<property name="contentManager" ref="jacmsContentManager" />
+		<property name="pageManager" ref="PageManager" />
+	</bean>
+	
+	<bean id="jacmsAbstractContentAction" abstract="true" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.AbstractContentAction" parent="abstractBaseAction" >
+		<property name="contentManager" ref="jacmsContentManager"/>
+		<property name="groupManager" ref="GroupManager"/>
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+	</bean>
+	
+	<bean id="jacmsContentFinderAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.ContentFinderAction" 
+			parent="jacmsAbstractContentAction" />
+	
+	<bean id="jacmsIntroNewContentAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.IntroNewContentAction" parent="jacmsAbstractContentAction" />
+	
+	<bean id="jacmsContentAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.ContentAction" 
+			parent="jacmsAbstractContentAction">
+		<property name="categoryManager" ref="CategoryManager"/>
+		<property name="pageManager" ref="PageManager" />
+		<property name="configManager" ref="BaseConfigManager" />
+		<property name="resourceIconUtil" ref="jacmsResourceIconUtil" />
+  	</bean>
+  	
+	<bean id="jacmsContentPreviewAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.ContentPreviewAction" 
+			parent="jacmsAbstractContentAction">
+		<property name="authorizationManager" ref="AuthorizationManager"/>
+		<property name="pageManager" ref="PageManager" />
+		<property name="contentPageMapperManager" ref="jacmsContentPageMapperManager"/>
+  	</bean>
+  	
+  	<!-- Servizi e bean appositi per Content Preview - INIZIO -->
+	
+	<bean id="jacmsContentPreviewViewerHelper" class="com.agiletec.plugins.jacms.apsadmin.content.preview.ContentPreviewViewerHelper" >
+		<property name="contentDispenser" ref="jacmsContentPreviewDispenser" />
+		<property name="contentManager" ref="jacmsContentManager" />
+		<property name="contentModelManager" ref="jacmsContentModelManager" />
+	</bean>
+	
+	<bean id="jacmsContentPreviewDispenser" class="com.agiletec.plugins.jacms.apsadmin.content.preview.ContentPreviewDispenser" 
+			parent="abstractService" >
+		<property name="contentRenderer" ref="jacmsBaseContentRenderer" />
+		<property name="linkResolver" ref="jacmsLinkResolverManager" />
+	</bean>
+  	
+  	<!-- Servizi e bean appositi per Content Preview - FINE -->
+  	
+	<bean id="jacmsContentAdminAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.ContentAdminAction">
+		<property name="contentManager" ref="jacmsContentManager"/>
+		<property name="searchEngineManager" ref="jacmsSearchEngineManager"/>
+  	</bean>
+	
+	<!-- BEANS PER GESTONE ATTRIBUTI RISORSA - INIZIO -->
+	<bean id="jacmsResourceAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.resource.ResourceAttributeAction" 
+			parent="abstractBaseAction" >
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+	</bean>
+	
+	<bean id="jacmsExtendedResourceFinderAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.resource.ExtendedResourceFinderAction" 
+			parent="jacmsResourceFinderAction" >
+	</bean>
+	
+	<bean id="jacmsExtendedResourceAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.resource.ExtendedResourceAction" 
+			parent="jacmsResourceAction" >
+	</bean>
+	<!-- BEANS PER GESTONE ATTRIBUTI RISORSA - FINE -->
+	
+	<bean id="jacmsListAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.list.ListAttributeAction" 
+			parent="abstractBaseAction" >
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+	</bean>
+	
+	<!-- BEANS PER GESTONE ATTRIBUTI LINK - INIZIO -->
+	
+	<bean id="jacmsLinkAttributeActionHelper" class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.helper.LinkAttributeActionHelper" />
+	
+	<bean id="jacmsLinkAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.LinkAttributeAction" 
+			parent="abstractBaseAction" >
+		<property name="pageManager" ref="PageManager" />
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+		<property name="linkAttributeHelper" ref="jacmsLinkAttributeActionHelper" />
+	</bean>
+	<bean id="jacmsUrlLinkAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.UrlLinkAction" 
+			parent="abstractBaseAction" >
+		<property name="linkAttributeHelper" ref="jacmsLinkAttributeActionHelper" />
+	</bean>
+	<bean id="jacmsPageLinkAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.PageLinkAction" 
+			parent="abstractBaseAction" >
+		<property name="groupManager" ref="GroupManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="linkAttributeHelper" ref="jacmsLinkAttributeActionHelper" />
+		<property name="helper" ref="pageActionHelper" />
+	</bean>
+	<bean id="jacmsContentLinkAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.link.ContentLinkAction" 
+			parent="abstractBaseAction" >
+		<property name="contentManager" ref="jacmsContentManager"/>
+		<property name="groupManager" ref="GroupManager"/>
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+		<property name="linkAttributeHelper" ref="jacmsLinkAttributeActionHelper" />
+	</bean>
+	<!-- BEANS PER GESTONE ATTRIBUTI RISORSA - FINE -->
+	
+	<!-- BEANS PER GESTONE ATTRIBUTI HYPERTEXT - FINE -->
+	<bean id="jacmsHypertextAttributeAction" scope="prototype" 
+			class="com.agiletec.plugins.jacms.apsadmin.content.attribute.action.hypertext.HypertextAttributeAction" 
+			parent="abstractBaseAction" >
+		<property name="contentManager" ref="jacmsContentManager"/>
+		<property name="groupManager" ref="GroupManager"/>
+		<property name="contentActionHelper" ref="jacmsContentActionHelper"/>
+		<property name="pageActionHelper" ref="pageActionHelper" />
+	</bean>
+	<!-- BEANS PER GESTONE ATTRIBUTI HYPERTEXT - FINE -->
+	
+</beans>

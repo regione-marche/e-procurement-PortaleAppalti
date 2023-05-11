@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+        "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+    <package name="portgare_do/FrontEnd/DGUE" namespace="/do/FrontEnd/DGUE"
+             extends="pp-common">
+
+        <action name="requestXmlFile"
+                class="dgueRequestAction"
+                method="sendXmlToOpenOnDgue">
+            <result type="stream">
+                <param name="contentType">application/json</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentCharSet">UTF-8</param>
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
+        </action>
+        <action name="sendTokenToDgue"
+                class="dgueRequestAction"
+                method="sendTokenToDgue">
+<!--            <result type="chain">openGestioneBuste</result>-->
+<!--            <result type="chain" name="portalError">openGestioneBuste</result>-->
+            <result name="redirectToDGUE" type="redirect" >${url}</result>
+        </action>
+
+    </package>
+
+</struts>

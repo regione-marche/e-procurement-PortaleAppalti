@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="VariazioniPrezzoScadenza" pageWidth="482" pageHeight="802" columnWidth="482" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3636363636363635"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\progetti\\PortaleAlice\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/IscrizioneImpresaElencoOperatori"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CATALOGO" class="java.lang.String">
+		<parameterDescription><![CDATA[Titolo del catalogo in esame]]></parameterDescription>
+		<defaultValueExpression><![CDATA["Catalogo 2013, versione A.02 per Lavori e Servizi"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/ReportGestioneProdotti/aggiornamenti/prodotto]]>
+	</queryString>
+	<field name="codiceArticolo" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceArticolo]]></fieldDescription>
+	</field>
+	<field name="marcaProdottoProduttore" class="java.lang.String">
+		<fieldDescription><![CDATA[marcaProdottoProduttore]]></fieldDescription>
+	</field>
+	<field name="codiceProdottoProduttore" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceProdottoProduttore]]></fieldDescription>
+	</field>
+	<field name="nomeCommerciale" class="java.lang.String">
+		<fieldDescription><![CDATA[nomeCommerciale]]></fieldDescription>
+	</field>
+	<field name="codiceProdottoFornitore" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceProdottoFornitore]]></fieldDescription>
+	</field>
+	<field name="descrizioneAggiuntiva" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizioneAggiuntiva]]></fieldDescription>
+	</field>
+	<field name="dimensioni" class="java.lang.String">
+		<fieldDescription><![CDATA[dimensioni]]></fieldDescription>
+	</field>
+	<field name="quantitaUMPrezzo" class="java.lang.String">
+		<fieldDescription><![CDATA[quantitaUMPrezzo]]></fieldDescription>
+	</field>
+	<field name="aliquotaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[aliquotaIVA]]></fieldDescription>
+	</field>
+	<field name="prezzoUnitario" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+	</field>
+	<field name="quantitaUMAcquisto" class="java.lang.String">
+		<fieldDescription><![CDATA[quantitaUMAcquisto]]></fieldDescription>
+	</field>
+	<field name="prezzoUnitarioPerAcquisto" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitarioPerAcquisto]]></fieldDescription>
+	</field>
+	<field name="garanzia" class="java.lang.String">
+		<fieldDescription><![CDATA[garanzia]]></fieldDescription>
+	</field>
+	<field name="tempoConsegna" class="java.lang.String">
+		<fieldDescription><![CDATA[tempoConsegna]]></fieldDescription>
+	</field>
+	<field name="dataScadenzaOfferta" class="java.lang.String">
+		<fieldDescription><![CDATA[dataScadenzaOfferta]]></fieldDescription>
+	</field>
+	<field name="stato" class="java.lang.String">
+		<fieldDescription><![CDATA[stato]]></fieldDescription>
+	</field>
+	<field name="unitaMisuraDetermPrezzo" class="java.lang.String">
+		<fieldDescription><![CDATA[unitaMisuraDetermPrezzo]]></fieldDescription>
+	</field>
+	<field name="unitaMisuraAcquisto" class="java.lang.String">
+		<fieldDescription><![CDATA[unitaMisuraAcquisto]]></fieldDescription>
+	</field>
+	<field name="prezzoUnitarioPer" class="java.lang.Integer">
+		<fieldDescription><![CDATA[prezzoUnitarioPer]]></fieldDescription>
+	</field>
+	<field name="unitaMisuraTempoConsegna" class="java.lang.String">
+		<fieldDescription><![CDATA[unitaMisuraTempoConsegna]]></fieldDescription>
+	</field>
+	<field name="tipoArticolo" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoArticolo]]></fieldDescription>
+	</field>
+	<field name="descrizioneArticolo" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizioneArticolo]]></fieldDescription>
+	</field>
+	<field name="descrizioneTecnicaArticolo" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizioneTecnicaArticolo]]></fieldDescription>
+	</field>
+	<field name="nomeImmagine" class="java.lang.String">
+		<fieldDescription><![CDATA[immagine/nomeFile]]></fieldDescription>
+	</field>
+	<field name="numSchedeTecniche" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count(schedeTecniche/*)]]></fieldDescription>
+	</field>
+	<field name="numCertificazioniRichieste" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count(certificazioniRichieste/*)]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="272" splitType="Immediate">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="482" height="20" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["PRODOTTO MODIFICATO"]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="20" width="482" height="5" isRemoveLineWhenBlank="true"/>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="25" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Tipo articolo]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{tipoArticolo} != null ? $F{tipoArticolo} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="45" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Codice articolo]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceArticolo} != null ? $F{codiceArticolo} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="65" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Descrizione]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{descrizioneArticolo} != null ? $F{descrizioneArticolo} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="85" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Descrizione tecnica]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{descrizioneTecnicaArticolo} != null ? $F{descrizioneTecnicaArticolo} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="105" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Codice prodotto del fornitore]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceProdottoFornitore} != null ? $F{codiceProdottoFornitore} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="125" width="482" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[("Bene".equals($F{tipoArticolo}.trim()))]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Marca prodotto]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{marcaProdottoProduttore} != null ? $F{marcaProdottoProduttore} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="145" width="482" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[("Bene".equals($F{tipoArticolo}.trim()))]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Codice prodotto del produttore]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceProdottoProduttore} != null ? $F{codiceProdottoProduttore} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="165" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Nome commerciale]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{nomeCommerciale} != null ? $F{nomeCommerciale} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="185" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Prezzo del prodotto]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.##### € " isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$F{prezzoUnitarioPerAcquisto} != null ? Double.valueOf($F{prezzoUnitarioPerAcquisto}) : null]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="205" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Unità di misura]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{unitaMisuraAcquisto}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="225" width="482" height="20" isRemoveLineWhenBlank="true"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="1" rightPadding="2">
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Data di scadenza dell'offerta]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="241" y="0" width="241" height="20"/>
+					<box topPadding="2" leftPadding="5" bottomPadding="5" rightPadding="2">
+						<leftPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="11"/>
+					</textElement>
+					<textFieldExpression class="java.util.Date"><![CDATA[$F{dataScadenzaOfferta} != null ? (new SimpleDateFormat("yyyy-MM-dd")).parse($F{dataScadenzaOfferta}.substring(0,10)) : null]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

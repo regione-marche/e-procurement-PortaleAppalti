@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC 
+	"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+	"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+	
+    <definition extends="main.layout" name="jpuserprofile.admin.CurrentUser.Profile.entry" >
+		<put-attribute name="title" value="jpuserprofile.title.changeUserProfile" />
+		<put-attribute name="extraResources" value="/WEB-INF/plugins/jpuserprofile/apsadmin/jsp/common/template/extraresources/userprofile.jsp" />
+		<put-attribute name="body" value="/WEB-INF/plugins/jpuserprofile/apsadmin/jsp/common/entryCurrentProfile.jsp" />
+	</definition>
+	
+	<!-- ********* INIZIO Area Gestione Entità ********* -->
+    
+    <definition extends="main.layout" name="admin.jpuserprofile.entityManagement.viewEntityTypes">
+		<put-attribute name="title" value="title.profileTypesManagement" />
+		<put-attribute name="body" value="/WEB-INF/plugins/jpuserprofile/apsadmin/jsp/entity/viewEntityTypes.jsp" />
+	</definition>
+    
+    <definition extends="main.layout" name="admin.jpuserprofile.entityManagement.viewEntityType">
+		<put-attribute name="title" value="title.profileTypesManagement" />
+		<put-attribute name="body" value="/WEB-INF/plugins/jpuserprofile/apsadmin/jsp/entity/entryUserProfileType.jsp" />
+	</definition>
+	
+    <!-- ********* FINE Area Gestione Entità ********* -->
+	
+</tiles-definitions>

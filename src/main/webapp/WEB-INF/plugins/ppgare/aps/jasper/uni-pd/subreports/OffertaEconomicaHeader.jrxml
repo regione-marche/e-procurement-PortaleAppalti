@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OffertaEconomicaheader" language="groovy" pageWidth="595" pageHeight="807" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.2100000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ITER_GARA" class="java.lang.String"/>
+	<queryString language="xPath">
+		<![CDATA[/ReportOffertaEconomica]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="69">
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="432" height="20"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="432" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="14" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portale appalti Università degli Studi di Padova]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="0" y="33" width="432" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[("6".equals($P{ITER_GARA})
+  ? "Mercato Elettronico dell’Università degli Studi di Padova"
+  : "Procedura di gara dell’Università degli Studi di Padova"
+)]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

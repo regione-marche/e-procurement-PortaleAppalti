@@ -14,7 +14,7 @@ SET escape_string_warning = off;
 
 SET default_tablespace = '';
 
-SET default_with_oids = true;
+--SET default_with_oids = true;
 
 CREATE TABLE authgroups (
     groupname character varying(20) NOT NULL,
@@ -42,14 +42,14 @@ CREATE TABLE authusergroups (
 );
 
 
-SET default_with_oids = false;
+--SET default_with_oids = false;
 
 CREATE TABLE authuserroles (
     username character varying(40) NOT NULL,
     rolename character varying(20) NOT NULL
 );
 
-SET default_with_oids = true;
+--SET default_with_oids = true;
 
 CREATE TABLE authusers (
     username character varying(40) NOT NULL,
@@ -153,12 +153,14 @@ INSERT INTO authusers (username, passwd, registrationdate, lastaccess, lastpassw
 ------------------------------------------------------------------------
 
 ALTER TABLE authusers ADD delegateuser character varying(40) NULL;
-ALTER TABLE authusers ADD COLUMN crc VARCHAR(64);
+ALTER TABLE authusers ADD crc VARCHAR(64);
+ALTER TABLE authusers ADD acceptance_version integer;
+ALTER TABLE authusers ALTER COLUMN passwd TYPE VARCHAR(64); 
 
 DELETE FROM authusers WHERE username = 'admin';
-INSERT INTO authusers (username, passwd, registrationdate, lastaccess, lastpasswordchange, active) VALUES ('admin', 'ZVzjxTZrEa4=', '2008-10-10', CURRENT_TIMESTAMP, NULL, 1);
+INSERT INTO authusers (username, passwd, registrationdate, lastaccess, lastpasswordchange, active) VALUES ('admin', 'njBnHz0lgNmfba5HO6NsPA==', '2008-10-10', CURRENT_TIMESTAMP, NULL, 1);
 
-update authusers set crc = 'c6d6a506e1b540f79b591f2c928fedd8e40c97d78fb05b033513259c0e60894b' where username = 'admin';
+update authusers set crc = '2b8a84219d181c980c6ee0937b4f862f4121cd8f9c67633b0641a6ccefe3ee26' where username = 'admin';
 
 
 
@@ -174,7 +176,7 @@ CREATE TABLE ppcommon_passwords (
   id integer NOT NULL DEFAULT NEXTVAL('ppcommon_passwords_id_seq'),
   username character varying(40) NOT NULL,
   passwordchange timestamp NOT NULL DEFAULT now(),
-  passwd character varying(40) NOT NULL
+  passwd character varying(64) NOT NULL
 );
 
 ALTER TABLE ONLY ppcommon_passwords
@@ -194,7 +196,8 @@ CREATE TABLE ppcommon_accesses (
   username character varying(40) NOT NULL,
   logintime timestamp NOT NULL DEFAULT now(),
   logouttime timestamp,
-  ipaddress character varying(40)
+  ipaddress character varying(40),
+  sessionid character varying(100)
 );
 
 ALTER TABLE ONLY ppcommon_accesses
@@ -341,4 +344,4 @@ INSERT INTO authrolepermissions(rolename, permissionname) VALUES ('cms', 'enterB
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('japs', '2.0.10', CURRENT_TIMESTAMP);
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('jpuserreg', '1.1', CURRENT_TIMESTAMP);
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('jpuserprofile', '1.5', CURRENT_TIMESTAMP);
-INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '3.13.0', CURRENT_TIMESTAMP);
+INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '3.24.0', CURRENT_TIMESTAMP);

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:tx="http://www.springframework.org/schema/tx"
+			 xmlns:jee="http://www.springframework.org/schema/jee"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+				http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd" >
+	
+	<bean id="checkProspettoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.CheckProspettoAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="reportManager" ref="ReportManager" />
+	</bean>
+	
+	<bean id="setParamProspettoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.SetParamProspettoAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="reportManager" ref="ReportManager" />
+	</bean>
+	
+	<bean id="getProspettoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GetProspettoAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="reportManager" ref="ReportManager" />
+	</bean>
+	
+	<bean id="downloadAllegatoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DownloadAllegatoAction" 
+				scope="prototype">
+		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="langManager" ref="LangManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+	
+	<bean id="accessoSimultaneoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AccessoSimultaneoAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="areaPersonaleAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AreaPersonaleAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="pageManager" ref="PageManager" />
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="cataloghiManager" ref="CataloghiManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="ordiniManager" ref="OrdiniManager" />
+		<property name="wsPagoPATableWrapper" ref="WSPagoPATableWrapper" />
+	</bean>
+	
+	<bean id="adminAccessAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.adminaccess.AdminAccessAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager"/> 
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+	
+	<bean id="authAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AuthAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+ 		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/> 
+	</bean>
+	
+	<bean id="assistenzaAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.assistenza.AssistenzaAction" 
+				parent="abstractBaseAction"	scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="eventManager" ref="EventManager"/>
+		<property name="dataSource" ref="portDataSource" />
+	</bean>
+	
+	
+	<bean id="portalErrorPageAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.error.PortalErrorPageAction"
+				parent="abstractBaseAction"	scope="prototype">
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+	</bean>
+	
+	<bean id="loginCohesionAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.cohesion.CohesionLoginResponseAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+ 		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/> 
+	</bean>
+	
+	<bean id="loginShibbolethAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.shibboleth.ShibbolethLoginResponseAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+ 		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/> 
+	</bean>
+	
+	<bean id="abstractBaseResponseAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.BaseResponseAction" 
+				parent="abstractBaseAction" scope="prototype" abstract="true">
+		<property name="configManager" ref="BaseConfigManager"/>
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="urlManager" ref="URLManager"/> 
+ 		<property name="pageManager" ref="PageManager" />
+		<property name="authServiceSPIDManager" ref="AuthServiceSPIDManager" />
+		<property name="wsAuthServiceSPID" ref="WSAuthServiceSPID" />
+		<property name="eventManager" ref="EventManager"/> 
+	</bean>
+	
+	<bean id="loginSpidAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.spid.SpidLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginSpidBusinessAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.spid.SpidBusinessLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="datiImpresaChecker" ref="DatiImpresaChecker" />
+	</bean>
+	
+	<bean id="loginCieAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.cie.CieLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginCrsAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.crs.CrsLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginCnsAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.cns.CnsLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginMyIdAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.myid.MyIdLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginGelAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.gel.GelLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginFederaAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.federa.FederaLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginGatewayAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.gateway.GatewayLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
+	
+	<bean id="loginSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.SSOLoginResponseAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager"/> 
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+	</bean>
+
+	<bean id="logoutSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.SSOLogoutResponseAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="abilitaAccessoSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AbilitaAccessoSSOAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+ 		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/> 
+		<property name="authServiceSPIDManager" ref="AuthServiceSPIDManager" />
+		<property name="wsAuthServiceSPID" ref="WSAuthServiceSPID" />
+		<property name="userManager" ref="UserManager" />
+		<property name="configManager" ref="BaseConfigManager"/>
+	</bean>
+	
+	<bean id="contrattiAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.ContrattiAction" 
+				parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="adminfunAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.botfilter.AdminfunAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
+	</bean>
+ 	
+ 	<bean id="allowCookiesAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.botfilter.AllowCookiesAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+ 	
+	<bean id="areaPersonaleSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AreaPersonaleSSOAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="urlManager" ref="URLManager"/>
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="eventManager" ref="EventManager"/>
+	</bean>
+	
+	<bean id="registrazioneManualeOperatoriEconomiciAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.RegistrazioneManualeOperatoriEconomiciAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="configManager" ref="BaseConfigManager"/>
+		<property name="eventManager" ref="EventManager"/>
+	</bean>
+	
+	<bean id="operatoriEconomiciNonAttiviFinderAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.OperatoriEconomiciNonAttiviFinderAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="monitoraggioManager" ref="MonitoraggioManager" />
+	</bean>
+	
+	<bean id="operatoriEconomiciAttivazioneAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AttivazioneOperatoriEconomiciAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="monitoraggioManager" ref="MonitoraggioManager" />
+		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+	
+	<bean id="flussiConErroriFinderAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.InvioFlussiConErroriFinderAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="monitoraggioManager" ref="MonitoraggioManager" />
+		<property name="eventManager" ref="EventManager"/> 
+	</bean>
+	
+	<bean id="sbloccaAccountAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.SbloccaAccountAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="userManager" ref="UserManager" />
+		<property name="userRegManager" ref="jpuserregUserRegManager" />
+	</bean>
+	
+	<bean id="sbloccoUtenzaAutonomoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.SbloccoUtenzaAutonomoAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="userManager" ref="UserManager" />
+	</bean>
+	
+	<bean id="delegateUserAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.DelegateUserAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="userManager" ref="UserManager" />
+		<property name="eventManager" ref="EventManager"/>
+	</bean>
+
+	<bean id="searchOEAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.SearchOEAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="eventManager" ref="EventManager"/>
+	</bean>
+
+	<bean id="infoFirmaDigitaleAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.firmadigitale.InfoFirmaDigitaleAction" 
+				scope="prototype">
+		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="langManager" ref="LangManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+	
+	<bean id="ricaricaConfigurazioneAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.ricaricaconfig.RicaricaConfigurazioneAction" 
+				scope="prototype">
+	</bean>	
+
+	<bean id="selezionaStazioneAppaltanteAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.safilter.ChooseStazioneAppaltanteAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+	
+	<!-- <bean id= class="" 
+				scope="prototype">
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="langManager" ref="LangManager" />
+	</bean>
+	
+	<bean id="" class="" 
+				scope="prototype">
+		<property name="pageManager" ref="PageManager" />
+		<property name="urlManager" ref="URLManager"/>
+		<property name="langManager" ref="LangManager" />
+	</bean>
+	
+	<bean id="accettazioneConsensiAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AccettazioneConsensiAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="eventManager" ref="EventManager"/>
+	</bean>
+		
+	
+	<bean id="pingAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.PingAction" 
+				parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+--> </beans>

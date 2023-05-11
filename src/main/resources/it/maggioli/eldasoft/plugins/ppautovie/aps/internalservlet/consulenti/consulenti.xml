@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Autovie/Consulenti" namespace="/do/FrontEnd/Autovie/Consulenti"
+		extends="pp-common">
+		
+		<action name="view" class="autovieConsulentiCollaboratoriFinderAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppautovie/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="find" class="autovieConsulentiCollaboratoriFinderAction" method="find">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppautovie/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="export" class="autovieConsulentiCollaboratoriFinderAction" method="export">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppautovie/aps/jsp/internalServlet/consulenti/consulentiCollaboratori.jsp
+			</result>
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+	</package>
+
+</struts>

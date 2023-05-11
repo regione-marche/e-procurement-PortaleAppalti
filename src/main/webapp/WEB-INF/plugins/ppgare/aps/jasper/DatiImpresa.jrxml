@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiImpresa" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="96a895a7-ae49-4628-9488-0178f77cdf9b">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="47"/>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRELENCHIDL189" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RATINGLEGALITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\progetti_eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIPOIMPRESA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATIULTVISIBILI" class="java.lang.Integer"/>
+	<parameter name="INDIRIZZIVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTCCIAVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTPREVVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTSOAVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTISOVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTWLVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTALTRIDATIVISIBILI" class="java.lang.Integer"/>
+	<parameter name="ABILITAGRUPPOIVA" class="java.lang.Integer"/>
+	<parameter name="SOC_COOP_VISIBLE" class="java.lang.Boolean"/>
+	<queryString language="xPath">
+		<![CDATA[/AggiornamentoAnagraficaImpresa/datiImpresa]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="555" height="20" uuid="0744da3e-932a-478f-aa11-a2e63be1f322"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati riepilogativi dell'operatore economico]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="71" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="33" width="280" height="25" uuid="06bf8043-a6c9-4cd9-97b4-af6470795e66"/>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAGRUPPOIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAGRUPPOIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRELENCHIDL189">
+					<subreportParameterExpression><![CDATA[$P{ISCRELENCHIDL189}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RATINGLEGALITA">
+					<subreportParameterExpression><![CDATA[$P{RATINGLEGALITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TIPOIMPRESA">
+					<subreportParameterExpression><![CDATA[$P{TIPOIMPRESA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="INDIRIZZIVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{INDIRIZZIVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTCCIAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTCCIAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTPREVVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTPREVVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTSOAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTSOAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTISOVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTISOVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTWLVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTWLVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTALTRIDATIVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SOC_COOP_VISIBLE">
+					<subreportParameterExpression><![CDATA[$P{SOC_COOP_VISIBLE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//impresa")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DatiPrincipaliImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="08f4e9f4-e42a-4194-9bc6-9c8ee72fcbc0"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati principali]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="58" width="150" height="13" uuid="592159e0-481a-49fd-9ca6-9844aaa002dd"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="1ef35d80-498e-4e5a-b768-ff19b676c689"/>
+			</line>
+		</band>
+		<band height="73">
+			<printWhenExpression><![CDATA[$P{INDIRIZZIVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="dce33696-5f17-4e5b-a33b-3a91ef476bc4"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Indirizzi]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="60" width="150" height="13" uuid="34735fd1-c6ca-4a64-8d41-f07cdb82fb7c"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="18" width="555" height="1" uuid="e31ecbb3-6e31-499d-be36-37e609e3ec34"/>
+			</line>
+			<subreport>
+				<reportElement x="0" y="32" width="200" height="28" uuid="5724930f-ca63-4fee-bedb-58bac1b3f693"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//impresa/indirizzo")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "IndirizziImpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="70">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="42" width="230" height="5" isRemoveLineWhenBlank="true" uuid="3e2cebf7-ef73-428f-9ab3-be2ac424ea71"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//altraCarica")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="37" width="230" height="5" isRemoveLineWhenBlank="true" uuid="63cfde4a-06d7-4cd5-98fc-02edd5440355"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//direttoreTecnico")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="230" height="5" isRemoveLineWhenBlank="true" uuid="e7b1fe90-af8e-4de4-a67a-eb26eaceae59"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//legaleRappresentante")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="0" width="200" height="20" uuid="56181230-71ec-4c0d-8c1c-24e8f896f474"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati anagrafici]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="a3afbc9f-b6f0-4117-8154-c736b2d9e8cb"/>
+			</line>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="47" width="230" height="5" isRemoveLineWhenBlank="true" uuid="01cfa3f8-c450-4858-928d-4ef33f365ba4"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//collaboratore")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="52" width="230" height="5" isRemoveLineWhenBlank="true" uuid="974abd23-545e-4d9a-83b3-42125d2218a1"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//altriDatiAnagrafici")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "AltriDatiAnagrImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="21" width="100" height="11" uuid="9bb3dc69-5869-4418-a53d-20751f851f32"/>
+				<text><![CDATA[Static text]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="57" width="150" height="13" uuid="0d4ffa46-f2dc-46b0-907e-46e42dcced18"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+		<band height="69">
+			<printWhenExpression><![CDATA[$P{DATIULTVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="eb383b1e-df4b-4f28-a5be-47b1004ce35f"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Altri dati]]></text>
+			</staticText>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="230" height="23" uuid="ecd7ac8d-c669-4e91-b1ae-b29bab8cb030"/>
+				<subreportParameter name="ISCRELENCHIDL189">
+					<subreportParameterExpression><![CDATA[$P{ISCRELENCHIDL189}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTCCIAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTCCIAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RATINGLEGALITA">
+					<subreportParameterExpression><![CDATA[$P{RATINGLEGALITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTWLVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTWLVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTISOVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTISOVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTSOAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTSOAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTPREVVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTPREVVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTALTRIDATIVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TIPOIMPRESA">
+					<subreportParameterExpression><![CDATA[$P{TIPOIMPRESA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//impresa")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DatiUlterioriImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="ddd90bf9-1b26-4e87-aa1c-465814517436"/>
+			</line>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="55" width="150" height="13" uuid="ca03588f-7fba-4920-879f-8f94a43bf215"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</detail>
+</jasperReport>

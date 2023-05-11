@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiPrincipaliImpresa" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="552652f1-942c-4368-8836-4b6a8d7b53c5">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dsSedeLegale" uuid="296a62f9-f004-4028-97fe-0244f1647e8c">
+		<queryString language="xPath">
+			<![CDATA[/impresa/sedeLegale]]>
+		</queryString>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[provincia]]></fieldDescription>
+		</field>
+		<field name="nazione" class="java.lang.String">
+			<fieldDescription><![CDATA[nazione]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsRecapiti" uuid="5d17e528-fdde-43a0-a1ae-7c2376761613">
+		<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/impresa/recapiti]]>
+		</queryString>
+		<field name="telefono" class="java.lang.String">
+			<fieldDescription><![CDATA[telefono]]></fieldDescription>
+		</field>
+		<field name="fax" class="java.lang.String">
+			<fieldDescription><![CDATA[fax]]></fieldDescription>
+		</field>
+		<field name="cellulare" class="java.lang.String">
+			<fieldDescription><![CDATA[cellulare]]></fieldDescription>
+		</field>
+		<field name="email" class="java.lang.String">
+			<fieldDescription><![CDATA[email]]></fieldDescription>
+		</field>
+		<field name="pec" class="java.lang.String">
+			<fieldDescription><![CDATA[pec]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAGRUPPOIVA" class="java.lang.String"/>
+	<parameter name="SOC_COOP_VISIBLE" class="java.lang.Boolean"/>
+	<queryString language="xPath">
+		<![CDATA[/impresa]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[ragioneSociale]]></fieldDescription>
+	</field>
+	<field name="naturaGiuridica" class="java.lang.String">
+		<fieldDescription><![CDATA[naturaGiuridica]]></fieldDescription>
+	</field>
+	<field name="tipoImpresa" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoImpresa]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="partitaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[partitaIVA]]></fieldDescription>
+	</field>
+	<field name="oggettoSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[oggettoSociale]]></fieldDescription>
+	</field>
+	<field name="sitoWeb" class="java.lang.String">
+		<fieldDescription><![CDATA[sitoWeb]]></fieldDescription>
+	</field>
+	<field name="microPiccolaMediaImpresa" class="java.lang.String">
+		<fieldDescription><![CDATA[microPiccolaMediaImpresa]]></fieldDescription>
+	</field>
+	<field name="gruppoIva" class="java.lang.String">
+		<fieldDescription><![CDATA[gruppoIva]]></fieldDescription>
+	</field>
+	<field name="tipoSocietaCooperativa" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoSocietaCooperativa]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="71" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="134" height="30" uuid="336d61b6-d21e-4231-8eb9-4e2214a3b4d8"/>
+				<text><![CDATA[Ragione sociale o denominazione:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="120" y="0" width="435" height="30" uuid="49ca91c4-5cd5-4be0-aeb1-c6ad32d68227"/>
+				<textFieldExpression><![CDATA[$F{ragioneSociale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="30" width="134" height="20" uuid="38df4c1b-812d-47b2-b68f-c1af3c0c8997"/>
+				<text><![CDATA[Tipologia :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="30" width="435" height="20" uuid="7b254675-00db-4ac9-9c76-69532428a64a"/>
+				<textFieldExpression><![CDATA[$F{tipoImpresa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="50" width="134" height="20" uuid="7d1a2bc7-c230-4210-9e7e-2e7ea93bddb8">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<text><![CDATA[Forma giuridica :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="50" width="435" height="20" uuid="e9cdb5c2-4596-469e-b743-ea7ce5d2313a"/>
+				<textFieldExpression><![CDATA[$F{naturaGiuridica}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="362" y="22" width="134" height="19" uuid="39fa5c2a-1c8b-4967-a55f-868b1c45015f">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<text><![CDATA[Micro, piccola, media
+impresa :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="400" y="22" width="134" height="28" uuid="afb143d4-c8b7-4b54-8252-be733f7153af">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA[($F{microPiccolaMediaImpresa} == null ? "" : ($F{microPiccolaMediaImpresa}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$P{SOC_COOP_VISIBLE} == null || $P{SOC_COOP_VISIBLE}]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="141d924a-28be-497a-9bbc-5b734f691789">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<text><![CDATA[Società cooperativa:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="0" width="435" height="20" uuid="45cafc20-226e-4c29-8b3c-1bfa904cc11d">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{tipoSocietaCooperativa}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA["1".equals($F{gruppoIva})]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="bf126171-f951-4fb6-b707-7e774cfa1de5"/>
+				<text><![CDATA[Gruppo IVA :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="0" width="182" height="20" uuid="8f51555a-b8db-4e23-8883-5c338b1cec4c"/>
+				<textFieldExpression><![CDATA[("1".equals($F{gruppoIva}) ? "Si" : "No")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="185">
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="40" width="555" height="20" uuid="033414c5-9394-49c2-8b6d-2e3d88a30462"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dsSedeLegale" uuid="1dfc31e2-761c-4007-b0af-f07dbea4ce38">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("impresa/sedeLegale")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="20" width="555">
+						<staticText>
+							<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="af5d5879-8701-473f-992f-4a94f845277c"/>
+							<text><![CDATA[Sede legale :]]></text>
+						</staticText>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="120" y="0" width="435" height="20" uuid="ba6e9008-4264-4004-a06c-25864662e815"/>
+							<textFieldExpression><![CDATA[$F{indirizzo} + " " + $F{numCivico} + ", " + ($F{cap} == null ? "" : $F{cap}) + " " + $F{comune} + ($F{provincia} == null ? "" : " (" + $F{provincia}+ ") ") + " - " + $F{nazione}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="60" width="134" height="20" uuid="c9c52a75-fa0a-4df9-ac44-0aaba0ccfeb8"/>
+				<text><![CDATA[Sito Internet :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="60" width="435" height="20" uuid="013ccf87-a7e9-4048-90a3-e7289fde7db2"/>
+				<textFieldExpression><![CDATA[($F{sitoWeb} == null ? "" : $F{sitoWeb})]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="80" width="555" height="80" uuid="f372f307-cb5b-4ca6-86c1-5b2e752f9c1f"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dsRecapiti" uuid="d21a6a3e-690f-4c44-8867-ad5625bab6dc">
+						<datasetParameter name="EMAILRECAPITO">
+							<datasetParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("impresa/recapiti")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="80" width="555">
+						<staticText>
+							<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="c57cf357-0d74-4da3-a53a-aeec1a594865"/>
+							<text><![CDATA[Recapiti :]]></text>
+						</staticText>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="120" y="59" width="211" height="20" uuid="e2ba4ff5-d4a1-4eff-9408-dca4f853be8e"/>
+							<textFieldExpression><![CDATA[($P{EMAILRECAPITO} == 1 ? "Email : " + ($F{email} == null ? "" : $F{email}) : "PEC : " + ($F{pec} == null ? "" : $F{pec}))]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="120" y="39" width="435" height="20" uuid="40a38083-76cf-49eb-a7b9-50d7c363fd99"/>
+							<textFieldExpression><![CDATA["Cell. : " + ($F{cellulare} == null ? "" : $F{cellulare})]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="120" y="20" width="435" height="20" uuid="f14348df-9a50-41c3-8d65-42683b4d27bb"/>
+							<textFieldExpression><![CDATA["Fax : " + ($F{fax} == null ? "" : $F{fax})]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="120" y="0" width="435" height="20" uuid="28407f01-4558-4e8f-b23d-ff9bb1e936fd"/>
+							<textFieldExpression><![CDATA["Tel. : " + ($F{telefono} == null ? "" : $F{telefono})]]></textFieldExpression>
+						</textField>
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="344" y="59" width="211" height="20" uuid="1e3eb76a-779c-45bf-b463-7c82b9d15e55"/>
+							<textFieldExpression><![CDATA[($P{EMAILRECAPITO} == 1 ? "INI-PEC : " + ($F{pec} == null ? "" : $F{pec}) : "")]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="84bc9add-110f-4596-af03-31b5535533a4"/>
+				<text><![CDATA[Codice fiscale :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="0" width="182" height="20" uuid="2acd8807-adbd-4227-bb11-b42b0829e9e8"/>
+				<textFieldExpression><![CDATA[$F{codiceFiscale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="20" width="134" height="20" uuid="f79057cc-34d5-4faf-b232-42729432d08e"/>
+				<text><![CDATA[Partita IVA :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="120" y="20" width="182" height="20" uuid="cf66fbc3-f5ca-4817-96a3-e4a01d89fa3c"/>
+				<textFieldExpression><![CDATA[($F{partitaIVA} == null ? "" : $F{partitaIVA})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

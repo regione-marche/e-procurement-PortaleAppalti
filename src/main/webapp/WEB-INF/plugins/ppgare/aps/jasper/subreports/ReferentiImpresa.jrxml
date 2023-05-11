@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReferentiImpresa" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.1000000000000003"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="xPath">
+		<![CDATA[datiImpresa/altraCarica]]>
+	</queryString>
+	<field name="qualifica" class="java.lang.String">
+		<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+	</field>
+	<field name="dataInizioIncarico" class="java.util.Date">
+		<fieldDescription><![CDATA[dataInizioIncarico]]></fieldDescription>
+	</field>
+	<field name="dataFineIncarico" class="java.util.Date">
+		<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+	</field>
+	<field name="responsabileDichiarazioni" class="java.lang.String">
+		<fieldDescription><![CDATA[responsabileDichiarazioni]]></fieldDescription>
+	</field>
+	<field name="cognome" class="java.lang.String">
+		<fieldDescription><![CDATA[cognome]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[nome]]></fieldDescription>
+	</field>
+	<field name="titolo" class="java.lang.String">
+		<fieldDescription><![CDATA[titolo]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="sesso" class="java.lang.String">
+		<fieldDescription><![CDATA[sesso]]></fieldDescription>
+	</field>
+	<field name="indirizzo" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivico" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+	</field>
+	<field name="cap" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+	</field>
+	<field name="comune" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+	</field>
+	<field name="provincia" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+	</field>
+	<field name="nazione" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/nazione]]></fieldDescription>
+	</field>
+	<field name="dataNascita" class="java.util.Date">
+		<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+	</field>
+	<field name="provinciaNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="tipologiaAlboProf" class="java.lang.String">
+		<fieldDescription><![CDATA[alboProfessionale/tipologia]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneAlboProf" class="java.lang.String">
+		<fieldDescription><![CDATA[alboProfessionale/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="dataIscrizioneAlboProf" class="java.util.Date">
+		<fieldDescription><![CDATA[alboProfessionale/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="provinciaIscrizioneAlboProf" class="java.lang.String">
+		<fieldDescription><![CDATA[alboProfessionale/provinciaIscrizione]]></fieldDescription>
+	</field>
+	<field name="tipologiaCassaPrevidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[cassaPrevidenza/tipologia]]></fieldDescription>
+	</field>
+	<field name="numMatricolaCassaPrevidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[cassaPrevidenza/numMatricola]]></fieldDescription>
+	</field>
+	<field name="note" class="java.lang.String">
+		<fieldDescription><![CDATA[note]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="362" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="39" y="30" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Periodo incarico :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="30" width="292" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["dal " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataInizioIncarico})
++ ($F{dataFineIncarico} == null ? "" : " al " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="70" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Nominativo :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="70" width="382" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="90" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Dati di nascita :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="90" width="382" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} == null ? "" : " (" + $F{provinciaNascita}+ ")")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="130" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Codice fiscale :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="130" width="182" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{codiceFiscale} == null ? "" : $F{codiceFiscale})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="150" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Residenza :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="150" width="382" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{indirizzo} + " " + $F{numCivico} + ", " + ($F{cap} == null ? "" : $F{cap}) + " " + $F{comune} + ($F{provincia} == null ? "" : " (" + $F{provincia}+ ") ") + " - " + $F{nazione}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="302" height="30"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{qualifica} + " " + $V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="110" width="382" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{titolo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="110" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Titolo :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="206" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{numIscrizioneAlboProf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="170" width="242" height="16"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Iscrizione all'Albo Professionale]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="246" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{provinciaIscrizioneAlboProf}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="226" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{dataIscrizioneAlboProf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="206" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Numero iscrizione :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="226" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Data iscrizione :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="246" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Provincia iscrizione :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="186" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Tipologia :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="186" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tipologiaAlboProf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="282" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Tipologia :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="81" y="302" width="134" height="20"/>
+				<textElement/>
+				<text><![CDATA[Numero matricola :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="302" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{numMatricolaCassaPrevidenza}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="266" width="242" height="16"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Iscrizione alla Cassa Previdenza]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="215" y="282" width="340" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tipologiaCassaPrevidenza}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="322" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Note :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="173" y="322" width="382" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{note}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="39" y="50" width="142" height="20"/>
+				<box rightPadding="15"/>
+				<textElement markup="none"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Abilitato alla firma digitale (Resp. dich. - DPR 445/2000) :"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="173" y="50" width="292" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{responsabileDichiarazioni} == null ? "" : ($F{responsabileDichiarazioni}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

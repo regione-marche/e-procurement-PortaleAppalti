@@ -1,0 +1,2 @@
+<%@ taglib prefix="wp" uri="aps-core.tld" %>
+<p class="instructions"><wp:i18n key="LABEL_MANDATORY_FIELDS_PRE"/> (<span class="required-field">*</span>) <wp:i18n key="LABEL_MANDATORY_FIELDS_POST"/>.</p>

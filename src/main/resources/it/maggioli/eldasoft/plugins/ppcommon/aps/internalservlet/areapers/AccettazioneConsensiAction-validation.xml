@@ -1,0 +1,37 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="utilizzoPiattaforma">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(utilizzoPiattaforma == 1)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<param name="min">1</param>
+			<param name="max">1</param>
+			<message key="utilizzoPiattaformaBlocked" />
+		</field-validator>
+	</field>
+
+	<field name="privacy">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[((visConsensoPrivacy && privacy == 1) || !visConsensoPrivacy)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<param name="min">1</param>
+			<param name="max">1</param>
+			<message key="privacyBlocked" />
+		</field-validator>
+	</field>
+	
+	<field name="soggettoRichiedente">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+ 
+</validators>

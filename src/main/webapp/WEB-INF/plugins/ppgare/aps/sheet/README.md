@@ -1,0 +1,2 @@
+Attenzione:
+E' necessario editare i template con excel e non con openoffice, altrimenti, in fase di lock del file le celle impostate come editabili non si potranno editare, anzi, tutto il file verrà bloccato.

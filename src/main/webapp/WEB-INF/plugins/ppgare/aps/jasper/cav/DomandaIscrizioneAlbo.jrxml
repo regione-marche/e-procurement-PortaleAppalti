@@ -1,0 +1,1040 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56">
+	<property name="ireport.zoom" value="1.1000000000000005"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dsLR">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsDT">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsAltreCariche">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCollaboratori">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCategorie">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
+		</queryString>
+		<field name="categoria" class="java.lang.String">
+			<fieldDescription><![CDATA[categoria]]></fieldDescription>
+		</field>
+		<field name="classificaMinima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+		</field>
+		<field name="classificaMassima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+		</field>
+		<field name="nota" class="java.lang.String">
+			<fieldDescription><![CDATA[nota]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="LIBERO_PROFESSIONISTA" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se l'impresa e' un libero professionista, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGES_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente le immagini]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Users\\Stefano.Sabbadin\\Documents\\images\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Progetti_Eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\cav\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_CAT" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si sono presenti categorie, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_SA" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si gestiscono più SA, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRIZIONE" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se iscrizione, 0 se aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ELENCO" class="java.lang.String">
+		<parameterDescription><![CDATA[Oggetto dell'elenco]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RTI" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se è presente una RTI, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_DENOMINAZIONE" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CF" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_INDIRIZZO" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_LOCALITA" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CAP" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_PROVINCIA" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CIVICO" class="java.lang.String"/>
+	<parameter name="SA_MAIL" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_PEC" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_WEB" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_HEADER" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{SUBREPORT_DIR} + "DomandaIscrizioneAlboHeader.jasper"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_FOOTER" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{SUBREPORT_DIR} + "DomandaIscrizioneAlboFooter.jasper"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/IscrizioneImpresaElencoOperatori]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/ragioneSociale]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="partitaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/partitaIVA]]></fieldDescription>
+	</field>
+	<field name="indirizzoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/numCivico]]></fieldDescription>
+	</field>
+	<field name="capSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/cap]]></fieldDescription>
+	</field>
+	<field name="comuneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/provincia]]></fieldDescription>
+	</field>
+	<field name="nazioneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/nazione]]></fieldDescription>
+	</field>
+	<field name="telefonoRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/telefono]]></fieldDescription>
+	</field>
+	<field name="faxRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/fax]]></fieldDescription>
+	</field>
+	<field name="emailRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/email]]></fieldDescription>
+	</field>
+	<field name="pecRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/pec]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="provinciaIscrizioneCCIAA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cciaa/provinciaIscrizione]]></fieldDescription>
+	</field>
+	<field name="dataIscrizioneSOA" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="organismoCertificatoreSOA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/organismoCertificatore]]></fieldDescription>
+	</field>
+	<field name="cognome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/cognome]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/nome]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleLR" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="dataNascita" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="indirizzoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/numCivico]]></fieldDescription>
+	</field>
+	<field name="capResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/cap]]></fieldDescription>
+	</field>
+	<field name="comuneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="nazioneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/nazione]]></fieldDescription>
+	</field>
+	<field name="qualifica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/qualifica]]></fieldDescription>
+	</field>
+	<field name="naturaGiuridica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/naturaGiuridica]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneSOA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneCCIAA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cciaa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="sesso" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/sesso]]></fieldDescription>
+	</field>
+	<field name="provinciaNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="dataNascitaLiberoProfessionista" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="provinciaNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="sessoLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/sesso]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleFirmatario" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscaleFirmatario]]></fieldDescription>
+	</field>
+	<field name="denominazioneRTI" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/denominazioneRTI]]></fieldDescription>
+	</field>
+	<field name="serialNumberMarcaBollo" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/serialNumberMarcaBollo]]></fieldDescription>
+	</field>
+	<field name="categorieIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]></fieldDescription>
+	</field>
+	<field name="nomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/nome]]></fieldDescription>
+	</field>
+	<field name="cognomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/cognome]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="14"/>
+				<subreportParameter name="SA_DENOMINAZIONE">
+					<subreportParameterExpression><![CDATA[$P{SA_DENOMINAZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_LOCALITA">
+					<subreportParameterExpression><![CDATA[$P{SA_LOCALITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CF">
+					<subreportParameterExpression><![CDATA[$P{SA_CF}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_WEB">
+					<subreportParameterExpression><![CDATA[$P{SA_WEB}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_PROVINCIA">
+					<subreportParameterExpression><![CDATA[$P{SA_PROVINCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CIVICO">
+					<subreportParameterExpression><![CDATA[$P{SA_CIVICO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CAP">
+					<subreportParameterExpression><![CDATA[$P{SA_CAP}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_PEC">
+					<subreportParameterExpression><![CDATA[$P{SA_PEC}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_MAIL">
+					<subreportParameterExpression><![CDATA[$P{SA_MAIL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_INDIRIZZO">
+					<subreportParameterExpression><![CDATA[$P{SA_INDIRIZZO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SERIAL_MARCA_BOLLO">
+					<subreportParameterExpression><![CDATA[$F{serialNumberMarcaBollo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="35">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="81" y="17" width="430" height="16"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ELENCO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="17" width="81" height="16"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[OGGETTO:]]></text>
+			</staticText>
+		</band>
+		<band height="20"/>
+		<band height="53">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Premesso che quanto di seguito dichiarato è reso ai sensi degli articoli 46 e 47 del DPR 445/2000, consapevole delle sanzioni penali previste all’articolo 76 per le ipotesi di falsità in atti e dichiarazioni mendaci:]]></text>
+			</staticText>
+		</band>
+		<band height="29">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
++
+($P{LIBERO_PROFESSIONISTA}
+     ? ($F{cognomeLiberoProfessionista} + " " + $F{nomeLiberoProfessionista})
+     : (($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))
+) +
+", nato/a a "
++
+($P{LIBERO_PROFESSIONISTA}
+    ? $F{comuneNascitaLiberoProfessionista}
+    : $F{comuneNascita}
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? ($F{provinciaNascitaLiberoProfessionista} == null
+        ? ""
+        : " (" + $F{provinciaNascitaLiberoProfessionista} + ")")
+    : ($F{provinciaNascita} == null
+        ? ""
+        : " (" + $F{provinciaNascita} + ")")
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascitaLiberoProfessionista})
+    : " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita})
+) + ", codice fiscale " + $F{codiceFiscaleFirmatario} +
+($P{LIBERO_PROFESSIONISTA}
+    ? ", in qualità di Libero Professionista"
+    : ", in qualità di " + $F{qualifica}
+) +
+("Procuratore".equals($F{qualifica})
+    ? " (come da copia della procura allegata) "
+    : ""
+) +
+" dell'operatore " + $F{ragioneSociale} + " " +
+($F{naturaGiuridica} != null ? $F{naturaGiuridica} : "") +
+($F{comuneSedeLegale} != null ?  ", con sede legale in "+ $F{comuneSedeLegale} : "") +
+($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale}+ ") ") +
+($F{capSedeLegale} != null ? "  C.A.P. " +  $F{capSedeLegale} : "") +
+($F{indirizzoSedeLegale} != null ? ", " +  $F{indirizzoSedeLegale}  : "") +
+($F{numCivicoSedeLegale} != null ? " n. civ. " +  $F{numCivicoSedeLegale} : "") +
+($F{codiceFiscale} ? ", codice fiscale " + $F{codiceFiscale} : "") +
+($F{partitaIVA} != null ? ", partita I.V.A " + $F{partitaIVA} : "") +
+($F{emailRecapito} != null ? ", email " + $F{emailRecapito}:  "") +
+($F{pecRecapito} != null ? ", PEC " + $F{pecRecapito}: "") +
+($P{RTI}
+    ? ", mandatario per il raggruppamento \"" + $F{denominazioneRTI} + "\" composto dai seguenti operatori economici mandanti:"
+    : ""
+)]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="30">
+			<printWhenExpression><![CDATA[$P{RTI}]]></printWhenExpression>
+			<subreport>
+				<reportElement positionType="Float" x="16" y="0" width="495" height="29"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="12"/>
+		<band height="38">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="512" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DICHIARA]]></text>
+			</staticText>
+		</band>
+		<band height="77">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="77" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[1) per quanto a conoscenza del dichiarante, per le persone aventi cariche rilevanti (ex art. 80 comma 3 D.Lgs. 50/2016 e ss.mm.ii.) e per i soggetti sottoposti alla verifica antimafia (ex art. 85 D.Lgs. 159/2011) che non sussistono cause di esclusione ex art. 80 comma 1 D.Lgs. 50/2016 e ss.mm.ii. e non sussistono cause di esclusione ex art. 80 comma 2 D.Lgs. 50/2016 e ss.mm.ii. in merito a decadenza, sospensione o divieto ex art. 67 D.Lgs. 159/2011 o tentativi di infiltrazione mafiosa ex art. 84, comma 4, del medesimo decreto;]]></text>
+			</staticText>
+		</band>
+		<band height="30">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[2) in merito alle cause di esclusione dalle gare d’appalto ex art. 80 D.Lgs. 50/2016 e ss.mm.ii.:]]></text>
+			</staticText>
+		</band>
+		<band height="39">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="39"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.4), di non avere commesso violazioni gravi definitivamente accertate rispetto agli obblighi relativi al pagamento delle imposte e tasse, secondo la legislazione italiana;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[I.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="38">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="37"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="37" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.4), di non aver commesso violazioni gravi definitivamente accertate alle norme in  materia di contributi previdenziali e assistenziali, secondo la legislazione italiana; ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[II.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="36">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="36"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="36" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif.c.5 lett. a), di non avere commesso gravi infrazioni debitamente accertate alle norme in materia di salute e sicurezza sul lavoro nonché agli obblighi ex art. 30, c.3;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[III.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="63">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="63"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="63" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. b),di non essere stato sottoposto a fallimento o di non trovarsi in stato di liquidazione coatta o di concordato preventivo o non sia in corso nei suoi confronti un procedimento per la dichiarazione di una di tali situazioni, fermo restando quanto previsto dagli articoli 110 del presente Codice e 186-bis del regio decreto 16 marzo 1942, n. 267;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[IV.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="41">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="40"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. c), di non essersi reso colpevole di gravi illeciti professionali, tali da rendere dubbia la propria integrità o affidabilità;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[V.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="76">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="66"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="66" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. c-bis), di non aver tentato di influenzare indebitamente il processo decisionale della stazione appaltante o di ottenere informazioni riservate a fini di proprio vantaggio e di non aver fornito, anche per negligenza, informazioni false o fuorvianti suscettibili di influenzare le decisioni sull'esclusione, la selezione o l'aggiudicazione, ovvero omesso le informazioni dovute ai fini del corretto svolgimento della procedura di selezione;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[VI.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="75">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="66"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="66" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. c-ter), di non aver dimostrato significative o persistenti carenze nell'esecuzione di un precedente contratto di appalto o di concessione che ne hanno causato la risoluzione per inadempimento ovvero la condanna al risarcimento del danno o altre sanzioni comparabili fermo restando che su tali circostanze la stazione appaltante motiva anche con riferimento al tempo trascorso dalla violazione e alla gravità della stessa;
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[VII.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="38">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="38"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c. 5 lett. c-quater), di non aver commesso grave inadempimento nei confronti di uno o più subappaltatori, riconosciuto o accertato con sentenza passata in giudicato;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[VIII.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="39">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="38"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. d, e) che non sussistono le cause di esclusione cui all’art. 80 comma 5 lettera d) , e) del D.Lgs. n. 50/2016 e ss.mm.ii.;
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[IX.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="53">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="53"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. f), di non essere stato soggetto alla sanzione interdittiva ex art. 9, c 2, lett c) D.Lgs. 231/2001 o ad altra sanzione che comporta il divieto di contrarre con la pubblica amministrazione, compresi i provvedimenti interdittivi ex art. 14 D.Lgs. 81/08;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[X.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="38">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="38"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XI.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. f-bis), di non avere presentato documentazione o dichiarazioni non veritiere in procedure di gara o negli affidamenti di subappalti;]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="53">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="53"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. f-ter), di non essere iscritto nel casellario informatico tenuto dall’Osservatorio dell’ANAC per aver presentato false dichiarazioni o falsa documentazione nelle procedure di gara e negli affidamenti di subappalti;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XII.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="50">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="50"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="50" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. g), che nel casellario informatico tenuto dall'Osservatorio dell'ANAC non sono presenti iscrizioni per aver presentato false dichiarazioni o falsa documentazione ai fini del rilascio dell'attestazione di qualificazione;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XIII.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="42">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="42"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. h), di non aver violato il divieto di intestazione fiduciaria posto all’art. 17 della  L. 55/1990;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XIV.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="43"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="43" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. i), di essere in regola con le norme che disciplinano il diritto al lavoro dei disabili ex L. 68/99;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XV.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="53">
+			<frame>
+				<reportElement x="0" y="0" width="511" height="53"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[(rif. c.5 lett. l), di non essersi reso responsabile di omessa denuncia dei fatti all'autorità giudiziaria per essere stato vittima dei reati previsti e puniti ex artt. 317 e 629 del codice penale aggravati ex art. 7 DL 152/1991, conv. con modificazioni dalla L. 203/1991.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[XVI.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="40">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[3) ex art. 80 c. 3 D.Lgs. 50/2016 e ss.mm.ii. in relazione alle cause di esclusione ex c. 1, che non sussistono cause ostative con riferimento ai cessati nell'ultimo anno dalla cariche di cui al punto 2);]]></text>
+			</staticText>
+		</band>
+		<band height="41">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[4) di possedere i requisiti per le categorie merceologiche per la quali è richiesta l'iscrizione ex artt. 83 e 84 D.Lgs. 50/2016 e ss.mm.ii. come da qualificazione a fianco di ciascuna categoria;]]></text>
+			</staticText>
+		</band>
+		<band height="41">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[5) di non trovarsi nella condizione prevista dall'art. 53, comma 16-ter, del D.Lgs. n. 165/2001 (pantouflage o revolving door);]]></text>
+			</staticText>
+		</band>
+		<band height="55">
+			<printWhenExpression><![CDATA[$F{serialNumberMarcaBollo} != null]]></printWhenExpression>
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="55" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["6) di aver assolto all'obbligo dell'imposta di bollo avendo applicato e annullato sulla copia cartacea della presente istanza, conservata a fini fiscali presso la propria sede legale, la marca da bollo con n° identificativo<sup>2</sup> " +
+($F{serialNumberMarcaBollo} == null ? "________________" : $F{serialNumberMarcaBollo})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="156">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="10" width="511" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[L'Operatore Economico, altresì,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="26" width="511" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="11" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[DICHIARA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="46" width="30" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[•]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="30" y="46" width="482" height="57" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[di rispettare, per quanto a sua conoscenza, la normativa di legge afferente la materia dei contratti pubblici – compresa quella non espressamente riportata nel presente modulo –per tutta la durata della propria iscrizione e si impegna a comunicare ogni variazione dovesse intercorrere con tempestività e precisione;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="30" y="103" width="482" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[di aver letto, compreso ed approvato quanto contenuto nel Regolamento di gestione dell’elenco aperto degli operatori economici e di impegnarsi al rispetto dello stesso;]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="103" width="30" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[•]]></text>
+			</staticText>
+		</band>
+		<band height="48">
+			<printWhenExpression><![CDATA[$F{categorieIscrizione} != null]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="16" width="511" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[l'iscrizione nelle seguenti categorie:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="512" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[e pertanto CHIEDE]]></text>
+			</staticText>
+		</band>
+		<band height="16">
+			<printWhenExpression><![CDATA[$F{categorieIscrizione} != null]]></printWhenExpression>
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="15"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlbo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="230">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="13" width="511" height="26" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Informativa sul trattamento dei dati personali ai sensi dell’art. 13 del Regolamento UE 2016/679]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="39" width="511" height="189" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Concessioni Autostradali Venete – CAV S.p.A., con sede in via Bottenigo 64/A, 30175, Marghera- VE (la “Società”), Titolare del trattamento, La informa, ai sensi del Regolamento UE 2016/679 (il “Regolamento”), che il trattamento dei dati personali da Lei forniti mediante la trasmissione della domanda di iscrizione all’albo fornitori, è necessario per adempiere un obbligo legale a cui è soggetta la Società (art. 6 co.1 lett. c) del Regolamento). I dati saranno trattati per il tempo necessario a gestire la Sua domanda di iscrizione all’albo fornitori, per la durata della Sua iscrizione e, successivamente per un tempo massimo di [*]; successivamente i dati saranno resi anonimi o cancellati. Contattando la Società all’indirizzo privacy@cavspa.it, potrà esercitare i diritti di cui agli artt. da 15 a 22 del Regolamento, e in particolare richiedere di accedere ai Suoi dati, aggiornarli, cancellarli, richiedere di ricevere o trasmettere ad altro titolare i dati in un formato strutturato, di uso comune e leggibile da dispositivo automatico. Le ricordiamo infine che potrà sempre proporre reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it) oppure all’Autorità Garante del Paese in cui risiede abitualmente, lavora oppure del luogo ove si è verificata la presunta violazione.Per informazioni più dettagliate può leggere il testo completo dell’informativa privacy cliccando qui [LINK].
+
+]]></text>
+			</staticText>
+		</band>
+		<band height="29">
+			<subreport runToBottom="false">
+				<reportElement x="-1" y="19" width="511" height="10"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="57">
+			<printWhenExpression><![CDATA[$V{PAGE_NUMBER}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="7" width="510" height="49">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1 && false]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="3" leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<text><![CDATA[1. Quando la stazione appaltante è una Pubblica Amministrazione, quindi utilizza i mercati elettronici messi a disposizione dai Soggetti Aggregatori istituzionali, seleziona i soggetti a cui inoltrare invito tra gli iscritti all'elenco solo in quanto iscritti anche al mercato elettronico utilizzato; la scelta del mercato elettronico tra le diverse piattaforme messe a disposizione dai Soggetti Aggregatori istituzionali è a discrezione dell’Amministrazione. ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="7" width="510" height="27">
+					<printWhenExpression><![CDATA[($V{PAGE_NUMBER} == 2 && $F{serialNumberMarcaBollo} != null)]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="3" leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<text><![CDATA[2.  L'assolvimento dell'imposta di bollo avviene conservando presso la propria sede legale copia cartacea dell'istanza ove deve essere apposta la marca da bollo il cui numero è indicato sulla presente. ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

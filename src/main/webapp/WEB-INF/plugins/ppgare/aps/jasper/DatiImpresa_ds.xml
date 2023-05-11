@@ -1,0 +1,225 @@
+<AggiornamentoAnagraficaImpresa xmlns="http://www.eldasoft.it/sil/portgare/datatypes">
+  <datiImpresa>
+    <impresa>
+      <ragioneSociale>Impresa Pavan Tiziano</ragioneSociale>
+      <naturaGiuridica>12</naturaGiuridica>
+      <tipoImpresa>2</tipoImpresa>
+      <codiceFiscale>PVNTZS70T27L407G</codiceFiscale>
+      <partitaIVA>19283746566</partitaIVA>
+      <oggettoSociale>azienda di produzione di software</oggettoSociale>
+      <sedeLegale>
+        <indirizzo>via Reginato</indirizzo>
+        <numCivico>87</numCivico>
+        <cap>31050</cap>
+        <comune>TREVISO</comune>
+        <provincia>TV</provincia>
+        <nazione>Italia</nazione>
+      </sedeLegale>
+      <sitoWeb>www.eldasoft.it</sitoWeb>
+      <recapiti>
+        <telefono>0422267735</telefono>
+        <fax>0422267770</fax>
+        <email>tiziano.pavan@eldasoft.it</email>
+      </recapiti>
+      <indirizzo>
+        <indirizzo>Via Volturno</indirizzo>
+        <numCivico>2/c</numCivico>
+        <cap>00185</cap>
+        <comune>Roma</comune>
+        <provincia>RM</provincia>
+        <nazione>Italia</nazione>
+        <tipoIndirizzo>1</tipoIndirizzo>
+        <telefono>0647825978</telefono>
+      </indirizzo>
+      <indirizzo>
+        <indirizzo>Via Danimarca</indirizzo>
+        <numCivico>52</numCivico>
+        <cap>90146</cap>
+        <comune>Palermo</comune>
+        <provincia>PA</provincia>
+        <nazione>Italia</nazione>
+        <tipoIndirizzo>1</tipoIndirizzo>
+        <telefono>0916709715</telefono>
+      </indirizzo>
+      <cciaa>
+		<iscritto>true</iscritto>
+        <numRegistroDitte>2</numRegistroDitte>
+        <dataDomandaIscrizione>1997-05-23</dataDomandaIscrizione>
+        <numIscrizione>1</numIscrizione>
+        <dataIscrizione>1988-02-01</dataIscrizione>
+        <provinciaIscrizione>TV</provinciaIscrizione>
+      </cciaa>
+      <soggettoDURC>true</soggettoDURC>
+      <settoreProduttivo>0</settoreProduttivo>
+      <inps>
+        <numIscrizione>123</numIscrizione>
+        <dataIscrizione>1995-12-01</dataIscrizione>
+        <localitaIscrizione>Treviso</localitaIscrizione>
+        <posizContributivaIndividuale>POS9999</posizContributivaIndividuale>
+      </inps>
+      <inail>
+        <numIscrizione>465</numIscrizione>
+        <dataIscrizione>1995-12-01</dataIscrizione>
+        <localitaIscrizione>Treviso</localitaIscrizione>
+        <posizAssicurativa>ASS123</posizAssicurativa>
+      </inail>
+      <cassaEdile>
+        <numIscrizione>CI12</numIscrizione>
+        <dataIscrizione>1998-06-24</dataIscrizione>
+        <localitaIscrizione>Oderzo</localitaIscrizione>
+        <codice>CC</codice>
+      </cassaEdile>
+      <altriIstitutiPrevidenziali>IN assicurazioni informatici</altriIstitutiPrevidenziali>
+      <soa>
+        <organismoCertificatore>7</organismoCertificatore>
+		<dataScadenzaTriennale>2015-10-01</dataScadenzaTriennale>
+        <dataVerificaTriennale>2015-11-01</dataVerificaTriennale>
+      </soa>
+      <iso9001>
+        <numIscrizione>9832/A</numIscrizione>
+        <dataScadenza>2015-06-15</dataScadenza>
+        <organismoCertificatore>1</organismoCertificatore>
+      </iso9001>
+      <altreCertificazioniAttestazioni>ICQ</altreCertificazioniAttestazioni>
+      <abilitazionePreventiva>
+        <dataScadenzaRinnovo>2012-03-31</dataScadenzaRinnovo>
+        <faseRinnovo>0</faseRinnovo>
+      </abilitazionePreventiva>
+      <zoneAttivita>02002200001111101022</zoneAttivita>
+      <assunzioniObbligate>false</assunzioniObbligate>
+      <datoAnnuo>
+        <anno>2014</anno>
+        <dipendenti>10</dipendenti>
+      </datoAnnuo>
+      <datoAnnuo>
+        <anno>2013</anno>
+        <dipendenti>4</dipendenti>
+      </datoAnnuo>
+      <datoAnnuo>
+        <anno>2012</anno>
+        <dipendenti>0</dipendenti>
+      </datoAnnuo>
+    </impresa>
+    <legaleRappresentante>
+      <qualifica>Legale rappresentante</qualifica>
+      <cognome>Rossi</cognome>
+      <nome>Mario</nome>
+      <codiceFiscale>RSSMRA75B04E980I</codiceFiscale>
+      <sesso>M</sesso>
+      <residenza>
+        <indirizzo>P.zza Venezia</indirizzo>
+        <numCivico>25</numCivico>
+        <cap>31022</cap>
+        <comune>Preganziol</comune>
+        <provincia>TV</provincia>
+        <nazione>Italia</nazione>
+      </residenza>
+      <dataNascita>1975-02-04</dataNascita>
+      <comuneNascita>Modena</comuneNascita>
+      <responsabileDichiarazioni>true</responsabileDichiarazioni>
+      <dataInizioIncarico>1980-01-01</dataInizioIncarico>
+      <dataFineIncarico>2010-12-31</dataFineIncarico>
+      <esistente>true</esistente>
+    </legaleRappresentante>
+    <legaleRappresentante>
+      <qualifica>Legale rappresentante</qualifica>
+      <cognome>Formaggino</cognome>
+      <nome>Fantasma</nome>
+      <codiceFiscale>FRMFTS20S24E094G</codiceFiscale>
+      <sesso>M</sesso>
+      <residenza>
+        <indirizzo>Via delle lenzuola bianche</indirizzo>
+        <numCivico>9</numCivico>
+        <cap>23018</cap>
+        <comune>Talamona</comune>
+        <provincia>SO</provincia>
+        <nazione>Italia</nazione>
+      </residenza>
+      <dataNascita>1920-11-24</dataNascita>
+      <comuneNascita>GORGONZOLA</comuneNascita>
+	  <provinciaNascita>MI</provinciaNascita>
+	  <responsabileDichiarazioni>true</responsabileDichiarazioni>
+      <dataInizioIncarico>2011-01-01</dataInizioIncarico>
+      <esistente>false</esistente>
+    </legaleRappresentante>
+    <direttoreTecnico>
+      <qualifica>Direttore tecnico</qualifica>
+      <cognome>Verdi</cognome>
+      <nome>Giuseppina</nome>
+      <codiceFiscale>BBBBBB22B22B222B</codiceFiscale>
+      <sesso>F</sesso>
+      <residenza>
+        <indirizzo>Via Torino</indirizzo>
+        <numCivico>234</numCivico>
+        <cap>45205</cap>
+        <comune>Cittadella</comune>
+        <provincia>PD</provincia>
+        <nazione>Italia</nazione>
+      </residenza>
+      <dataNascita>1982-09-26</dataNascita>
+      <comuneNascita>Padova</comuneNascita>
+      <responsabileDichiarazioni>false</responsabileDichiarazioni>
+      <dataInizioIncarico>2008-01-01</dataInizioIncarico>
+      <esistente>true</esistente>
+    </direttoreTecnico>
+    <altraCarica>
+      <qualifica>Presidente del C.d.A.</qualifica>
+      <cognome>Mora</cognome>
+      <nome>Lele</nome>
+      <titolo>Geometra</titolo>
+      <codiceFiscale>MROLLE55C31A574Q</codiceFiscale>
+      <sesso>Maschio</sesso>
+      <residenza>
+        <indirizzo>Piazza del bunga bunga</indirizzo>
+        <numCivico>2</numCivico>
+        <cap>58043</cap>
+        <comune>Castiglione della Pescaia</comune>
+        <provincia>GR</provincia>
+        <nazione>Italia</nazione>
+      </residenza>
+      <dataNascita>1955-03-31</dataNascita>
+      <comuneNascita>Bagnolo di Po</comuneNascita>
+      <provinciaNascita>RO</provinciaNascita>
+      <alboProfessionale>
+        <tipologia>Geometri</tipologia>
+        <numIscrizione>123</numIscrizione>
+        <dataIscrizione>2008-05-01</dataIscrizione>
+        <provinciaIscrizione>CO</provinciaIscrizione>
+      </alboProfessionale>
+      <cassaPrevidenza/>
+      <note>ci metto una nota e gli do titolo ed albo professionale</note>
+      <responsabileDichiarazioni>true</responsabileDichiarazioni>
+      <dataInizioIncarico>2008-03-01</dataInizioIncarico>
+      <esistente>false</esistente>
+    </altraCarica>
+    <collaboratore>
+      <qualifica>Dipendente</qualifica>
+      <cognome>gigio</cognome>
+      <nome>topo</nome>
+      <codiceFiscale>GGITPO80C02G273A</codiceFiscale>
+      <sesso>Maschio</sesso>
+      <residenza>
+        <indirizzo>via dal formaggio</indirizzo>
+        <numCivico>1</numCivico>
+        <cap>12345</cap>
+        <comune>disneyland</comune>
+        <nazione>Stati Uniti</nazione>
+      </residenza>
+      <dataNascita>2000-04-12</dataNascita>
+      <comuneNascita>disneyland</comuneNascita>
+      <provinciaNascita/>
+      <alboProfessionale>
+        <tipologia>Ingegneri</tipologia>
+        <numIscrizione>2896/af2</numIscrizione>
+      </alboProfessionale>
+      <cassaPrevidenza>
+        <tipologia>EPPI</tipologia>
+        <numMatricola>87897</numMatricola>
+      </cassaPrevidenza>
+      <note>e stata valorizzata la cassa previdenza</note>
+      <responsabileDichiarazioni>false</responsabileDichiarazioni>
+      <dataInizioIncarico>2003-02-01</dataInizioIncarico>
+      <esistente>false</esistente>
+    </collaboratore>  
+  </datiImpresa>
+</AggiornamentoAnagraficaImpresa>

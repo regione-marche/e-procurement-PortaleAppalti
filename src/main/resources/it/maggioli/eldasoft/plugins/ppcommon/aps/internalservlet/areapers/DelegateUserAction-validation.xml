@@ -1,0 +1,34 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+
+	<field name="username">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="newdelegateuser">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[( 
+				(("1".equals(tipoOperazione) || "2".equals(tipoOperazione)) && newdelegateuser.trim().length() > 0) ||
+				("3".equals(tipoOperazione))
+				)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+		
+	<!-- diritto all'oblio -->
+	<field name="olddelegateuser">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[(	
+				("1".equals(tipoOperazione)) ||
+				(("2".equals(tipoOperazione) || "3".equals(tipoOperazione)) && olddelegateuser.trim().length() > 0) 
+				)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+</validators>

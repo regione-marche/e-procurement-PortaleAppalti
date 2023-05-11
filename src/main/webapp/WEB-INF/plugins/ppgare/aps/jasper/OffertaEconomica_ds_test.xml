@@ -1,0 +1,598 @@
+<ReportOffertaEconomica xmlns="http://www.eldasoft.it/sil/portgare/datatypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dataPresentazione>2015-07-02T16:14:51.194+02:00</dataPresentazione>
+  <documenti>
+    <documento>
+      <nomeFile>AliceGare_OEPV_G00234_tec.xls</nomeFile>
+      <contentType>application/vnd.ms-excel</contentType>
+      <descrizione>doc eco ditta</descrizione>
+    </documento>
+  </documenti>
+  <offerta>
+    <listaComponentiDettaglio>
+      <componenteDettaglio>
+        <id>1</id>
+        <codice>1</codice>
+        <voce>LED a ultravioletti Philips Lumileds LHUV-0385-0250 125, 385nm, 2 Pin, SMD</voce>
+        <descrizione>LED a ultravioletti Philips Lumileds LHUV-0385-0250 125 �, 385nm, 2 Pin, SMD, si veda codice produttore Philips Lumileds numero LHUV-0385-0250</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>21.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa>10</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>10.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa>uuuuuu</valoreStringa>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>100.0</quantita>
+        <prezzoUnitario>1250.01257</prezzoUnitario>
+        <importo>125001.257</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>2</id>
+        <codice>2</codice>
+        <voce>LED a ultravioletti Philips Lumileds LHUV-0395-0500 125 �, 395nm, 2 Pin, SMD</voce>
+        <descrizione>LED a ultravioletti Philips Lumileds LHUV-0395-0500 125 �, 395nm, 2 Pin, SMD, si veda codice produttore Philips Lumileds numero LHUV-0395-0500</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>qqq</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>102.36</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa>4</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>10.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa>uuu</valoreStringa>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>100.0</quantita>
+        <prezzoUnitario>100.0</prezzoUnitario>
+        <importo>10000.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>3</id>
+        <codice>3</codice>
+        <voce>LED a ultravioletti Philips Lumileds LHUV-0405-0650 125 �, 405nm, 2 Pin, SMD</voce>
+        <descrizione>LED a ultravioletti Philips Lumileds LHUV-0405-0650 125 �, 405nm, 2 Pin, SMD, si veda codice produttore Philips Lumileds numero LHUV-0405-0650</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>xx</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>102.36</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>100.0</quantita>
+        <prezzoUnitario>23.0</prezzoUnitario>
+        <importo>2300.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>4</id>
+        <codice>4</codice>
+        <voce>Sonda oscilloscopio alta tensione, passiva Tektronix P5100A, 500MHz, attenuazione 100x</voce>
+        <descrizione>Sonda oscilloscopio alta tensione, passiva Tektronix P5100A, 500MHz, attenuazione 100x, si veda codice produttore Tektronix numero P5100A</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>22.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>x1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>14.25</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>1.0</quantita>
+        <prezzoUnitario>1.0</prezzoUnitario>
+        <importo>1.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>5</id>
+        <codice>5</codice>
+        <voce>Dissipatore rel� a stato solido, HS202DR, 2�C/W, per guida DIN</voce>
+        <descrizione>Dissipatore rel� a stato solido, HS202DR, 2�C/W, per guida DIN, si veda codice produttore Crydom numero HS202DR</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>22.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>s2</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa>5</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>3.0</quantita>
+        <prezzoUnitario>20.0</prezzoUnitario>
+        <importo>60.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>6</id>
+        <codice>6</codice>
+        <voce>Dissipatore rel� a stato solido, HS122DR, 1.2�C/W, per guida DIN</voce>
+        <descrizione>Dissipatore rel� a stato solido, HS122DR, 1.2�C/W, per guida DIN, si veda codice produttore Crydom numero HS122DR</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>4.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>s2</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa>11</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>3.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>m</unitaMisura>
+        <quantita>1.0</quantita>
+        <prezzoUnitario>20.0</prezzoUnitario>
+        <importo>20.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>7</id>
+        <codice>7</codice>
+        <voce>Alimentatore da banco BK Precision BK1687B</voce>
+        <descrizione>Alimentatore da banco BK Precision BK1687B, si veda codice produttore BK Precision numero BK1687B</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>4.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>s4</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>ml</unitaMisura>
+        <quantita>4.0</quantita>
+        <prezzoUnitario>20.0</prezzoUnitario>
+        <importo>80.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>8</id>
+        <codice>8</codice>
+        <voce>Kit di sviluppo a microcontrollore Arduino A000062</voce>
+        <descrizione>Kit di sviluppo a microcontrollore Arduino A000062, si veda codice produttore Arduino numero A000062</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>4.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>s2</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>ml</unitaMisura>
+        <quantita>5.0</quantita>
+        <prezzoUnitario>21.0</prezzoUnitario>
+        <importo>105.0</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>9</id>
+        <codice>9</codice>
+        <voce>Alimentatore da scrivania switching, uscita 12V cc 1A</voce>
+        <descrizione>Alimentatore da scrivania switching, uscita 12V cc 1A, si veda codice produttore RS numero T3299EG</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+          <valoreNumerico>4.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa>s1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+          <valoreNumerico>1.0</valoreNumerico>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa>1</valoreStringa>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>ml</unitaMisura>
+        <quantita>20.0</quantita>
+        <prezzoUnitario>23.369</prezzoUnitario>
+        <importo>467.38</importo>
+      </componenteDettaglio>
+      <componenteDettaglio>
+        <id>10</id>
+        <codice>10</codice>
+        <voce>Premium-Line 6way, 3m cable 16A, black</voce>
+        <descrizione>Premium-Line 6way, 3m cable 16A, black, si veda codice produttore Brennenstuhl numero 1156110016</descrizione>
+        <attributoAggiuntivo>
+          <codice>Aliquota Iva (numero intero)</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Nome commerciale</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Marca</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto produttore</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Codice prodotto</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Prezzo per unit� di acquisto</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Unit� di misura aggiuntiva</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Numero unit� di misura componenti acquisto (con 2 decimali)</codice>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Acquisto verde?</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <attributoAggiuntivo>
+          <codice>Note aggiuntive</codice>
+          <valoreStringa/>
+        </attributoAggiuntivo>
+        <soggettoRibasso>true</soggettoRibasso>
+        <unitaMisura>ml</unitaMisura>
+        <quantita>4.0</quantita>
+        <prezzoUnitario>9189.86</prezzoUnitario>
+        <importo>36759.44</importo>
+      </componenteDettaglio>
+    </listaComponentiDettaglio>
+    <importoBaseGara>250000.0</importoBaseGara>
+    <importoSicurezza>2000.0</importoSicurezza>
+    <importoOfferto>176794.077</importoOfferto>
+    <importoOffertoLettere>centosettantaseimilasettecentonovantaquattro/077</importoOffertoLettere>
+    <costiSicurezzaAziendali>140.0</costiSicurezzaAziendali>
+    <uuid>80a9cbff-6f9e-4d44-b9d8-66ebc576dde4</uuid>
+  </offerta>
+  <firmatario>
+    <tipoImpresa>1</tipoImpresa>
+    <codiceFiscaleImpresa>08494381000</codiceFiscaleImpresa>
+    <partitaIVAImpresa>08494381000</partitaIVAImpresa>
+    <cognome>Prova</cognome>
+    <nome>Sara01</nome>
+    <codiceFiscaleFirmatario>CCNLSN61D51H501H</codiceFiscaleFirmatario>
+    <sesso>Maschio</sesso>
+    <dataNascita>1970-10-10</dataNascita>
+    <comuneNascita>roma</comuneNascita>
+    <provinciaNascita>RM</provinciaNascita>
+    <residenza>
+      <indirizzo>via roma1</indirizzo>
+      <numCivico>11</numCivico>
+      <cap>42320</cap>
+      <comune>roma</comune>
+      <provincia>RM</provincia>
+      <nazione>Italia</nazione>
+    </residenza>
+    <qualifica>Legale rappresentante</qualifica>
+  </firmatario>
+  <codiceOfferta>G00315</codiceOfferta>
+  <oggetto>prova sarax prezzi unitari servizi attributi dinamici 03</oggetto>
+  <cig xsi:nil="true"/>
+  <tipoAppalto>3</tipoAppalto>
+  <criterioAggiudicazione>Prezzo pi� basso</criterioAggiudicazione>
+  <stazioneAppaltante>
+    <denominazione>DIPARTIMENTO DI SCIENZE CHIRURGICHE ONCOLOGICHE E GASTROENTEROLOGICHE</denominazione>
+    <codiceFiscale>80006480281</codiceFiscale>
+    <indirizzo>Via G. Jappelli</indirizzo>
+    <numCivico>1</numCivico>
+    <cap>35121</cap>
+    <comune>PADOVA</comune>
+    <provincia>PD</provincia>
+    <email>scienze@unipd.it</email>
+    <pec>scienze@pec.unipd.it</pec>
+    <telefono>0498275770</telefono>
+    <fax>0498275069</fax>
+  </stazioneAppaltante>
+  <rup>Tirotta Pasquale</rup>
+  <puntoOrdinante>Super Utente</puntoOrdinante>
+  <puntoIstruttore xsi:nil="true"/>
+  <numGiorniValiditaOfferta xsi:nil="true"/>
+  <datiImpresa>
+    <impresa>
+      <ragioneSociale>impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01impresa prova portale 01</ragioneSociale>
+      <naturaGiuridica>Societ� per azioni</naturaGiuridica>
+      <codiceFiscale>08494381000</codiceFiscale>
+      <partitaIVA>08494381000</partitaIVA>
+      <sedeLegale>
+        <indirizzo>via roma</indirizzo>
+        <numCivico>1</numCivico>
+        <cap>31200</cap>
+        <comune>roma</comune>
+        <provincia>RM</provincia>
+        <nazione>Italia</nazione>
+      </sedeLegale>
+      <recapiti>
+        <telefono>0</telefono>
+        <fax>1</fax>
+        <email>sara01.santi@eldasoft.it</email>
+        <pec xsi:nil="true"/>
+      </recapiti>
+      <cciaa>
+        <numRegistroDitte>1</numRegistroDitte>
+        <dataDomandaIscrizione>2010-07-20</dataDomandaIscrizione>
+        <numIscrizione>22</numIscrizione>
+        <dataIscrizione>2010-07-20</dataIscrizione>
+        <provinciaIscrizione>Roma</provinciaIscrizione>
+      </cciaa>
+      <settoreProduttivo>Acquedotti</settoreProduttivo>
+      <inps/>
+      <inail/>
+    </impresa>
+  </datiImpresa>
+</ReportOffertaEconomica>

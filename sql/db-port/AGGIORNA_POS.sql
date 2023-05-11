@@ -11471,3 +11471,5922 @@ LANGUAGE 'plpgsql' ;
 
 select * from aggiornamento();
 drop function aggiornamento();
+-- 3.13.0_to_3.14.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.13.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- CUSTOMIZZAZIONI
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('INVIOFLUSSI', 'MARCATEMPORALE', 'ACT', 0);
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA','CONSENSO-EXTRA','VIS',0);	
+
+	--PARAMETRI
+	insert into ppcommon_properties (name, type, description, value, defvalue, ordprog) values ('marcaturaTemp.provider.url', 'S', 'Url del provider di marcatura temporale dei file', '', 'http://timestamp.sectigo.com', 870);
+
+	insert into ppcommon_properties (name, type, description, value, defvalue, ordprog) values ('marcaturaTemp.provider.tipo', 'S', 'Tipologia provider del servizio di marcatura temporale dei file', '', 'rfc3161', 880);
+
+	insert into ppcommon_properties (name, type, description, value, defvalue, ordprog) values ('marcaturaTemp.provider.username', 'S', 'Username di accesso al provider di marcatura temporale dei file', '', '', 890);
+
+	insert into ppcommon_properties (name, type, description, value, defvalue, ordprog) values ('marcaturaTemp.provider.password', 'S', 'Password di accesso al provider di marcatura temporale dei file', '', '', 900);
+
+	insert into ppcommon_properties (name, type, description, value, defvalue, ordprog) values ('marcaturaTemp.url', 'L', 'URL di accesso al servizio di marcatura temporale dei file', 'https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts', 'https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts', 910);
+	
+	--LABELS
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_RIEPILOGO_ALLEGATI', 'en', 'Attachments summary');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_RIEPILOGO_ALLEGATI', 'it', 'Riepilogo allegati');
+	
+	update localstrings set stringvalue = 'dichiara inoltre che i dati personali forniti ed acquisiti contestualmente alla registrazione ai servizi scelti, nonch&eacute; i dati necessari all''erogazione di tali servizi, saranno trattati, nel rispetto delle garanzie di riservatezza e delle misure di sicurezza previste dalla normativa vigente attraverso strumenti informatici, telematici e manuali, con logiche strettamente correlate alle finalit&agrave; del trattamento.' where keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' and langcode = 'it';
+
+	update localstrings set stringvalue = 'declare that personal data provided and acquired together with the registration to the services chosen, as well as the data necessary for the provision of these services, will be processed, in compliance with the guarantees of confidentiality and security measures provided for by current legislation through IT, telematic and manual tools, with logic strictly related to the purposes of the processing.' where keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' and langcode = 'en';
+
+
+	--CEF eInvoicing
+	--configurations
+	DELETE FROM ppcommon_properties WHERE name='nso.baseUrlFatt';
+	DELETE FROM ppcommon_properties WHERE name='nso.fatt.auth';
+	INSERT INTO ppcommon_properties ("name", "type", description, value, defvalue, ordprog) VALUES ('nso.baseUrlFatt', 'L', 'URL del servizio rest per fatture (CEF eInvoicing)', 'http://127.0.0.1:8999', 'http://127.0.0.1:8999', 861);
+	INSERT INTO ppcommon_properties ("name", "type", description, value, defvalue, ordprog) VALUES ('nso.fatt.auth', 'L', 'Auth per nso.baseUrlFatt (10 anni)', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYW5hZ2VyIiwiYXVkIjoiTWFuYWdlciIsIlVTRVJfQ0YiOiJNYW5hZ2VyIiwiaXNzIjoiMTI3LjAuMC4xIiwiZXhwIjoxOTM0NzAzNTY2LCJpYXQiOjE2MTkxNzA3NjZ9.zkPZQRIQZYB4lGadWVwra12PzwIFGN6gYtV4Nh45Yec', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYW5hZ2VyIiwiYXVkIjoiTWFuYWdlciIsIlVTRVJfQ0YiOiJNYW5hZ2VyIiwiaXNzIjoiMTI3LjAuMC4xIiwiZXhwIjoxOTM0NzAzNTY2LCJpYXQiOjE2MTkxNzA3NjZ9.zkPZQRIQZYB4lGadWVwra12PzwIFGN6gYtV4Nh45Yec', 862);
+	
+	--delete labels in case already present
+	DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_EORDERS_LISTA_FATTURE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_EORDERS_LISTA_FATTURE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_SDI_FATTURE_INVIATE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PROGINVIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATAINVIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATARICSDI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_STATO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_NOMEFILE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_ARCHIVIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_CREA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_INVIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_EORDERS_UPLOAD_FATTURE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_EORDERS_UPLOAD_FATTURE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_UPLOAD' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_FILENAMEUPLOADED' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BUTTON_FATT_INVIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_EORDERS_FATTURA_CREA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_EORDERS_FATTURA_CREA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATI_GENERALI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_TESTATA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_CODICEFATT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_RAPP_FISC' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_CORPO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_TIPDOC' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_DATA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_NUMERO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_DATIRITENUTA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_DR_TR' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_DR_AL' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DG_DR_CP' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATT_BOL' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATT_BOL_FIXTEXT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATCASSPREV' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATCASSPREV_ALRIT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATCASSPREV_IMPCASSA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATCASSPREV_ALIVA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATCASSPREV_RITENUTA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATCASSPREV_NATURA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATISAL' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DDT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DDT_N' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DDT_DATA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DATRIT_IMPRIT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATIPAGAMENTO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_COND' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_MOD' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_DATSCAD' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_ISTFIN' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_IBAN' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_ABI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_CAB' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PAG_BIC' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_REGEN' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_STEP_DATI_GENERALI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_STEP_DATI_LINEE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_INDEX' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_PREZZO_UNITARIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_RITENUTA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_NATURA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ESIGIVA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_RIFNORM' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_AZIONI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_LINEEORDINE_EDIT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_LINE_MOD' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_LINEEORDINE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BUTTON_FATT_LINE_POP_CANCEL' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BUTTON_FATT_LINE_POP_CONFIRM' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_RIEPILOGO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_CIG' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_CODICEDESTINATARIO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_CODIMPFORNITORE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_CREATEDDATE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_DATAFATTURA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_ID' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_IDNSOWSORDINI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_IDORDINE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_IDUSER' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_NUMEROFATTURA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_PLAINFILENAME' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_STATUSSDI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_STATUSWS' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_TOTRIEPILOGOIMPONIBILEIMPORTO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_TOTRIEPILOGOIMPOSTA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_TOTRIEPILOGOTOTALE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATT_UPDATEDDATE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATTURAZIONE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_EORDERS_FATTURA_RIEPILOGO' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_STAB_ORG' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_IDPAESE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_IDCODICE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_DENOM' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_NOME' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_COGN' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_TIT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_IDFISCIVA_EORI' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_STATLIQ' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_EORDERS_FATTURA_LINEEORDINE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATTURAZIONE_WARN' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_NO_DATA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_NO_MATCHING_ORDER' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_NO_SEND' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_SEND' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_FILEEXT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_FATT_CODICEFATT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_EORDERS_FATT_DELLINE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_FATT_DATAFATT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_SENT' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'WARN_FATT_SENTERR' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_FATT_DATASCADPAG' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DDT_DATA' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_FATTURA_DDT_RIF' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_FATT_DDTDATA' and langcode in ('it','en');
+	--inserimento labels it e en
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_LISTA_FATTURE', 'it', 'Fatture Archiviate per Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_LISTA_FATTURE', 'en', 'Store Bills to Order');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_LISTA_FATTURE', 'it', 'Lista delle fatture inoltrate tramite SDI');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_LISTA_FATTURE', 'en', 'List of invoices submitted via SDI');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SDI_FATTURE_INVIATE', 'it', 'Elenco delle fatture inviate');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SDI_FATTURE_INVIATE', 'en', 'List of invoices');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PROGINVIO', 'it', 'Progressivo Invio');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PROGINVIO', 'en', 'Progressive Enter');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATAINVIO', 'it', 'Data Invio');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATAINVIO', 'en', 'Send date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATARICSDI', 'it', 'Data Ricezione SDI');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATARICSDI', 'en', 'Receiving Date SDI');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATO', 'it', 'Stato');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATO', 'en', 'State');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_NOMEFILE', 'it', 'Nome file inviato');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_NOMEFILE', 'en', 'Filename sent');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_ARCHIVIO', 'it', 'Fatture Archiviate');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_ARCHIVIO', 'en', 'Store Invoices');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_CREA', 'it', 'Genera Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_CREA', 'en', 'Generate Invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_INVIO', 'it', 'Invio Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_INVIO', 'en', 'Enter Invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_UPLOAD_FATTURE', 'it', 'Invio Fattura per Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_UPLOAD_FATTURE', 'en', 'Enter Invoice for Order');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_UPLOAD_FATTURE', 'it', 'Pagina per invio di fatture');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_UPLOAD_FATTURE', 'en', 'for sending invoices Page');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_UPLOAD', 'it', 'Upload della Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_UPLOAD', 'en', 'Upload of Invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_FILENAMEUPLOADED', 'it', 'File Caricato');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_FILENAMEUPLOADED', 'en', 'File Uploaded');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_INVIO', 'it', 'Invia');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_INVIO', 'en', 'Submit');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_FATTURA_CREA', 'it', 'Creazione Fattura per Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_EORDERS_FATTURA_CREA', 'en', 'Creating Order to Invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_CREA', 'it', 'Pagina di inserimento dei dati generali della fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_CREA', 'en', 'Page insertion of the general invoice data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATI_GENERALI', 'it', 'Dati Generali');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATI_GENERALI', 'en', 'General data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_TESTATA', 'it', 'Dati di Testata');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_TESTATA', 'en', 'Head of Data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODICEFATT', 'it', 'Codice Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODICEFATT', 'en', 'Invoice No.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_RAPP_FISC', 'it', 'Rappresentante Fiscale');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_RAPP_FISC', 'en', 'Fiscal agent');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_CORPO', 'it', 'Dati di Corpo');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_CORPO', 'en', 'Body of data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_TIPDOC', 'it', 'Tipologia di documento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_TIPDOC', 'en', 'Document Type');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DATA', 'it', 'Data del documento (secondo il formato ISO 8601:2004)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DATA', 'en', 'Document date (according to the ISO 8601: 2004)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_NUMERO', 'it', 'Numero della fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_NUMERO', 'en', 'Invoice number');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DATIRITENUTA', 'it', 'Blocco dati relativi alla ritenuta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DATIRITENUTA', 'en', 'Block data relating to withholding');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_TR', 'it', 'Tipologia della ritenuta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_TR', 'en', 'Type of withholding tax');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_AL', 'it', 'Aliquota (%) della ritenuta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_AL', 'en', 'Rate (%) of withholding');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_CP', 'it', 'Causale del pagamento (quella del Mod CU)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DG_DR_CP', 'en', 'Reason for payment (the Mod CU)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATT_BOL', 'it', 'Bollo');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATT_BOL', 'en', 'Stamp');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATT_BOL_FIXTEXT', 'it', 'Bollo assolto ai sensi del decreto MEF 17 giugno 2014 (art. 6)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATT_BOL_FIXTEXT', 'en', 'Bollo acquitted under the MEF decree of June 17, 2014 (art. 6)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATCASSPREV', 'it', 'Blocco dati relativi alla cassa professionale di appartenenza');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATCASSPREV', 'en', 'Block data relating to professional cash belonging');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_ALRIT', 'it', 'Aliquota (%) del contributo, se previsto, per la cassa di appartenenza');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_ALRIT', 'en', 'Rate (%) of the contribution, if any, to the membership cash');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_IMPCASSA', 'it', 'Importo sul quale applicare il contributo cassa previdenziale');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_IMPCASSA', 'en', 'Amount on which to apply the contribution to social security fund');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_ALIVA', 'it', 'Aliquota (%) IVA applicata');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_ALIVA', 'en', 'Rate (%) applied VAT');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_RITENUTA', 'it', 'Ritenuta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_RITENUTA', 'en', 'withholding');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_NATURA', 'it', 'Natura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATCASSPREV_NATURA', 'en', 'Nature');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATISAL', 'it', 'Riferimento Fase');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATISAL', 'en', 'Reference Phase');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT', 'it', 'Dati di Trasporto');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT', 'en', 'Transport Data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT_N', 'it', 'Numero Documento di Trasporto');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT_N', 'en', 'Number Transport Document');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT_DATA', 'it', 'Data del documento di trasporto (secondo il formato ISO 8601:2004)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DDT_DATA', 'en', 'Date of the transport document (according to the ISO 8601: 2004)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATRIT_IMPRIT', 'it', 'FF 8');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DATRIT_IMPRIT', 'en', 'FF 8');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATIPAGAMENTO', 'it', 'Dati Pagamento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATIPAGAMENTO', 'en', 'Payment data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_COND', 'it', 'Condizioni Pagamento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_COND', 'en', 'Payment conditions');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_MOD', 'it', 'Modalità Pagamento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_MOD', 'en', 'Payment mode');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_DATSCAD', 'it', 'Data scadenza del pagamento (secondo il formato ISO 8601:2004)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_DATSCAD', 'en', 'Date Payment Due (according to ISO 8601: 2004)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_ISTFIN', 'it', 'Istituto finanziario');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_ISTFIN', 'en', 'financial Institute');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_IBAN', 'it', 'IBAN');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_IBAN', 'en', 'IBAN');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_ABI', 'it', 'ABI');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_ABI', 'en', 'ABI');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_CAB', 'it', 'CAB');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_CAB', 'en', 'CAB');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_BIC', 'it', 'BIC');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_BIC', 'en', 'BIC');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_REGEN', 'it', 'Rigenera Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_REGEN', 'en', 'regenerate invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_STEP_DATI_GENERALI', 'it', 'Dati Generali');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_STEP_DATI_GENERALI', 'en', 'General data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_STEP_DATI_LINEE', 'it', 'Dati Linee');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_STEP_DATI_LINEE', 'en', 'data Lines');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INDEX', 'it', 'Indice');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INDEX', 'en', 'Index');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZO_UNITARIO', 'it', 'Prezzo Unitario');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZO_UNITARIO', 'en', 'Unit price');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RITENUTA', 'it', 'Ritenuta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RITENUTA', 'en', 'withholding');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NATURA', 'it', 'Natura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NATURA', 'en', 'Nature');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ESIGIVA', 'it', 'Esig. Iva');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ESIGIVA', 'en', 'ESIG. VAT');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RIFNORM', 'it', 'Rif. Normativo');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RIFNORM', 'en', 'Ref. Normative');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AZIONI', 'it', 'Azioni sulla linea');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AZIONI', 'en', 'Stocks on the line');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_LINEEORDINE_EDIT', 'it', 'Modifica Linee Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_LINEEORDINE_EDIT', 'en', 'Change Order Lines');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_LINE_MOD', 'it', 'Modifica Linee');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_LINE_MOD', 'en', 'Changing Lines');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_LINEEORDINE', 'it', 'Elenco Linee Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_LINEEORDINE', 'en', 'Lines List Order');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_LINE_POP_CANCEL', 'it', 'Annulla');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_LINE_POP_CANCEL', 'en', 'Cancel');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_LINE_POP_CONFIRM', 'it', 'Conferma');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_LINE_POP_CONFIRM', 'en', 'Confirmation');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_RIEPILOGO', 'it', 'Riepilogo Dati Fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_RIEPILOGO', 'en', 'Invoice Summary Data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CIG', 'it', 'Cig');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CIG', 'en', 'cig');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODICEDESTINATARIO', 'it', 'Codice Intestatario');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODICEDESTINATARIO', 'en', 'Holder Code');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODIMPFORNITORE', 'it', 'Codice Foritore');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CODIMPFORNITORE', 'en', 'Foritore Code');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CREATEDDATE', 'it', 'Data Creazione');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_CREATEDDATE', 'en', 'Creation date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATAFATTURA', 'it', 'Data Fatturazione');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_DATAFATTURA', 'en', 'Data Billing');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_ID', 'it', 'Id interno fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_ID', 'en', 'internal invoice Id');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDNSOWSORDINI', 'it', 'Id interno ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDNSOWSORDINI', 'en', 'Id internal order');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDORDINE', 'it', 'Id ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDORDINE', 'en', 'order Id');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDUSER', 'it', 'Id interno utente');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_IDUSER', 'en', 'Id internal user');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_NUMEROFATTURA', 'it', 'Numero fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_NUMEROFATTURA', 'en', 'Invoice number');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PLAINFILENAME', 'it', 'Nome File');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PLAINFILENAME', 'en', 'File Name');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATUSSDI', 'it', 'Status SDI');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATUSSDI', 'en', 'Status SDI');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATUSWS', 'it', 'Status WS');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_STATUSWS', 'en', 'Status WS');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOIMPONIBILEIMPORTO', 'it', 'Importo Imponibile');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOIMPONIBILEIMPORTO', 'en', 'Taxable Amount');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOIMPOSTA', 'it', 'Riepilogo Imposta');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOIMPOSTA', 'en', 'Summary Sets');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOTOTALE', 'it', 'Importo Totale');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_TOTRIEPILOGOTOTALE', 'en', 'Total amount');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_UPDATEDDATE', 'it', 'Data Aggiornamento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_UPDATEDDATE', 'en', 'Update date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATTURAZIONE', 'it', 'Sezione Fatture Ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATTURAZIONE', 'en', 'Section Bills Order');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_RIEPILOGO', 'it', 'Dati di riepilogo della fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_RIEPILOGO', 'en', 'Invoice Summary Data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_STAB_ORG', 'it', 'Stabile Organizzazione');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_STAB_ORG', 'en', 'Organization Stable');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_IDPAESE', 'it', 'Identificativo Paese');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_IDPAESE', 'en', 'ID Country');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_IDCODICE', 'it', 'Codice identificativo fiscale');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_IDCODICE', 'en', 'Tax Identification Number');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_DENOM', 'it', 'Denominazione');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_DENOM', 'en', 'Name');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_NOME', 'it', 'Nome');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_NOME', 'en', 'First name');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_COGN', 'it', 'Cognome');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_COGN', 'en', 'Surname');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_TIT', 'it', 'Titolo onorifico');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_TIT', 'en', 'honorary title');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_EORI', 'it', 'Codice EORI');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_IDFISCIVA_EORI', 'en', 'EORI number');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_STATLIQ', 'it', 'Stato Liquidazione');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_STATLIQ', 'en', 'Liquidation State');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_LINEEORDINE', 'it', 'Pagina di Modifica Linee');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_EORDERS_FATTURA_LINEEORDINE', 'en', 'Edit Lines Page');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATTURAZIONE_WARN', 'it', 'Ordine confermato, ma ancora non recapitato');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATTURAZIONE_WARN', 'en', 'Order confirmed, but not yet delivered');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_DATA', 'it', 'Dati minimi per invio fattura mancanti');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_DATA', 'en', 'Minimum data for missing invoice submission');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_MATCHING_ORDER', 'it', 'Nella fattura viene indicato un ordine diverso da quello in pagina');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_MATCHING_ORDER', 'en', 'The invoice indicates a different order from the one page');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_SEND', 'it', 'La fattura risulta inviata, impossibile inviare.');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_NO_SEND', 'en', 'The invoice is sent, you can not send.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SEND', 'it', 'Fattura pronta per essere inviata.');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SEND', 'en', 'Bill ready to be sent.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_FILEEXT', 'it', 'Caricato file non corretto, si accettano esclusivamente file con estensione .p7m o .xml');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_FILEEXT', 'en', 'Uploaded incorrect file, we only accept files with .p7m or .xml extension');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_CODICEFATT', 'it', 'Numero fattura mancante o formato non valido, deve avere almeno un numero');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_CODICEFATT', 'en', 'Number missing invoice or malformed, must have at least one number');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_DELLINE', 'it', 'Elimina Linea');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_EORDERS_FATT_DELLINE', 'en', 'Delete Line');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DATAFATT', 'it', 'Data del documento mancante oppure non in formato corretto (dd-MM-YYYY,dd/MM/YYYY,YYYY-MM-dd)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DATAFATT', 'en', 'Date of the missing document, or not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SENT', 'it', 'Fattura inviata con successo');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SENT', 'en', 'successfully sent Invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SENTERR', 'it', 'Errore in invio fattura');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('WARN_FATT_SENTERR', 'en', 'Error while sending invoice');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DATASCADPAG', 'it', 'Data scadenza del pagamento obbligatoria');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DATASCADPAG', 'en', 'Date of expiry of the mandatory payment');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DDT_DATA', 'it', 'Data Documento di Trasporto');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DDT_DATA', 'en', 'Data Transport Document');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DDT_RIF', 'it', 'Rif. Linea Documento di Trasporto');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATTURA_DDT_RIF', 'en', 'Ref. Line Transport Document');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DDTDATA', 'it', 'Data Documento di Trasporto non in formato corretto (dd-MM-YYYY,dd/MM/YYYY,YYYY-MM-dd)');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_DDTDATA', 'en', 'Data Transport document is not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)');
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.13.0';
+	UPDATE ppcommon_ver SET version = '3.14.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.13.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.14.0-M1_to_3.14.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	ALTER TABLE ppcommon_properties ADD COLUMN category VARCHAR(30);
+	
+	UPDATE ppcommon_properties set category = 'protocollazione' where name like 'protocollazione.%';
+
+	UPDATE ppcommon_properties set category = 'autenticazione' where name like 'sso.%';
+
+	UPDATE ppcommon_properties set category = 'nso' where name like 'nso.%';
+
+	UPDATE ppcommon_properties set category = 'marcatura temporale' where name like 'marcaturaTemp%';
+
+	UPDATE ppcommon_properties set category = 'assistenza' where name like 'assistenza.%';
+
+	UPDATE ppcommon_properties set category = 'configurazione generale' where category is null;
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_DATA_LIMITE_MOD' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_ORDER_LIMITDATE' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'BUTTON_FATT_BACK_ORDER' and langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_ERR_FATT_TIPODOC' and langcode in ('it','en');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_LIMITE_MOD', 'it', 'Modifiche ordine accettate fino al');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_LIMITE_MOD', 'en', 'Order Changes accepted until');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_ORDER_LIMITDATE', 'it', 'Errore nella data di accettazione modifiche');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_ORDER_LIMITDATE', 'en', 'Error date of acceptance changes');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_BACK_ORDER', 'it', 'Dettaglio ordine');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_FATT_BACK_ORDER', 'en', 'order details');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_TIPODOC', 'it', 'Selezionare una Tipologia di documento');	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERR_FATT_TIPODOC', 'en', 'Select a Document Type');
+
+
+--CONFIGURAZIONE NUOVA ACTION
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppcommon_auth', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Authentication page</property>
+<property key="it">Pagina di autenticazione</property>
+</properties>', NULL, 'ppcommon', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Auth/authAction.action</property>
+</properties>', 1);
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_auth', 'ppgare_impr', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Authentication</property>
+<property key="it">Autenticazione</property>
+</properties>', 'free', 0);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 7, 'ppcommon_auth', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 9, 'language_choose', NULL, NULL);
+
+update ppcommon_properties set category = 'autenticazione-portoken' where name like '%portoken%';
+update ppcommon_properties set category = 'delete' where category = 'autenticazione';
+
+
+--CONFIGURAZIONI GENERALI AUTENTICAZIONE
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.form', 'I', 'Sistema di autenticazione tramite credenziali (0=non prevista, 1=Previsto)', '1', '1','autenticazione', 10000);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion', 'I', 'Sistema di autenticazione Single Sign-on cohesion (0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10010);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth', 'I', 'Sistema di autenticazione Single Sign-on shibboleth (0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10020);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cie', 'I', 'Sistema di autenticazione Single Sign-on CIE(0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10030);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cns', 'I', 'Sistema di autenticazione Single Sign-on CNS(0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10040);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spid', 'I', 'Sistema di autenticazione Single Sign-on SPID(0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10050);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.crs', 'I', 'Sistema di autenticazione Single Sign-on CRS(0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10060);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.myid', 'I', 'Sistema di autenticazione tramite Single Sign-on My Id(0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10070);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.gel', 'I', 'Sistema di autenticazione tramite tramite Single Sign-on GEL (0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10080);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.federa', 'I', 'Sistema di autenticazione tramite tramite Single Sign-on FEDERA (0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10090);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness', 'I', 'Sistema di autenticazione tramite tramite Single Sign-on SPID Business (0=non prevista, 1=Previsto)', '0', '0','autenticazione', 10100);
+
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.form.position', 'I', 'posizione sistema di autenticazione tramite credenziali', '1', '1','autenticazione', 10110);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.position', 'I', 'posizione sistema di autenticazione Single Sign-on cohesion', '2', '2','autenticazione', 10120);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.position', 'I', 'posizione sistema di autenticazione Single Sign-on shibboleth', '3', '3','autenticazione', 10130);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.gel.position', 'I', 'posizione sistema di autenticazione Single Sign-on GEL', '4', '4','autenticazione', 10140);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.myid.position', 'I', 'posizione sistema di autenticazione tramite myId', '5', '5','autenticazione', 10150);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.federa.position', 'I', 'posizione sistema di autenticazione tramite FEDERA', '6', '6','autenticazione', 10160);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spid.position', 'I', 'posizione sistema di autenticazione Single Sign-on SPID', '7', '7','autenticazione', 10170);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness.position', 'I', 'posizione sistema di autenticazione tramite spid business', '8', '8','autenticazione', 10180);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cie.position', 'I', 'posizione sistema di autenticazione Single Sign-on CIE', '9', '9','autenticazione', 10190);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cns.position', 'I', 'posizione sistema di autenticazione Single Sign-on CNS', '10', '10','autenticazione', 10200);
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.crs.position', 'I', 'posizione sistema di autenticazione Single Sign-on CRS', '11', '11','autenticazione', 10210);
+
+
+--CONFIGURAZIONI SHIBBOLETH
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.login.url', 'S', 'URL autenticazione al sistema di SSO shibboleth', null, null,'autenticazione-shibboleth', 10300);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.logout.url', 'S', 'URL disconnessione al sistema di SSO shibboleth', null, null,'autenticazione-shibboleth', 10310);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.nome', 'S', 'Attributo ricevuto dal processo di SSO shibboleth da usare per reperire il nome', null, null,'autenticazione-shibboleth', 10320);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.cognome', 'S', 'Attributo ricevuto dal processo di SSO shibboleth da usare per reperire il cognome', null, null,'autenticazione-shibboleth', 10330);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.login', 'S', 'Attributo ricevuto dal processo di SSO shibboleth da usare per reperire la login/codice fiscale', null, null,'autenticazione-shibboleth', 10340);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.email', 'S', 'Attributo ricevuto dal processo di SSO shibboleth da usare per reperire l''indirizzo email', null, null,'autenticazione-shibboleth', 10350);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.azienda', 'S', 'Attributo ricevuto dal processo di SSO shibboleth da usare per reperire la denominazione azienda per persone giuridiche', null, null,'autenticazione-shibboleth', 10360);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.shibboleth.mapping.partitaIVA', 'S', 'Attributo ricevuto dal processo di SSO  da usare per reperire la partita IVA per persone giuridiche', null, null,'autenticazione-shibboleth', 10370);
+
+--CONFIGURAZIONI COHESION
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.login.url', 'S', 'URL autenticazione al sistema di SSO  cohesion', null, null,'autenticazione-cohesion', 10400);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.logout.url', 'S', 'URL disconnessione al sistema di SSO cohesion', null, null,'autenticazione-cohesion', 10410);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.nome', 'S', 'Attributo ricevuto dal processo di SSO cohesion da usare per reperire il nome', null, null,'autenticazione-cohesion', 10420);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.cognome', 'S', 'Attributo ricevuto dal processo di SSO cohesion da usare per reperire il cognome', null, null,'autenticazione-cohesion', 10430);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.login', 'S', 'Attributo ricevuto dal processo di SSO cohesion da usare per reperire la login/codice fiscale', null, null,'autenticazione-cohesion', 10440);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.email', 'S', 'Attributo ricevuto dal processo di SSO cohesion da usare per reperire l''indirizzo email', null, null,'autenticazione-cohesion', 10450);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.tipoAutenticazione', 'S', 'Attributo ricevuto dal processo di SSO  da usare per reperire la tipologia di autenticazione-cohesion (solo per Cohesion)', null, null,'autenticazione-cohesion', 10460);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.azienda', 'S', 'Attributo ricevuto dal processo di SSO cohesion da usare per reperire la denominazione azienda per persone giuridiche', null, null,'autenticazione-cohesion', 10470);
+
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.mapping.partitaIVA', 'S', 'Attributo ricevuto dal processo di SSO  da usare per reperire la partita IVA per persone giuridiche', null, null,'autenticazione-cohesion', 10480);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cohesion.encryption.key', 'S', 'Chiave di criptazione del token di scambio con Cohesion', 'y4h6YemAjg9wt799kaKpm2Ca', 'y4h6YemAjg9wt799kaKpm2Ca','autenticazione-cohesion', 10490);
+
+
+--CONFIGURAZIONI SPID
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spid.wsAuthServiceSPID.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione SPID', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService','autenticazione-spid', 10500);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spid.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spid', 10510);
+
+insert into ppcommon_properties (name, type, description, value, defvalue,category, ordprog) values ('auth.sso.spid.serviceindex', 'I', 'Dataset restituito da SPID. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-spid', 10520);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spid.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione SPID (L1, L2, L3)', 'L1', 'L1', 'autenticazione-spid',10530);
+
+insert into ppcommon_properties (name, type, description, value, defvalue, category, ordprog) values ('auth.sso.spid.validator', 'I', 'Attiva il link di validazione SPID per AGID. Valori ammessi: 0=Non attivo [default], 1=Attivo', '0', '0', 'autenticazione-spid',10540);
+
+--CONFIGURAZIONI CIE
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cie.wsAuthServiceCIE.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione CIE', 'https://cie.comune-online.it/AuthServiceCIE/services/AuthService', 'https://cie.comune-online.it/AuthServiceCIE/services/AuthService','autenticazione-cie', 10600);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cie.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione CIE', 'bergamo', 'bergamo','autenticazione-cie', 10610);
+
+insert into ppcommon_properties (name, type, description, value, defvalue,category, ordprog) values ('auth.sso.cie.serviceindex', 'I', 'Dataset restituito da CIE. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-cie', 10620);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cie.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione CIE (L1, L2, L3)', 'L2', 'L2', 'autenticazione-cie',10630);
+
+--CONFIGURAZIONI CRS
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.crs.wsAuthServiceCRS.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione CRS', 'https://spid.comune-online.it/AuthServiceCRS/services/AuthService', 'https://spid.comune-online.it/AuthServiceCRS/services/AuthService','autenticazione-crs', 10700);
+
+--CONFIGURAZIONI CNS
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.cns.wsAuthServiceCNS.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione CNS', 'https://spid.comune-online.it/AuthServiceCNS/services/AuthService', 'https://spid.comune-online.it/AuthServiceCNS/services/AuthService','autenticazione-cns', 10800);
+
+--CONFIGURAZIONI GEL
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.gel.wsAuthServiceGEL.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione GEL', 'https://spid.comune-online.it/AuthServiceGel/services/AuthService', 'https://spid.comune-online.it/AuthServiceGel/services/AuthService','autenticazione-gel', 10900);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.gel.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione GEL', 'cantu', 'cantu','autenticazione-gel', 10910);
+
+--CONFIGURAZIONI MYID
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.myid.wsAuthServiceMyId.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione MYID', 'https://spid.comune-online.it/AuthServiceMyId/services/AuthService', 'https://spid.comune-online.it/AuthServiceMyId/services/AuthService','autenticazione-myid', 11000);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.myid.serviceMyId.url', 'L', 'URL cliente servizio di autenticazione MYID', 'https://impostasoggiorno.comune.padova.it/AuthServiceMyId/auth.jsp', 'https://impostasoggiorno.comune.padova.it/AuthServiceMyId/auth.jsp','autenticazione-myid', 11010);
+
+
+--CONFIGURAZIONI FEDERA
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.myid.wsAuthServiceFedera.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione FEDERA', 'https://spid.comune-online.it/AuthServiceMultiEnte/services/AuthService', 'https://spid.comune-online.it/AuthServiceMultiEnte/services/AuthService','autenticazione-myid', 11100);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.federa.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione FEDERA', 'parma', 'parma','autenticazione-federa', 11110);
+
+--CONFIGURAZIONE SPID BUSINESS
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness.authpurpose', 'S', 'Tipologia di riconoscimento persona giuridica', 'LP', 'LP','autenticazione-spidbusiness', 11120);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness.wsAuthServiceSPID.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spidbusiness', 11130);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spidbusiness', 11140);
+
+insert into ppcommon_properties (name, type, description, value, defvalue,category, ordprog) values ('auth.sso.spidbusiness.serviceindex', 'I', 'Dataset restituito da SPID. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-spidbusiness', 11150);
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('auth.sso.spidbusiness.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione SPID (L1, L2, L3)', 'L1', 'L1', 'autenticazione-spidbusiness',11160);
+
+
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN '1'
+ELSE '0'  
+END  
+where name = 'auth.sso.cohesion';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN '1' 
+ELSE '0' 
+END  
+where name = 'auth.sso.shibboleth';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '3' THEN '1'  
+ELSE '0'  
+END  
+where name = 'auth.sso.spid';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '3' THEN '1'
+WHEN '0' THEN '1'  
+ELSE '0'  
+END  
+where name = 'auth.form';
+
+
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.login.url')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.login.url';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.logout.url')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.logout.url';
+
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.nome')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.nome';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.cognome')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.cognome';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.login')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.login';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.email')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.email';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.azienda')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.azienda';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '2' THEN (select value from ppcommon_properties where name = 'sso.mapping.partitaIVA')
+ELSE ''  
+END  
+where name = 'auth.sso.cohesion.mapping.partitaIVA';
+
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.login.url')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.login.url';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.logout.url')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.logout.url';
+
+update ppcommon_properties set value = (select value from ppcommon_properties where name = 'sso.mapping.tipoAutenticazione') where name =  'auth.sso.cohesion.mapping.tipoAutenticazione';
+update ppcommon_properties set value = (select value from ppcommon_properties where name = 'sso.cohesion.encryption.key') where name =  'auth.sso.cohesion.encryption.key';
+
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.nome')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.nome';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.cognome')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.cognome';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.login')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.login';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.email')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.email';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.azienda')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.azienda';
+UPDATE ppcommon_properties  
+SET value = CASE (select value as value from ppcommon_properties where name = 'sso.protocollo')  
+WHEN '1' THEN (select value from ppcommon_properties where name = 'sso.mapping.partitaIVA')
+ELSE ''  
+END  
+where name = 'auth.sso.shibboleth.mapping.partitaIVA';
+
+update ppcommon_properties set value = x.value from (select value from ppcommon_properties where name = 'sso.spid.wsAuthServiceSPID.url') x where name = 'auth.sso.spid.wsAuthServiceSPID.url';
+update ppcommon_properties set value = x.value from (select value from ppcommon_properties where name = 'sso.spid.serviceindex') x where name = 'auth.sso.spid.serviceindex';
+update ppcommon_properties set value = x.value from (select value from ppcommon_properties where name = 'sso.spid.serviceprovider') x where name = 'auth.sso.spid.serviceprovider';
+update ppcommon_properties set value = x.value from (select value from ppcommon_properties where name = 'sso.spid.authlevel') x where name = 'auth.sso.spid.authlevel';
+update ppcommon_properties set value = x.value from (select value from ppcommon_properties where name = 'sso.spid.validator') x where name = 'auth.sso.spid.validator';
+
+delete from ppcommon_properties where category = 'delete';
+
+UPDATE ppcommon_properties  set category = 'custom' where category is null;
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'it', 'Accedi con Username e Password ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'en', 'Login with Username and Password');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'it', 'Se sei in possesso di credenziali al portale puoi accedere tramite l''inserimento di Username e Password nell''apposita form.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'en', 'If you have credentials for the portal you can login by filling Username and Password in the form.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_BUTTON', 'it', 'Accedi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_BUTTON', 'en', 'Login');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_TITLE', 'it', 'Accedi con CNS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_TITLE', 'en', 'Login with CNS');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_DESCRIPTION', 'it', 'Se possiedi un Certificato Digitale (CNS), inserisci il supporto nel tuo dispositivo (Smart Card o Token USB) e clicca sul bottone ''Accedi con CNS''.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_DESCRIPTION', 'en', 'If you have a Digital Certificate (CNS), insert the support in your device (Smart Card or USB Token) and click on the button ''Login with Cns''.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_BUTTON', 'it', 'Accedi con Cns');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CNS_LOGIN_BUTTON', 'en', 'Login with Cns');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_TITLE', 'it', 'Accedi con CIE');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_TITLE', 'en', 'Login with CIE');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_DESCRIPTION', 'it', 'Se possiedi una carta d''identità elettronica e un cellulare con supporto nfc puoi autenticarti cliccando sul bottone ''Accedi con CIE''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_DESCRIPTION', 'en', 'If you have an electronic identity card and a mobile phone with NFC support, you can log in by clicking on the ''Login with CIE button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_BUTTON', 'it', 'Accedi con CIE');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_BUTTON', 'en', 'Login with CIE');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_TITLE', 'it', 'Accedi con fedERa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_TITLE', 'en', 'Login with fedERa');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_DESCRIPTION', 'it', 'Se usi il sistema di autenticazione federata della Regione Emilia-Romagna clicca sul bottone ''Accedi con fedERa''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_DESCRIPTION', 'en', 'If you use the federated authentication system of the Emilia-Romagna Region, click on the ''Login with fedERa button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_BUTTON', 'it', 'Accedi con fedERa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_BUTTON ', 'en', 'Login with fedERa');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_TITLE', 'it', 'Accedi con SPID');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_TITLE', 'en', 'Login with SPID');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'it', 'Se possiedi un account SPID, il Sistema Pubblico di Identità Digitale, puoi accedere cliccando il bottone ''Accedi con SPID''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'en', 'If you have a SPID account, the Public Digital Identity System, you can log in by clicking the ''Log in with SPID button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_TITLE', 'it', 'Accedi con MyID');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_TITLE', 'en', 'Login with MyID');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_DESCRIPTION', 'it', 'Se usi il sistema di autenticazione federata della Regione Veneto clicca sul bottone ''Accedi con MyID''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_DESCRIPTION', 'en', 'If you use the federated authentication system of the Veneto Region, click on the ''Login with MyID button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_BUTTON', 'it', 'Accedi con MyID');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_BUTTON', 'en', 'Login with MyID');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_TITLE', 'it', 'Accedi con GEL');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_TITLE', 'en', 'Login with GEL');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_DESCRIPTION', 'it', 'Se usi il sistema di autenticazione federata della Regione Lombardia clicca sul bottone ''Accedi con GEL''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_DESCRIPTION', 'en', 'If you use the federated authentication system of the Lombardia Region, click on the ''Login with GEL button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_BUTTON', 'it', 'Accedi con GEL');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GEL_LOGIN_BUTTON', 'en', 'Login with GEL');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_TITLE', 'it', 'Accedi con Sistema autenticazione esterna');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_TITLE', 'en', 'Login with external login system');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_DESCRIPTION', 'it', 'Se vuoi accedere tramite il servizio di gestione identita''  clicca sul bottone ''Accedi''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_DESCRIPTION', 'en', 'If you want to log in through the Shibboleth identity management service, click on the ''Login'' button');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_BUTTON', 'it', 'Accedi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SHIBBOLETH_LOGIN_BUTTON', 'en', 'Login');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_TITLE', 'it', 'Accedi con Cohesion');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_TITLE', 'en', 'Login with Cohesion');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_DESCRIPTION', 'it', 'Se usi il sistema di autenticazione federata della Regione Marche clicca sul bottone ''Accedi con Cohesion''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_DESCRIPTION', 'en', 'If you use the federated authentication system of the Lombardia Region, click on the ''Login with Cohesion button''');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_BUTTON', 'it', 'Accedi con Cohesion');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_BUTTON', 'en', 'Login with Cohesion');
+
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_TITLE', 'it', 'Accedi con Crs');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_TITLE', 'en', 'Login with Crs');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_DESCRIPTION', 'it', 'Se possiedi un Certificato Digitale (CRS), inserisci il supporto nel tuo dispositivo (Smart Card o Token USB) e clicca sul bottone ''Accedi con Crs''.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_DESCRIPTION', 'en', 'If you have a Digital Certificate (CRS), insert the support in your device (Smart Card or USB Token) and click on the button ''Login with Crs''.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_BUTTON', 'it', 'Accedi con Crs');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_BUTTON', 'en', 'Login with Crs');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'it', 'Accedi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'en', 'Login');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SHIBBOLET', 'it', 'Shibboleth');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SHIBBOLET', 'en', 'Shibboleth');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CIE', 'it', 'CIE');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CIE', 'en', 'CIE');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CNS', 'it', 'CNS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CNS', 'en', 'CNS');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CRS', 'it', 'CRS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_CRS', 'en', 'CRS');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_MYID', 'it', 'MyId');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_MYID', 'en', 'MyId');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_GEL', 'it', 'Gel');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_GEL', 'en', 'Gel');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_FEDERA', 'it', 'Federa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_FEDERA', 'en', 'Federa');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_COHESION', 'it', 'Cohesion');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_COHESION', 'en', 'Cohesion');
+
+
+update localstrings set stringvalue = 'Abilita a sistema di autenticazione esterno' where keycode = 'LINK_AREA_PERSONALE_ABILITA_ACCESSO_CON' and langcode = 'it';
+update localstrings set stringvalue = 'Enable access with external login system' where keycode = 'LINK_AREA_PERSONALE_ABILITA_ACCESSO_CON' and langcode = 'en';
+update localstrings set stringvalue = 'Abilita a sistema di autenticazione esterno' where keycode = 'TITLE_AREA_PERSONALE_ABILITA_ACCESSO_SPID' and langcode = 'it';
+update localstrings set stringvalue = 'Enable access with external login system' where keycode = 'TITLE_AREA_PERSONALE_ABILITA_ACCESSO_SPID' and langcode = 'en';
+update localstrings set keycode = 'TITLE_AREA_PERSONALE_ABILITA_ACCESSO_CON' where keycode = 'TITLE_AREA_PERSONALE_ABILITA_ACCESSO_SPID';
+
+update localstrings set stringvalue = 'Abilita accesso con sistema di autenticazione esterno. Clicca sul link per associare la tua utenza a quella di uno dei sistemi proposti sotto' where keycode = 'BALLOON_AREA_PERSONALE_ABILITA_ACCESSO_CON' and langcode ='it';
+
+update localstrings set stringvalue = 'Enable access with external authentication system. Click on the link to associate your user with one of the systems proposed below' where keycode = 'BALLOON_AREA_PERSONALE_ABILITA_ACCESSO_CON' and langcode ='en';
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_ACCOUNT', 'it', 'Collega account');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_ACCOUNT', 'en', 'Link account');
+
+-- link "iscriviti a elenco operatori"
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ICRIZIONE_A_ELENCO', 'it', 'Iscriviti all''Elenco Operatori Economici');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ICRIZIONE_A_ELENCO', 'en', 'Subscribe to the List of Economic Operators');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ICRIZIONE_A_ELENCO', 'it', 'Iscriviti all''Elenco Operatori Economici');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ICRIZIONE_A_ELENCO', 'en', 'Subscribe to the List of Economic Operators');
+
+-- adeguamento messaggi attivazione utente
+DELETE FROM localstrings WHERE keycode='BALLOON_jpuserreg_ACTIVATION';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_ACTIVATION', 'it', 'Per completare il processo di attivazione account occorre inserire la password ripetendola due volte per controllo. Si suggerisce di utilizzare password di almeno 8 caratteri, utilizzando almeno 1 lettera maiuscola, almeno 1 lettera minuscola, almeno 2 numeri, almeno 1 carattere speciale e non più di 2 caratteri uguali consecutivi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_ACTIVATION', 'en', 'To complete the account activation process, the password must be entered by repeating it twice to check. It is suggested to use passwords of at least 8 characters, using at least 1 uppercase letter, at least 1 lowercase letter, at least 2 numbers, at least 1 special character and no more than 2 consecutive identical characters.');
+
+DELETE FROM localstrings WHERE keycode='BALLOON_jpuserreg_PASSWORD_RECOVERY';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_PASSWORD_RECOVERY', 'it', 'Per completare il processo di riattivazione account occorre impostare una nuova password ripetendola due volte per controllo. Si suggerisce di utilizzare password di almeno 8 caratteri, utilizzando almeno 1 lettera maiuscola, almeno 1 lettera minuscola, almeno 2 numeri, almeno 1 carattere speciale e non più di 2 caratteri uguali consecutivi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_PASSWORD_RECOVERY', 'en', 'To complete the account reactivation process, a new password must be set by repeating it twice to check. It is suggested to use passwords of at least 8 characters, using at least 1 uppercase letter, at least 1 lowercase letter, at least 2 numbers, at least 1 special character and no more than 2 consecutive identical characters.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SPID_BUSINESS_LOGIN_TITLE', 'it', 'Accedi con SPID Business');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SPID_BUSINESS_LOGIN_TITLE', 'en', 'Login with SPID Business');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_BUSINESS_LOGIN_DESCRIPTION', 'it', 'Se possiedi un account SPID Business, il Sistema Pubblico di Identità Digitale, puoi accedere cliccando il bottone ''Accedi''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_BUSINESS_LOGIN_DESCRIPTION', 'en', 'If you have a SPID Business account, the Public Digital Identity System, you can log in by clicking the ''Log in'' button');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'it', 'Disassocia account esterno');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'en', 'Unlink external account');
+
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINKED_USER_CF', 'it', 'Per questa utenza è autorizzato ad entrare tramite account esterno il seguente cf:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINKED_USER_CF', 'en', 'For this user, the following cf is authorize to ligin:');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLINK_ACCOUNT', 'it', 'Scollega');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLINK_ACCOUNT', 'en', 'Unlink');
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppcommon_contracts', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Contracts</property>
+<property key="it">Contratti</property>
+</properties>', NULL, 'ppcommon', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Contratti/openStipulaContratti.action</property>
+</properties>', 0);
+
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppcommon_contracts', 'ppgare_impr', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Contracts</property>
+<property key="it">Contratti</property>
+</properties>', 'gare', 1);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 7, 'ppcommon_contracts', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppcommon_contracts', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppcommon_contracts' AND framepos = 9);
+
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code in ('ppgare_auth', 'ppcommon_abilita_accesso_sso', 'ppcommon_sblocco_autonomo', 'ppcommon_contracts', 'ppcommon_registra_op_manuale') or parentcode in ('ppgare_auth', 'ppcommon_abilita_accesso_sso', 'ppcommon_sblocco_autonomo', 'ppcommon_contracts', 'ppcommon_registra_op_manuale');
+
+insert into ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('wsStipuleAppalto', 'L', 'Web service per l''interazione con il sistema stipule', 'http://localhost:8080/WSAppalti/services/WSStipuleSOAP', 'http://localhost:8080/WSAppalti/services/WSStipuleSOAP','configurazione generale', 920);	
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0-M1';
+	UPDATE ppcommon_ver SET version = '3.14.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.14.0-M2_to_3.14.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_OGGETTO_STIPULA_CONTRATTO', 'it', 'Conferma invio documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_OGGETTO_STIPULA_CONTRATTO', 'en', 'Confirm documents sending');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'it', 'L''''operatore economico "{0}" conferma l''''invio della stipula con codice {1} e dei relativi documenti obbligatori');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'en', 'Economic operator "{0}" confirm the stipulation with code {1} and related documents sending');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_CONTRATTI', 'it', 'Contratti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_CONTRATTI', 'en', 'Contracts');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_CONTRATTI', 'it', 'Stipule Contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_CONTRATTI', 'en', 'Contracts stipulation');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_STIPULE', 'it', 'Elenco contratti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_STIPULE', 'en', 'Contracts list');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_STIPULE', 'it', 'Di seguito sono elencati i contratti associati all''impresa, attivi o in fase di stipula.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_STIPULE', 'en', 'The list below include all the the contracts assigned to the Supplier, already activated or to be signed by the supplier.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COD_STIPULA', 'it', 'Codice contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COD_STIPULA', 'en', 'Contracts code');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARA', 'it', 'Gara');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARA', 'en', 'Tender');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_STIPULA', 'it', 'Importo contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_STIPULA', 'en', 'Contract amount');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_STIPULA', 'it', 'Scheda contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_STIPULA', 'en', 'Contract detail');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_STIPULA', 'it', 'Questa funzionalità permette di visulizzare i dati del contratto selezionato. Il pulsante "Documenti contratto" permette di accedere al dettaglio dei documenti di contratto.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_STIPULA', 'en', 'This feature allows to view the information about the selected contrat. By the "CONTRACT DOCUMENT" button it is possibile to see the detail of the contract document.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OGGETTO_CONTRATTO', 'it', 'Oggetto contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OGGETTO_CONTRATTO', 'en', 'Contract subject');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_CONTRATTO', 'it', 'Importo contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_CONTRATTO', 'en', 'Contract amount');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTRATTO', 'it', 'Numero contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTRATTO', 'en', 'Contract number');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_STIPULA', 'it', 'Data stipula');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_STIPULA', 'en', 'Stipulation date');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCUMENTI', 'it', 'Documenti contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCUMENTI', 'en', 'Contract documents');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DOCUMENTI_STIPULE', 'it', 'Documenti contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DOCUMENTI_STIPULE', 'en', 'Contract documents');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DOCUMENTI_STIPULE', 'it', 'Di seguito viene visualizzata la lista dei documenti relativi al contratto selezionato. Facendo click sul nome di ciascun documento è possibile scaricare il relativo file (se presente). Al termine del caricamento dei file, usare il tasto INVIA CONTRATTO per inviare i documenti alla Stazione Appaltante.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DOCUMENTI_STIPULE', 'en', 'Here below there is the list of documents related to the selected contract. Doing a click on the document name it is possibile to download the file. Once the files have been uploaded, push on SEND CONTRACT  to send  documents to the Contracting Authority.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_LISTA', 'it', 'Lista documenti contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_LISTA', 'en', 'Contract documents list');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_DOCUMENTO', 'it', 'Documento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_DOCUMENTO', 'en', 'Document');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_DOCUMENTO', 'it', 'Note');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_DOCUMENTO', 'en', 'Notes');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_ALLEGATO', 'it', 'Allegato');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_ALLEGATO', 'en', 'Attachement');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_CONFIRM_STIPULE', 'it', 'Invia contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_CONFIRM_STIPULE', 'en', 'Send contract');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_REPERTORIO', 'it', 'Numero repertorio');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_REPERTORIO', 'en', 'Repertoire number');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFERMA_INVIO_STIPULA', 'it', 'Confermando l''operazione i documenti inseriti saranno inviati alla Stazione Appaltante. Si vuole procedere?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFERMA_INVIO_STIPULA', 'en', 'By confirming this operation, the documents uploaded will be sent to the Contracting Authority. Do you confirm?');
+
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_CONFERMA_INVIO_STIPULA', 'it', 'Invio documenti di contratto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_CONFERMA_INVIO_STIPULA', 'en', 'Contract documents sending');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFERMA_INVIO_STIPULA_SUCCESS', 'it', 'I documenti sono stati inviati con successo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFERMA_INVIO_STIPULA_SUCCESS', 'en', 'Contract documents were sent successfully');
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0-M2';
+	UPDATE ppcommon_ver SET version = '3.14.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0-M2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+
+
+-- 3.14.0-M3 to_3.14.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+		
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_BACK_DETTAGLIO_STIPULA', 'it', 'Torna al dettaglio contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_BACK_DETTAGLIO_STIPULA', 'en', 'Back to the contract detail');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONTRACT_MANAGER', 'it', 'Contract Manager');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONTRACT_MANAGER', 'en', 'Contract Manager');
+	
+	delete from showletconfig where pagecode='ppgare_auth' and framepos=9;
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_auth', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_auth' AND framepos = 9);
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_VAI_AL_CONTRATTO', 'it', 'Vai al contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_VAI_AL_CONTRATTO', 'en', 'Open contract');
+
+	update localstrings set stringvalue = 'Di seguito viene visualizzata la lista dei documenti relativi al contratto selezionato. Facendo click sul nome di ciascun documento &egrave; possibile scaricare il relativo file (se presente). Al termine del caricamento dei file, usare il tasto INVIA CONTRATTO per inviare i documenti alla Stazione Appaltante.' where keycode = 'BALLOON_DOCUMENTI_STIPULE' and langcode = 'it';
+
+	update localstrings set stringvalue = 'Questa funzionalit&agrave; permette di visulizzare i dati del contratto selezionato. Il pulsante "Documenti contratto" permette di accedere al dettaglio dei documenti di contratto.' where keycode = 'BALLOON_DETTAGLIO_STIPULA' and langcode = 'it';
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0-M3';
+	UPDATE ppcommon_ver SET version = '3.14.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0-M3';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.14.0-M4 to_3.14.0-RC2
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0-M4') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+	-- consenso extra
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA_TITLE', 'it', 'LABEL_CONSENSO_EXTRA_TITLE' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA_TITLE' AND langcode = 'it');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA_TITLE', 'en', 'LABEL_CONSENSO_EXTRA_TITLE' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA_TITLE' AND langcode = 'en');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA_NOTA', 'it', 'LABEL_CONSENSO_EXTRA_NOTA' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA_NOTA' AND langcode = 'it');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA_NOTA', 'en', 'LABEL_CONSENSO_EXTRA_NOTA' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA_NOTA' AND langcode = 'en');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA', 'it', 'LABEL_CONSENSO_EXTRA' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA' AND langcode = 'it');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) 
+	SELECT 'LABEL_CONSENSO_EXTRA', 'en', 'LABEL_CONSENSO_EXTRA' FROM ppcommon_ver WHERE plugin='ppgare' AND NOT EXISTS(SELECT keycode FROM localstrings WHERE keycode = 'LABEL_CONSENSO_EXTRA' AND langcode = 'en');	
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0-RC2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0-M4';
+	UPDATE ppcommon_ver SET version = '3.14.0-RC2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0-M4';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.14.0-RC2 to_3.14.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0-RC2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO ppcommon_customreports SELECT 44, 'agenziapo', 1, 'DomandaIscrizioneAlboLavori', 'Domanda iscrizione per lavori per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=44);
+INSERT INTO ppcommon_customreports SELECT 45, 'agenziapo', 1, 'DomandaIscrizioneAlboServiziForniture', 'Domanda iscrizione per servizi e forniture per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=45);
+INSERT INTO ppcommon_customreports SELECT 46, 'agenziapo', 1, 'DomandaIscrizioneAlboServiziTecnici', 'Domanda iscrizione per servizi tecnici per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=46);
+INSERT INTO ppcommon_customreports SELECT 47, 'agenziapo', 2, 'DomandaRinnovoAlboLavori', 'Domanda rinnovo per lavori per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=47);
+INSERT INTO ppcommon_customreports SELECT 48, 'agenziapo', 2, 'DomandaRinnovoAlboServiziForniture', 'Domanda rinnovo per servizi e forniture per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=48);
+INSERT INTO ppcommon_customreports SELECT 49, 'agenziapo', 2, 'DomandaRinnovoAlboServiziTecnici', 'Domanda rinnovo per servizi tecnici per Agenzia PO'
+									 FROM ppcommon_customreports WHERE id=9 and not exists (SELECT id FROM ppcommon_customreports WHERE id=49);
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_WSDM_TESTO_STIPULA_CONTRATTO' AND langcode IN ('it','en');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'it', 'L''''operatore economico "{0}" conferma l''''invio della stipula con codice {1} e dei relativi documenti.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'en', 'Economic operator "{0}" confirms the sending of the stipulation with code {1} and the related documents.');
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_LINK_USER_TO_SPID' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID', 'it', 'SPID');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID', 'en', 'SPID');
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_LINK_USER_TO_SHIBBOLET' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SHIBBOLETH', 'it', 'Shibboleth');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SHIBBOLETH', 'en', 'Shibboleth');
+
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_ABILITA_ACCESSO_CON' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ABILITA_ACCESSO_CON', 'it', 'Seleziona il link corrispondente al sistema da utilizzare per associare la tua utenza ad un sistema di autenticazione esterno e procedi con l''autenticazione nel sistema selezionato. In caso di autenticazione effettuata con successo la tua utenza esterna verrà abbinata alla tua utenza su portale, e pertanto potrai accedere direttamente utilizzando il sistema esterno a partire dai prossimi accessi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ABILITA_ACCESSO_CON', 'en', 'Select the link corresponding to the system to be used to associate your user with an external authentication system and proceed with the authentication in the selected system. In case of successful authentication, your external user will be matched to your user on the portal, and therefore you will be able to access directly using the external system starting from the next accesses.');
+
+	DELETE FROM localstrings WHERE keycode = 'LINK_AREA_PERSONALE_DISABILITA_ACCESSO_CON' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'it', 'Scollega da sistema di autenticazione esterno');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'en', 'Unlink access from external login system');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DISABILITA_ACCESSO_CON', 'it', 'Disabilita accesso con sistema di autenticazione esterno');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DISABILITA_ACCESSO_CON', 'en', 'Disable access with external authentication system');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'it', 'Selezionare "Scollega" per disattivare definitivamente, per le autenticazioni future, l''utilizzo del sistema di autenticazione esterno.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_DISABILITA_ACCESSO_CON', 'en', 'Select "Disconnect" to permanently disable the use of the external authentication system for future authentication.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DISABILITA_ACCESSO_CON_SUCCESS', 'it', 'L''utenza di portale è stata scollegata con successo da qualsiasi sistema esterno. Per accedere ora è necessario utilizzare esclusivamente l''autenticazione mediante inserimento di utente e password.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DISABILITA_ACCESSO_CON_SUCCESS', 'en', 'The portal user has been successfully disconnected from any external system. To log in now you need to use authentication by entering your user and password only.');
+
+-- si rieseguono degli inserimenti per correggere gli accenti corrotti
+DELETE FROM localstrings WHERE keycode='auth_CIE_LOGIN_DESCRIPTION' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='auth_SPID_LOGIN_DESCRIPTION' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='auth_SPID_BUSINESS_LOGIN_DESCRIPTION' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='LABEL_FATT_PAG_MOD' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='BALLOON_jpuserreg_ACTIVATION' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='BALLOON_jpuserreg_PASSWORD_RECOVERY' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='LABEL_LINKED_USER_CF' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='BALLOON_DETTAGLIO_STIPULA' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode='BALLOON_DOCUMENTI_STIPULE' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_DESCRIPTION', 'it', 'Se possiedi una carta d''identità elettronica e un cellulare con supporto nfc puoi autenticarti cliccando sul bottone ''Accedi con CIE''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CIE_LOGIN_DESCRIPTION', 'en', 'If you have an electronic identity card and a mobile phone with NFC support, you can log in by clicking on the ''Login with CIE button''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'it', 'Se possiedi un account SPID, il Sistema Pubblico di Identità Digitale, puoi accedere cliccando il bottone ''Accedi con SPID''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'en', 'If you have a SPID account, the Public Digital Identity System, you can log in by clicking the ''Log in with SPID button''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_BUSINESS_LOGIN_DESCRIPTION', 'it', 'Se possiedi un account SPID Business, il Sistema Pubblico di Identità Digitale, puoi accedere cliccando il bottone ''Accedi''');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_BUSINESS_LOGIN_DESCRIPTION', 'en', 'If you have a SPID Business account, the Public Digital Identity System, you can log in by clicking the ''Log in'' button');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_MOD', 'it', 'Modalità Pagamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FATT_PAG_MOD', 'en', 'Payment mode');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_ACTIVATION', 'it', 'Per completare il processo di attivazione account occorre inserire la password ripetendola due volte per controllo. Si suggerisce di utilizzare password di almeno 8 caratteri, utilizzando almeno 1 lettera maiuscola, almeno 1 lettera minuscola, almeno 2 numeri, almeno 1 carattere speciale e non più di 2 caratteri uguali consecutivi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_ACTIVATION', 'en', 'To complete the account activation process, the password must be entered by repeating it twice to check. It is suggested to use passwords of at least 8 characters, using at least 1 uppercase letter, at least 1 lowercase letter, at least 2 numbers, at least 1 special character and no more than 2 consecutive identical characters.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_PASSWORD_RECOVERY', 'it', 'Per completare il processo di riattivazione account occorre impostare una nuova password ripetendola due volte per controllo. Si suggerisce di utilizzare password di almeno 8 caratteri, utilizzando almeno 1 lettera maiuscola, almeno 1 lettera minuscola, almeno 2 numeri, almeno 1 carattere speciale e non più di 2 caratteri uguali consecutivi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_PASSWORD_RECOVERY', 'en', 'To complete the account reactivation process, a new password must be set by repeating it twice to check. It is suggested to use passwords of at least 8 characters, using at least 1 uppercase letter, at least 1 lowercase letter, at least 2 numbers, at least 1 special character and no more than 2 consecutive identical characters.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINKED_USER_CF', 'it', 'Per questa utenza è autorizzato ad entrare tramite account esterno il seguente identificativo:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINKED_USER_CF', 'en', 'For this user, the following ID is authorized to enter via an external account:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_STIPULA', 'it', 'Questa funzionalità permette di visualizzare i dati del contratto selezionato. Il pulsante "Documenti contratto" permette di accedere al dettaglio dei documenti di contratto.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_STIPULA', 'en', 'This feature allows to view the information about the selected contrat. By the "CONTRACT DOCUMENT" button it is possibile to see the detail of the contract document.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DOCUMENTI_STIPULE', 'it', 'Di seguito viene visualizzata la lista dei documenti relativi al contratto selezionato. Facendo click sul nome di ciascun documento &egrave; possibile scaricare il relativo file (se presente). Al termine del caricamento dei file, usare il tasto INVIA CONTRATTO per inviare i documenti alla Stazione Appaltante.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DOCUMENTI_STIPULE', 'en', 'Here below there is the list of documents related to the selected contract. Doing a click on the document name it is possibile to download the file. Once the files have been uploaded, push on SEND CONTRACT  to send  documents to the Contracting Authority.');
+
+update ppcommon_properties set name='auth.sso.federa.wsAuthServiceFedera.url', category = 'autenticazione-federa' where name = 'auth.sso.myid.wsAuthServiceFedera.url';
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.14.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0-RC2';
+	UPDATE ppcommon_ver SET version = '3.14.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0-RC2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.14.0_to_3.15.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.14.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTIONARIO_COMPLETATO', 'it', 'Questionario completato');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTIONARIO_COMPLETATO', 'en', 'Completed questionnaire');
+
+-- CUSTOMIZZAZIONI
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'RINUNCIA', 'ACT', 0);
+
+-- rinuncia partecipazione offerta
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_RINUNCIA_OFFERTA', 'it', 'Rinuncia all''offerta');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_RINUNCIA_OFFERTA', 'en', 'Renounce tender offer');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARETEL_RINUNCIA_OFFERTA', 'it', 'Rinuncia all''offerta');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARETEL_RINUNCIA_OFFERTA', 'en', 'Renounce tender offer');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_RINUNCIA_OFFERTA', 'it', 'Rinuncia all''offerta');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_RINUNCIA_OFFERTA', 'en', 'Renounce to tender offer');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_RINUNCIA_OFFERTA', 'it', 'Rinuncia offerta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_RINUNCIA_OFFERTA', 'en', 'Renounce tender offer');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_RIEPILOGO_RINUNCIA', 'it', 'Riepilogo rinuncia');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_RIEPILOGO_RINUNCIA', 'en', 'Renounce summary');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA', 'it', 'Annulla rinuncia');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA', 'en', 'Cancel renounce');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MOTIVAZIONE_RINUNCIA', 'it', 'Motivazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MOTIVAZIONE_RINUNCIA', 'en', 'Reason');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO', 'it', 'Notifica di invio rinuncia offerta con oggetto "{0}"');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO', 'en', 'Notification of sending renounce of tender offer with subject "{0}"');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO', 'it', 'Con la presente si notifica all''''operatore economico "{0}" che la rinuncia offerta è stata inviata e presentata in data {1}.
+
+Cordiali saluti
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO', 'en', 'We hereby notify the "economic operator" {0} "that the renounce of tender offer has been sent and presented on {1}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO', 'it', 'Con la presente si notifica all''''operatore economico "{0}" che la rinuncia offerta è stata inviata e presentata in data {1} e risulta protocollata con anno {2} e numero {3}.
+
+Cordiali saluti
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO', 'en', 'We hereby notify the "economic operator" {0} "that the renounce of tender offer has been sent and presented on {1} and is registered with the year {2} and number {3}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+
+-- RAI visualizzazione gare scadute
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'NEGOZIATESCADUTE', 'VIS', 1);
+
+-- ...
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_OGGETTO', 'it', 'Notifica recupero registrazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_OGGETTO', 'en', 'Notification of registration recovery');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO', 'it', 'Spettabile {0},
+hai richiesto in data {1} il ripristino sul portale {2} della tua utenza.
+[[La richiesta è stata attivata mediante autenticazione di un soggetto con id {4}.]]
+Seleziona il link {3} per confermare e completare il processo
+
+-----
+ 
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO', 'en', 'Respectable {0},
+on {1} you requested the restoration of your user on the portal {2}.
+[[The request was triggered by authenticating a subject with id {4}.]]
+Select link {3} to confirm and complete the process
+
+-----
+ 
+This email is generated by an automatic system, please do not reply.');
+
+-- aggancio utente esistenti a SSO
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'it', 'Collega utenza a SSO');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'en', 'Link user to SSO');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'it', 'Completa la registrazione utente e il collegamento a SSO');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'en', 'Complete user registration and logon to SSO');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_INFO', 'it', 'E'' stato ricevuto un token per completare la registrazione utente e per collegare tale utenza ad SSO');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_INFO', 'en', 'A token was received to complete user registration and to connect that user to SSO');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCESSO_COLLEGA_UTENZA', 'it', 'Collega utenza');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCESSO_COLLEGA_UTENZA', 'en', 'Link user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_SUCCESS', 'it', 'Il processo di registrazione e il collegamento a SSO sono stati completati correttemente. E'' stata inviata una mail di conferma della registrazione all''indirizzo di mail definito per l''impresa');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_SUCCESS', 'en', 'The registration process and the connection to SSO have been completed successfully. An e-mail confirming registration has been sent to the e-mail address defined for the company');
+
+-- accettazione dei consensi 
+INSERT INTO ppcommon_properties (name, type, description , value, defvalue, category, ordprog) VALUES ('clausolePiattaforma.versione', 'I', 'Versione delle clausole della piattaforma', '', '','configurazione generale', 920);
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppcommon_accettaconsensi', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Consent acceptance</property>
+<property key="it">Accettazione consensi</property>
+</properties>', NULL, 'ppcommon', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/AreaPers/openAccettazioneConsensi.action</property>
+</properties>
+', 1);
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppcommon_accetta_consensi', 'ppcommon_area_riservata', 14, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Consent acceptance</property>
+<property key="it">Accettazione consensi</property>
+</properties>', 'free', 0);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 7, 'ppcommon_accettaconsensi', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 9, 'language_choose', NULL, NULL);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_ACCETTA_CONSENSI', 'it', 'Accettazione consensi');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_ACCETTA_CONSENSI', 'en', 'Accettazione Consensi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI', 'it', 'Accettazione consensi');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI', 'en', 'Accettazione consensi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_CONSENSI', 'it', 'Confirma');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_CONSENSI', 'en', 'Confirm');
+
+-- notifica oggetto mail invio comunicazione
+DELETE FROM localstrings WHERE keycode = 'MAIL_INVCOM_RICEVUTA_OGGETTO';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_INVCOM_RICEVUTA_OGGETTO', 'it', 'Rif. {1} - Notifica di invio comunicazione con oggetto "{0}"');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_INVCOM_RICEVUTA_OGGETTO', 'en', 'Ref. {1} - Notification of sending communication with subject "{0}"');
+
+--stipule contratti
+DELETE FROM localstrings WHERE keycode = 'LABEL_WSDM_TESTO_STIPULA_CONTRATTO' AND langcode IN ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'it', 
+'L''''operatore economico "{0}" conferma l''''invio della documentazione di contratto inerente la stipula con:
+
+Codice: {1}
+Titolo: {2}
+
+ovvero dei documenti di seguito elencati:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_TESTO_STIPULA_CONTRATTO', 'en', 
+'The economic operator "{0}" confirms the sending of the contract documentation concerning the stipulation with:
+
+Code: {1} 
+Title: {2}
+
+with the following documents:');
+
+-- ascesa torre
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUISITI_ASCESA_TORRE', 'it', 'Possesso requisiti di ascesa torre');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUISITI_ASCESA_TORRE', 'en', 'Possession requirements for ascesa torre');
+
+-- rettifica questionari
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO1', 'it', 'ATTENZIONE: la Stazione Appaltante ha cambiato la modulistica o la documentazione richiesta per la busta ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO1', 'en', 'ATTENTION: the Contracting Authority has changed the forms or documentation required for the envelope ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO2', 'it', 'E'' necessario annullare la busta e ricominciare da capo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO2', 'en', 'It is necessary to cancel the envelope and start over.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI', 'it', 'Clicca qui per scaricare e recuperare i documenti giÃ  caricati.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI', 'en', 'Click here to download and retrieve the documents already uploaded.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI', 'it', 'Clicca qui per cancellare tutto il contenuto della busta e ricominciare da capo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI', 'en', 'Click here to delete all the contents of the envelope and start over.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO3', 'it', 'Controllare inoltre la documentazione di gara o eventuali comunicazioni della Stazione Appaltante inerenti  rettifiche alla procedura di appalto.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO3', 'en', 'Also check the tender documentation or any communications from the Contracting Authority regarding adjustments to the procurement procedure.');
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.14.0';
+	UPDATE ppcommon_ver SET version = '3.15.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.14.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.15.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	UPDATE ppcommon_customizations SET objectid = 'GARE-SCADUTE', attrib = 'NEGOZIATE' WHERE objectid = 'GARE' AND attrib = 'NEGOZIATESCADUTE' AND feature = 'VIS';
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_REQUISITI_ASCESA_TORRE' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUISITI_ASCESA_TORRE', 'it', 'Possesso requisiti di ascesa torre');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUISITI_ASCESA_TORRE', 'en', 'Possession of tower ascent requirements');
+
+	DELETE FROM showletconfig WHERE pagecode = 'ppcommon_accetta_consensi' AND framepos = 9;
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppcommon_accetta_consensi', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppcommon_accetta_consensi' AND framepos = 9);
+
+	UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code = 'ppcommon_accetta_consensi';
+
+-- rettifica questionari
+	DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_MODULISTICA_CAMBIATA' AND langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_MODULISTICA_CAMBIATA_INFO1' AND langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_MODULISTICA_CAMBIATA_INFO2' AND langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI' AND langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI' AND langcode in ('it','en');
+	DELETE FROM localstrings WHERE keycode = 'LABEL_MODULISTICA_CAMBIATA_INFO3' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_MODULISTICA_CAMBIATA', 'it', 'Modulistica variata');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_MODULISTICA_CAMBIATA', 'en', 'Varied forms');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO1', 'it', 'ATTENZIONE: la Stazione Appaltante ha cambiato la modulistica o la documentazione richiesta per la busta ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO1', 'en', 'ATTENTION: the Contracting Authority has changed the forms or documentation required for the envelope ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO2', 'it', 'E'' necessario annullare la busta e ricominciare da capo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO2', 'en', 'It is necessary to cancel the envelope and start over.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI', 'it', 'Clicca qui per scaricare e recuperare i documenti già caricati.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI', 'en', 'Click here to download and retrieve the documents already uploaded.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI', 'it', 'Clicca qui per cancellare tutto il contenuto della busta e ricominciare da capo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI', 'en', 'Click here to delete all the contents of the envelope and start over.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO3', 'it', 'Controllare inoltre la documentazione di gara o eventuali comunicazioni della Stazione Appaltante inerenti  rettifiche alla procedura di appalto.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_CAMBIATA_INFO3', 'en', 'Also check the tender documentation or any communications from the Contracting Authority regarding adjustments to the procurement procedure.');
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_RECOVER_REGISTRAZIONE_OE' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RECOVER_REGISTRAZIONE_OE', 'it', 'L''impresa &egrave; stata registrata in precedenza ma il processo non &egrave; mai stato completato. Vuoi ripristinare lo stato in modo da completare il processo di registrazione? Conferma per ricevere una mail dove troverai un link da cliccare per verificare la tua identità.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RECOVER_REGISTRAZIONE_OE', 'en', '
+The company was previously registered but the process was never completed. Do you want to reset the status in order to complete the registration process? Confirm to receive an email where you will find a link to click to verify your identity.');
+
+INSERT INTO ppcommon_properties (name, type, description , value, defvalue, category, ordprog) VALUES ('importMassivoUtenti.dataTermine', 'S', 'UTILIZZARE SOLO IN CASO DI IMPORT MASSIVO DI UTENZE: impostare la data termine per consentire ad utenti di inserirsi a sistema (formato GG/MM/AAAA)', '', '','configurazione generale', 930);
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0-M1';
+	UPDATE ppcommon_ver SET version = '3.15.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.15.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.15.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+	DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI', 'it', 'È stata definita una nuova versione dei consensi da approvare nella piattaforma. Se sei arrivato in questa pagina vuol dire che i consensi accettati in precedenza sono diversi da quelli in vigore, oppure si tratta del primo accesso successivo alla gestione della registrazione dei consensi.<br/>Per procedere pertanto accettare le voci sottostanti e premere il pulsante "Conferma".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI', 'en', 'A new version of the consents has been defined to be approved in the platform. If you have arrived on this page it means that the previously accepted consents are different from those in force, or it is the first access following the management of the consent registration. <br/> To proceed, therefore, accept the items below and press the "Confirm" button.');	
+
+	DELETE FROM localstrings WHERE keycode = 'BUTTON_ACCETTA_CONSENSI' AND langcode in ('it','en');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0-M2';
+	UPDATE ppcommon_ver SET version = '3.15.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.15.0-M2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.15.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	DELETE FROM localstrings WHERE keycode = 'MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO', 'it', 'Spettabile {0},
+hai richiesto in data {1} il ripristino sul portale {2} della tua utenza.
+[[La richiesta è stata attivata mediante autenticazione di un soggetto con id {4}.]]
+Seleziona entro 48 ore il link {3} per confermare e completare il processo.
+
+-----
+ 
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO', 'en', 'Respectable {0},
+on {1} you requested the restoration of your user on the portal {2}.
+[[The request was triggered by authenticating a subject with id {4}.]]
+Select the link {3} within 48 hours to confirm and complete the process.
+
+-----
+ 
+This email is generated by an automatic system, please do not reply.');
+
+-- rinuncia partecipazione offerta
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_1', 'it', 'Hai richiesto l''annullamento della rinuncia all''offerta inviata in precedenza.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_1', 'en', 'You have requested the cancellation of the renounce to tender offer previously sent.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2', 'it', 'Quest''operazione annuller&agrave; a tutti gli effetti l''invio della precedente rinuncia all''offerta, pertanto sar&agrave; necessario procedere nuovamente all''inserimento ed al reinvio dei dati.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2', 'en', 'This operation will in effect cancel the sending of the previous renounce to tender offer, therefore it will be necessary to proceed again with the insertion and the sending of the data.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3', 'it', 'Vuoi veramente annullare la rinucia all''offerta?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3', 'en', 'Do you really want to cancel the tender offer renunciation?');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_1', 'it', 'La sua richiesta di annullamento della rinuncia all''offerta presentata il');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_1', 'en', 'Your request to cancel the renounce to tender offer presented on');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_2', 'it', 'Seguire il link per tornare al dettaglio della procedura.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_2', 'en', 'Follow the link to go back to the details of the procedure.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_OGGETTO', 'it', 'Rif. {0} - Conferma di annullamento {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_OGGETTO', 'en', 'Ref. {0} - Cancellation of confirmation {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_TESTO', 'it', 'Si conferma che {0} presentata in data {1} è stata annullata come da Sua richiesta da portale.
+
+Cordiali saluti
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_TESTO', 'en', 'It is confirmed that {0} presented on {1} was canceled as per your request from the portal.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO' AND langcode in('it', 'en');
+DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_COLLEGA_UTENZA_SSO' AND langcode in('it', 'en');
+DELETE FROM localstrings WHERE keycode = 'LABEL_COLLEGA_UTENZA_INFO' AND langcode in('it', 'en');
+DELETE FROM localstrings WHERE keycode = 'LABEL_COLLEGA_UTENZA_SUCCESS' AND langcode in('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'it', 'Attiva operatore economico autenticato con sistema esterno');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'en', 'Activate authenticated economic operator with external system');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'it', 'È stata ricevuta una richiesta per completare la registrazione di un operatore economico collegato alla propria utenza su portale. L''accesso alla piattaforma avverrà utilizzando sempre il sistema di autenticazione esterno usato per il presente accesso. Verificare i dati e quindi confermare.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_COLLEGA_UTENZA_SSO', 'en', 'A request was received to complete the registration of an economic operator connected to its user on the portal. Access to the platform will always take place using the external authentication system used for this access. Check the data and then confirm.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_SUCCESS', 'it', 'Il processo di registrazione ed il collegamento alle credenziali di autenticazione sono stati conclusi con successo. E'' stato inoltre inviato all''operatore la mail di conferma abilitazione alla piattaforma.');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COLLEGA_UTENZA_SUCCESS', 'en', 'The registration process and the connection to the authentication credentials have been completed successfully. In addition, the email confirming enabling the platform was sent to the economic operator.');
+
+DELETE FROM localstrings WHERE keycode = 'BALLOON_GARETEL_RINUNCIA_OFFERTA' AND langcode in('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RINUNCIA_OFFERTA', 'it', 'Inserire la motivazione per la quale si intende rinunciare a presentare offerta, quindi premere il pulsante "Rinuncia offerta" per comunicare alla stazione appaltante la motivazione.<br/>Nota bene: la ricezione della rinuncia avverrà contestualmente all''acquisizione delle offerte.');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RINUNCIA_OFFERTA', 'en', 'Enter the reason for which you intend to renounce to submit the tender offer, then press the "Renounce tender offer" button to notify the contracting authority of the reason.<br/>Please note: the acquisition of renunciations will take place at the same time as the acquisition of offers.');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0-M3';
+	UPDATE ppcommon_ver SET version = '3.15.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.15.0-M3';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.15.0-M4') THEN
+	-- INIZIO AGGIORNAMENTI
+	DELETE FROM localstrings WHERE keycode = 'MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO' AND langcode in('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO', 'it', 'Notifica di invio rinuncia offerta rif. procedura {1} con oggetto "{0}"');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO', 'en', 'Notification of sending renounce of tender offer ref. procedure {1} with subject "{0}"');
+
+	DELETE FROM localstrings WHERE keycode = 'MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO' AND langcode in('en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO', 'en', 'We hereby notify the economic operator "{0}" that the renounce of tender offer has been sent and presented on {1}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+	DELETE FROM localstrings WHERE keycode = 'MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO' AND langcode in('en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO', 'en', 'We hereby notify the economic operator "{0}" that the renounce of tender offer has been sent and presented on {1} and is registered with the year {2} and number {3}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_RIEPILOGO_RINUNCIA_OFFERTA', 'it', 'Riepilogo rinuncia offerta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_RIEPILOGO_RINUNCIA_OFFERTA', 'en', 'Tender offer waiver summary');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RIEPILOGO_RINUNCIA_OFFERTA', 'it', 'Di seguito viene riportata la motivazione inserita per la rinuncia a presentare offerta. Nel caso di termine presentazione offerta non ancora scaduto, è possibile annullare la rinuncia per ritornare a presentare offerta agendo sul pulsante "Annulla rinuncia".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RIEPILOGO_RINUNCIA_OFFERTA', 'en', 'The motivation entered for the renunciation to submit a tender offer is shown below. If the deadline for submitting the offer has not yet expired, it is possible to cancel the renunciation to return to the tender offer by clicking on the "Cancel renounce" button.');
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.15.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0-M4';
+	UPDATE ppcommon_ver SET version = '3.15.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.15.0-M4';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.15.0_to_3.16.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.15.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	DELETE FROM ppcommon_properties WHERE category = 'dgue';
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('dgue-symkey', 'S', 'Chiave simmetrica per la cifratura dei dati da scambiare con applicativo M-DGUE', NULL, NULL, 99, 'dgue');
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('dgue-jwtkey', 'S', 'Chiave per generare il token di scambio con applicativo M-DGUE', NULL, NULL, 100, 'dgue');
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('dgue-jwtkey-expiration', 'L', 'Tempo massimo di validita del token per M-DGUE da esprimersi in minuti', '5', '5', 101, 'dgue');
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('dgue-url-mdgue', 'S', 'URL applicativo M-DGUE', NULL, 'http://localhost:4200/dgue-home', 102, 'dgue');
+	
+	DELETE FROM localstrings where keycode like ('LABEL_DGUE%') and langcode in ('it','en');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_CLICK', 'it', 'clicca qui');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_CLICK', 'en', 'click here');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_FIRST', 'it', 'Utilizza il servizio <b>M-DGUE</b> integrato alla piattaforma per compilare il <b>DGUE</b> elettronico e una volta prodotto il file "XML Response" ritorna qui per caricalo.<br>Per compilare un <b>nuovo DGUE</b> recuperando i dati inseriti nella piattaforma (dati anagrafici dell''impresa o dell''eventuale capogruppo in caso di RTI, lotti, ecc.) ');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_FIRST', 'en', 'Use the platform-integrated <b>M-DGUE</b> service to fill in the electronic <b>ESPD</b> and once produced the "XML Response" file returns here to upload it.<br>To fill in a <b>new ESPD</b> by retrieving the data entered in the platform (personal data of the company or of the possible parent company in case of RTI, lots, etc.) ');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_SECOND', 'it', 'Per gli <b>ulteriori</b> eventuali <b>DGUE</b> richiesti ad altri soggetti (membri del ragguppamento, imprese ausiliarie, subappaltatori...) utilizza o condividi');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_SECOND', 'en', 'For any <b>further ESPDs</b> requested from other parties (members of the group, auxiliary companies, subcontractors...) use or share ');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_THIRD', 'it', 'Per modificare o riutilizzare un "XML Response" esistente, oppure per eseguire altre operazioni accessorie');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DGUE_LINK_THIRD', 'en', 'To modify or reuse an existing "XML Response", or to perform other ancillary operations ');
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.16.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.15.0';
+	UPDATE ppcommon_ver SET version = '3.16.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.15.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.16.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	UPDATE ppcommon_properties SET value = 'https://helpdesk.maggioli.it', defvalue = 'https://helpdesk.maggioli.it' WHERE name = 'assistenza.hda.url'; 
+	
+		INSERT INTO ppcommon_properties (name, type, description , value, defvalue, category, ordprog) values ('wsLfsAppalto', 'L', 'Web service per l''interazione con il sistema LFS', 'http://localhost:8080/WSAppalti/services/WSLfsSOAP', 'http://localhost:8080/WSAppalti/services/WSLfsSOAP','configurazione generale', 940);
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_searchContrattiLFS', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Contracts execution</property>
+<property key="it">Esecuzione contratti</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/ContrattiLFS/searchContratti.action</property>
+</properties>
+', 1);
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_contratti_lfs_lista', 'ppcommon_area_riservata', 15, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Contracts list</property>
+<property key="it">Esecuzione contratti</property>
+</properties>', 'gare', 0);
+
+
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 0, 'date_time', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 1, 'search_form', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 2, 'navigation_breadcrumbs', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+	<properties>
+	<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+	</properties>
+	', NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 7, 'ppgare_searchContrattiLFS', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 9, 'language_choose', NULL, NULL);
+
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_contratti_lfs_lista', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_contratti_lfs_lista' AND framepos = 9);
+
+	UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code in ('ppgare_contratti_lfs_lista');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_CONTRATTI_LFS', 'it', 'Esecuzione contratti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_CONTRATTI_LFS', 'en', 'Contracts execution');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_CONTRATTI_LFS', 'it', 'All''interno di questa sezione è possibile consultare i contratti in essere associati all''impresa.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_CONTRATTI_LFS', 'en', 'In this section it is possible to consult the existing contracts associated with the company.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_CONTRATTI_LFS', 'it', 'Esecuzione contratti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_CONTRATTI_LFS', 'en', 'Contracts execution');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_CONTRATTI_LFS', 'it', 'Esecuzione contratti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_CONTRATTI_LFS', 'en', 'Contracts execution');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_CONTRATTO_LFS', 'it', 'Dettaglio esecuzione contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_CONTRATTO_LFS', 'en', 'Contract execution detail');	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_CONTRATTO_LFS', 'it', 'Questa funzionalità permette di visualizzare i dati del contratto selezionato.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_CONTRATTO_LFS', 'en', 'This feature allows you to view the data of the selected contract.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DIRETTORE_ESECUZIONE', 'it', 'Direttore esecuzione del contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DIRETTORE_ESECUZIONE', 'en', 'Contract manager');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COORDINATORE_SICUREZZA', 'it', 'Coordinatore della sicurezza');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COORDINATORE_SICUREZZA', 'en', 'Security coordinator');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CONTRATTO', 'it', 'Codice Contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CONTRATTO', 'en', 'Contract Code');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONTRATTO', 'it', 'Data contratto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONTRATTO', 'en', 'Contract data');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_CONTRATTO', 'it', 'Stato');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_CONTRATTO', 'en', 'Status');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMUNICAZIONI_RIFERIMENTO', 'it', 'Riferimento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMUNICAZIONI_RIFERIMENTO', 'en', 'Reference');
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.16.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.16.0-M1';
+	UPDATE ppcommon_ver SET version = '3.16.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.16.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.16.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione tramite credenziali (0=non previsto, 1=previsto)' WHERE name = 'auth.form';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on Cohesion (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]' WHERE name = 'auth.sso.cohesion';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on Apache Shibboleth (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]' WHERE name = 'auth.sso.shibboleth';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on CIE (0=non previsto, 1=previsto)' WHERE name = 'auth.sso.cie';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on CNS (0=non previsto, 1=previsto)' WHERE name = 'auth.sso.cns';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on SPID (0=non previsto, 1=previsto)' WHERE name = 'auth.sso.spid';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on CRS (0=non previsto, 1=previsto)' WHERE name = 'auth.sso.crs';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on My ID (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]' WHERE name = 'auth.sso.myid';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on GEL (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]' WHERE name = 'auth.sso.gel';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione Single Sign-on FEDERA (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]' WHERE name = 'auth.sso.federa';
+UPDATE ppcommon_properties SET description = 'Sistema di autenticazione tramite Single Sign-on SPID Business (0=non previsto, 1=previsto)' WHERE name = 'auth.sso.spidbusiness';
+
+-- parametri di protocollazione deprecati/obsoleti che vengono spostati nella relativa configurazione di BO
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] URL servizio WSDM di protocollazione'
+WHERE name = 'protocollazione.wsdm.url';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Codice del sistema di protocollazione usato'
+WHERE name = 'protocollazione.wsdm.codiceSistema';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Utente da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.username';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Password da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.password';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Cognome utente da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.cognome';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Nome utente da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.nome';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Ruolo da inviare al servizio di protocollazione' 
+WHERE name = 'protocollazione.wsdm.ruolo';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Codice unità organizzativa da inviare al servizio di protocollazione' 
+WHERE name = 'protocollazione.wsdm.codiceUO';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Struttura competente destinataria della protocollazione, se diversa dalla struttura proponente nel fascicolo di B.O.'  
+WHERE name = 'protocollazione.wsdm.struttura';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipologia di assegnazione all''ufficio' 
+WHERE name = 'protocollazione.wsdm.tipoAssegnazione';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Codice mittente interno da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.mittenteInterno';
+
+UPDATE ppcommon_properties SET description =  '[DEPRECATA - convertire in analoga configurazione su Appalti] Inserisci il codice fiscale mittente (1=SI, 0=NO)'
+WHERE name = 'protocollazione.wsdm.cfMittente';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Mezzo usato per la spedizione, da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.mezzo';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Channel code, da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.channelCode';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Identificativo utente protocollante, da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.idUtente';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Identificativo dell''unità operativa del protocollante, da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.idUnitaOperativa';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Identificativo dell''unità operativa destinataria, da inviare al servizio di protocollazione'
+WHERE name = 'protocollazione.wsdm.idUnitaOperativaDestinataria';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Campo supporto da utilizzare per la protocollazione'
+WHERE name = 'protocollazione.wsdm.supporto';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione in invio comunicazione'
+WHERE name = 'protocollazione.wsdm.tipoDocumento.inviaComunicazione';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Classifica da utilizzare per la protocollazione di iscrizione/aggiornamenti/rinnovi a elenchi o cataloghi'
+WHERE name = 'protocollazione.wsdm.iscrizione.classifica';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione di iscrizione/aggiornamenti/rinnovi a elenchi o cataloghi'
+WHERE name = 'protocollazione.wsdm.iscrizione.tipoDocumento';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Registro da utilizzare per la protocollazione di iscrizione/aggiornamenti/rinnovi a elenchi o cataloghi'
+WHERE name = 'protocollazione.wsdm.iscrizione.registro';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Indice da utilizzare per la protocollazione di iscrizione/aggiornamenti/rinnovi a elenchi o cataloghi'
+WHERE name = 'protocollazione.wsdm.iscrizione.indice';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Titolazione da utilizzare per la protocollazione di iscrizione/aggiornamenti/rinnovi a elenchi o cataloghi'
+WHERE name = 'protocollazione.wsdm.iscrizione.titolazione';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Classifica da utilizzare per la protocollazione di prodotti del mercato elettronico'
+WHERE name = 'protocollazione.wsdm.mepa.classifica';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione di prodotti del mercato elettronico'
+WHERE name = 'protocollazione.wsdm.mepa.tipoDocumento';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Registro da utilizzare per la protocollazione di prodotti a del mercato elettronico'
+WHERE name = 'protocollazione.wsdm.mepa.registro';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Indice da utilizzare per la protocollazione di prodotti a del mercato elettronico'
+WHERE name = 'protocollazione.wsdm.mepa.indice';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Titolazione da utilizzare per la protocollazione di prodotti a del mercato elettronico'
+WHERE name = 'protocollazione.wsdm.mepa.titolazione';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Classifica da utilizzare per la protocollazione in procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.classifica';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione in procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.tipoDocumento';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione di una busta di prequalifica'
+WHERE name = 'protocollazione.wsdm.gare.tipoDocumento.prequalifica';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Registro da utilizzare per la protocollazione in procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.registro';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Indice da utilizzare per la protocollazione in procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.indice';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Titolazione da utilizzare per la protocollazione in procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.titolazione';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Livello di riservatezza nelle procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.livelloRiservatezza';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Struttura competente destinataria della protocollazione per le procedure di gara'
+WHERE name = 'protocollazione.wsdm.gare.struttura';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Classifica da utilizzare per la protocollazione in svvisi'
+WHERE name = 'protocollazione.wsdm.avvisi.classifica';
+ 
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Tipo documento da utilizzare per la protocollazione in avvisi'
+WHERE name = 'protocollazione.wsdm.avvisi.tipoDocumento';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Registro da utilizzare per la protocollazione in avvisi'
+WHERE name = 'protocollazione.wsdm.avvisi.registro';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Indice da utilizzare per la protocollazione in avvisi'
+WHERE name = 'protocollazione.wsdm.avvisi.indice';
+
+UPDATE ppcommon_properties SET description = '[DEPRECATA - convertire in analoga configurazione su Appalti] Titolazione da utilizzare per la protocollazione in avvisi'
+WHERE name = 'protocollazione.wsdm.avvisi.titolazione';
+
+-- aggiorna label rinuncia
+DELETE FROM localstrings WHERE keycode = 'MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO', 'it', 'Con la presente si notifica all''''operatore economico "{0}" che la rinuncia offerta {2} "{3}" è stata inviata e presentata in data {1}.
+
+Cordiali saluti
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO', 'en', 'We hereby notify the economic operator "{0}" that the renounce of tender offer {2} "{3}" has been sent and presented on {1}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+DELETE FROM localstrings WHERE keycode = 'MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO', 'it', 'Con la presente si notifica all''''operatore economico "{0}" che la rinuncia offerta {4} "{5}" è stata inviata e presentata in data {1} e risulta protocollata con anno {2} e numero {3}.
+
+Cordiali saluti
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO', 'en', 'We hereby notify the economic operator "{0}" that the renounce of tender offer {4} "{5}" has been sent and presented on {1} and is registered with the year {2} and number {3}.
+
+Best regards
+
+-----
+This mail is generated by an automatic system, please do not reply.');
+
+-- aggiornamento dei messaggi relativi alle mail di avviso di sicurezza
+UPDATE sysconfig SET config = '<?xml version="1.0" encoding="UTF-8"?>
+<AuthConfig>
+	<profileEntity nameAttr="Nome" surnameAttr="Nome" eMailAttr="email" langAttr="language" />
+	<sender code="PORTALICE1" />
+	
+	<userDisabledAdminMail pageCode="admin">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Disattivazione account utente]]></subject>
+			<body><![CDATA[L''utenza {userName} è stata disabilitata, poiché è stato superato il numero limite di {attempts} tentativi di login con password errata a {applicationBaseUrl}.
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Account disabled]]></subject>
+			<body><![CDATA[The user {userName} is now disabled, because the limit of {attempts} login attempts with wrong password has been exceeded to {applicationBaseUrl}.
+
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</userDisabledAdminMail>
+	
+	<userDisabledUserMail pageCode="user">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Disattivazione account utente]]></subject>
+			<body><![CDATA[Spett.le {name}, 
+la Sua utenza {userName} per l''accesso al portale è stata disattivata a seguito di un eccessivo numero di tentativi di accesso falliti.
+ 
+E'' possibile riattivare l''utenza ritornando sul sito web
+{applicationBaseUrl}
+cliccando sul link "Hai dimenticato la password?".
+
+Qualora non riesca a recuperare la password e riattivare la propria utenza, potrà contattare il servizio di assistenza a uno dei recapiti indicati nella sezione "Assistenza operatori economici" del sito web.
+
+Cordiali Saluti.
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Account disabled]]></subject>
+			<body><![CDATA[Dear {name}, 
+your user {userName} has been suspended due to too many login attempts.
+ 
+It is possible to reactivate the user by returning to the website
+{applicationBaseUrl}
+by clicking on the "Forgot your password?" link.
+
+If you are unable to retrieve your password and reactivate your account, you can contact the assistance service at one of the addresses indicated in the "Assistance to economic operators" section of the website.
+
+Best regards.
+
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</userDisabledUserMail>
+
+	<ipSuspendedAdminMail pageCode="admin">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Inibizione accesso]]></subject>
+			<body><![CDATA[L''accesso al portale {applicationBaseUrl} dall''indirizzo ip {ipAddress} è stato inibito per {minutes} minuti, poiché è stato superato il numero limite di {attempts} tentativi di login falliti.
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Inhibition access]]></subject>
+			<body><![CDATA[
+Portal access {applicationBaseUrl} has been inhibited for {minutes} minutes for the ip address {ipAddress}, because the limit of {attempts} login failures has been exceeded.
+
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</ipSuspendedAdminMail>
+	
+</AuthConfig>'
+WHERE version = 'production' AND item = 'jpauthenticator_Config';
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_FOOTER', 'it', '<!-- HTML_PRE_FOOTER -->');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_FOOTER', 'en', '<!-- HTML_PRE_FOOTER -->');
+
+UPDATE ppcommon_properties SET ordprog = '74' WHERE name = 'wsStipuleAppalto';
+UPDATE ppcommon_properties SET ordprog = '76' WHERE name = 'wsLfsAppalto';
+
+UPDATE ppcommon_properties SET ordprog = '940' WHERE name = 'dgue-symkey';
+UPDATE ppcommon_properties SET ordprog = '950' WHERE name = 'dgue-jwtkey';
+UPDATE ppcommon_properties SET ordprog = '960' WHERE name = 'dgue-jwtkey-expiration';
+UPDATE ppcommon_properties SET ordprog = '970' WHERE name = 'dgue-url-mdgue';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.16.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.16.0-M2';
+	UPDATE ppcommon_ver SET version = '3.16.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.16.0-M2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.16.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.16.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.16.0-M3';
+	UPDATE ppcommon_ver SET version = '3.16.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.16.0-M3';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.16.0_to_3.17.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.16.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) values ('urlAlboFornitoriEsterni', 'S', 'Url albo fornitori esterni', '', '','configurazione generale', 190);
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_alboFornitoriEsterno', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Access to the Suppliers Register</property>
+<property key="it">Accesso all''Albo Fornitori</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/openAlboFornitori.action</property>
+</properties>
+', 1);
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_albo_fornitori_esterno',  'ppgare_oper_economici', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Access to the Suppliers Register</property>
+<property key="it">Accesso all''Albo Fornitori</property>
+</properties>', 'free', 0);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 7, 'ppgare_alboFornitoriEsterno', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_albo_fornitori_esterno', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_albo_fornitori_esterno' AND framepos = 9);
+
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code in ('ppgare_albo_fornitori_esterno');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ALBO_FORNITORI', 'it', 'Albo fornitori');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ALBO_FORNITORI', 'en', 'Suppliers register');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALBO_FORNITORI', 'it', 'Definire un testo informativo che riferisca di cosa si tratta, se ci sono regolamenti scaricabili, e come si deve procedere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALBO_FORNITORI', 'en', 'Define an informative text that tells what it is, if there are downloadable regulations, and how to proceed.');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_RICHIEDI_ISCRIZIONE', 'it', 'Richiedi iscrizione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_RICHIEDI_ISCRIZIONE', 'en', 'Request registration');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_INVIATA', 'it', 'Richiesta di iscrizione inviata: a breve riceverete una mail all’indirizzo PEC specificato in sede di registrazione contenente le indicazioni per completare il processo.<br/>
+Per eventuale supporto tecnico, contattare il servizio di assistenza all’indirizzo mail <a href="mailto:indirizzomail">indicare un indirizzo mail</a>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_INVIATA', 'en', 'Registration request sent: you will soon receive an email to the certified email address specified during registration containing the instructions to complete the process.<br/>
+For any technical support, contact the support service at the email address <a href="mailto:mailaddress">indicate an email address</a>');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_ERRORE', 'it', 'Si sono presentati errori nell''elaborazione della richiesta di iscrizione.<br/>
+Contattare il servizio di assistenza all’indirizzo mail <a href="mailto:indirizzomail">indicare un indirizzo mail</a>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_ERRORE', 'en', 'There were errors in processing the registration request.<br/>
+Contact the support service at the email address <a href="mailto:mailaddress">indicate an email address</a>');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_NON_ACCESSIBILE', 'it', 'PER PROCEDERE NELL''ISCRIZIONE E'' NECESSARIO EFFETTUARE IL LOGIN (Accedi)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_ISCRIZIONE_ALBO_NON_ACCESSIBILE', 'en', 'TO PROCEED WITH THE REGISTRATION IT IS NECESSARY TO LOGIN (Login)');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCEDI_ALBO_FORNITORI', 'it', 'Accedi all''albo fornitori');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCEDI_ALBO_FORNITORI', 'en', 'Access the suppliers register');	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALBO_FORNITORI_CONFERMA_RICHIESTA', 'it', 'Vuoi confermare la richiesta di iscrizione all''albo fornitori?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALBO_FORNITORI_CONFERMA_RICHIESTA', 'en', 'Do you want to confirm the request for registration in the supplier register?');	
+
+	-- fix della 3.16 in cui si inseriva la scelta lingua in modo incondizionato
+	DELETE FROM showletconfig WHERE pagecode = 'ppgare_contratti_lfs_lista' AND framepos = 9;
+
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_contratti_lfs_lista', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_contratti_lfs_lista' AND framepos = 9);
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.17.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.16.0';
+	UPDATE ppcommon_ver SET version = '3.17.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.16.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.17.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.17.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	--per evitare script parziali in sviluppo
+	DELETE FROM ppcommon_customizations WHERE objectid='PDF' AND attrib='PDF-A' AND feature='ACT';
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PDF', 'PDF-A', 'ACT', 1);
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.17.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.17.0-M1';
+	UPDATE ppcommon_ver SET version = '3.17.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.17.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.17.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.17.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LOGIN', 'CHECK-DATIMPRESA', 'ACT', 0);
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.17.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.17.0-M2';
+	UPDATE ppcommon_ver SET version = '3.17.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.17.0-M2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.17.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.17.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.17.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.17.0-M3';
+	UPDATE ppcommon_ver SET version = '3.17.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.17.0-M3';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.17.0_to_3.18.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.17.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	UPDATE ppcommon_customizations SET configvalue = 0 WHERE objectid = 'PDF' AND attrib = 'PDF-A' AND feature = 'ACT';
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.18.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.17.0';
+	UPDATE ppcommon_ver SET version = '3.18.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.17.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.18.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.18.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.18.0-M1';
+	UPDATE ppcommon_ver SET version = '3.18.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.18.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.18.0_to_3.19.0
+
+-- 3.19.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.18.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	ALTER TABLE localstrings ADD customized smallint NOT NULL DEFAULT 0;
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.19.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.18.0';
+	UPDATE ppcommon_ver SET version = '3.19.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.18.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.19.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+	UPDATE localstrings SET customized = 0 WHERE customized IS NULL;
+	
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('denominazioneStazioneAppaltanteUnica', 'S', 'Indicare la denominazione della stazione appaltante unica SOLO SE l''installazione DEVE MASCHERARE TUTTE LE STAZIONI APPALTANTI PRESENTI', null, null,'configurazione generale', 195);
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMUNICAZIONI_TIPO_RICHIESTA', 'it', 'Tipologia di richiesta');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMUNICAZIONI_TIPO_RICHIESTA', 'en', 'Request type');
+
+	INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('comunicazioni.tipologie', 'S', 'Elenco delle coppie codice-descrizione che identificano le tipologie di comunicazione gestite', '', '', 'configurazione generale', 168);
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.19.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0-M1';
+	UPDATE ppcommon_ver SET version = '3.19.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.19.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+	-- PAGOPA showletcatalog
+	INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_pagopa_sc_nuovo', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">New payment</property><property key="it">Nuovo pagamento</property></properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="actionPath">/ExtStr2/do/FrontEnd/PagoPA/nuovoPagamento.action</property></properties>', 1);
+	INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_pagopa_sc_effettuati', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments done</property><property key="it">Pagamenti effettuati</property></properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="actionPath">/ExtStr2/do/FrontEnd/PagoPA/listaEffettuati.action</property></properties>', 1);
+	INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_pagopa_sc_daeffettuare', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments to do</property><property key="it">Pagamenti da effettuare</property></properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="actionPath">/ExtStr2/do/FrontEnd/PagoPA/listaDaEffettuare.action</property></properties>', 1);
+	--PAGOPA pages
+	INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa', 'homepage', (select max(pos)+1 from pages), '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments</property><property key="it">Pagamenti</property></properties>', 'gare', 0);
+	-- si definiscono le sottopagine all'interno delle varie sezioni
+	INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_nuovo', 'ppgare_pagopa', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">New payment</property><property key="it">Nuovo pagamento</property></properties>', 'gare', 1);
+	INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_effettuati', 'ppgare_pagopa', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments done</property><property key="it">Pagamenti effettuati</property></properties>', 'gare', 1);
+	INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_daeffettuare', 'ppgare_pagopa', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments to do</property><property key="it">Pagamenti da effettuare</property></properties>', 'gare', 1);
+	-- in aggiornamento tutte le pagine prendono il modello in uso nella homepage in modo da essere allineati allo standard di layout installato
+	UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code in ('ppgare_pagopa') or parentcode in ('ppgare_pagopa');
+	
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 0, 'date_time', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 1, 'search_form', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 2, 'navigation_breadcrumbs', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 7, 'ppgare_pagopa_sc_nuovo', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 0, 'date_time', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 1, 'search_form', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 2, 'navigation_breadcrumbs', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 7, 'ppgare_pagopa_sc_effettuati', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 0, 'date_time', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 1, 'search_form', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 2, 'navigation_breadcrumbs', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 7, 'ppgare_pagopa_sc_daeffettuare', NULL, NULL);
+
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_pagopa_nuovo', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_pagopa_nuovo' AND framepos = 9);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_pagopa_effettuati', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_pagopa_effettuati' AND framepos = 9);
+	INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+	SELECT 'ppgare_pagopa_daeffettuare', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_pagopa_daeffettuare' AND framepos = 9);
+
+
+	--TRADUZIONI
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_PAGOPA', 'it', 'PagoPA');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_PAGOPA', 'en', 'PagoPA');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_NUOVO', 'it', 'Nuovo pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_NUOVO', 'en', 'New payment');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_FATTI', 'it', 'Pagamenti effettuati');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_FATTI', 'en', 'Payments done');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_DAFARE', 'it', 'Pagamenti da effettuare');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_PAGOPA_DAFARE', 'en', 'Payments to do');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_CODICE', 'it', 'Codice Gara');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_CODICE', 'en', 'Tender Code');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_TITOLO', 'it', 'Oggetto');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_TITOLO', 'en', 'Subject');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_CAUSALE', 'it', 'Causale pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_CAUSALE', 'en', 'Reason for payment');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IMPORTO', 'it', 'Importo in EUR');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IMPORTO', 'en', 'Amount in EUR');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IDDEBITO', 'it', 'Id debito');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IDDEBITO', 'en', 'Debit Id');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IDRATA', 'it', 'Id rata');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IDRATA', 'en', 'Flat Id');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAINIZIOVAL', 'it', 'Data inizio validita''');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAINIZIOVAL', 'en', 'Validity start date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATASCAD', 'it', 'Data scadenza');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATASCAD', 'en', 'Due date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAFINEVAL', 'it', 'Data fine validita''');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAFINEVAL', 'en', 'Validity end date');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_NUOVO', 'it', 'Nuovo Pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_NUOVO', 'en', 'New Payment');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_NUOVO', 'it', 'In questa sezione si inseriscono i dati per il pagamento attraverso PagoPA.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_NUOVO', 'en', 'In this section you have to fill the data to use PagoPA payment platform.');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_DETT', 'it', 'Dettaglio Pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_DETT', 'en', 'Payment Detail');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_DETT', 'it', 'Sezione di dettaglio del pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_DETT', 'en', 'Detail section of the payment.');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_LISTA', 'it', 'Lista Pagamenti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PAGOPA_LISTA', 'en', 'Payment List');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_LISTA', 'it', 'Elenco dei pagamenti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PAGOPA_LISTA', 'en', 'Payment List');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_VIEW_PAGOPA_DETT', 'it', 'Dettaglio pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_VIEW_PAGOPA_DETT', 'en', 'Detail Payment');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_STATO', 'it', 'Stato pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_STATO', 'en', 'Payment State');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ESPAG', 'it', 'Esegui pagamento');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ESPAG', 'en', 'Pay');
+	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_SCRIC', 'it', 'Scarica Ricevuta');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_SCRIC', 'en', 'Download Receipt');
+	
+	UPDATE  
+		localstrings 
+	SET  
+		stringvalue = 'Dichiara che i dati personali forniti ed acquisiti contestualmente alla registrazione ai servizi scelti, nonch&eacute; i dati necessari all''erogazione di tali servizi, saranno trattati, nel rispetto delle garanzie di riservatezza e delle misure di sicurezza previste dalla normativa vigente attraverso strumenti informatici, telematici e manuali, con logiche strettamente correlate alle finalit&agrave; del trattamento. Il trattamento dei dati pu&ograve; essere visualizzato da ' 
+	WHERE 
+		keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' 
+		AND langcode = 'it'; 
+		 
+	UPDATE  
+		localstrings 
+	SET  
+		stringvalue = 'Declare that personal data provided and acquired together with the registration to the services chosen, as well as the data necessary for the provision of these services, will be processed, in compliance with the guarantees of confidentiality and security measures provided for by current legislation through IT, telematic and manual tools, with logic strictly related to the purposes of the processing. The data processing may be showed from ' 
+	WHERE 
+		keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' 
+		AND langcode = 'en'; 
+		 
+	--Properties 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.nomeTitolare', 'S', 'Nome del titolare dell''impianto', NULL, NULL, 'privacy', 1500); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.sedeTitolare', 'S', 'Sede del titolare dell''impianto', NULL, NULL, 'privacy', 1501); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.mailTitolare', 'S', 'Mail del titolare dell''impianto', NULL, NULL, 'privacy', 1502); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.mailDPO', 'S', 'mail del DPO dell''impianto', NULL, NULL, 'privacy', 1503); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.nomeGestore', 'S', 'Nome del gestore dell''impianto', NULL, NULL, 'privacy', 1504); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.sedeGestore', 'S', 'Sede del gestore dell''impianto', NULL, NULL, 'privacy', 1505); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.mailGestore', 'S', 'Mail del gestore dell''impianto', NULL, NULL, 'privacy', 1506); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.durataLogNavigazione', 'S', 'Durata dei log di navigazione', NULL, NULL, 'privacy', 1507); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.duranteConservazioniContattiMail', 'S', 'Durata conservazione contatti mail', NULL, NULL, 'privacy', 1508); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.durataDatiElenco', 'S', 'Durata dati assiocati ad un elenco', NULL, NULL, 'privacy', 1509); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.durataDatiGare', 'S', 'Durata dati gare', NULL, NULL, 'privacy', 1510); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.durataDatiNonTrasmessi', 'S', 'Durata dati non trasmessi', NULL, NULL, 'privacy', 1511); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.dataInizioValiditaPolicy', 'S', 'Data inizio validità della privacy policy', NULL, NULL, 'privacy', 1512); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.nomePiattaforma', 'S', 'Denominazione della piattaforma telematica', NULL, 'Appalti&Contratti e-procurement', 'privacy', 1513); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description, value, defvalue, category, ordprog)  
+		VALUES ('privacy.localitaForo', 'S', 'Localita del foro di competenza', NULL, 'Rimini (RN)', 'privacy', 1514); 
+	INSERT INTO ppcommon_properties  
+		(name, type, description , value, defvalue, category, ordprog)  
+		VALUES ('show.default.termOfUse', 'S', 'Pubblica i termini e le condizioni di servizio standard', 'TRUE', 'TRUE','privacy', 1515); 
+ 
+	--PAGOPA 
+	--CMS 
+	UPDATE contents 
+	SET 
+		workxml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>
+			<p>Below you have the links to the documents.</p>
+			<h3>Documents</h3>
+			<ul>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">Information on the processing of personal data (italian version)</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action&currentFrame=7">Terms and use of the telematic platform (italian version)</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openResource.action&currentFrame=7&resourceID=RES-STD-MANUSO">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</a>
+				</li>
+			</ul>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>
+			<p>Di seguito avete i link  ai documenti.</p>
+			<h3>Documenti</h3>
+			<ul>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">Informativa sul trattamento dei dati personali</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action&currentFrame=7">Termini ed utilizzo della piattaforma telematica</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openResource.action&currentFrame=7&resourceID=RES-STD-MANUSO">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</a>
+				</li>
+			</ul>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach" /></attributes><status>READY</status><version>4.0</version></content>
+'
+		, onlinexml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>
+			<p>Below you have the links to the documents.</p>
+			<h3>Documents</h3>
+			<ul>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">Information on the processing of personal data (italian version)</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action&currentFrame=7">Terms and use of the telematic platform (italian version)</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openResource.action&currentFrame=7&resourceID=RES-STD-MANUSO">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</a>
+				</li>
+			</ul>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>
+			<p>Di seguito avete i link  ai documenti.</p>
+			<h3>Documenti</h3>
+			<ul>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">Informativa sul trattamento dei dati personali</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action&currentFrame=7">Termini ed utilizzo della piattaforma telematica</a>
+				</li>
+				<li>
+					<a href="homepage.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openResource.action&currentFrame=7&resourceID=RES-STD-MANUSO">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</a>
+				</li>
+			</ul>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach" /></attributes><status>READY</status><version>4.0</version></content>
+' 
+WHERE contentid = 'GEN-STD-AAR'; 
+	
+	-- verifica se esiste GARE|RINUNCIA|ACT=0
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) 
+SELECT 'GARE', 'RINUNCIA', 'ACT', 0 FROM ppcommon_customizations WHERE (objectid='AREARISERVATA' AND attrib='REGISTRATI' AND feature='VIS') AND NOT EXISTS(SELECT objectid FROM ppcommon_customizations WHERE objectid = 'GARE' and attrib = 'RINUNCIA' and feature = 'ACT');
+
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UI-ADVANCED', 'DATATABLE', 'ACT', 1); 
+
+insert INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) 
+ Select 'auth.sso.sessionInvalidate', 'I', 'Determina se in fase di logout da sistema SSO sia necessario invalidare la sessione su portale. Valori ammessi: 1 [default] la sessione viene invalidata prima della disconnessione dal service provider, 0 la sessione non viene invalidata in fase di logout, ma dopo la disconnesione dal service provider.', '1', '1','autenticazione', 10011
+ from ppcommon_properties where name = 'layoutStyle'
+ and not exists(select * from ppcommon_properties where name='auth.sso.sessionInvalidate');
+		
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.19.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0-M2';
+	UPDATE ppcommon_ver SET version = '3.19.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0-M2';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.19.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0-M3') THEN
+		--TRADUZIONI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VAT_GROUP', 'it', 'Gruppo IVA');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VAT_GROUP', 'en', 'VAT Group');
+		
+		UPDATE localstrings SET stringvalue = 'Delibere a contrarre o atto equivalente' WHERE keycode = 'TITLE_BANDI_DELIBERE_A_CONTRARRE' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Resolutions to contract or equivalent act' WHERE keycode = 'TITLE_BANDI_DELIBERE_A_CONTRARRE' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Gare e procedure in corso' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_IN_CORSO' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Tenders and procedures in progress' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_IN_CORSO' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Gare e procedure scadute' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_SCADUTI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Expired tenders and procedures' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_SCADUTI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Avvisi pubblici in corso' WHERE keycode = 'TITLE_PAGE_LISTA_AVVISI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Public announcements in progress' WHERE keycode = 'TITLE_PAGE_LISTA_AVVISI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Avvisi pubblici scaduti' WHERE keycode = 'TITLE_PAGE_LISTA_AVVISI_SCADUTI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Expired public notices' WHERE keycode = 'TITLE_PAGE_LISTA_AVVISI_SCADUTI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Avvisi di aggiudicazione, esiti e affidamenti' WHERE keycode = 'TITLE_PAGE_LISTA_ESITI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Award notices, results and assignments' WHERE keycode = 'TITLE_PAGE_LISTA_ESITI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Sovvenzioni, contributi, sussidi - Elenco dei soggetti beneficiari' WHERE keycode = 'TITLE_PAGE_190_SOGGETTI_BENEFICIARI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Grants, contributions, subsidies - List of beneficiaries' WHERE keycode = 'TITLE_PAGE_190_SOGGETTI_BENEFICIARI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Consulenti e collaboratori' WHERE keycode = 'TITLE_PAGE_CONSULENTI_COLLABORATORI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Consultants and collaborators' WHERE keycode = 'TITLE_PAGE_CONSULENTI_COLLABORATORI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Acquisti in corso (extra normativa)' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_IN_CORSO_ACQ' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Tenders for purchase in progress (extra legislation)' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_IN_CORSO_ACQ' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Acquisti scaduti (extra normativa)' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_SCADUTI_ACQ' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Expired purchases (extra legislation)' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_SCADUTI_ACQ' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Tenders for sales in progress' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_IN_CORSO_VEN' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Expired tenders for sales' WHERE keycode = 'TITLE_PAGE_LISTA_BANDI_SCADUTI_VEN' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Bandi d''iscrizione per elenchi operatori economici' WHERE keycode = 'TITLE_PAGE_LISTA_ELENCHI_OE' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'List of announcement of operators lists' WHERE keycode = 'TITLE_PAGE_LISTA_ELENCHI_OE' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Esiti affidamenti' WHERE keycode = 'TITLE_PAGE_LISTA_ESITI_AFFIDAMENTI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Outcomes of assignments' WHERE keycode = 'TITLE_PAGE_LISTA_ESITI_AFFIDAMENTI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Accesso all''Albo Fornitori' WHERE keycode = 'TITLE_PAGE_ALBO_FORNITORI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Access to the Suppliers Register' WHERE keycode = 'TITLE_PAGE_ALBO_FORNITORI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Bandi d''iscrizione per il mercato elettronico' WHERE keycode = 'TITLE_PAGE_LISTA_CATALOGHI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Invitations to register for the electronic market' WHERE keycode = 'TITLE_PAGE_LISTA_CATALOGHI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		
+		UPDATE localstrings SET stringvalue = 'INI-PEC' WHERE stringvalue = 'PEC';
+		UPDATE localstrings SET stringvalue = 'INI-PEC confirm' WHERE keycode = 'LABEL_PEC_CONFIRM' and langcode = 'en';
+		UPDATE localstrings SET stringvalue = 'Conferma INI-PEC' WHERE keycode = 'LABEL_PEC_CONFIRM' and langcode = 'it';
+		UPDATE localstrings SET stringvalue = 'La PEC (Posta Elettronica Certificata) &egrave; lo strumento privilegiato dall''Ente per l''invio di comunicazioni e corrispondenza all''operatore economico. Nel caso in cui la <strong>PEC</strong> risulti <strong>definita ma non ancora attiva ed utilizzabile</strong> si prega di <strong>rinviare la procedura</strong> pena l''impossibilit&agrave; da parte dell''Ente di inviare comunicazioni che non possono ancora essere recapitate correttamente. ATTENZIONE: la casella PEC da utilizzare deve essere quella ufficiale del Registro INI-PEC (<a href=''https://www.inipec.gov.it/''>https://www.inipec.gov.it/</a>)<br/>' WHERE keycode = 'DATI_IMPRESA_INFO_PEC'AND langcode = 'it';
+		UPDATE localstrings SET stringvalue = 'The PEC (Certified Electronic Mail) is the tool favored by the Entity for sending communications and correspondence to the economic operator. In the case that the <strong> PEC </strong> is <strong> defined but not yet active and usable </strong> please <strong> postpone the procedure </strong> under penalty of impossibility by the Entity to send communications that cannot yet be delivered correctly. ATTENTION: the PEC box to be used must be the official one of the INI-PEC Register (<a href=''https://www.inipec.gov.it/''>https://www.inipec.gov.it/</a>)<br/>' WHERE keycode = 'DATI_IMPRESA_INFO_PEC' AND langcode = 'en';
+
+		--FINE TRADUZIONI
+		
+		--PAGOPA
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-configuration', 'S', 'Configurazione per PagoPA, attualmente solo SISPI', 'SISPI', 'SISPI', 1550, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-clientid', 'S', 'Client id per token SISPI', 'sige', 'sige', 1560, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-client-secret', 'S', 'Client secret per token SISPI', 'c7c000d0-3fe3-4433-b980-5b3e02d4c648', 'c7c000d0-3fe3-4433-b980-5b3e02d4c648', 1570, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-grant-type', 'S', 'Grant type per token SISPI', 'client_credentials', 'client_credentials', 1580, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-scope', 'S', 'Scope per token SISPI', 'openid', 'openid', 1590, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-realm', 'S', 'Realm per inserimento pagamento SISPI', 'palermo', 'palermo', 1600, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-service-pmpay', 'S', 'Service pmpay per inserimento pagamento SISPI', 'appalti', 'appalti', 1610, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-userid', 'S', 'Userid per inserimento pagamento SISPI (usrsys.syslogin?)', 'TINITRSSMRA80A01F999E', 'TINITRSSMRA80A01F999E', 1620, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-keycloak-username', 'S', 'Username per autenticazione in keycloak', 'platform', 'platform', 1630, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-keycloak-password', 'S', 'Password per autenticazione in keycloak', '5d16d720-ef01-4e42-af4b-3c58b86148bc', '5d16d720-ef01-4e42-af4b-3c58b86148bc', 1640, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-keycloak-url', 'S', 'URL per autenticazione keycloak', 'https://keycloak-maggioli-collaudo.cloud.ponmetropalermo.it/auth/realms/palermo/protocol/openid-connect/token', 'https://keycloak-maggioli-collaudo.cloud.ponmetropalermo.it/auth/realms/palermo/protocol/openid-connect/token', 1650, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-url-pagamento', 'S', 'Base URL per pagamento SISPI', 'http://govway-postgres-ocp-maggioli-collaudo.cloud.ponmetropalermo.it/govway/palermo/WP-Pagamenti/v1', 'http://govway-postgres-ocp-maggioli-collaudo.cloud.ponmetropalermo.it/govway/palermo/WP-Pagamenti/v1', 1660, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-codice-ente', 'S', 'Codice Ente per pagamento SISPI', 'CP001', 'CP001', 1670, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-endpoint', 'S', 'Endpoint per API Maggioli PagoPA', 'http://az001-cloud-ppat.cloudapp.net/jcitygov-pagopa/ws/PagoPAInternal', 'http://az001-cloud-ppat.cloudapp.net/jcitygov-pagopa/ws/PagoPAInternal', 1680, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-codipa', 'S', 'Codice IPA per API Maggioli PagoPA', 'EntTest1', 'EntTest1', 1690, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-versione', 'S', 'Versione delle API Maggioli PagoPA', '1.2', '1.2', 1700, 'pagopa');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-codiceservizio', 'S', 'Codice servizio API Maggioli PagoPA', 'JCITY.GOV', 'JCITY.GOV', 1710, 'pagopa');
+		
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('wsPagoPA', 'S', 'Web service per le tabelle interne PagoPA', 'http://localhost:8080/WSAppalti/services/WSPagoPASOAP', 'http://localhost:8080/WSAppalti/services/WSPagoPASOAP', 92, 'configurazione generale');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IUV', 'it', 'Identificativo univoco versamento (IUV)');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_IUV', 'en', 'Payment Identification Code (IUV)');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_DOWNLOAD', 'it', 'Errore nel download della ricevuta.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_DOWNLOAD', 'en', 'Error downloading the receipt.');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_RIFPROC', 'it', 'Riferimento procedura non presente, si prega di verificare.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_RIFPROC', 'en', 'Procedure reference not present, please check.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_GEN', 'it', 'Errore generico, si prega di riprovare.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_GEN', 'en', 'Genric error, please try again.');
+		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_SRV', 'it', 'Errore nella invocazione del servizio esterno, si prega di riprovare.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_SRV', 'en', 'Error during the invocation of the external service, please try again.');
+		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_VAL_POP', 'it', 'Prego popolare');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_VAL_POP', 'en', 'Please insert');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_VAL_IMP', 'it', 'con un valore maggiore di zero');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_ERR_VAL_IMP', 'en', 'with a value greater than zero.');
+
+		delete from localstrings where keycode ='LABEL_PAGOPA_GARA_CODICE'  and langcode in( 'it','en');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_CODICE', 'it', 'Riferimento procedura');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_GARA_CODICE', 'en', 'Reference');
+		
+		delete from localstrings where keycode ='LABEL_PAGOPA_CREA'  and langcode in( 'it','en');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_CREA', 'it', 'Crea');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_CREA', 'en', 'Create');
+	
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_MSG_NOPAG', 'it', 'Pagamento non effettuabile, crearne uno nuovo.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_MSG_NOPAG', 'en', 'Payment not possible, create a new one.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_MSG_PAGNEW', 'it', 'Pagamento effettuato con successo. Possibile scaricare ricevuta.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_MSG_PAGNEW', 'en', 'Payment successfull. You can download receipt.');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAPAG', 'it', 'Data pagamento');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAPAG', 'en', 'Payment date');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_TITLE', 'it', 'Accedi con Gateway');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_TITLE', 'en', 'Login with Gateway');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_DESCRIPTION', 'it', 'Se usi il sistema di autenticazione Gateway della Regione Veneto clicca sul bottone ''Accedi con Gateway''');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_DESCRIPTION', 'en', 'If you use the federated authentication system of the Veneto Region, click on the ''Login with Gateway button''');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_BUTTON', 'it', 'Accedi con Gateway');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_BUTTON ', 'en', 'Login with Gateway');
+		
+		
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway', 'I', 'Sistema di autenticazione Single Sign-on CIE (0=non previsto, 1=previsto)', 0, 0,'autenticazione', 10101);
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.position', 'I', 'posizione sistema di autenticazione Single Sign-on gateway', '2', '2','autenticazione', 10220);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.ws.url', 'S', 'URL del microservizio di gateway per l''autenticazione SSO', NULL, NULL,'autenticazione-gateway', 11170);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.endpoint', 'S', 'Endpoint del microservizio di gateway per l''autenticazione SSO', NULL, NULL,'autenticazione-gateway', 11180);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.clientId', 'S', 'ID del client da inviare al microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11190);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.authtype', 'S', 'Tipo di autenticazione da eseguire attraverso il microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11200);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.passphrase', 'S', 'Chiave per decifrare il token JWT inviato dal microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11210);
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.19.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0-M3';
+		UPDATE ppcommon_ver SET version = '3.19.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0-M3';
+
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.19.0-M5
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0-M4') THEN
+	
+	-- TRADUZIONI
+
+		UPDATE localstrings SET stringvalue = 'La PEC (Posta Elettronica Certificata) &egrave; lo strumento privilegiato dall''Ente per l''invio di comunicazioni e corrispondenza all''operatore economico. Nel caso in cui la <strong>PEC</strong> risulti <strong>definita ma non ancora attiva ed utilizzabile</strong> si prega di <strong>rinviare la procedura</strong> pena l''impossibilit&agrave; da parte dell''Ente di inviare comunicazioni che non possono ancora essere recapitate correttamente. ATTENZIONE: la casella PEC da utilizzare deve essere quella ufficiale del Registro INI-PEC (<a href="https://www.inipec.gov.it/" target="_blank">https://www.inipec.gov.it/</a>)<br/>' WHERE keycode = 'DATI_IMPRESA_INFO_PEC'AND langcode = 'it' and customized = 0;
+		UPDATE localstrings SET stringvalue = 'The PEC (Certified Electronic Mail) is the tool favored by the Entity for sending communications and correspondence to the economic operator. In the case that the <strong> PEC </strong> is <strong> defined but not yet active and usable </strong> please <strong> postpone the procedure </strong> under penalty of impossibility by the Entity to send communications that cannot yet be delivered correctly. ATTENTION: the PEC box to be used must be the official one of the INI-PEC Register (<a href="https://www.inipec.gov.it/" target="_blank">https://www.inipec.gov.it/</a>)<br/>' WHERE keycode = 'DATI_IMPRESA_INFO_PEC' AND langcode = 'en' and customized = 0;
+
+
+UPDATE localstrings SET stringvalue = 'Si autorizza la Stazione appaltante ad inviare eventuali comunicazioni e/o corrispondenza agli indirizzi di posta elettronica indicati, ai sensi dell''art.76, comma 6, del D.Lgs. 50/2016, consapevole che le comunicazioni e/o corrispondenza correttamente inviate ai predetti recapiti si intenderanno conosciute al destinatario.' 
+WHERE keycode = 'DATI_IMPRESA_INFO_PEC2' AND langcode = 'it' and customized = 0;
+UPDATE localstrings SET stringvalue = 'The Contracting Authority is authorized to send any communications and/or correspondence to the e-mail addresses indicated, pursuant to article 76, paragraph 6, of Legislative Decree 50/2016, aware that communications and/or correspondence correctly sent to the aforementioned addresses will be considered known to the recipient.'  
+WHERE keycode = 'DATI_IMPRESA_INFO_PEC2' AND langcode = 'en' and customized = 0;
+
+UPDATE localstrings SET stringvalue = 'Dichiara che i dati personali forniti ed acquisiti contestualmente alla registrazione ai servizi scelti, nonch&eacute; i dati necessari all''erogazione di tali servizi, saranno trattati, nel rispetto delle garanzie di riservatezza e delle misure di sicurezza previste dalla normativa vigente attraverso strumenti informatici, telematici e manuali, con logiche strettamente correlate alle finalit&agrave; del trattamento.'
+WHERE keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'Declare that personal data provided and acquired together with the registration to the services chosen, as well as the data necessary for the provision of these services, will be processed, in compliance with the guarantees of confidentiality and security measures provided for by current legislation through IT, telematic and manual tools, with logic strictly related to the purposes of the processing.'
+WHERE keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA'  AND langcode = 'en' AND customized = 0;
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'it', 'Termini e condizioni di utilizzo della piattaforma telematica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'en', 'Terms and conditions of use of the telematic platform');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'it', 'I presenti Termini e Condizioni disciplinano, in maniera vincolante, il funzionamento della Piattaforma telematica denominata "<strong>{0}</strong>", definendo, tra l''altro, le condizioni di accesso e le modalit&agrave; di utilizzo della stessa.<br>
+La suddetta Piattaforma &egrave; finalizzata all''espletamento delle procedure ad evidenza pubblica che si svolgono in modalit&agrave; telematica. Tali procedure sono regolate dal D.Lgs n. 50 del 2016, recante "Codice dei contratti pubblici" e relativi provvedimenti attuativi, cui si rinvia per quanto qui non specificato.<br>
+Per quanto concerne le specifiche tecniche, si rimanda al Manuale per gli Utenti della Piattaforma.<br>
+L''Utente, come di seguito definito, &egrave; pregato di leggere attentamente questo documento prima di registrarsi e di usufruire dei Servizi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'en', 'These Terms and Conditions govern, in a binding manner, the operation of the telematic platform called "<strong>{0}</strong>", defining, among other things, the conditions of access and how to use it.<br>
+The aforementioned platform is aimed at carrying out public procedures that take place electronically. These procedures are governed by Legislative Decree no. 50 of 2016, containing the "Code of public contracts" and related implementing measures, to which reference should be made for what is not specified here.<br>
+As regards the technical specifications, please refer to the Manual for Users of the Platform.<br>
+The User, as defined below, is requested to read this document carefully before registering and using the Services.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI_TITLE', 'it', '1. Definizioni - acronimi - glossario');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI_TITLE', 'en', '1. Definitions - acronyms - glossary');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'it', 'Le espressioni di cui al presente articolo, quando utilizzate con l''iniziale maiuscola, avranno il seguente significato:<br>
+<strong>Area Riservata:</strong> indica l''area riservata all''Utente sulla Piattaforma, creata dopo la sua registrazione e finalizzata all''invio e alla ricezione di comunicazioni nell''ambito del Sistema;<br>
+<strong>Gestore del sistema:</strong> il soggetto di cui si avvale la stazione appaltante per la gestione tecnica della piattaforma;<br>
+<strong>Codice degli Appalti/Codice dei contratti pubblici:</strong> si intende il Decreto Legislativo n. 50/2016;<br>
+<strong>Operatore Economico:</strong> si intende uno dei soggetti ammessi a partecipare alle procedure ad evidenza pubblica, come definiti dall''art. 45 del Codice dei contratti pubblici e dalla normativa eurounitaria;<br>
+<strong>Piattaforma:</strong> si intende la piattaforma {0}"; il sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; telematica nel rispetto delle disposizioni di cui al Codice dei contratti pubblici;<br>
+<strong>Portale Appalti:</strong> si intende la componente della Piattaforma telematica rivolta ad offrire funzionalit&agrave; specifiche agli operatori economici;<br>
+<strong>Procedure Telematiche:</strong> si intendono le procedure gestite mediante la Piattaforma;<br>
+<strong>Utente:</strong> si intende la persona fisica, autorizzata dall''Operatore Economico e dotata dei necessari poteri di rappresentanza, che agisce sulla Piattaforma in nome e per conto dell''Operatore Economico stesso;<br>
+<strong>Servizio:</strong> si intende il Servizio offerto tramite la Piattaforma, come meglio definito all''articolo 2;<br>
+<strong>Stazione Appaltante:</strong> si intende l''ente, come definito nel Codice dei contratti pubblici, che offre il Servizio agli Operatori Economici interessati a partecipare ad una determinata procedura di gara;<br>
+<strong>Termini e Condizioni:</strong> indica il presente documento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'en', 'The expressions referred to in this article, when used with a capital letter, will have the following meaning:<br>
+<strong>Reserved Area:</strong> indicates the area reserved for the User on the Platform, created after his registration and aimed at sending and receiving communications within the System;<br>
+<strong>System manager:</strong> the subject used by the contracting authority for the technical management of the platform;<br>
+<strong>Procurement Code/Public Contracts Code:</strong> means the Legislative Decree n. 50/2016;<br>
+<strong>Economic Operator:</strong> means one of the subjects admitted to participate in public tender procedures, as defined by art. 45 of the Code of public contracts and the European Union legislation;<br>
+<strong>Platform:</strong> means the platform {0}"; the computer system (software and hardware) through which it is possible to carry out tender procedures entirely managed electronically in compliance with the provisions of the Code of public contracts;<br>
+<strong>Procurement Portal:</strong> means the telematic platform'' component aimed at offering functionalities specific to economic operators;<br>
+<strong>Telematic Procedures:</strong> means the procedures managed through the Platform;<br>
+<strong>User:</strong> means the natural person, authorized by the Economic Operator and endowed with the necessary powers of representation, who acts on the Platform in the name and on behalf of the Economic Operator itself;<br>
+<strong>Service:</strong> means the Service offered through the Platform, as better defined in article 2;<br>
+<strong>Contracting Authority:</strong> means the entity, as defined in the Public Contracts Code, which offers the Service to Economic Operators interested in participating in a specific tender procedure;<br>
+<strong>Terms and Conditions:</strong> means this document.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE', 'it', '2. Descrizione della Piattaforma telematica e del Servizio');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE', 'en', '2. Description of the Telematic Platform and the Service');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'it', 'Il Servizio consiste in un sistema online, accessibile mediante registrazione dell''Operatore Economico alla Piattaforma, che consente all''Operatore economico di partecipare alle procedure ad evidenza pubblica, indette dalla Stazione Appaltante.<br>
+L''utilizzo della piattaforma da parte degli Operatori economici &egrave; subordinato alla registrazione degli stessi al fine di accedere all''Area Riservata, ove sono disponibili le funzionalit&agrave; di interazione con la Stazione Appaltante.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'en', 'The Service consists of an online system, accessible by registering the Economic Operator on the Platform, which allows the Economic Operator to participate in public procedures, announced by the Contracting Authority.<br>
+The use of the platform by economic operators is subject to their registration in order to access the Reserved Area, where the functionalities are available of interaction with the Contracting Authority.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE', 'it', '3. Registrazione alla piattaforma');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE', 'en', '3. Registration on the platform');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION', 'it', 'L''Operatore Economico che vuole usufruire del Servizio deve registrarsi, tramite una persona fisica da lui autorizzata e munita dei necessari poteri alla Piattaforma ed eleggere sulla casella di posta elettronica certificata indicata all''atto della registrazione alla Piattaforma il domicilio digitale.<br>
+La registrazione di ciascun soggetto pu&ograve; avvenire soltanto ed esclusivamente in associazione con l''Operatore Economico in nome e per conto del quale la persona fisica si registra, accede e opera nel sistema.<br>
+Ai fini della registrazione, la persona fisica deve fornire i propri dati anagrafici, i dati e le informazioni relative all''Operatore Economico di appartenenza e tutte le informazioni richieste dal sistema, dichiarando di conoscere e accettare senza riserva i presenti Termini e Condizioni.<br>
+Il soggetto che richiede la registrazione sulla Piattaforma &egrave; l''unico ed esclusivo responsabile della veridicit&agrave;, della completezza, dell''aggiornamento e dell''accuratezza di tutti i dati e le informazioni richieste e fornite.<br>
+L''Operatore Economico &egrave; tenuto a dotarsi, a propria cura e spese, della strumentazione tecnica e informatica software e hardware, inclusi gli strumenti di Firma Digitale, marcatura temporale, Posta Elettronica Certificata (PEC) e collegamenti alle linee di telecomunicazione, necessari per il collegamento alla rete Internet e quanto altro necessario per compiere le attivit&agrave; all''interno del Sistema. Il difetto di questi strumenti pu&ograve; influire sulla possibilit&agrave; di fruire delle funzionalit&agrave; della Piattaforma.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION', 'en', 'The Economic Operator who wants to use the Service must register, through a natural person authorized by him and equipped with the necessary powers to the Platform and elect the digital domicile on the certified e-mail address indicated when registering on the Platform.<br>
+The registration of each subject can take place solely and exclusively in association with the Economic Operator in the name and on behalf of which the natural person registers, accesses and operates in the system.<br>
+For registration purposes, the natural person must provide their personal data, data and information relating to the Economic Operator to which they belong and all the information required by the system, declaring that they know and accept these Terms and Conditions without reserve.<br>
+The person requesting registration on the Platform is the sole and exclusive person responsible for the truthfulness, completeness, updating and accuracy of all data and information requested and provided.<br>
+The Economic Operator is required to equip themselves, at their own expense, with the technical and IT tools, software and hardware, including digital signature tools, time stamping, certified electronic mail (PEC) and connections to telecommunication lines, necessary for connection to the Internet and anything else necessary to carry out the activities within the System. The defect of these tools can affect the possibility to use the functionalities of the Platform.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT_TITLE', 'it', '4. Gestione dell''account e utilizzo della Piattaforma');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT_TITLE', 'en', '4. Account Management and use of the Platform');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'it', 'L''Utente registrato effettuer&agrave; l''accesso alla Piattaforma mediante l''utilizzo delle proprie credenziali costituite da nome utente e password o tramite sistema pubblico di identit&agrave; digitale (SPID).<br>
+La stazione appaltante potrebbe in ogni caso adottare restrizioni in materia di strumenti di identificazione nel caso si rendesse necessario per adeguarsi a disposizioni normative sopravvenute.<br>
+L''Utente garantisce che le informazioni personali fornite durante la procedura di registrazione, o anche successivamente, sono complete e veritiere e si impegna a tenere la stazione appaltante indenne e manlevata da qualsiasi danno, obbligo risarcitorio e/o sanzione derivante da e/o in qualsiasi modo collegata alla violazione da parte dell''Utente delle disposizioni del presente articolo.<br>
+L''account creato dall''Utente &egrave; strettamente personale e non pu&ograve; essere ceduto a qualunque titolo o condiviso con terzi, neanche temporaneamente.<br>
+L''Utente si impegna a non cedere neanche temporaneamente a terzi e a conservare le credenziali di registrazione con la dovuta cura, diligenza e segretezza sotto la propria responsabilit&agrave;, costituendo le stesse i soli mezzi per identificare l''Utente e per validare i suoi accessi alla Piattaforma. L''Utente pertanto &egrave; informato che tutti gli atti compiuti mediante l''utilizzo delle dette credenziali saranno a lui attribuiti ed avranno efficacia vincolante nei suoi confronti e nei confronti dell''Operatore rappresentato.<br>
+L''Utente, una volta terminata la registrazione, non potr&agrave; modificare autonomamente le proprie informazioni o quelle dell''Operatore Economico. Eventuali variazioni dovranno essere richieste utilizzando l''apposita procedura "Richiedi variazione dati identificativi" disponibile nell''Area Riservata. Per tali variazioni &egrave; richiesta la verifica e l''accettazione da parte da parte della stazione appaltante e, pertanto, il processo di aggiornamento &egrave; differito. In caso di urgenza &egrave; possibile contattare la Stazione Appaltante mediante il pulsante "Assistenza operatori economici" presente sul Portale.<br>
+<!-- L''Utente potr&agrave; cancellare il proprio account seguendo la procedura indicata sulla Piattaforma nell''Area Riservata alla voce "Dismetti ed elimina account" e specificata nel Manuale per gli Utenti della Piattaforma.<br>
+La cancellazione dell''account comporter&agrave; l''impossibilit&agrave; di fruire delle funzionalit&agrave; della Piattaforma. -->');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'en', 'The registered User will carry out access to the Platform through the use of his credentials consisting of a username and password or through a public identity system digital (SPID).<br>
+The contracting authority could in any case adopt restrictions on identification tools should it become necessary to comply with supervening regulatory provisions.<br>
+The User guarantees that the personal information provided during the registration procedure, or even subsequently, is complete and truthful and undertakes to keep the contracting authority harmless and indemnified from any damage, compensation obligation and/or sanction deriving from and/or in any way related to the User''s violation of the provisions of this article.<br>
+The account created by the User is strictly personal and cannot be transferred for any reason or shared with third parties, not even temporarily.<br>
+The User undertakes not to transfer even temporarily to third parties and to keep the registration credentials with due care, diligence and secrecy under his own responsibility, constituting the only means to identify the User and to validate his access to the Platform. The User therefore is informed that all the acts carried out through the use of said credentials will be attributed to him and will have binding effect on him and on the represented Operator.<br>
+Once the registration has been completed, the User will not be able to independently modify their own information or that of the Economic Operator. Any changes must be requested using the appropriate procedure "Request identification data change" available in the Reserved Area. For such variations is required verification and acceptance by the contracting authority and, therefore, the updating process is deferred. In case of urgency It is possible to contact the Contracting Authority using the "Economic operators assistance" button on the Portal. <br>
+<!-- The User will be able to cancel his account by following the procedure indicated on the Platform in the Reserved Area under the heading "Unsubscribe and delete account" and specified in the Platform User Manual.<br>
+The cancellation of the account will result in the impossibility to use the functionalities of the Platform. -->');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE', 'it', '5. Modalit&agrave; di sottoscrizione dei documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE', 'en', '5. Methods of signing of documents');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION', 'it', 'L''uso dell''account non sostituisce l''utilizzo della firma digitale, ove questa &egrave; prevista. L''Operatore Economico prende atto e accetta che gli atti e i documenti per i quali &egrave; richiesto di volta in volta l''utilizzo della firma digitale non potranno considerarsi validi ed efficaci se non verranno sottoscritti secondo la modalit&agrave; richiesta.<br>
+L''Utente &egrave; tenuto a rispettare tutte le norme legislative, regolamentari, di attuazione, contrattuali, le regole tecniche e le deliberazioni dell''Agenzia per l''Italia Digitale in tema di conservazione ed utilizzo dello strumento di Firma Digitale, cos&igrave; come ogni altra istruzione impartita in materia dal Certificatore che ha rilasciato lo strumento e, pertanto, esonera espressamente la Stazione Appaltante e il Gestore del Sistema da qualsiasi responsabilit&agrave; per conseguenze pregiudizievoli di qualsiasi natura o per danni, diretti o indiretti, che fossero arrecati ad essi o a terzi a causa dell''utilizzo improprio dello strumento di firma digitale.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION', 'en', 'The use of the account does not replace the use of the digital signature, where this is expected. The Economic Operator acknowledges and accepts that the deeds and documents for which is requested from time to time the use of the digital signature will not be considered valid and effective if they are not signed according to the modality requested.<br>
+The User is required to comply with all legislative, regulatory, implementation, contractual rules, technical rules and resolutions of the Agency for Digital Italy on the subject of conservation and use of the Digital Signature tool, so like any other instruction given on the matter by the Certifier who issued the instrument and, therefore, expressly exonerates the Contracting Authority and the System Manager from any responsibility for prejudicial consequences of any nature or for damages, direct or indirect, which were caused to them or to third parties due to the improper use of the digital signature tool.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION_TITLE', 'it', '6. Elezione di domicilio e comunicazioni');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION_TITLE', 'en', '6. Election of domicile and communications');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'it', 'Con l''accettazione dei presenti Termini e Condizioni l''Utente elegge domicilio presso la casella di posta elettronica certificata indicata all''atto della registrazione alla Piattaforma. L''utente potr&agrave; rinvenire le comunicazioni anche presso l''area Utente riservata all''interno della Piattaforma.
+Le comunicazioni tra la stazione appaltante e l''Utente potranno avvenire mediante i canali summenzionati.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'en', 'By accepting these Terms and Conditions, the User elects domicile at the certified e-mail address indicated when registering on the Platform. The user can find the communications also in the reserved User area within the Platform.
+Communications between the contracting authority and the User will may take place through the aforementioned channels.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL_TITLE', 'it', '7. Propriet&agrave; intellettuale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL_TITLE', 'en', '7. Intellectual ownership');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL', 'it', 'I contenuti e le informazioni offerti all''Utente attraverso la Piattaforma e il software utilizzato sono concessi in licenza da terzi alla stazione appaltante e sono protetti dal diritto d''autore o da altri diritti di propriet&agrave; intellettuale (ivi inclusi i diritti sulle banche dati).<br>
+Con l''accettazione dei presenti "Termini e Condizioni" l''Utente si impegna a rispettare i diritti della stazione appaltante sulla piattaforma.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL', 'en', 'The contents and information offered to the User through the Platform and the software used are licensed by third parties to the contracting authority and are protected by copyright or other proprietary rights intellectual property (including database rights).<br>
+By accepting these "Terms and Conditions", the User undertakes to respect the rights of the contracting authority on the platform.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RESPONSABILITY_TITLE', 'it', '8. Limitazione di responsabilit&agrave;');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RESPONSABILITY_TITLE', 'en', '8. Limitation of liability');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RESPONSABILITY', 'it', 'La Stazione Appaltante si impegna a garantire i pi&ugrave; alti standard di qualit&agrave; e affidabilit&agrave; dei servizi, sia sotto il profilo della fruibilit&agrave; per gli Utenti che sotto il profilo della sicurezza.<br>
+Nonostante ci&ograve;, l''amministrazione non pu&ograve; essere ritenuta in alcun modo responsabile per qualsiasi danno derivante all''Utente o agli Operatori Economici dall''utilizzo, dal malfunzionamento, dal ritardato o mancato utilizzo e/o dall''interruzione o sospensione dell''utilizzo della Piattaforma, ivi inclusi perdita di opportunit&agrave; commerciali, mancati guadagni, perdita di dati, danno all''immagine, richieste di risarcimento e/o pretese di terzi, causati da:<br>
+(a) eventi di "Forza Maggiore", intendendosi in maniera esemplificativa e non esaustiva, un evento tra i seguenti: interruzione della corrente elettrica o delle linee telefoniche o di collegamento alla rete per fatto di terzi, scioperi, dispute industriali, guerre, ragioni di stato o di autorit&agrave; civili o militari, embarghi, atti vandalici e terroristici, epidemie, allagamenti, terremoti, incendi ed altri disastri naturali;<br>
+(b) errata utilizzazione della Piattaforma da parte dell''Utente/Operatore;<br>
+(c) difetti di funzionamento delle apparecchiature di connessione utilizzate dall''Utente/Operatore;<br>
+(d) guasti ai sistemi informatici, alle apparecchiature di telecomunicazione e/o agli impianti tecnologici per una durata non superiore a 30 giorni;<br>
+(e) violazione dei presenti Termini e Condizioni;<br>
+(f) violazione delle prescrizioni in tema di custodia delle credenziali d''accesso.<br>
+L''Utente, inoltre, prende atto e accetta espressamente che:<br>
+(i) la stazione appaltante si riserva il diritto di interrompere e/o sospendere l''utilizzo della Piattaforma e/o revocare la registrazione e l''abilitazione in qualsiasi momento a fronte di irregolarit&agrave; nell''utilizzo della Piattaforma o del compimento di atti contrari alla normativa vigente, previa comunicazione all''Utente, senza incorrere in alcuna responsabilit&agrave; nei suoi confronti;<br>
+(ii) la Piattaforma &eacute; fruibile cos&igrave; come &eacute;, priva di garanzie di qualsivoglia natura; l''Utente, pertanto, rinuncia a qualsiasi garanzia, espressa o implicita, ivi inclusa, a titolo meramente indicativo, la garanzia di idoneit&agrave; ad un uso o uno scopo specifico.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RESPONSABILITY', 'en', 'The Contracting Authority undertakes to guarantee the most high quality standards and reliability of the services, both in terms of usability for Users who in terms of security.<br>
+Despite this, the administration cannot be held in any way responsible for any damage resulting to the User or Economic Operators from the use, malfunction, delayed or non-use and/or interruption or suspension of the use of the Platform, including loss of opportunities commercial, loss of earnings, loss of data, damage to image, compensation claims and/or third party claims, caused by:<br>
+(a) "Major Force" events, meaning by way of example and not exhaustively, one of the following events: interruption of electricity or telephone lines or connection to the network due to third parties, strikes, industrial disputes, wars, reasons state or authority civil or military, embargoes, acts of vandalism and terrorism, epidemics, floods, earthquakes, fires and other natural disasters;<br>
+(b) incorrect use of the Platform by the User/Operator;<br>
+(c) malfunctions of the connection equipment used by the User/Operator;<br>
+(d) failures in computer systems, telecommunications equipment and/or technological systems for a duration not exceeding 30 days;<br>
+(e) breach of these Terms and Conditions;<br>
+(f) violation of the provisions regarding the custody of access credentials.<br>
+Furthermore, the User acknowledges and expressly accepts that:<br>
+(i) the contracting authority reserves the right to interrupt and/or suspend the use of the Platform and/or revoke the registration and authorization at any time in the event of irregularities in the use of the Platform or in the fulfillment of acts contrary to the current legislation, upon communication to the User, without incurring any liability against him;<br>
+(ii) the Platform is accessible as it is, without guarantees of any nature; the User, therefore, waives any guarantee, expressed or implied, including, by way of example only, the guarantee of suitability for a specific use or purpose.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RIGHTS_TITLE', 'it', '9. Diritti di terzi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RIGHTS_TITLE', 'en', '9. Third Party Rights');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RIGHTS', 'it', 'La stazione appaltante non &egrave; in alcun modo responsabile per qualsiasi danno derivante agli Operatori Economici o terzi, in conseguenza dell''utilizzo della Piattaforma da parte degli Utenti muniti del necessario potere di rappresentanza.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_RIGHTS', 'en', 'The contracting authority is not in any way liable for any damage resulting to Economic Operators or third parties, as a result of the use of the Platform by Users with the necessary power of representation.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL_TITLE', 'it', '10. Protezione dei dati personali');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL_TITLE', 'en', '10. Protection of personal data');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'it', 'I dati comunicati dall''Utente saranno trattati dalla Stazione Appaltante, in qualit&agrave; di titolare del trattamento, nel rispetto della normativa sulla protezione dei dati personali (Reg. (UE) 2016/679 RGPD e D.lgs. 196/2003 s.m.i.). Per ulteriori specificazioni si invita l''Utente a prendere visione dell''<a href="ppgare_auth.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">informativa sul trattamento dei dati personali</a>, consultabile alla sezione "Informazioni", sottosezione "Accesso area riservata" del sito, la quale costituisce parte integrante e sostanziale dei presenti "Termini e Condizioni".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'en', 'The data communicated by the User will be processed by the Contracting Authority, in quality as the data controller, in compliance with the legislation on the protection of personal data (Reg. (EU) 2016/679 RGPD and Legislative Decree 196/2003 s.m.a.). For further specifications, the User is invited to read the <a href="ppgare_auth.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7"> information on the processing of personal data</a>, which can be consulted in the "Informations" section, "Access to reserved area" subsection of the site, which forms an integral and essential part of these "Terms and Conditions".');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS_TITLE', 'it', '11. Accesso agli atti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS_TITLE', 'en', '11. Access to documents');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS', 'it', 'Gli Operatori economici e, in generale, gli aventi diritto potranno accedere ai documenti della piattaforma telematica nel rispetto di quanto previsto dalle vigenti disposizioni in materia di diritto di accesso ai documenti amministrativi ai sensi della Legge n. 241/1990, e s.m.i. e del Codice dei Contratti Pubblici e s.m.i., inoltrando apposita richiesta alla Stazione Appaltante e al relativo Responsabile del procedimento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS', 'en', 'Economic operators and, in general, those entitled will have access to the documents of the telematic platform in compliance with the provisions in force on the right of access to administrative documents pursuant to Law No. 241/1990, and s.m.a. and the Code of Public Contracts and s.m.a., by sending a special request to the Contracting Authority and to the respective Responsible of the procedure.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_LAW_TITLE', 'it', '12. Legge applicabile e foro competente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_LAW_TITLE', 'en', '12. Applicable law and competent court');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_LAW', 'it', 'Eventuali controversie con la Stazione Appaltante derivanti da o relative al presente documento saranno disciplinate dalla legge italiana indipendentemente dal paese di origine dell''Utente o del paese dal quale si accede alla Piattaforma e saranno di competenza del Foro di {0}.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_LAW', 'en', 'Any disputes with the Contracting Authority arising from or relating to this document will be governed by Italian law regardless of the User''s country of origin or the country from which the Platform is accessed and will be the responsibility of the Court of {0}.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_CHANGES_TITLE', 'it', '13. Modifiche e validit&agrave;');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_CHANGES_TITLE', 'en', '13. Modifications and validity');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_CHANGES', 'it', 'I presenti "Termini e Condizioni" sono validi ed efficaci dalla data di pubblicazione.<br>
+La stazione appaltante si riserva il diritto di apportare modifiche, in qualsiasi momento, ai presenti "Termini e Condizioni" nonch&eacute; alle funzionalit&agrave; della Piattaforma, fornendo un preavviso di trenta giorni agli Utenti a mezzo posta elettronica certificata e pubblicando la nuova versione sul Portale Appalti. Le modifiche apportate saranno efficaci una volta decorso il termine suindicato. Nel caso in cui l''utente non concordi con le modifiche apportate, ha la facolt&agrave; di richiedere a mezzo pec la cancellazione del proprio account.<br>
+L''eventuale nullit&agrave;, annullabilit&agrave; o inefficacia di una o pi&ugrave; clausole dei "Termini e Condizioni" non si estender&agrave; alle restanti clausole che pertanto rimarranno pienamente valide ed efficaci.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_CHANGES', 'en', 'These "Terms and Conditions" are valid and effective from the date of publication.<br>
+The contracting authority reserves the right to make changes, at any time, to these "Terms and Conditions" as well as to make changes to the functionalities of the Platform, providing thirty days'' notice to Users by certified e-mail and publishing the new version on the Procurement Portal. The changes made will be effective once the aforementioned deadline has elapsed. In the event that the user does not agree with the changes made, he has the option to request cancellation of your account by certified e-mail.<br>
+Any nullity, annulment o ineffectiveness of one or more clauses of the "Terms and Conditions" do not extend the remaining clauses which will therefore remain fully valid and effective.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TITLE', 'it', 'Informativa sul trattamento dei dati personali');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TITLE', 'en', 'Information on the processing of personal data');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'it', '<p>In questa pagina, si descrivono le modalit&agrave; e le logiche del trattamento dei dati personali degli utenti che consultano il sito {0} (di seguito "il Sito" o "la Piattaforma"). L''informativa &egrave; resa ai sensi dell''art. 13 del Regolamento (UE) 2016/679 a tutti gli utenti che, interagendo con il Sito, forniscono i propri dati personali. La validit&agrave; dell''informativa contenuta nella presente pagina &egrave; limitata al solo Sito e non si estende ad altri siti web eventualmente consultabili mediante collegamento ipertestuale.</p>
+<p>Gli utenti  sono invitati a prendere visione della seguente informativa prima di fornire informazioni personali di qualsiasi genere.</p>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'en', '<p>On this page, we describe the methods and logic of the processing of personal data of users who visit the site {0} (hereinafter "the Site" or "the Platform"). The information is provided pursuant to art. 13 of Regulation (EU) 2016/679 to all users who, by interacting with the Site, provide their personal data. The validity of the information contained in this page is limited to the Site and does not extend to other websites that may be accessed through hypertext links.</p>
+<p>Users are invited to read the following information before providing personal information of any kind.</p>');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_TITLE', 'it', 'Titolare del trattamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_TITLE', 'en', 'Holder of the treatment');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'it', 'Il Titolare del trattamento &egrave; {0} - {1} - {2}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'en', 'The Data Controller is {0} - {1} - {2}');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO_TITLE', 'it', 'Responsabile della protezione dei dati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO_TITLE', 'en', 'Responsible for data protection');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO', 'it', 'Il Titolare ha provveduto a nominare il Responsabile della protezione dei dati che potr&agrave; essere contattato ai seguenti indirizzi: {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO', 'en', 'The Data Controller has appointed the Data Protection Officer who can be contacted at the following addresses: {0}');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'it', 'Gestore del sistema');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'en', 'System manager');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'it', 'Il Gestore del sistema responsabile del trattamento dei dati &egrave; {0} - {1} - {2}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'en', 'The System Manager responsible for data processing is {0} - {1} - {2}');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TYPE_OF_DATA_TITLE', 'it', 'Tipologie di dati trattati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TYPE_OF_DATA_TITLE', 'en', 'Types of data processed');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION_TITLE', 'it', 'Dati di navigazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION_TITLE', 'en', 'Navigation data');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'it', 'I sistemi informatici e le procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali la cui trasmissione &egrave; implicita nell''uso dei protocolli di comunicazione di Internet.</p>
+<p>In questa categoria di dati rientrano gli indirizzi IP o i nomi a dominio dei computer e dei terminali utilizzati dagli utenti, gli indirizzi in notazione URI/URL (Uniform Resource Identifier/Locator) delle risorse richieste, l''orario della richiesta, il metodo utilizzato nel sottoporre la richiesta al server, la dimensione del file ottenuto in risposta, il codice numerico indicante lo stato della risposta data dal server (buon fine, errore, ecc.) ed altri parametri relativi al sistema operativo e all''ambiente informatico dell''utente.</p>
+<p>I dati di navigazione non persistono per pi&ugrave; di {0} mesi e vengono cancellati immediatamente dopo la loro aggregazione (salve eventuali necessit&agrave; di accertamento di reati da parte dell''Autorit&agrave; giudiziaria).');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'en', 'The computer systems and software procedures used to operate this site acquire, during their normal operation, some personal data whose transmission is implicit in the use of Internet communication protocols.</p>
+<p>This category of data includes IP addresses or domain names of computers and terminals used by users, URI/URL (Uniform Resource Identifier/Locator) addresses of the requested resources, the time of the request, the method used in submitting the request to the server, the size of the file obtained in response, the numerical code indicating the status of the response given by the server (successful, error, etc.) and other parameters related to the user’s operating system and IT environment.</p>
+<p>The navigation data does not persist for longer of {0} months and are canceled immediately after their aggregation (except for any need to ascertain crimes by the judicial Authority).');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY_TITLE', 'it', 'Dati forniti volontariamente dall''utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY_TITLE', 'en', 'Data provided voluntarily by the user');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY', 'it', 'I dati personali sono forniti dagli utenti allo scopo di fruire dei servizi della Piattaforma.</p>
+<p>Il Titolare non raccoglie e non tratta dati personali relativi ai minori d''et&agrave;. Accedendo al Sito e utilizzando i servizi offerti, dichiara di aver compiuto la maggiore et&agrave;. Gli utenti minori di 18 anni sono pertanto pregati di non registrarsi alla Piattaforma e di non fornire dati personali.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY', 'en', 'Personal data are provided by users in order to use the services of the Platform.</p>
+<p>The Data Controller does not collect and does not process personal data relating to minors. By accessing the Site and using the services offered, you declare that you have reached the age of majority. Users under the age of 18 are therefore requested not to register on the Platform and not to provide personal data.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA_TITLE', 'it', 'Dati forniti per la registrazione dell''account');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA_TITLE', 'en', 'Data provided for account registration');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'it', 'L''accesso alla propria area riservata pu&ograve; avvenire attraverso l''identificazione con SPID oppure attraverso l''autenticazione tramite username e password. Nel caso di SPID, i dati che vengono trattati dal Titolare sono visualizzabili da ciascun utente prima di completare l''identificazione nella schermata riepilogativa messa a disposizione dal proprio Identity Provider.  Nel caso di autenticazione tramite username e password, l''utente dovr&agrave; fornire alcuni dati tra cui a titolo esemplificativo il nome, il cognome, l''indirizzo email, il numero di telefono oltre che i dati dell''operatore economico che intende registrare. I dati obbligatori sono contrassegnati da asterisco, pertanto il rifiuto di fornirli comporta l''impossibilit&agrave; di completare la registrazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'en', 'Access to your own reserved area can take place through identification with SPID or through authentication via username and password. In the case of SPID, the data that are processed by the Data Controller can be viewed by each user before completing the identification in the summary screen made available by their Identity Provider. In the case of authentication via username and password, the user must provide some data including, by way of example, the name, surname, email address, telephone number as well as the data of the economic operator he intends to register. The mandatory data are marked with an asterisk, therefore the refusal to supply them implies the impossibility to complete the registration.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES_TITLE', 'it', 'Dati forniti utilizzando gli indirizzi di contatto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES_TITLE', 'en', 'Data provided using contact addresses');
+		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'it', 'Si tratta delle informazioni che decider&agrave; di comunicare scrivendo agli indirizzi indicati sulla Piattaforma o nelle aree dedicate all''interazione con la Stazione Appaltante. In questo, caso il Titolare tratta i suoi dati come l''indirizzo e-mail e ogni altra informazione che includer&agrave; nella comunicazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'en', 'This is the information that will decide to communicate by writing to the addresses indicated on the Platform or in the areas dedicated to interaction with the Contracting Authority. In this case, the Data Controller processes your data such as the e-mail address and any other information that will include in communication.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST_TITLE', 'it', 'Dati forniti per l''iscrizione all''elenco operatori');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST_TITLE', 'en', 'Data provided for registration in the operator list');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST', 'it', 'Si tratta delle informazioni inserite per l''iscrizione all''elenco operatori del Titolare del trattamento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST', 'en', 'This is the information entered for registration in the operator list of the Data Controller.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PLATFORM_SERVICES_TITLE', 'it', 'Dati forniti utilizzando i servizi della Piattaforma');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PLATFORM_SERVICES_TITLE', 'en', 'Data provided using the services of the Platform');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PLATFORM_SERVICES', 'it', 'Si tratta delle informazioni, ivi inclusi atti e documenti, che vengono inserite dall''utente per fruire dei servizi della Piattaforma.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PLATFORM_SERVICES', 'en', 'This is information, including deeds and documents, which are entered by the user to use the services of the Platform.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE_TITLE', 'it', 'Cookie');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE_TITLE', 'en', 'Cookie');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'it', 'La Piattaforma utilizza cookie. Ulteriori dettagli possono essere consultati nella sezione dedicata all''interno della <a href="ppgare_cookies.wp">seguente pagina</a>.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'en', 'The Platform uses cookies. Further details can be found in the dedicated section inside the <a href="ppgare_cookies.wp">following page</a>.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE_TITLE', 'it', 'Finalit&agrave; e base giuridica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE_TITLE', 'en', 'Purpose and legal basis');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE', 'it', '<p>I trattamenti di dati personali sono effettuati dal Titolare del trattamento per le seguenti finalit&agrave;:</p>
+<ol>
+<li>Assicurare il corretto funzionamento delle pagine web e dei loro contenuti. In questo caso, il trattamento dei dati si basa sul legittimo interesse del Titolare.</li>
+<li>Creare il profilo utente o consentire l''identificazione dell''utente per garantire l''accesso alla propria area riservata. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
+<li>Riscontrare le richieste di informazioni e di assistenza dell''utente. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
+<li>Consentire l''iscrizione all''elenco operatori. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
+<li>Fruire dei servizi della Piattaforma partecipando alle procedure ad evidenza pubblica. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
+</ol>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE', 'en', '<p> The processing of personal data is carried out by the Data Controller for the following purposes:</p>
+<ol>
+<li>To ensure the proper functioning of web pages and their contents. In this case, the data processing is based on the legitimate interest of the Data Controller.</li>
+<li>Create the user profile or allow the user to be identified to guarantee access to their private area. The treatment is functional to fulfill a user''s request and it is based on the execution of a contract or pre-contractual measures.</li>
+<li>Respond to the user''s requests for information and assistance. The treatment is functional to fulfill a user''s request and it is based on the execution of a contract or pre-contractual measures.</li>
+<li>Allow subscription to the operator list. The treatment is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+<li>Use the services of the Platform by participating in public procedures. The treatment is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+</ol>');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_MODALITY_TITLE', 'it', 'Modalit&agrave; di trattamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_MODALITY_TITLE', 'en', 'Processing methods');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_MODALITY', 'it', '<p>Il trattamento dei dati avverr&agrave; con modalit&agrave; e procedure strettamente necessarie per il perseguimento delle finalit&agrave; per i quali sono stati raccolti con l''ausilio di strumenti elettronici.</p>
+<p>Al fine di evitare il rischio di perdita di dati, usi illeciti o il non corretto utilizzo degli stessi, o l''accesso non autorizzato, la loro alterazione, sono state adottate idonee misure di sicurezza tecnologiche e gestionali. I dati personali saranno trattati dal Titolare del Trattamento, da personale autorizzato al trattamento o da soggetti appositamente nominati quali Responsabili del trattamento. In ogni momento, l''interessato pu&ograve; chiedere al Titolare la lista completa dei Responsabili di volta in volta nominati coinvolti nel trattamento dei dati per le finalit&agrave; di cui alla presente informativa.</p>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_MODALITY', 'en', '<p>The data processing will take place with modality and procedures strictly necessary for the pursuit of the purposes for which they have been collected with the help of electronic tools.</p>
+<p>In order to avoid the risk of data loss, illicit use or incorrect use of the same, or unauthorized access, their alteration, suitable technological and managerial security measures have been adopted. Personal data will be processed by the Data Controller, by personnel authorized for processing or by persons specifically appointed as Data Processors. At any time, the interested party can ask the Data Controller for the complete list of Managers appointed from time to time involved in the processing of data for the purposes referred to in this information.</p>');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION_TITLE', 'it', 'Conservazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION_TITLE', 'en', 'Preservation');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION', 'it', '<p>Il Titolare adotta le seguenti politiche in materia di conservazione dei dati degli utenti della Piattaforma:</p>
+<ol>
+<li>I dati di navigazione verranno conservati per {0} mesi.</li>
+<li>I dati forniti in fase di registrazione e necessari alla creazione del profilo utente verranno conservati fino alla cancellazione dell''account.<!-- da parte dell''utente nell''Area Riservata alla voce "Dismetti ed elimina account".--></li>
+<li>I dati forniti nei form di contatto o nelle mail inviate agli indirizzi pubblicati sulla Piattaforma verranno conservati per {1} mesi.</li>
+<li>I dati inseriti nell''elenco operatori saranno conservati per l''intera durata dell''elenco e in caso di mancato rinnovo o richiesta di rimozione dall''elenco per  {2} mesi.</li>
+<li>I dati, ricompresi in atti e documenti, forniti per partecipare alle procedure ad evidenza pubblica verranno conservati per l''intera durata delle procedure e al termine di queste per {3} anni.</li>
+<li>I dati caricati all''interno della propria area riservata e non inviati per la partecipazione alle procedure verranno conservati per {4} mesi.</li>
+</ol>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION', 'en', '<p>The Data Controller adopts the following policies regarding the retention of data of users of the Platform:</p>
+<ol>
+<li>The navigation data will be kept for {0} months.</li>
+<li>The data provided during registration and necessary for the creation of the user profile will be kept until the account is canceled.<!--by the user in the Reserved Area under "Unmiss and delete account".--></li>
+<li>The data provided in the contact forms or in the emails sent to the addresses published on the Platform will be kept for {1} months.</li>
+<li>The data entered in the list of operators will be kept for the entire duration of the list and in case of non-renewal or request for removal from the list for {2} months.</li>
+<li>The data, included in deeds and documents, provided to participate in public tender procedures will be kept for the entire duration of the procedures and at the end of these for {3} years.</li>
+<li>The data uploaded to your reserved area and not sent for participation in the procedures will be kept for {4} months.</li>
+</ol>');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_RIGHTS_TITLE', 'it', 'Esercizio dei diritti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_RIGHTS_TITLE', 'en', 'Exercise of rights');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_RIGHTS', 'it', 'L''interessato pu&ograve; esercitare, in qualsiasi momento, i diritti previsti dall''art. 15 e ss. del Regolamento (UE) 2016/679 inviando un''email all''indirizzo {0} oppure scrivendo a {1}. L''interessato, ricorrendone i presupposti, ha altres&igrave; il diritto di proporre reclamo al Garante quale autorit&agrave; di controllo, qualora ritenga che il trattamento dei propri dati personali avvenga in violazione di quanto previsto dalla normativa vigente.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_RIGHTS', 'en', 'The interested party can exercise, at any time, the rights provided for by art. 15 and ss. of Regulation (EU) 2016/679 by sending an email to the address {0} or by writing to {1}. The interested party, having met the conditions, has also the right to lodge a complaint with the Guarantor as authority control, if it believes that the processing of personal data is in violation of the provisions of current legislation.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_UPDATES_TITLE', 'it', 'Aggiornamenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_UPDATES_TITLE', 'en', 'Updates');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_UPDATES', 'it', 'La Privacy Policy di questo Sito &egrave; valida dal {0} ed &egrave; soggetta ad aggiornamenti. Gli Utenti sono pertanto invitati a verificarne periodicamente il contenuto.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_UPDATES', 'en', 'The Privacy Policy of this Site is valid from {0} and it is subject to updates. Users are therefore invited to periodically check the content.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_PRIVACY_LINK', 'it', 'Il trattamento dei dati pu&ograve; essere visualizzato da ');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_PRIVACY_LINK', 'en', 'The data processing may be showed from ');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TRATTAMENTO_DATI', 'it', 'Termini ed utilizzo della piattaforma telematica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TRATTAMENTO_DATI', 'en', 'Terms and use of the online platform');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_PRIVACY', 'it', 'Informativa sul trattamento dei dati personali');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_PRIVACY', 'en', 'Information on the processing of personal data');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PRESA_VISIONE', 'it', 'Presa visione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PRESA_VISIONE', 'en', 'Acknowledgment');
+
+	--FINE TRADUZIONI
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('privacy_link', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Privacy links</property>
+<property key="it">Link privacy</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/RegistrImpr/openPrivacyLinks.action</property>
+</properties>', 1);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 8, 'privacy_link', NULL, NULL);
+
+	-- Properties
+	UPDATE ppcommon_properties SET description = 'Mail del DPO dell''impianto' WHERE name = 'privacy.mailDPO';
+	UPDATE ppcommon_properties SET description = 'Durata dei log di navigazione (in mesi)' WHERE name = 'privacy.durataLogNavigazione';
+	UPDATE ppcommon_properties SET name = 'privacy.durataConservazioneContattiMail' WHERE name = 'privacy.duranteConservazioniContattiMail';
+	UPDATE ppcommon_properties SET description = 'Durata conservazione contatti mail (in mesi)' WHERE name = 'privacy.durataConservazioneContattiMail';
+	UPDATE ppcommon_properties SET description = 'Durata dati associati ad un elenco (in mesi)' WHERE name = 'privacy.durataDatiElenco';
+	UPDATE ppcommon_properties SET description = 'Durata dati gare (in anni)' WHERE name = 'privacy.durataDatiGare';
+	UPDATE ppcommon_properties SET description = 'Durata dati non trasmessi (in mesi)' WHERE name = 'privacy.durataDatiNonTrasmessi';
+	UPDATE ppcommon_properties SET description = 'Data inizio validità della policy sulla privacy (GG/MM/AAAA)' WHERE name = 'privacy.dataInizioValiditaPolicy';
+	UPDATE ppcommon_properties SET name = 'privacy.pubblicaCondizioniUsoStd' WHERE name = 'show.default.termOfUse';
+	UPDATE ppcommon_properties SET type = 'I', description = 'Pubblica i termini e le condizioni di servizio standard? (1=Si, 0=No)' WHERE name = 'privacy.pubblicaCondizioniUsoStd';
+	UPDATE ppcommon_properties SET value = '0', defvalue = '1' WHERE name = 'privacy.pubblicaCondizioniUsoStd';
+	UPDATE ppcommon_properties SET value = '24', defvalue = '24' WHERE name = 'privacy.durataLogNavigazione';
+	UPDATE ppcommon_properties SET value = '24', defvalue = '24' WHERE name = 'privacy.durataConservazioneContattiMail';
+	UPDATE ppcommon_properties SET value = '10', defvalue = '10' WHERE name = 'privacy.durataDatiGare';
+	UPDATE ppcommon_properties SET value = '12', defvalue = '12' WHERE name = 'privacy.durataDatiElenco';
+	UPDATE ppcommon_properties SET value = '12', defvalue = '12' WHERE name = 'privacy.durataDatiNonTrasmessi';
+	UPDATE ppcommon_properties SET description = 'Nome del titolare dell''impianto (es. Comune di Metropolis)' WHERE name = 'privacy.nomeTitolare';
+	UPDATE ppcommon_properties SET description = 'Sede del titolare dell''impianto (es: Piazza Venezia 13, 00149 (RM))' WHERE name = 'privacy.sedeTitolare';
+	UPDATE ppcommon_properties SET value = 'Maggioli SpA', defvalue = 'Maggioli SpA' WHERE name = 'privacy.nomeGestore';
+	UPDATE ppcommon_properties SET value = 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)', defvalue = 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)' WHERE name = 'privacy.sedeGestore';
+	--Fine properties
+
+	UPDATE localstrings 
+	SET  
+		stringvalue = 'Dichiara che i dati personali forniti ed acquisiti contestualmente alla registrazione ai servizi scelti, nonch&eacute; i dati necessari all''erogazione di tali servizi, saranno trattati, nel rispetto delle garanzie di riservatezza e delle misure di sicurezza previste dalla normativa vigente attraverso strumenti informatici, telematici e manuali, con logiche strettamente correlate alle finalit&agrave; del trattamento.' 
+	WHERE 
+		keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' 
+		AND langcode = 'it'; 
+		 
+	UPDATE  
+		localstrings 
+	SET  
+		stringvalue = 'Declare that personal data provided and acquired together with the registration to the services chosen, as well as the data necessary for the provision of these services, will be processed, in compliance with the guarantees of confidentiality and security measures provided for by current legislation through IT, telematic and manual tools, with logic strictly related to the purposes of the processing.' 
+	WHERE 
+		keycode = 'LABEL_REGISTRA_OE_PRIVACY_NOTA' 
+		AND langcode = 'en'; 
+
+	UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?> 
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>3.0</version></content> 
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?> 
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>3.0</version></content> 
+' WHERE contentid = 'GEN-STD-AAR';
+
+	UPDATE localstrings SET stringvalue = 'Bandi e avvisi d''iscrizione per elenchi operatori economici' WHERE keycode = 'TITLE_PAGE_LISTA_ELENCHI_OE' AND langcode = 'it' AND customized = 0;
+	UPDATE localstrings SET stringvalue = 'Announcements and notices of subscription for lists of economic operators' WHERE keycode = 'TITLE_PAGE_LISTA_ELENCHI_OE' AND langcode = 'en' AND customized = 0;
+	UPDATE localstrings SET stringvalue = 'Bandi e avvisi d''iscrizione per il mercato elettronico' WHERE keycode = 'TITLE_PAGE_LISTA_CATALOGHI' AND langcode = 'it' AND customized = 0;
+	UPDATE localstrings SET stringvalue = 'Announcements and notices of subscription for the electronic market' WHERE keycode = 'TITLE_PAGE_LISTA_CATALOGHI' AND langcode = 'en' AND customized = 0;
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.19.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0-M4';
+		UPDATE ppcommon_ver SET version = '3.19.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0-M4';
+
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.19.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0-M5') THEN	
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.19.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0-M5';
+		UPDATE ppcommon_ver SET version = '3.19.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0-M5';
+
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.19.0_to_3.20.0
+
+-- 3.20.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.19.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	--Labels
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LAVORAZIONE_SELEZIONATA', 'it', 'Offerta?');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LAVORAZIONE_SELEZIONATA', 'en', 'Offer?');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONSEGNA_RICHIESTA', 'it', 'Data consegna richiesta');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONSEGNA_RICHIESTA', 'en', 'Requested delivery date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONSEGNA_OFFERTA', 'it', 'Data consegna offerta');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_CONSEGNA_OFFERTA', 'en', 'Offer delivery date');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO', 'it', 'Tipo');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO', 'en', 'Type');
+
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRALBO_QUESTIONARIO', 'it', 'Questionario');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRALBO_QUESTIONARIO', 'en', 'QForm');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRALBO_RIEPILOGO_QUESTIONARIO', 'it', 'Riepilogo questionario');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRALBO_RIEPILOGO_QUESTIONARIO', 'en', 'QForm summary');	
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_ELENCO_CAMBIATA_INFO', 'it', 'ATTENZIONE: la Stazione Appaltante ha cambiato la modulistica o la documentazione richiesta per l''elenco! E'' necessario annullare la richiesta e ricominciare da capo.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_ELENCO_CAMBIATA_INFO', 'en', 'ATTENTION: the Contracting Authority has changed the forms or documentation required for the list! you need to cancel the request and start over.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTA_ND_NON_PREVISTO', 'it', 'Il pulsante "Genera pdf" compare una volta inserito il valore di questo campo.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTA_ND_NON_PREVISTO', 'en', 'The "Generate pdf" button appears once the value of this field has been entered.');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_ELENCO_CAMBIATA_WARN', 'it', 'ATTENZIONE: la Stazione Appaltante ha cambiato la modulistica o la documentazione richiesta per l''elenco!');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODULISTICA_ELENCO_CAMBIATA_WARN', 'en', 'ATTENTION: the Contracting Authority has changed the forms or documentation required for the list!');
+
+	--Customizations
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-DOCUM', 'NUMSERIEBOLLODOMANDA', 'MAN', 0);
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.20.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.19.0';
+	UPDATE ppcommon_ver SET version = '3.20.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.19.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.20.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.20.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+UPDATE sysconfig SET config = '<?xml version="1.0" encoding="UTF-8"?>
+<AuthConfig>
+	<profileEntity nameAttr="Nome" surnameAttr="Nome" eMailAttr="email" langAttr="language" />
+	<sender code="PORTALICE1" />
+	
+	<userDisabledAdminMail pageCode="admin">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Disattivazione account utente]]></subject>
+			<body><![CDATA[L''utenza {userName} è stata disabilitata, poiché è stato superato il numero limite di {attempts} tentativi di login con password errata a {applicationBaseUrl}.
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Account disabled]]></subject>
+			<body><![CDATA[The user {userName} is now disabled, because the limit of {attempts} login attempts with wrong password has been exceeded to {applicationBaseUrl}.
+
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</userDisabledAdminMail>
+	
+	<userDisabledUserMail pageCode="user">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Disattivazione account utente]]></subject>
+			<body><![CDATA[Spett.le {name}, 
+la Sua utenza {userName} per l''accesso al portale è stata disattivata a seguito di un eccessivo numero di tentativi di accesso falliti. 
+Se non riconosce gli accessi falliti, allora è stato tentato un accesso illecito sulla sua utenza, pertanto si rende necessario il cambio della propria password seguendo il link
+{link}
+
+Qualora non riesca a recuperare la password e riattivare la propria utenza, potrà contattare il servizio di assistenza a uno dei recapiti indicati nella sezione "Assistenza operatori economici" del sito web.
+
+Cordiali Saluti.
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Account disabled]]></subject>
+			<body><![CDATA[Dear {name}, 
+your user {userName} has been suspended due to too many login attempts.
+If it does not recognize the failed accesses, then an illegal access has been attempted on its user, therefore it is necessary to change your password by following the link
+{link}
+
+If you are unable to retrieve your password and reactivate your account, you can contact the assistance service at one of the addresses indicated in the "Assistance to economic operators" section of the website.
+
+Best regards.
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</userDisabledUserMail>
+
+	<ipSuspendedAdminMail pageCode="admin">
+		<template lang="it">
+			<subject><![CDATA[[Portale Appalti]: Inibizione accesso]]></subject>
+			<body><![CDATA[L''accesso al portale {applicationBaseUrl} dall''indirizzo ip {ipAddress} è stato inibito per {minutes} minuti, poiché è stato superato il numero limite di {attempts} tentativi di login falliti.
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.
+]]></body>
+		</template>
+		<template lang="en">
+			<subject><![CDATA[[Portale Appalti]: Inhibition access]]></subject>
+			<body><![CDATA[
+Portal access {applicationBaseUrl} has been inhibited for {minutes} minutes for the ip address {ipAddress}, because the limit of {attempts} login failures has been exceeded.
+
+-----
+Please don''t reply, this mail is generated automatically from the system.
+]]></body>
+		</template>
+	</ipSuspendedAdminMail>
+	
+</AuthConfig>'
+WHERE version='production' AND item = 'jpauthenticator_Config';
+
+-- si alza il livello di autenticazione SPID a L2 per tutti
+UPDATE ppcommon_properties SET value = 'L2', defvalue = 'L2' WHERE name = 'auth.sso.spid.authlevel';
+UPDATE ppcommon_properties SET value = 'L2', defvalue = 'L2' WHERE name = 'auth.sso.spidbusiness.authlevel';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.20.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.20.0-M1';
+	UPDATE ppcommon_ver SET version = '3.20.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.20.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.20.0_to_3.21.0
+-- 3.21.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.20.0') THEN
+
+	-- INIZIO AGGIORNAMENTI
+		-- backup preventivo delle label
+		create table localstrings_bk_3_20 as select * from localstrings;
+
+	DELETE FROM ppcommon_customizations WHERE objectid='DOCUM-FIRMATO' AND attrib='VERIFICACONWS' AND feature='ACT';
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('DOCUM-FIRMATO', 'VERIFICACONWS', 'ACT', 0);
+
+DELETE FROM ppcommon_properties WHERE category = 'digital-signature-check';
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authurl', 'S', 'Url di keycloack per la autorizzazione servizio verifica firma', 'https://login.maggiolicloud.it/auth/realms/progetto_segreteria/protocol/openid-connect/token/', 'https://login.maggiolicloud.it/auth/realms/progetto_segreteria/protocol/openid-connect/token/', 12000, 'digital-signature-check');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authusername', 'S', 'Username per keycloack per la autorizzazione servizio verifica firma', '', NULL, 12010, 'digital-signature-check');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authsecret', 'S', 'Secret per la autorizzazione servizio verifica firma', null, null, 12020, 'digital-signature-check');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-url', 'S', 'Url del servizio per la verifica delle firme digitali', 'https://api.maggiolicloud.it/rest/segreteria/v2', 'https://api.maggiolicloud.it/rest/segreteria/v2', 12030, 'digital-signature-check');
+	--credenziali ambiente test
+--UPDATE ppcommon_properties SET value='https://login-dev.maggiolicloud.it/auth/realms/progetto_segreteria/protocol/openid-connect/token/' where name='digital-signature-check-authurl' and category='digital-signature-check';
+--UPDATE ppcommon_properties SET value='YXBwYWx0aUB2b2w6Y2RlOWM5NTMtNTM1MS00MGRiLWFjMWItMmQwMTEwNTg5MDYy' where name='digital-signature-check-authsecret' and category='digital-signature-check';
+--UPDATE ppcommon_properties SET value='https://api-dev.maggiolicloud.it/rest/segreteria/v2' where name='digital-signature-check-url' and category='digital-signature-check';
+	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRATION_ONLY_NOT_ITALIANS', 'it', 'La funzionalità "Registrati" è disponibile esclusivamente per operatori economici NON italiani. Per tutti gli operatori economici italiani l''autenticazione deve avvenire esclusivamente mediante uno dei sistemi di autenticazione esterni (SPID, CIE, CNS, ...) previsti dal portale stesso.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRATION_ONLY_NOT_ITALIANS', 'en', 'The "Register" function is available exclusively for NON-Italian economic operators. For all Italian economic operators, authentication must take place exclusively through one of the external authentication systems (SPID, CIE, CNS, ...) provided by the portal itself.');
+
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'SOLOESTERE', 'ACT', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PASSWORD-ALGORITMO', 'INDECIFRABILE', 'ACT', 1);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CONFIRM_STIPULE', 'it', 'Conferma i documenti delle stipule');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CONFIRM_STIPULE', 'en', 'Confirm the stipulation documents');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_INFO', 'it', 'Scrivi qui le info per gestire i documenti che seguono');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DOCSTIPULE_INFO', 'en', 'Write here info to manage the following documents');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('NOTIFICA_GARETEL_RINUNCIA_OGGETTO', 'it', 'Rinuncia partecipazione offerta per il bando {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('NOTIFICA_GARETEL_RINUNCIA_OGGETTO', 'en', 'Renounce of tender offer {0}');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.21.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.20.0';
+	UPDATE ppcommon_ver SET version = '3.21.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.20.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.21.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.21.0-M1') THEN
+
+	-- INIZIO AGGIORNAMENTI
+	
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO', 'it', 'Attenzione: non sei ancora iscritto ad alcun elenco operatori.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO', 'en', 'Warning: you are not yet subscribed to list of Economic Operators.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRIVITI', 'it', 'Iscriviti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ISCRIVITI', 'en', 'Subscribe');
+
+	DELETE FROM localstrings WHERE keycode = 'LABEL_REGISTRATION_ONLY_NOT_ITALIANS' AND langcode = 'en';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRATION_ONLY_NOT_ITALIANS', 'en', 'The "Sign in" function is available exclusively for NON-Italian economic operators. For all Italian economic operators, authentication must take place exclusively through one of the external authentication systems (SPID, CIE, CNS, ...) provided by the portal itself.');
+
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('httpHeader.host.allowed', 'S', 'Elenco degli host ammessi nell''header http delle richieste separate da ",". La base url del portale, e localhost sono implicitamente incluse. Utilizzare "*" per disattivare il controllo.', null, null,'configurazione generale', 196);
+
+	DELETE FROM ppcommon_customizations WHERE objectid = 'PASSWORD-ALGORITMO' AND attrib = 'INDECIFRABILE' AND feature = 'ACT';
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PASSWORD-ALGORITMO', 'INDECIFRABILE', 'ACT', 0);
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.21.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.21.0-M1';
+	UPDATE ppcommon_ver SET version = '3.21.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.21.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.21.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.21.0-M2') THEN
+
+	-- INIZIO AGGIORNAMENTI
+	
+	--label
+	UPDATE localstrings SET stringvalue = 'Italian Fiscal Code' WHERE keycode = 'LABEL_CODICE_FISCALE' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_FIELD_GENERATE_CF', 'it', 'Per generare il codice fiscale è necessario valorizzare i campi: Cognome, Nome, Sesso, Data di nascita, Comune di nascita (italiani), Provincia di nascita (italiani) e Nazione (esteri)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_FIELD_GENERATE_CF', 'en', 'To generate the italian fiscal code it is necessary to fill in the fields: Surname, Name, Gender, Date of birth, Town of birth (Italians), Province of birth (Italians) and Country (foreigners)');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_CF_NON_VALIDO', 'it', 'Il codice fiscale fornito non è valido');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_CF_NON_VALIDO', 'en', 'Provided input is not a valid italian fiscal code');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_DATA_NON_VALIDA', 'it', 'Non è stato possibile convertire correttamente la data di nascita inserita');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_DATA_NON_VALIDA', 'en', 'The date of birth entered could not be converted correctly');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_NOME_NON_ESISTE', 'it', 'Il comune {0} non esiste');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_NOME_NON_ESISTE', 'en', 'the municipality {0} does not exist');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_NOME_E_PROV_NON_ESISTE', 'it', 'Il comune {0} nella provincia {1} non esiste');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_NOME_E_PROV_NON_ESISTE', 'en', 'the municipality {0} in the province {1} does not exist');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_MULTIPLO', 'it', 'Il comune {0} è stato trovato in più di una provincia. Per favore specifica una provincia');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_COMUNE_MULTIPLO', 'en', 'The municipality {0} was found in more than one province. Please specify a province');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_DATI_NON_VALIDI', 'it', 'I dati inseriti non sono validi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ERRORE_DATI_NON_VALIDI', 'en', 'The data entered is invalid');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_NAZIONE', 'it', 'La nazione è un campo obbligatorio per i soggetti esteri');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_NAZIONE', 'en', 'Country is a mandatory field for foreign subjects');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_COMUNE', 'it', 'Il comune è un campo obbligatorio per i soggetti italiani');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REQUIRED_COMUNE', 'en', 'The municipality is a mandatory field for Italian subjects');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTA_NAZIONE_PER_ESTERI', 'it', 'In caso di soggetto NON italiano, valorizzare esclusivamente data e nazione di nascita.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTA_NAZIONE_PER_ESTERI', 'en', 'In the case of a NOT Italian subject, enter only the date and country of birth.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TITLE_GENERA_CF', 'it', 'Generatore di codice fiscale in formato italiano');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TITLE_GENERA_CF', 'en', 'Fiscal code generator in Italian format');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ITALIANO', 'it', 'Italiano');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ITALIANO', 'en', 'Italian');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GENERA', 'it', 'Genera');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GENERA', 'en', 'Generate');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BUTTON_CALCOLA', 'it', 'Calcola');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BUTTON_CALCOLA', 'en', 'Calculate');
+
+
+INSERT INTO contents VALUES ('GEN-STD-CRED', 'GEN', 'Credits', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-CRED" typecode="GEN" typedescr="Contenuto generico"><descr>Credits</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Credits</text><text lang="it">Credits</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<div class="credits-title">Product made by <b>Maggioli S.p.A.</b></div> <br>
+<div class="credits-sub-title"><b>Software Solutions and Services  Procurement & Contracts</b>  area  Public Procurement lifecycle Management</div> <br>
+<div class="credits-image"><img src="../resources/static/img/logo_maggioli.png"alt="Maggioli company logo" /></div>
+<div class="credits-info">
+<b>Maggioli Group</b><br>
+Via del Carpino, 8<br>
+Santarcangelo di Romagna (RN) - Italy
+</div><br>
+]]></hypertext><hypertext lang="it"><![CDATA[<div class="credits-title">Prodotto realizzato da <b>Maggioli S.p.A.</b></div> <br>
+<div class="credits-sub-title"><b>Soluzioni e Servizi Software</b>  area  <b>Appalti & Contratti</b> Public Procurement lifecycle Management</div> <br>
+<div class="credits-image"><img src="../resources/static/img/logo_maggioli.png" alt="Logo azienda Maggioli"/></div>
+<div class="credits-info">
+<b>Gruppo Maggioli</b><br>
+Via del Carpino, 8<br>
+Santarcangelo di Romagna (RN) - Italia
+</div><br>
+]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach" /></attributes><status>READY</status><version>3.0</version></content>
+', '20220803123707', '20220804142505', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-CRED" typecode="GEN" typedescr="Contenuto generico"><descr>Credits</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Credits</text><text lang="it">Credits</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<div class="credits-title">Product made by <b>Maggioli S.p.A.</b></div> <br>
+<div class="credits-sub-title"><b>Software Solutions and Services  Procurement & Contracts</b>  area  Public Procurement lifecycle Management</div> <br>
+<div class="credits-image"><img src="../resources/static/img/logo_maggioli.png"alt="Maggioli company logo" /></div>
+<div class="credits-info">
+<b>Maggioli Group</b><br>
+Via del Carpino, 8<br>
+Santarcangelo di Romagna (RN) - Italy
+</div><br>
+]]></hypertext><hypertext lang="it"><![CDATA[<div class="credits-title">Prodotto realizzato da <b>Maggioli S.p.A.</b></div> <br>
+<div class="credits-sub-title"><b>Soluzioni e Servizi Software</b>  area  <b>Appalti & Contratti</b> Public Procurement lifecycle Management</div> <br>
+<div class="credits-image"><img src="../resources/static/img/logo_maggioli.png" alt="Logo azienda Maggioli"/></div>
+<div class="credits-info">
+<b>Gruppo Maggioli</b><br>
+Via del Carpino, 8<br>
+Santarcangelo di Romagna (RN) - Italia
+</div><br>
+]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach" /></attributes><status>READY</status><version>3.0</version></content>
+', 'free', '1.0', 'admin');
+
+
+INSERT INTO contentrelations VALUES ('GEN-STD-CRED', NULL, NULL, NULL, NULL, 'free');
+
+INSERT INTO contentsearch VALUES ('GEN-STD-CRED', 'Titolo', 'Credits', NULL, NULL, 'it');
+INSERT INTO contentsearch VALUES ('GEN-STD-CRED', 'Titolo', 'Credits', NULL, NULL, 'en');
+
+INSERT INTO workcontentsearch VALUES ('GEN-STD-CRED', 'Titolo', 'Credits', NULL, NULL, 'it');
+INSERT INTO workcontentsearch VALUES ('GEN-STD-CRED', 'Titolo', 'Credits', NULL, NULL, 'en');
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_doc_credits', 'ppgare_documenti', 10, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Credits</property>
+<property key="it">Credits</property>
+</properties>
+', 'free', 0);
+
+INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig
+(pagecode, framepos, showletcode, config, publishedcontent)
+VALUES('ppgare_doc_credits', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>', NULL);
+INSERT INTO showletconfig
+(pagecode, framepos, showletcode, config, publishedcontent)
+VALUES('ppgare_doc_credits', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="contentId">GEN-STD-CRED</property>
+</properties>', 'GEN-STD-CRED');
+	
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_doc_credits', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_doc_credits' AND framepos = 9);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'en', '<div class="footer-info"><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div></div>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'it', '<div class="footer-info"><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div></div>');
+
+	update localstrings
+	set stringvalue = (SELECT stringvalue FROM localstrings WHERE keycode = 'COPYRIGHT' and langcode='it' AND (customized=1 OR stringvalue <> 'Copyright &copy; <a href="https://www.maggioli.it/divisioni/maggioli-informatica/" title="Vai al sito di Maggioli S.p.A. - Divisione Informatica"><span>Maggioli S.p.A. - Divisione Informatica</span></a>')), customized=1
+	where keycode = 'FOOTER' and langcode = 'it' AND EXISTS (SELECT stringvalue FROM localstrings WHERE keycode = 'COPYRIGHT' and langcode='it' AND (customized=1 OR stringvalue <> 'Copyright &copy; <a href="https://www.maggioli.it/divisioni/maggioli-informatica/" title="Vai al sito di Maggioli S.p.A. - Divisione Informatica"><span>Maggioli S.p.A. - Divisione Informatica</span></a>'));
+
+	update localstrings
+	set stringvalue = (SELECT stringvalue FROM localstrings WHERE keycode = 'COPYRIGHT' and langcode='en' AND (customized=1 OR stringvalue <> 'Copyright &copy; <a href="https://www.maggioli.it/divisioni/maggioli-informatica/" title="Go to the Maggioli S.p.A. website - IT Division"><span>Maggioli S.p.A. - IT Division</span></a>')), customized=1
+	where keycode = 'FOOTER' and langcode = 'en' AND EXISTS (SELECT stringvalue FROM localstrings WHERE keycode = 'COPYRIGHT' and langcode='en' AND (customized=1 OR stringvalue <> 'Copyright &copy; <a href="https://www.maggioli.it/divisioni/maggioli-informatica/" title="Go to the Maggioli S.p.A. website - IT Division"><span>Maggioli S.p.A. - IT Division</span></a>'));
+
+	DELETE FROM localstrings WHERE keycode = 'COPYRIGHT';
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.21.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.21.0-M2';
+	UPDATE ppcommon_ver SET version = '3.21.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.21.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.21.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.21.0-M3') THEN
+
+	-- INIZIO AGGIORNAMENTI
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.21.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.21.0-M3';
+	UPDATE ppcommon_ver SET version = '3.21.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.21.0-M3';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+-- 3.21.0_to_3.22.0
+-- 3.22.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.21.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+		-- backup preventivo delle label
+		create table localstrings_bk_3_21 as select * from localstrings;
+
+		-- rimozione disallineamenti per creazione label in inglese con uno spazio in coda (2)
+		DELETE FROM localstrings WHERE keycode = 'auth_GATEWAY_LOGIN_BUTTON ' AND langcode = 'en';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_BUTTON', 'en', 'Login with Gateway');
+
+		DELETE FROM localstrings WHERE keycode = 'auth_FEDERA_LOGIN_BUTTON ' AND langcode = 'en';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FEDERA_LOGIN_BUTTON', 'en', 'Login with fedERa');
+
+		-- correzioni etichette in lingua italiana (8)
+UPDATE localstrings SET stringvalue='Scaricare il file PDF contenente la domanda di aggiornamento iscrizione che dovrà essere verificata, eventualmente completata, sottoscritta e caricata al passo successivo ("Documentazione richiesta"). Prima di procedere a generare il documento, indicare il firmatario del documento per ogni partecipante al raggruppamento temporaneo.<br/><strong>Attenzione: la funzione di generazione del PDF diventa disponibile solo dopo aver compilato correttamente i firmatari di tutte le partecipanti al raggruppamento.</strong>' WHERE langcode='it' AND customized = 0 AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Elenco degli ordini confermati<br/><br/><b>Tutti gli ordini con notifica o comunicazione da oltre 5 giorni vengono considerati confermati</b>' WHERE langcode='it' AND customized = 0 AND keycode='BALLOON_EORDERS_RICERCA_CONFERMATI';
+UPDATE localstrings SET stringvalue='Codice Fornitore' WHERE langcode='it' AND customized = 0 AND keycode='LABEL_FATT_CODIMPFORNITORE';
+UPDATE localstrings SET stringvalue='Tutte le tipologie' WHERE langcode='it' AND customized = 0 AND keycode='OPT_TUTTE_LE_TIPOLOGIE';
+UPDATE localstrings SET stringvalue='Procedure di vendita in aggiudicazione o concluse' WHERE langcode='it' AND customized = 0 AND keycode='TITLE_AREA_PERSONALE_PROC_AGGIUDIC_VEN';
+UPDATE localstrings SET stringvalue='Avvia la compilazione di un nuovo componente' WHERE langcode='it' AND customized = 0 AND keycode='TITLE_NEW_COMPONENTE';
+UPDATE localstrings SET stringvalue='Accedi con CNS' WHERE langcode='it' AND customized = 0 AND keycode='auth_CNS_LOGIN_BUTTON';
+UPDATE localstrings SET stringvalue='Accedi con fedERa' WHERE langcode='it' AND customized = 0 AND keycode='auth_FEDERA_LOGIN_BUTTON';
+
+		-- correzioni etichette in lingua inglese (829)
+UPDATE localstrings SET stringvalue='Enter the further personal informations and the registration data of the economic operator.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_IMPRESA_ALTRI_DATI_ANAGR_IMPRESA';
+UPDATE localstrings SET stringvalue='Below you can find the summary data of the economic operator. If all the information is correct, complete the update process by clicking on "Send".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_IMPRESA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='To add new owners, members or administrators with representation charge and technical directors, enter the personal data and click on "Add". For subjects already existent in the registry it is not possible to change the starting date of the assignment and the Italian social security number.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_IMPRESA_SOGGETTI_IMPRESA';
+UPDATE localstrings SET stringvalue='In this page it is possible to attach (upload) any documents to be submitted with the request for updating; furthermore, the list of documents required for registration remains available with the possibility of downloading any facsimile models.<br/><br/>To upload files related to any documents already on the list, click on "Browse ..."<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are listed below. To change the personal data or view the details, click on "Edit".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_ISCR_ALBO_IMPRESA';
+UPDATE localstrings SET stringvalue='It is possible to request registration for additional contracting authorities (in addition to those for which the application has already been submitted).' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_ISCR_ALBO_SA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the update request that must be verified, if necessary completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the update registration request that must be verified, if necessary completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, indicate the signatory of the document for each participant in the temporary grouping. <br/> <strong> Warning: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping . </strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='The list of any other documents is showed below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ALTRI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Information relating to transparency on contracts awarded in accordance with Legislative Decree 50/2016.<br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link is available on the CIG field to consult the relevant detail. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it in horizontal direction, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AMMTRASP_CONTRATTI_LISTA';
+UPDATE localstrings SET stringvalue='The tab below shows the detailed information of the selected contract. To return to the procurement list, click on the "Back to list" link at the bottom of the card.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AMMTRASP_CONTRATTO_SCHEDA';
+UPDATE localstrings SET stringvalue='In the personal area, once the user has logged-in, links for accessing specific functions are available, such as managing personal data, changing the password, accessing information for which he is registered or enabled, and access any communications received from the Administration.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AREA_PERSONALE';
+UPDATE localstrings SET stringvalue='A new version of the consents has been defined to be approved in the platform. If you have arrived on this page it means that the previously accepted consents are different from those in force, or it is the first access following the management of the consent registration. <br/> To proceed, therefore, accept the items below and click on "Confirm".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI';
+UPDATE localstrings SET stringvalue='It is possible to delegate to one of the previously registered traders or to register a new one.<br/><strong>ATTENTION: the operator selection function is available only on operators acquired and processed by the system (therefore not simply registered) and only once per user session</strong>; in case of need to change the economic operator in use it is therefore mandatory to log out to make the new selection.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_AREA_PERSONALE_SSO';
+UPDATE localstrings SET stringvalue='Bid indicating the new value offered to improve the previous offer.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ASTA_RILANCIO';
+UPDATE localstrings SET stringvalue='The list of any documents and deeds required by c. 1 art. 29 of Legislative Decree 50/2016 for the purposes of transparency is showed below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ATTI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the administrative envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_BUSTA_AMMINISTRATIVA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the economic envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_BUSTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the prequalification envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_BUSTA_PREQUALIFICA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the technical envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_BUSTA_TECNICA';
+UPDATE localstrings SET stringvalue='List of categories/provisions of the selected registration announcement.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_CATEGORIE_DETTAGLIO_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='List of categories/provisions and any classifications to which the candidate is registered for the selected registration announcement. To modify the data entered, go back to the registration announcement, and if the terms are still open, use the "Update data / documents" function.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_CATEGORIE_OPERATORE_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='List of the categories/provisions to which it appears registered for the registration tender to the selected electronic market. To modify the data entered, go back to the electronic market registration tender, and if the terms are still open, use the "Data/documents update" function.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_CATEGORIE_OPERATORE_DETTAGLIO_CATALOGO';
+UPDATE localstrings SET stringvalue='List of communications received by the Administration and automatically filed after 90 days after receiving. To consult the details of a communication, select the subject of the communication of interest.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_COMUNICAZIONI_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='In this section you can consult contract resolutions and equivalent acts according to the timeframe provided for in the contract regulations.<br/>The publication obligation is provided by the art. 29 of Legislative Decree 50/2016.<br/><br/>Set a search criterion to consult the data. A link to consult or download the document is available under the description.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DELIBERE_A_CONTRARRE';
+UPDATE localstrings SET stringvalue='This feature allows you to view the data and detailed documents of an item. In case of an economic operator authenticated to the system, authorized and that already selected the product category during registration, it is also possible to request the inclusion of a new product.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_ARTICOLO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data of the selected tender notice, including documents. In case of a portal with the management of economic operators lists, in a notice referring to a list, the "Detail of the announcement of the operators list" button  appears, which allows to access the detailed information of the list.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_AVVISO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the data of the selected procedure, including the documents related to the announcement, or related to the documents that are required to competitors. Click on "Lots" you can view the detailed information on the lots included in the procedure.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_BANDO';
+UPDATE localstrings SET stringvalue='This feature allows you to view detailed data relating to a notice of registration for economic operators lists, including the documents that are required to the operators. The "Subscription request" button, activated for registered users only, allows you to activate the operator registration procedure for a list of economic operators for the chosen contracting authority.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data relating to a registration tender for the electronic market, including the documents that are required to economic operators. The "Subscription request" button, activated for registered users only, allows the operator registration process to be activated for an electronic market for the chosen contracting authority.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_CATALOGO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data of the selected tender result, including the documents. Clicking on "Lots" you can view the detailed information on the tender lots, while clicking on "Call for tenders" you can access the call for tender detail associated to this tender result' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_ESITO';
+UPDATE localstrings SET stringvalue='The summary of the request sent with attached documents is shown below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_INVIO';
+UPDATE localstrings SET stringvalue='The product data is presented below. By clicking on  "Modify", you can edit the content of the product.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_PRODOTTO';
+UPDATE localstrings SET stringvalue='This feature allows to view the information about the selected contract. By clicking on "Contract documents" it is possibile to see the detail of the contract documents.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETTAGLIO_STIPULA';
+UPDATE localstrings SET stringvalue='The data of the communication sent with any attached documents is shown below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETT_COMUNICAZIONE_INVIATA';
+UPDATE localstrings SET stringvalue='The data of the communication received with any attached documents is shown below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETT_COMUNICAZIONE_RICEVUTA';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are shown below. It is possible to display all the personal data using the "Download detailed PDF" command which allows you to download a file in PDF format. To modify the personal data, click on "Edit", while to enter a request for changing the identification of operator data (company name, VAT number, fiscal code, ...) click on "Request identification data change"' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DETT_IMPRESA';
+UPDATE localstrings SET stringvalue='The list of auction invitation documents and defined phases are showed below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DOCUMENTI_FASI_ASTA';
+UPDATE localstrings SET stringvalue='The list of documents related to the selected contract is shown below. By clicking on each document name it is possibile to download the file. Once the files have been uploaded, click on SEND CONTRACT to send documents to the Contracting Authority.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_DOCUMENTI_STIPULE';
+UPDATE localstrings SET stringvalue='General invoice data entering page' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_EORDERS_FATTURA_CREA';
+UPDATE localstrings SET stringvalue='Invoice summary data' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_EORDERS_FATTURA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='List of the invoices submitted via SDI' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_EORDERS_LISTA_FATTURE';
+UPDATE localstrings SET stringvalue='Page for sending invoices' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_EORDERS_UPLOAD_FATTURE';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators. For each envelope the economic operator or grouping, the status relating to the administrative envelope, and at the end the admission to the next phase are listed. By selecting the single envelope it is possible to access the detailed data.<br/>Attention: in case of an administrative documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_APERTURA_DOC_AMM';
+UPDATE localstrings SET stringvalue='Detail of the administrative envelope related to the selected envelope, showing the data of the economic operator or the composition of the group, the list of attached documents and the list of lots for which the offer was submitted (only in the case of lot tenders ).' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_APERTURA_DOC_AMM_OP';
+UPDATE localstrings SET stringvalue='The various phases of the tender procedure are presented below. Select the phase of interest to access the information published to the participating economic operators.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_FASI';
+UPDATE localstrings SET stringvalue='List of economic operators admitted to the ranking. For each envelope the economic operator or the grouping, the value of its offer and the ranking are listed.<br/>Attention: if the ranking is not completed yet, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_GRADUATORIA';
+UPDATE localstrings SET stringvalue='Select the lot to proceed with the consultation of the ranking.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_GRADUATORIA_LOTTI';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators admitted to the economic offer evaluation phase. For each envelope the economic operator or grouping, the status of the economic envelope, the value of its offer, and at the end the admission to the next phase are listed. By selecting the single envelope it is possible to access the detailed data.<br/>Attention: in case of an economic documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Detail of the economic envelope related to the selected envelope, showing the data of the economic operator or the composition of the group, the list of attached documents and the value of its offer.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_OFFERTA_ECONOMICA_OP';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators admitted to the technical assessment phase. For each envelope, the economic operator or grouping, the status of the technical envelope and the phase completed, the admission to the next phase are listed. By selecting the single envelope, it is possible to access the detailed data.<br/>Attention: in case of the technical documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GARA_TEL_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='This feature allows you to change your product catalogue. <br/> Use "Enter a new product" to define new products, "Modify products in the catalogue" to modify or delete existing products or restore previously deleted products, "Change prices and deadlines "to change only the price or the expiry date validity of the offer of the products in the catalogue. <br/> At any time you can consult the list of new products or changes made starting from "Summary of changes in progress ". <br/> The actual transmission of the operations carried out takes place using the "Confirm and send changes" function.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GESTIONE_PRODOTTI';
+UPDATE localstrings SET stringvalue='List of products included in the catalogue. It is possible to apply a search filter on the products in the catalogue by setting the search terms (words of at least 3 characters) in the field identified by "Filter products by", or search for products by switching to an advanced search mode and expressing the filter criteria on one or more information indicated. <br/> From the list of extracted products it is possible to access the detail or request the elimination of the product in the catalogue.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GESTIONE_PRODOTTI_CATALOGO_SISTEMA';
+UPDATE localstrings SET stringvalue='Summary of the changes to be made to the catalogue such as: products inserted (to be sent or drafted), products modified, eliminated or restored. <br/> From the list it is possible to access the details of a single product or request the cancellation of the variation at catalogue (cancellation of new product insertion, cancellation of a modification, deletion and restoration). <br/> <strong> Warning: the variations have not yet been transmitted </strong>; to complete the submission use the appropriate function from the main page of Product Management.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_GESTIONE_PRODOTTI_RIEPILOGO_MODIFICHE';
+UPDATE localstrings SET stringvalue='The system provides for the uploading of files in several "digital envelopes" in a manner conceptually similar to the traditional paper handling. Only after completion the operator can proceed with the sending of the offer, i.e. the "digital envelope" containing all the "digital envelopes" is transmitted. Therefore to proceed with the sending of the electronic envelopes for the offer it is necessary to proceed as follows: <ul> <li>select "Start compiling offer" to set some basic information for the envelopes to be sent, such as the method of participation and any tender lots of interest, where applicable; with confirmation at the end of the procedure the envelopes provided for the tender are activated</li> <li>select each envelope provided to attach and save the related documentation</li> <li>check the data and documents collected by the procedure in the summary</li> <li>select "Confirm and send offer" to proceed with the actual sending of the data; in case of lots tenders, the offer can be sent only when the data and documents have been completely entered</li> </ul>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_OFFERTA';
+UPDATE localstrings SET stringvalue='To send the prequalification electronic envelope to require the participation, you have to proceed as follows: <ul> <li>select "Start compiling the application" to set some basic information, such as how to participate and any tender lots of interest, if any; with the confirmation at the end of the procedure the compilation of the prequalification envelope is activated</li> <li>attach and save the documentation related to the prequalification envelope</li> <li>check the data and documents collected by the procedure in the summary</li> <li>select "Confirm and send request" to proceed with the actual sending of the data.</li> </ul>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Summary of entered data and uploaded attachments. Attention: the data are saved but not sent to the Administration yet.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Enter the agent''s participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_DOC_ART48_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_DOC_ART48_IMPRESA';
+UPDATE localstrings SET stringvalue='In case the company participated in the procedure as a temporary grouping, it is necessary that the data entry operations on this website are carried out by the grouping company specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_DOC_ART48_RTI';
+UPDATE localstrings SET stringvalue='Enter the agent''s participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_OFFERTA_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_OFFERTA_IMPRESA';
+UPDATE localstrings SET stringvalue='If applicable by the tender announcement, it is possible to present an offer as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the grouping company specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_INVIO_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='The categories provided for the Operators List ar listed below. Indicate for which categories and any classifications you intend to register for. The operator will be invited to submit offers based on these lists. The operator must document his economic-financial and technical-organizational capacity also based on the categories and classifications indicated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_CATEGORIE';
+UPDATE localstrings SET stringvalue='To register, it is necessary to present the request, attaching the documents indicated in the call for tenders/notice of the Economic Operators List, or in the published regulations. <br/> To upload files related to any documents already present in the list, click on "Browse ...". <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next registration step is blocked until the operator data is completely updated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_IMPRESA';
+UPDATE localstrings SET stringvalue='Check that you have attached all the required documents (upload), then press "Send request" to definitively submit the application, or press "Save draft" to save and send it later.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_RIEPILOGO';
+UPDATE localstrings SET stringvalue='If applicable in the announcement of registration to the Operators List, it is possible to participate in the List as a temporary grouping. In this case, it is necessary that the data entry operations on this website are carried out by the group leader or agent, specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_RTI';
+UPDATE localstrings SET stringvalue='The Operators List you are subscribing to may be used by one or more of the following Contracting Stations. Indicate which Contracting Stations you wish to operate for.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_SA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the request for registration which must be verified, completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, select its signatory.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the request for registration which must be verified, completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, indicate the signatory of the document for each participant in the temporary grouping. <br/> <strong> Warning: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping . </strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Here you can find the categories provided for the electronic market registration tender. Indicate which categories you intend to register for. The operator must document his economic-financial and technical-organizational capacity also based on the categories indicated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_CATALOGO_CATEGORIE';
+UPDATE localstrings SET stringvalue='To register it is necessary to present the documentation required by the announcement and by the Electronic Market Documents. <br/> To upload files related to any documents already on the list, click on "Browse ...". <Br /> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_CATALOGO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='If required by the electronic market registration announcement, it is possible to participate in the electronic market as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the group leader or agent, specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_ISCR_CATALOGO_RTI';
+UPDATE localstrings SET stringvalue='To use this function, it is necessary to enable Javascript code execution in the browser.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_JAVASCRIPT_REQUIRED';
+UPDATE localstrings SET stringvalue='List of items defined in the registration announcement for the selected electronic market; the items are paginated and the commands for consulting the extracted records are available at the bottom of the page. To reduce the number of extracted elements, filter by search criteria.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Below you can find the electronic auctions in progress in which the operator participated in the offer phase, regardless of the admission to the auction phase. To access the details, select the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_ASTE_IN_CORSO';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for the search for tenders. Click on "Search" to access the list of tenders that satisfy the set criteria, and from the list it will be possible to access the detailed data of a single tender.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_CON_ESITO';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_IN_CORSO';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the purchase tenders currently IN PROGRESS and not subject to the application of the current legislation on public procurement.<br/> <br/> The detailed data of the purchasing procedures can be consulted by selecting the "View detail" link' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_IN_CORSO_ACQ';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the sales tenders IN PROGRESS.<br/> The detailed data of the public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_IN_CORSO_VEN';
+UPDATE localstrings SET stringvalue='List of notices for registration for currently published economic operators lists. If you want to register in a list of economic operators, you must be registered on the portal. For further details about the registration procedure consult the manual "Access to the reserved area".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Below you can find the tender procedures or tender offer requests (RDO) in progress, for which you must submit documentation (for example relating to the certification of self-certified requirements, clarifications, price justification, etc.). To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='The tender offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA';
+UPDATE localstrings SET stringvalue='The purchase offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='The sales offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the tender announcements <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_SCADUTI';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the EXPIRED purchase tenders not subject to the application of the current legislation on public procurement.<br/> <br/> The detailed data of the purchasing procedures can be consulted by selecting the link "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_SCADUTI_ACQ';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the EXPIRED sales tenders.<br/> The detailed data of the public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_BANDI_SCADUTI_VEN';
+UPDATE localstrings SET stringvalue='List of current iscription announcements for the electronic market. To request registration you must be registered on the portal, for more details about the registration procedure consult the manual under "Access to the reserved area".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_CATALOGHI';
+UPDATE localstrings SET stringvalue='The economic operator who has access to the platform can fill in the participation form either as a "single economic operator" or as a group leader/agent on behalf of a temporary grouping of companies "RTI".<br/> In lots tenders it is possible to compete in different forms in different lots. It is possible to submit a single request, as a single or on behalf of the same RTI, for one or more lots. For example, it is possible to participate as a single company in a lot (or more) and as a RTI in another lot (or more). It is also possible to participate as another a RTI in another lot (or more).<br/> A "digital envelope" linked to the competitor (single or RTI) for one or more lots is then created for each request for participation.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_DOMANDE_PARTECIPAZIONE_TELEMATICHE';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the results of tenders according to the deadlines set by the contracts legislation.<br/>The obligation to publish the tender results is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_ESITI_IN_CORSO';
+UPDATE localstrings SET stringvalue='List of requests sent to the Administration. To consult the details of an item, select the type of request of your interest.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_INVII';
+UPDATE localstrings SET stringvalue='The economic operator who has access to the platform can fill in the offer form either as a "single economic operator" or as a group leader/agent on behalf of a temporary grouping of companies "RTI".<br/> In lots tenders it is possible to compete in different forms in different lots. It is possible to submit a single request, as a single or on behalf of the same RTI, for one or more lots. For example, it is possible to participate as a single company in a lot (or more) and as a RTI in another lot (or more). It is also possible to participate as another a RTI in another lot (or more).<br/> A "digital envelope" linked to the competitor (single or RTI) for one or more lots is then created.<br/> ATTENTION: in case of reserved procedures, the digital envelopes for each invitation request received will be always displayed.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_OFFERTE_TELEMATICHE';
+UPDATE localstrings SET stringvalue='This section summarises the procedures created in cases of extreme urgency, pursuant to articles 163 or 63 of Legislative Decree 50/2016. The detailed data of the public procedures can be consulted by selecting the link "View Detail".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='The list below includes all the the contracts assigned to the economic operator, already activated or to be signed.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LISTA_STIPULE';
+UPDATE localstrings SET stringvalue='Select the lot of interest to participate with an auction bid or view the offer summary.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LOTTI_ASTA';
+UPDATE localstrings SET stringvalue='List of the lots of the selected procedure with their details.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LOTTI_BANDO';
+UPDATE localstrings SET stringvalue='List of selected lots for which the economic envelope is required. Select the link on the lot to activate the uploading of the related documentation and the economic offer. Once all the documentation required for a specific lot has been entered and saved, a check appears in the "Ready to send" column.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LOTTI_BUSTE_ECONOMICHE';
+UPDATE localstrings SET stringvalue='List of selected lots for which the technical envelope is required. Select the link on the lot to activate the uploading of the related documentation and the economic offer. Once all the documentation required for a specific lot has been entered and saved, a check appears in the "Ready to send" column.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_LOTTI_BUSTE_TECNICHE';
+UPDATE localstrings SET stringvalue='It is possible to proceed with the update of the price and the expiry date offered for your products in the catalogue using the functions below.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_MODIFICA_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='List of registered and authorized economic operators. By selecting the link on the categories of an operator, it is possible to consult the list of categories for which he is registered with any classifications, if required.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_OPERATORI_ABILITATI_E_CAT_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Enter the group leader participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PART_GARA_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete data, the access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PART_GARA_IMPRESA';
+UPDATE localstrings SET stringvalue='Select only the tender lots for which you intend to request for participation. <br/> ATTENTION: the request for participation will be sent only when the data and documents have been entered on all the selected lots. It is not possible to send a request of participation without having completed all the lots of interest.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PART_GARA_LOTTI';
+UPDATE localstrings SET stringvalue='If required by the tender, it is possible to participate in the procedure as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the group leader specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PART_GARA_RTI';
+UPDATE localstrings SET stringvalue='Summary tables of the assignments for works, services and supplies (Compliance with art.1 paragraph 32 Law 190/2012). Select the year to access the published data.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PROSPETTO_ANNI_ANTICORRUZIONE';
+UPDATE localstrings SET stringvalue='Information relating to tender and contract acquisition procedures, published pursuant to Article 1 of Law No. 190 of 6 November 2012.<br/>Set a search criterion to consult the data. If at least one occurrence is extracted, a link to export the extracted data is available at the end of the page.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_PROSPETTO_ANTICORRUZIONE';
+UPDATE localstrings SET stringvalue='Enter the additional personal information and registration data of the economic operator.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_ALTRI_DATI_ANAGR_IMPRESA';
+UPDATE localstrings SET stringvalue='ATTENTION: once registration has been completed and data has been sent, the information relating to Company Name, Legal Form, Social Security Number and VAT Number cannot be changed. Any changes must be requested using the "Request dentification data change" button from your personal area.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_DATI_PRINC_IMPRESA';
+UPDATE localstrings SET stringvalue='If you have already registered on another e-procurement platform that supports the M-XML format, you can download the registry data from that platform in M-XML format and import them into this one. <br/> Search in the other platform the data export function in M-XML format. Typically the export function can be found in the "Personal Area", "Profile", "Your data" section. <br/> If you have a M-XML file click on "Import from M-XML file" to upload the compatible/available data and then proceed by verifying and supplementing any additional data that may be required.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_FROM_PORTALE';
+UPDATE localstrings SET stringvalue='The summary data of the registry of the economic operator and of the other data entered are listed below. If all the information entered is correct, complete the registration process by clicking on "Send".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Complete the registration by entering a username as desired. Repeat the username in the appropriate field for confirmation and check. The username must be kept and not communicated to others. Accept the consent for the processing of personal data and proceed to complete the registration phase.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_UTENZA';
+UPDATE localstrings SET stringvalue='The username is defined by the system using the social security number/tax code. Accest the consent for the processing of personal data and proceed to complete the registration phase.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_REG_IMPRESA_UTENZA_LOGINCF';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for searching of tender notices. Click on "Search" to access the list of tender notices that satisfy the set criteria, and then it is possible to access the detailed data of a single tender notice.<br/><br/>To search announcements or tender results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_AVVISI';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for tenders announcements. Click on "Search" to access the list of tenders that satisfy the set criteria, and  from the that you can view the detailed data of a single tender.<br/><br/>To search for tender notices or results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_BANDI';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage purchase tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG_ACQ';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage sales tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG_VEN';
+UPDATE localstrings SET stringvalue='The purchase orders received from the Administration are listed below. It is possible to set a search criterion to limit the data displayed. To access the order form, use the "View detail" link.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_CONTRATTI';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for tenders announcements. Click on "Search" to access the list of tenders that satisfy the set criteria, and  from the that you can view the detailed data of a single tender.<br/><br/>To search for tender notices or results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICERCA_ESITI';
+UPDATE localstrings SET stringvalue='The function should be used <strong> exclusively </strong> to communicate changes regarding the following data: <ul> <li> Company name or denomination </li> <li> Type </ li> <li> Legal form </li> <li> Social Security Number</li> <li> VAT number </li> </ul>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RICH_VARIAZIONE_DATI_IMPR';
+UPDATE localstrings SET stringvalue='Summary of the data entered with the possibility of checking the information loaded in the envelopes of the offer submitted.<br/>If the deadline for submitting the offer is still open and the application sent is incorrect, it is possible to cancel the submission made and reinsert the correct data/attachments using the "Cancel and resubmit offer" button.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIEPILOGO_OFFERTA';
+UPDATE localstrings SET stringvalue='Summary of the data entered with the possibility of checking the information loaded in the prequalification envelope submitted.<br/>If the deadline for submitting the participation request is still open and the application sent is incorrect, it is possible to cancel the submission made and reinsert the correct data/attachments using the "Cancel and resubmit participation request" button.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='The reasons for waiving the offer are listed below. If the deadline for submitting the offer has not expired yet, it is possible to cancel the waiver and return to submitting the offer by clicking on "Cancel waiver".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIEPILOGO_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Enter the reason why you intend to waive the tender offer, then click on "Waive tender offer" to notify the contracting authority of the reason.<br/>Please note: receipt of the waiver will take place at the same time as the acquisition of offers.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='To renew the registration, it is necessary to present the application, attaching the documents indicated in the notice/announcement of the Economic Operators List, or in the published regulations. <br/> To upload the files related to any documents already on the list , click on "Browse ...". <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIN_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The data entered are summarized below. Check that you have attached all the required documents (upload), then click on "Send renewal" to definitively submit the application.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIN_ISCR_ALBO_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the renewal request that must be verified, completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIN_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the renewal request that must be verified, completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document for each participant in the temporary grouping.<br/><strong>Attention: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping.</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIN_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='To renew the registration, it is necessary to present the documentation required by the Announcement and by the Electronic Market Documents.<br/>To upload files related to any documents already on the list, click on "Browse ...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_RIN_ISCR_CATALOGO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='List of the contracting authorities available in the portal. Select a contracting authority to filter all data extraction features for the selected one. By selecting the first occurrence ("All contracting authorities") it is possible to cancel the set filter and return to the extraction of all the elements.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_SELEZIONE_STAZIONE_APPALTANTE';
+UPDATE localstrings SET stringvalue='Insert any attachments to the communication. <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_COMUNICAZIONE_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Attach the final economic auction offer file downloaded in the previous step (after having digitally signed it). <br/> To upload the file click on "Browse ...".' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_CONFERMA_ASTA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The final offer submitted when participating in the auction is indicated below. If no bisd have been submitted, the offer submitted in the preliminary round applies.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_CONFERMA_ASTA_OFFERTA';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, the access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_CONFERMA_ASTA_OPERATORE';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the final economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_CONFERMA_ASTA_SCARICA_OFFERTA';
+UPDATE localstrings SET stringvalue='Chack and correct the selection of the signatory for the group leader and of the signatories for each principal. Once all the signatories have been confirmed, the "Generate pdf" button will appear and you will be able to download the PDF file containing the final economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_CONFERMA_ASTA_SCARICA_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the economic envelope, <strong>including the PDF file digitally signed in the previous step.</strong><br/>To upload files related to documents already in the list, click on "Browse...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the indications of the call for tenders/tender or letter of invitation and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_DOCUMENTI_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the technical envelope, <strong>including the PDF file digitally signed in the previous step.</strong><br/>To upload files related to documents already in the list, click on "Browse...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the indications of the call for tenders/tender or letter of invitation and attach ALL the documentation required!</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_DOCUMENTI_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='Summary of the item selected in the previous step to proceed with the insertion of new products; in case the Electronic Market provides the opportunity to load more products for each item, it is also necessary to indicate the maximum number of products that can be inserted for each item. Use "Download model" to download the Excel file to be modified to insert the new products in the catalogue.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_EXPORT_ARTICOLI_CONFIRM';
+UPDATE localstrings SET stringvalue='Insert the file to be uploaded and use "Upload products". All the lines of the file that are not completely filled in will be automatically discarded.<br/>Successfully uploaded products are available from the "Summary of changes in progress" function, eventually in a draft status if you must include attachments.<br/><br/><strong>Attention: in case of errors during the import phase it is possible to correct the source file and reload it; the system will only import products that have not been successfully processed yet.</strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_IMPORT_PRODOTTI';
+UPDATE localstrings SET stringvalue='Insert the file to upload and use "Import". All the unaltered lines of the file will be automatically discarded. <br/> Successfully changed products will be available from the "Summary of changes in progress" function. <br/> <br/> <strong> Attention: in case of errors in the import phase it is possible to correct the source file and reload it. </strong>' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_IMPORT_VARIAZIONE_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='Enter the overall offer with the required information and, if applicable, company safety and labour costs.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Enter the technical offer by inserting values for each required evaluation criterion.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='You can change the attachments previously uploaded for the product. Each uploaded file must be selected and immediately sent using the corresponding "Browse ..." button. It is also possible to download any fac-similes of the required certifications.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_AGG_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Edit the product detail data that changed.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_AGG_PRODOTTO';
+UPDATE localstrings SET stringvalue='Check the modified data and continue by confirming the data with the "Save" button, thus making the product ready to send its modifications.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_AGG_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Insert image, technical data sheets and certifications required for the product. Each uploaded file must be selected and sent immediately using the corresponding "Browse ..." button. It is also possible to download any fac-similes of the required certifications.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_INS_DOCUMENTI';
+UPDATE localstrings SET stringvalue='It is possible to proceed with the insertion of a single product starting from an item present in the enabled product categories, or inserting more products by first exporting an Excel file prepared for compilation, compiling it and then importing it.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_INS_PRODOTTO_CHOICES';
+UPDATE localstrings SET stringvalue='Check the data entered and proceed with the draft entry if you intend to continue the compilation after, otherwise, if the compilation has been completed and the product is ready to be sent, add the product.' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_PRODOTTO_INS_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Select the signatory for the group leader/agent and enter the signatory for each principal. Once all the signatories have been entered, save the data. After saving, the "Generate pdf offer" button will appear to download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_RTI_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Select the signatory for the group leader/agent and enter the signatory for each principal. Once all the signatories have been entered, save the data. After saving, the "Generate pdf technical offer" button will appear to download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_TECNICA_RTI_TEL';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the technical offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='Enter your old and new passwords (repeat twice to check). The new password must contain a minimum of 14 characters (using letters and at least 2 numbers) up to a maximum of 20. It is recommended to use upper and lower case letters as well as a special character between . (dot) _ (underscore) & (commercial e) $ (dollar) @ (snail) ! (exclamation mark) and - (minus)' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_jpadminprofile_EDITPASSWORD';
+UPDATE localstrings SET stringvalue='Enter your old and new passwords (repeat twice to check). The new password must contain a minimum of 8 characters (using letters and at least 2 numbers) up to a maximum of 20. It is recommended to use upper and lower case letters as well as a special character between . (dot) and _ (underscore).' WHERE langcode='en' AND customized=0 AND keycode='BALLOON_jpuserprofile_EDITPASSWORD';
+UPDATE localstrings SET stringvalue='Data/documents completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Registration completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Renewal completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Registration request' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_CATALOGO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_CATALOGO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Tender notice' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_ESITO_BANDO';
+UPDATE localstrings SET stringvalue='Cancel waiver' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA';
+UPDATE localstrings SET stringvalue='Submit requirements documentation' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_PRESENTA_OFFERTA';
+UPDATE localstrings SET stringvalue='Submit participation request' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Participation request summary' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Waive summary' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_RIEPILOGO_RINUNCIA';
+UPDATE localstrings SET stringvalue='Waive tender offer' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_DETTAGLIO_GARA_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Place a bid' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ESEGUI_RILANCIO';
+UPDATE localstrings SET stringvalue='Order details' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_FATT_BACK_ORDER';
+UPDATE localstrings SET stringvalue='Data/documents completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ISCRALBO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Registration completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ISCRALBO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Renewal completion' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ISCRALBO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Registration request' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ISCRALBO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_ISCRALBO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Add participation request as single' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_NUOVA_DOMANDA';
+UPDATE localstrings SET stringvalue='Add participation request in RTI' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_NUOVA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Add offer in RTI' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_NUOVA_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='Bid' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_RILANCIA';
+UPDATE localstrings SET stringvalue='Save product as draft' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_SAVE_PRODOTTO_BOZZA';
+UPDATE localstrings SET stringvalue='Search' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_SEARCH';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Back to registration' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_WIZARD_BACK_TO_ISCRIZIONE_ISCRALBO';
+UPDATE localstrings SET stringvalue='Back to the participation request' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_WIZARD_BACK_TO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Generate pdf' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_WIZARD_GENERA_PDF';
+UPDATE localstrings SET stringvalue='Generate pdf offer' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_WIZARD_GENERA_PDF_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Generate pdf technical offer' WHERE langcode='en' AND customized=0 AND keycode='BUTTON_WIZARD_GENERA_PDF_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='The PEC (Certified Email) is the PEC (Posta Elettronica Certificata) is the preferred tool for sending communications and correspondence to the economic operator. In case the <strong> PEC </strong> is <strong> defined but not active yet</strong> please <strong> postpone the procedure </strong>otherwise the Administration will not be able to send communications that cannot yet be delivered correctly.<br/>' WHERE langcode='en' AND customized=0 AND keycode='DATI_IMPRESA_INFO_PEC';
+UPDATE localstrings SET stringvalue='The Contracting Authority is authorised to send any notices and/or correspondence to the email addresses indicated, pursuant to Article 76, paragraph 4, of Legislative Decree 50/2016, in the knowledge that notices and/or correspondence correctly sent to the aforementioned addresses shall be deemed to be known to the addressee.' WHERE langcode='en' AND customized=0 AND keycode='DATI_IMPRESA_INFO_PEC2';
+UPDATE localstrings SET stringvalue='Economic operator addresses list' WHERE langcode='en' AND customized=0 AND keycode='ELENCO_INDIRIZZI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Economic operator subjects list' WHERE langcode='en' AND customized=0 AND keycode='ELENCO_SOGGETTI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Amount provided' WHERE langcode='en' AND customized=0 AND keycode='LABEL_190_IMPORTO_CORRISPOSTO';
+UPDATE localstrings SET stringvalue='Results of the beneficiaries prospectus summary' WHERE langcode='en' AND customized=0 AND keycode='LABEL_190_PROSPETTO_SOGGETTI_BENEFICIARI_SUMMARY';
+UPDATE localstrings SET stringvalue='Contracting authority' WHERE langcode='en' AND customized=0 AND keycode='LABEL_190_STRUTTURA_PROPONENTE';
+UPDATE localstrings SET stringvalue='You selected to cancel the economic operator data update procedure.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ABORT_EDIT_DATI_OE_1';
+UPDATE localstrings SET stringvalue='you selected to cancel the insertion of a request to change the identification data of the economic operator.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ABORT_RICH_VARIAZIONE_DATI_OE_1';
+UPDATE localstrings SET stringvalue='Attention: any data or documents uploaded and not yet saved in the session to be terminated will be lost!' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ACCESSO_SIMULTANEO_OPTION_2_2';
+UPDATE localstrings SET stringvalue='Select this action to update in your catalogue the price and/or the expiry date offered inserted in the Excel file downloaded starting from the previous item. The two information relating to the products are checked and acquired, but to proceed with the actual updating of the catalogue, it is necessary to proceed with the step of confirming and sending changes.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_AGGIORNA_CATALOGO_PREZZI_INSERITI_IN_XLS';
+UPDATE localstrings SET stringvalue='Order attachments' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ALLEGATI_ORDINE';
+UPDATE localstrings SET stringvalue='Other certifications' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ALTRE_CERTIFICAZIONI_ATTESTAZIONI';
+UPDATE localstrings SET stringvalue='Cancel request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ANNULLA_DOMANDA';
+UPDATE localstrings SET stringvalue='Are you sure you want to cancel all changes to the catalogue?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ANNULLA_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='It is necessary to login using the authentication system if you want to enter your personal area' WHERE langcode='en' AND customized=0 AND keycode='LABEL_AREA_PERSONALE_SSO_PLEASE_LOGIN';
+UPDATE localstrings SET stringvalue='Please remember, in case you need to make new requests related to this one, to include in the description of the new request the ticket number assigned to this one' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASSISTENZA_TECNICA_FUTURE_SEGNALAZIONI';
+UPDATE localstrings SET stringvalue='Enter a new request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASSISTENZA_TECNICA_INS_RICHIESTA';
+UPDATE localstrings SET stringvalue='We recommend you to send your requests by completing the online form available above. However, it is also possible to ask for assistance from the following references:' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASSISTENZA_TECNICA_RIFERIMENTI_TESTO';
+UPDATE localstrings SET stringvalue='Attention: the economic operator is NOT subject to the hiring obligations set out in Law 68/1999 when he employs fewer than 16 employees or when he employs 16 to 35 employees and has not hired new employees after 01/15/2000 when the law came into force.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASSUNZIONI_OBBLIGATE_NOTA';
+UPDATE localstrings SET stringvalue='Auction open' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASTA_APERTA';
+UPDATE localstrings SET stringvalue='You selected to cancel the final offer confirmation for the auction.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ASTE_CANCEL_OFFERTA_1';
+UPDATE localstrings SET stringvalue='Notices' WHERE langcode='en' AND customized=0 AND keycode='LABEL_AVVISI';
+UPDATE localstrings SET stringvalue='Notice for' WHERE langcode='en' AND customized=0 AND keycode='LABEL_AVVISO_PER';
+UPDATE localstrings SET stringvalue='Actions on the line' WHERE langcode='en' AND customized=0 AND keycode='LABEL_AZIONI';
+UPDATE localstrings SET stringvalue='Fixed-price or T&M' WHERE langcode='en' AND customized=0 AND keycode='LABEL_A_CORPO_O_MISURA';
+UPDATE localstrings SET stringvalue='You selected to cancel the updating of the data and documents relating to the subscription' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_AGGIORNAMENTO_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the subscription' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_ISCRIZIONE_ISCRALBO_1';
+UPDATE localstrings SET stringvalue=', "Back to registration" to return to the data entry form and continue the registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_ISCRIZIONE_ISCRALBO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for sending a new communication.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_REGISTRAZIONE_COMUNICAZIONI_1';
+UPDATE localstrings SET stringvalue='You selected to register the economic operator to the portal.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_REGISTRAZIONE_OE_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the registration renewal' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='Select "Confirm cancellation" to cancel the registration renewal and return to detail,' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_2';
+UPDATE localstrings SET stringvalue='"Back to renewal" to return to the data entry form and continue renewing the registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the updating of data and documents relating to the product' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_ANNULLA_AGGIORNAMENTO_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the insertion of a new product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_ANNULLA_INSERIMENTO_1';
+UPDATE localstrings SET stringvalue='During the import phase, you can import a maximum of 20 products for each item.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_IMPORT_MAX_20_PRODOTTI';
+UPDATE localstrings SET stringvalue='has been successfully updated, click on "Go back to product management" and follow the procedure to send the product to the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_PRODOTTO_AGGIORNATO_CON_SUCCESSO';
+UPDATE localstrings SET stringvalue='The new product has been entered correctly, click on "Go back to product management" and follow the procedure to send the product to the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_PRODOTTO_INSERITO_CON_SUCCESSO';
+UPDATE localstrings SET stringvalue='Deletion request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_RICHIESTA_ELIMINAZIONE';
+UPDATE localstrings SET stringvalue='A deletion request is in progress' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_RICHIESTA_ELIMINAZIONE_IN_CORSO';
+UPDATE localstrings SET stringvalue='Request for modification' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_RICHIESTA_MODIFICA';
+UPDATE localstrings SET stringvalue='A request for modification is in progress' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_RICHIESTA_MODIFICA_IN_CORSO';
+UPDATE localstrings SET stringvalue='Item selection' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATALOGHI_STEP_SELEZIONE_ARTICOLO';
+UPDATE localstrings SET stringvalue='Category/Activity' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATEGORIA_PRESTAZIONE';
+UPDATE localstrings SET stringvalue='Categories with electronic catalogue items' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CATEGORIE_ARTICOLI_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='Italian Social Security Number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CODICE_FISCALE';
+UPDATE localstrings SET stringvalue='I.S.S.N.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CODICE_FISCALE_ABBR';
+UPDATE localstrings SET stringvalue='Contract code' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COD_STIPULA';
+UPDATE localstrings SET stringvalue='Expected remuneration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMPENSO_PREVISTO';
+UPDATE localstrings SET stringvalue='Components' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMPONENTI';
+UPDATE localstrings SET stringvalue='Grouping components' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMPONENTI_RAGGRUPPAMENTO';
+UPDATE localstrings SET stringvalue='Date of sending' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMUNICAZIONI_DATAINVIO';
+UPDATE localstrings SET stringvalue='Date of acquisition' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMUNICAZIONI_DATA_ACQUISIZIONE';
+UPDATE localstrings SET stringvalue='Date of submission' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COMUNICAZIONI_DATA_PRESENTAZIONE';
+UPDATE localstrings SET stringvalue='Confirm and send request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CONFERMA_INVIO_DOMANDA';
+UPDATE localstrings SET stringvalue='Are you sure you want to proceed with the registration renewal request?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_CONFERMA_RINNOVO_ISCRALBO';
+UPDATE localstrings SET stringvalue='Labour costs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COSTI_MANODOPERA';
+UPDATE localstrings SET stringvalue='Company safety costs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_COSTI_SICUREZZA_AZIENDALE';
+UPDATE localstrings SET stringvalue='Contract date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_CONTRATTO';
+UPDATE localstrings SET stringvalue='Registration date in professional Register' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Registration date in Building Fund' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_ISCRIZIONE_CASSA_EDILE';
+UPDATE localstrings SET stringvalue='Registration date in Companies Register' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Registration date in anti-mafia whitelist' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_ISCRIZIONE_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Order changes accepted until' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_LIMITE_MOD';
+UPDATE localstrings SET stringvalue='Date time bid' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_ORA_RILANCIO';
+UPDATE localstrings SET stringvalue='Date of publication' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_PUBBLICAZIONE_AVVISO';
+UPDATE localstrings SET stringvalue='Date of publication' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_PUBBLICAZIONE_BANDO';
+UPDATE localstrings SET stringvalue='Tender results date of publication' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_PUBBLICAZIONE_ESITO';
+UPDATE localstrings SET stringvalue='Bid date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_RILANCIO';
+UPDATE localstrings SET stringvalue='Expiry date of the certification' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_CERTIFICAZIONE';
+UPDATE localstrings SET stringvalue='Expiry date of the ISO 9001 certification' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_CERTIFICAZIONE_ISO';
+UPDATE localstrings SET stringvalue='Expiry date of the intermediate certification (permanent consortia)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_INTERMEDIA';
+UPDATE localstrings SET stringvalue='Expiry date of the SOA certification (permanent consortia)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_INTERMEDIA_SOA';
+UPDATE localstrings SET stringvalue='Expiry date of the anti-mafia register subscription' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_ISCRIZIONE_ANAGRAFE';
+UPDATE localstrings SET stringvalue='Expiry date of the anti-mafia whitelist subscription' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_ISCRIZIONE_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Expiry date of the legality rating' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_POSSESSO_RATING';
+UPDATE localstrings SET stringvalue='Five-year expiry date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_QUINQUENNALE';
+UPDATE localstrings SET stringvalue='Five-year expiry date of the SOA' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_QUINQUENNALE_SOA';
+UPDATE localstrings SET stringvalue='Three-year expiry date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_TRIENNALE';
+UPDATE localstrings SET stringvalue='Three-year expiry date of the SOA' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_SCADENZA_TRIENNALE_SOA';
+UPDATE localstrings SET stringvalue='Contract date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATA_STIPULA';
+UPDATE localstrings SET stringvalue='Master data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATI_ANAGRAFICI';
+UPDATE localstrings SET stringvalue='Item general data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATI_GENERALI_ARTICOLO';
+UPDATE localstrings SET stringvalue='Product general data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATI_GENERALI_PRODOTTO';
+UPDATE localstrings SET stringvalue='Birth date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATI_NASCITA';
+UPDATE localstrings SET stringvalue='Download the PDF containing the complete details of the master data of the economic operator' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DATI_OE_STAMPA_ANAGRAFICA';
+UPDATE localstrings SET stringvalue='of the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='RTI name' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DENOMINAZIONE_RTI';
+UPDATE localstrings SET stringvalue='Item description' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DESCRIZIONE_ARTICOLO';
+UPDATE localstrings SET stringvalue='Fac-simile certifications' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_ARTICOLO_FACSIMILE_CERTIFICAZIONI';
+UPDATE localstrings SET stringvalue='Products information' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_ARTICOLO_INFO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Products uploaded by other economic operators' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_ARTICOLO_PROD_CARICATI_ALTRI_OE';
+UPDATE localstrings SET stringvalue='Uploaded products' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_ARTICOLO_PROD_CARICATI_OE';
+UPDATE localstrings SET stringvalue='Submit the documentation to prove requirements' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Documentation required to competitors' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_DOCUMENTAZIONE_CONCORRENTI';
+UPDATE localstrings SET stringvalue='Tender documentation' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_DOCUMENTAZIONE_GARA';
+UPDATE localstrings SET stringvalue='View the tender phases' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_FASI_GARA';
+UPDATE localstrings SET stringvalue='Submit a new offer in the electronic auction' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_OFFERTA_ASTA';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_PRESENTA_OFFERTA';
+UPDATE localstrings SET stringvalue='Submit the request for participation to the tender' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Requirements required to competitors' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_REQUISITI_CONCORRENTI';
+UPDATE localstrings SET stringvalue='View the summary of the tender offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_RIEPILOGO_OFFERTA';
+UPDATE localstrings SET stringvalue='View the summary of the request for participation to the tender' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Deadlines before rectification' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_SCADENZE_PRECEDENTI';
+UPDATE localstrings SET stringvalue='Deadlines for offers submission before rectification' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DETTAGLIO_GARA_TERMINI_OFFERTE_PRECEDENTI';
+UPDATE localstrings SET stringvalue='Use the <b>M-DGUE</b> service integrated in the platform to compile the electronic <b>ESPD</b> and once the "XML Response" file has been produced, return here to upload it.<br>To compile a <b>new ESPD</b> retrieving the data entered in the platform (master data of the company or of the group leader in case of RTI, lots, etc.).' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DGUE_LINK_FIRST';
+UPDATE localstrings SET stringvalue='For any <b>further ESPDs</b> required to other parties (members of the group, auxiliary companies, subcontractors...) use or share' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DGUE_LINK_SECOND';
+UPDATE localstrings SET stringvalue='To modify or reuse an existing "XML Response", or to perform other operations' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DGUE_LINK_THIRD';
+UPDATE localstrings SET stringvalue='The portal user has been successfully disconnected from any external system. To login now you need to authenticate only by entering your user and password.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DISABILITA_ACCESSO_CON_SUCCESS';
+UPDATE localstrings SET stringvalue='of which not subject to discount is' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DI_CUI_NON_SOGGETTO_RIBASSO';
+UPDATE localstrings SET stringvalue='of which design costs are' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DI_CUI_ONERI_PROGETTAZIONE';
+UPDATE localstrings SET stringvalue='of which safety costs are' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DI_CUI_SICUREZZA';
+UPDATE localstrings SET stringvalue='Attachment' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DOCSTIPULE_ALLEGATO';
+UPDATE localstrings SET stringvalue='The documents marked with (<span class="required-field">*</span>) are mandatory to send the request.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DOCUMENTI_OBBLIGATORI_PER_PROCEDERE';
+UPDATE localstrings SET stringvalue='Participation request with single participation form already exinsting' WHERE langcode='en' AND customized=0 AND keycode='LABEL_DOMANDA_IMPRESA_SINGOLA_PRESENTE';
+UPDATE localstrings SET stringvalue='Master data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EDIT_DATI_OE_STEP_ALTRI_DATI_ANAGRAFICI';
+UPDATE localstrings SET stringvalue='Economic operator data updated succesfully.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EDIT_DATI_OE_SUCCESS_1';
+UPDATE localstrings SET stringvalue='To return to the function previously consulted before starting the master data update procedure, select the button below.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EDIT_DATI_OE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='and items' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ED_ARTICOLI';
+UPDATE localstrings SET stringvalue='Addresses list' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ELENCO_INDIRIZZI';
+UPDATE localstrings SET stringvalue='List of subjects' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ELENCO_SOGGETTI';
+UPDATE localstrings SET stringvalue='Delete participation request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ELIMINA_DOMANDA';
+UPDATE localstrings SET stringvalue='Remove the product from the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ELIMINA_PRODOTTO_DA_CATALOGO';
+UPDATE localstrings SET stringvalue='Confirm email' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EMAIL_CONFIRM';
+UPDATE localstrings SET stringvalue='Order Invoices Section' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATTURAZIONE';
+UPDATE localstrings SET stringvalue='Order confirmed, but not delivered yet' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATTURAZIONE_WARN';
+UPDATE localstrings SET stringvalue='Archived Invoices' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATT_ARCHIVIO';
+UPDATE localstrings SET stringvalue='Send Invoice' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATT_INVIO';
+UPDATE localstrings SET stringvalue='Change Lines' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATT_LINE_MOD';
+UPDATE localstrings SET stringvalue='Regenerate Invoice' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATT_REGEN';
+UPDATE localstrings SET stringvalue='Data Lines' WHERE langcode='en' AND customized=0 AND keycode='LABEL_EORDERS_FATT_STEP_DATI_LINEE';
+UPDATE localstrings SET stringvalue='Number invoice missing or invalid format, it must have at least one number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ERR_FATT_CODICEFATT';
+UPDATE localstrings SET stringvalue='Date of document is missing or not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ERR_FATT_DATAFATT';
+UPDATE localstrings SET stringvalue='Transport document date is not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ERR_FATT_DDTDATA';
+UPDATE localstrings SET stringvalue='Date of acceptance changes error' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ERR_ORDER_LIMITDATE';
+UPDATE localstrings SET stringvalue='Reverse procedure result' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ESITO_PROCEDURA_INVERSA';
+UPDATE localstrings SET stringvalue='Fac-simile certifications' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FACSIMILE_CERTIFICAZIONI';
+UPDATE localstrings SET stringvalue='Development phases' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FASI_SVOLGIMENTO';
+UPDATE localstrings SET stringvalue='Phases table' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FASI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Fixed-price contract data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_CORPO';
+UPDATE localstrings SET stringvalue='Rate (%) of the contribution, if any, for the fund to which it belongs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_DATCASSPREV_ALRIT';
+UPDATE localstrings SET stringvalue='Status' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_DATCASSPREV_NATURA';
+UPDATE localstrings SET stringvalue='Withholding' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_DATCASSPREV_RITENUTA';
+UPDATE localstrings SET stringvalue='Transport Document Date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_DDT_DATA';
+UPDATE localstrings SET stringvalue='Surname' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_IDFISCIVA_COGN';
+UPDATE localstrings SET stringvalue='Name' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_IDFISCIVA_NOME';
+UPDATE localstrings SET stringvalue='Honorary title' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_IDFISCIVA_TIT';
+UPDATE localstrings SET stringvalue='Order Lines List' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_LINEEORDINE';
+UPDATE localstrings SET stringvalue='Permanent Establishment' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_STAB_ORG';
+UPDATE localstrings SET stringvalue='Header Data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATTURA_TESTATA';
+UPDATE localstrings SET stringvalue='Supplier Code' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_CODIMPFORNITORE';
+UPDATE localstrings SET stringvalue='Creation Date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_CREATEDDATE';
+UPDATE localstrings SET stringvalue='Invoice Date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DATAFATTURA';
+UPDATE localstrings SET stringvalue='Date of sending' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DATAINVIO';
+UPDATE localstrings SET stringvalue='Date of Receiving SDI' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DATARICSDI';
+UPDATE localstrings SET stringvalue='Blocking of data relating to the professional group to which it belongs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DATCASSPREV';
+UPDATE localstrings SET stringvalue='Stamp duty paid pursuant to MEF decree of 17 June 2014 (art. 6)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DATT_BOL_FIXTEXT';
+UPDATE localstrings SET stringvalue='Transport Document Number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DDT_N';
+UPDATE localstrings SET stringvalue='Blocking of withholding data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DG_DATIRITENUTA';
+UPDATE localstrings SET stringvalue='Type of withholding' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_DG_DR_TR';
+UPDATE localstrings SET stringvalue='Financial institute' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_PAG_ISTFIN';
+UPDATE localstrings SET stringvalue='Progressive Number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_PROGINVIO';
+UPDATE localstrings SET stringvalue='Tax Summary' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_TOTRIEPILOGOIMPOSTA';
+UPDATE localstrings SET stringvalue='Invoice Upload' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FATT_UPLOAD';
+UPDATE localstrings SET stringvalue='File containing the products to be uploaded' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FILE_PRODOTTI_DA_CARICARE';
+UPDATE localstrings SET stringvalue='Filter categories/services by' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FILTRA_CATEGORIE_PER';
+UPDATE localstrings SET stringvalue='Certifying authority data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_DATI_ENTE_CERTIFICATORE';
+UPDATE localstrings SET stringvalue='The document doesn''t exist in the database' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_DOCUMENTO_NON_TROVATO';
+UPDATE localstrings SET stringvalue='The certificate is reliable on date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_DOMANDA_ATTENDIBILE';
+UPDATE localstrings SET stringvalue='List of untrusted certificates on date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_LISTA_UNTRUSTED';
+UPDATE localstrings SET stringvalue='Timestamp data' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_MARCA_TEMPORALE';
+UPDATE localstrings SET stringvalue='Timestamps' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_MARCHE_TEMPORALI';
+UPDATE localstrings SET stringvalue='the certificate is not legally valid as it does not have the non-repudiation attribute' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DIGITALE_NO_RIPUDIO';
+UPDATE localstrings SET stringvalue='it was not possible to verify the digital signature, so make sure the document is correctly signed before proceeding!' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FIRMA_DOCUMENTI_NON_VERIFICABILE_2';
+UPDATE localstrings SET stringvalue='Form of participation' WHERE langcode='en' AND customized=0 AND keycode='LABEL_FORMA_DI_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='You have requested to cancel the compilation of the offer for which you have received an invitation. As you proceed, in the list of tenders the selected occurrence will still be retained as it is associated with an invitation, and in order to allow you, in case of deletion by mistake, to return to re-compile the tender. <br/> However, ALL completed envelopes will be removed and ALL lots of interest to the tender will be deselected.<br/> In the event that it is no longer of interest to submit a tender in this form, the envelope will then be permanently cancelled but will remain visible in the list of envelopes without lots and in the compilation state.<br/> <br/> Do you really want to cancel the completion of this offer?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLAMENTO_INVIO';
+UPDATE localstrings SET stringvalue='You requested to cancel the request to participate in the tender, then all the data entered will be deleted.<br/> <br/> Do you really want to cancel the compilation of this tender partecipation request?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLAMENTO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='The request for participation {0} has been successfully deleted.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='You have requested the cancellation of your tender offer waiver previously sent.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_1';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous tender offer waiver, therefore it will be necessary to proceed again with the insertion and the sending of the data.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2';
+UPDATE localstrings SET stringvalue='Do you really want to cancel the tender offer waiver?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for entering data and documents for the economic offer.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_ECO_1';
+UPDATE localstrings SET stringvalue='Select "Cancel confirmation" to cancel the procedure and return to the offer submission menu, select "Back to edit" to return to the data entry form and continue editing.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_ECO_2';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for entering data and documents for the technical offer.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_TEC_1';
+UPDATE localstrings SET stringvalue='requirements proof' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Request sent successfully.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_CONFERMA_INVIO';
+UPDATE localstrings SET stringvalue='You have requested to delete the completion of the request for participation, therefore all data entered will be removed.<br/> <br/> Do you really want to delete this request?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_ELIMINAZIONE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Are you sure you want to proceed with the request for' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_PROCEDERE_CON_RICHIESTA';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous offer, therefore it will be necessary to proceed again with the insertion and the sending of the data.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_RETTIFICA_INVIO_2';
+UPDATE localstrings SET stringvalue='Do you really want to cancel the previous submission to submit a new offer?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_RETTIFICA_INVIO_3';
+UPDATE localstrings SET stringvalue='You requested the cancellation of your previous request for participation.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_RETTIFICA_PARTECIPAZIONE_1';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous request for participation, therefore it will be necessary to proceed to enter and send the data again.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_RETTIFICA_PARTECIPAZIONE_2';
+UPDATE localstrings SET stringvalue='Waive tender offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Confirm the data of your request and submit' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_CONFERMA_INOLTRA_DOMANDA';
+UPDATE localstrings SET stringvalue='and it is not most economically advantageous tender or does not include a technical envelope' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_GARA_NO_OEPV_BUSTATEC';
+UPDATE localstrings SET stringvalue='Opens the wizard to start filling in the partecipation request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_INIZIA_DOMANDA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Opens the wizard to start compiling the offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_INIZIA_OFFERTA';
+UPDATE localstrings SET stringvalue='There are no communications for envelopes' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_NO_COMUNICAZIONI_BUSTE';
+UPDATE localstrings SET stringvalue='View the data summary to be sent' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_RIEPILOGO';
+UPDATE localstrings SET stringvalue='View the data summary to be sent' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GARETEL_WIZARD_RIEPILOGO_DATI';
+UPDATE localstrings SET stringvalue='Go to notices search' WHERE langcode='en' AND customized=0 AND keycode='LABEL_GO_TO_SEARCH_AVVISI';
+UPDATE localstrings SET stringvalue='Foreign tax ID' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IDENTIFICATIVO_FISCALE_ESTERO';
+UPDATE localstrings SET stringvalue='Correct' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IDONEA';
+UPDATE localstrings SET stringvalue='Cart product' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IL_PRODOTTO_DEL_CARRELLO';
+UPDATE localstrings SET stringvalue='catalogue product' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IL_PRODOTTO_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='the summary of the request sent on' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IL_RIEPILOGO_RICHIESTA_DEL';
+UPDATE localstrings SET stringvalue='Tender amount' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_BANDO';
+UPDATE localstrings SET stringvalue='Tender base amount' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_BASE_GARA';
+UPDATE localstrings SET stringvalue='design costs included' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_CON_ONERI_PROGETTAZIONE';
+UPDATE localstrings SET stringvalue='safety costs included, not subject to discounts' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_CON_ONERI_SICUREZZA_NON_SOGGETTI';
+UPDATE localstrings SET stringvalue='amounts not subject to discounts included' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_CON_SOGGETTI_A_RIBASSO';
+UPDATE localstrings SET stringvalue='net of safety costs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_NETTO_ONERI_SICUREZZA';
+UPDATE localstrings SET stringvalue='Offer amount' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_OFFERTA';
+UPDATE localstrings SET stringvalue='Final amount offered' WHERE langcode='en' AND customized=0 AND keycode='LABEL_IMPORTO_OFFERTO_FINALE';
+UPDATE localstrings SET stringvalue='Select this action when you plan to insert more products or if you want to pre-fill the data of new products out of the portal and by filling in the Excel file that will be downloaded.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_INFO_WIZARD_EXPORT_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Select this action to upload the products included in the Excel file downloaded in the previous step into your catalogue. All products for which attachments are required will be inserted as drafts, and the required attachments will be inserted using the editing function.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_INFO_WIZARD_IMPORT_MASSIVO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Select this action to access the guided creation of a new product in the catalogue, specifying all its characteristics and attaching any files.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_INFO_WIZARD_INSERIMENTO_NUOVO_PRODOTTO';
+UPDATE localstrings SET stringvalue='There is a consignment pending processing by the Administration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_INVIO_IN_ATTESA_DI_ELABORAZIONE';
+UPDATE localstrings SET stringvalue='List of items' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_ARTICOLI_ELENCO';
+UPDATE localstrings SET stringvalue='Electronic market items' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_ARTICOLI_MEPA';
+UPDATE localstrings SET stringvalue='Stamp serial number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_NUMERO_MARCA_BOLLO';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_RIEPILOGO_CATEGORIE';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_SCARICA_DOMANDA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Download update request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Download renewal request' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_RINNOVO';
+UPDATE localstrings SET stringvalue='View the categories provided for in the registration notice' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRALBO_VISUALIZZA_CATEGORIE_PREVISTE_BANDO';
+UPDATE localstrings SET stringvalue='Registered?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRITTO';
+UPDATE localstrings SET stringvalue='Registered in anti-mafia registry (art.30 c.6 Law Decree 189/2016)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRITTO_ANAGRAFE_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Registered with the Chamber of Commerce?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRITTO_CCIAA';
+UPDATE localstrings SET stringvalue='Registered in special professional list (art.34 Law Decree 189/2016)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRITTO_ELENCO_SPECIALE_PROF';
+UPDATE localstrings SET stringvalue='Registered in anti-mafia whitelist?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRITTO_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Registration in Professional Register' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Chamber of Commerce registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='KB availabe in the entire catalogue considering all the products.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_KB_LIBERI_NEL_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='My items' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LISTA_ARTICOLI_MIEI_ARTICOLI';
+UPDATE localstrings SET stringvalue='Participation requests list' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LISTA_DOMANDE';
+UPDATE localstrings SET stringvalue='Offers list' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LISTA_OFFERTE';
+UPDATE localstrings SET stringvalue='List of valid subjects with the right to sign. Select the signatory' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LISTA_SOGGETTI_DIRITTO_FIRMA';
+UPDATE localstrings SET stringvalue='Place of registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOCALITA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Place of Building Fund registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOCALITA_ISCRIZIONE_CASSA_EDILE';
+UPDATE localstrings SET stringvalue='Place of INAIL registration' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOCALITA_ISCRIZIONE_INAIL';
+UPDATE localstrings SET stringvalue='INPS office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOCALITA_ISCRIZIONE_INPS';
+UPDATE localstrings SET stringvalue='Start importing...' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOG_IMPORT_INIZIO';
+UPDATE localstrings SET stringvalue='Lots in which he participates' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOTTI_A_CUI_PARTECIPA';
+UPDATE localstrings SET stringvalue='Minimum lot per unit of measurement' WHERE langcode='en' AND customized=0 AND keycode='LABEL_LOTTO_MINIMO_UNITA_MISURA';
+UPDATE localstrings SET stringvalue='Group leader/agent' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MANDATARIA';
+UPDATE localstrings SET stringvalue='You can upload an attachment with a maximum size of' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MAX_FILE_SIZE';
+UPDATE localstrings SET stringvalue='please note that no documents are uploaded!</strong> Please note that each document to be attached must <strong>be uploaded individually</strong> in the previous step (Required documentation) by clicking the corresponding "Attach" button' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MESSAGE_NO_DOCUMENTS';
+UPDATE localstrings SET stringvalue='<p> For safety reasons some operations cannot be done, in particular: </p> <ol> <li>using the browser''s "Back" button: navigation must take place exclusively using the application links</li> <li>using the browser''s "Update" / "Reload current page" (or F5) command: a request already sent will be discarded if sent again</li> <li>double click on the buttons (save, send, etc...): similar to the previous case</li> <li>opening of new "Navigation Tabs" on the platform: navigation must take place in the only page open on the platform</li> </ol> <p> See further details in the user manuals. </p> In case you view this page, navigation must restart from the homepage.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MESSAGE_TOKEN_ERROR';
+UPDATE localstrings SET stringvalue='Best offer submitted' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MIGLIOR_OFFERTA_PRESENTATA';
+UPDATE localstrings SET stringvalue='Best price offered for the item of' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MIGLIOR_PREZZO_OFFERTO_PER_ARTICOLO';
+UPDATE localstrings SET stringvalue='Edit prices and deadlines' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MODIFICA_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='Edit products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Some changes have not be saved yet. Use the "Save" command to avoid losing your changes.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MODIFICHE_NON_ANCORA_SALVATE';
+UPDATE localstrings SET stringvalue='Click here to delete the entire contents of the envelope and start again.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='It is necessary to cancel the envelope and start again.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_MODULISTICA_CAMBIATA_INFO2';
+UPDATE localstrings SET stringvalue='Status' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NATURA';
+UPDATE localstrings SET stringvalue='Legal status' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NATURA_GIURIDICA';
+UPDATE localstrings SET stringvalue='There is no modification to the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NESSUNA_MODIFICA_CATALOGO';
+UPDATE localstrings SET stringvalue='Name' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NOME';
+UPDATE localstrings SET stringvalue='Trade name' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NOME_COMMERCIALE';
+UPDATE localstrings SET stringvalue='Not correct' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NON_IDONEA';
+UPDATE localstrings SET stringvalue='Not submitted' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NON_PRESENTATA';
+UPDATE localstrings SET stringvalue='The "Generate pdf for economic offer" button appears once the value of this field has been entered. Indicate "n.d." if not provided for the procedure.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NOTA_PASSOE_INDICARE_ND_SE_NON_PREVISTO';
+UPDATE localstrings SET stringvalue='Notes' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NOTE';
+UPDATE localstrings SET stringvalue='No image uploaded' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NO_IMMAGINE';
+UPDATE localstrings SET stringvalue='Unsaved changes have been made to the documents.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NO_MODIFICHE_AI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The necessary documentation has not been read' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NO_VISIONE_DOCUMENTAZIONE_NECESSARIA';
+UPDATE localstrings SET stringvalue='Directory number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUMERO_REPERTORIO';
+UPDATE localstrings SET stringvalue='Registration number in professional Register' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUM_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Registration number in Chamber of Commerce' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUM_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Directory number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUM_REPERTORIO';
+UPDATE localstrings SET stringvalue='No. of units in which the price is expressed, components of the unit of measurement to which the purchase refers' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUM_UNITA_PREZZO_ACQUISTO';
+UPDATE localstrings SET stringvalue='New technical sheet' WHERE langcode='en' AND customized=0 AND keycode='LABEL_NUOVA_SCHEDA_TECNICA';
+UPDATE localstrings SET stringvalue='Offer with participation form as single already present' WHERE langcode='en' AND customized=0 AND keycode='LABEL_OFFERTA_IMPRESA_SINGOLA_PRESENTE';
+UPDATE localstrings SET stringvalue='Company object' WHERE langcode='en' AND customized=0 AND keycode='LABEL_OGGETTO_SOCIALE';
+UPDATE localstrings SET stringvalue='Participant' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PARTECIPANTE';
+UPDATE localstrings SET stringvalue='Participants in the temporary grouping' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PARTECIPANTI_RTI';
+UPDATE localstrings SET stringvalue='participation' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Participates as an agent of a RTI' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PARTECIPA_COME_MANDATARIA_RTI';
+UPDATE localstrings SET stringvalue='Percentage labour costs' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PERCENTUALE_COSTI_MANODOPERA';
+UPDATE localstrings SET stringvalue='Has a legality rating' WHERE langcode='en' AND customized=0 AND keycode='LABEL_POSSIEDE_RATING_LEGALITA';
+UPDATE localstrings SET stringvalue='The initial offer only is present, without bids.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRESENTE_SOLO_OFFERTA_SENZA_RILANCI';
+UPDATE localstrings SET stringvalue='Proceed by sending the changes to the catalogue or cancel the operation.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PROCEDERE_INVIO_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='Proceed by sending the price and expiry variations or cancel the operation.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PROCEDERE_INVIO_VARIAZIONI_PREZZO';
+UPDATE localstrings SET stringvalue='Wrong products, because there are incorrect values in one or more fields' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTI_ERRATI';
+UPDATE localstrings SET stringvalue='products inserted for this item by other E.O.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTI_INSERITI_PER_ARTICOLO_DA_ALTRI_OE';
+UPDATE localstrings SET stringvalue='Outdated products, because price or expiry date are invalid' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTI_NON_AGGIORNATI_PER_DATI_INVALIDI';
+UPDATE localstrings SET stringvalue='Products processed' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTI_PROCESSATI';
+UPDATE localstrings SET stringvalue='Discarded products because without changes in the price or validity date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTI_SCARTATI_PER_NO_VARIAZIONI';
+UPDATE localstrings SET stringvalue='Produced at the line' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTO_ALLA_RIGA';
+UPDATE localstrings SET stringvalue='Before being available in the catalogue, the product will be verified by the Contracting Authority.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PRODOTTO_SOGGETTO_A_VERIFICA_SA';
+UPDATE localstrings SET stringvalue='Tender participation number' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PROGRESSIVO_DOMANDA';
+UPDATE localstrings SET stringvalue='Registration province in professional Register' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PROVINCIA_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Chamber of Commerce main office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_PROVINCIA_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Are you sure you want to delete the subject' WHERE langcode='en' AND customized=0 AND keycode='LABEL_QUESTION_CONFIRM_DEL_SOGGETTO_1';
+UPDATE localstrings SET stringvalue='Are you sure you want to continue without indicating any consortium member?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA';
+UPDATE localstrings SET stringvalue='Your request will be examined as soon as possible and you will receive an email at' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='containing a link to open with your browser to activate your user and set the password' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_3';
+UPDATE localstrings SET stringvalue='if you do not proceed by carrying out the indicated operation within the maximum time indicated in the email, your registration will be cancelled.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_4';
+UPDATE localstrings SET stringvalue='Click on "Compile manually" to enter the data in the following forms relating to the economic operator master data.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_ISTRUZIONI_MANUALE';
+UPDATE localstrings SET stringvalue='we inform you that a test email has been sent to your email address, in order to verify the reference email that the portal will use to send you communications' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_1';
+UPDATE localstrings SET stringvalue='Before sending your request, please check that it has been received and that it is consistent with the data indicated in the summary.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_2';
+UPDATE localstrings SET stringvalue='we inform you that a test email has been sent to your email address' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_DOPO_INVIO_1';
+UPDATE localstrings SET stringvalue='The email address was entered as the reference address for the company, but was changed again after it was sent. <strong>Before sending the request, please check that the e-mail details in the summary are correct</strong> and, if necessary, go back to the "Main data" page to make the necessary corrections.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_DOPO_INVIO_2';
+UPDATE localstrings SET stringvalue='also declares that the personal data provided and acquired at the time of registration for the chosen services, as well as the data necessary for the provision of such services, will be processed, in compliance with the guarantees of confidentiality and the security measures provided for by the regulations in force, by means of computerised, telematic and manual tools, with logic strictly related to the purposes of processing.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_PRIVACY_NOTA';
+UPDATE localstrings SET stringvalue='User' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_STEP_UTENZA';
+UPDATE localstrings SET stringvalue='Maximum 20 alphanumeric characters (letters or numbers or dot)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_USERNAME_NOTA_1';
+UPDATE localstrings SET stringvalue='The User ID can be used as an alternative access solution to the digital identity system used (SPID, CIE, etc.) and corresponds to the "username" associated with the economic operator''s personal data. If you wish to activate this method of access, you will need to use the "Forgotten password" function to receive a link via e-mail to set the password to be used together with the identifier. For further information please refer to the manual "Technical procedures for using the electronic platform and access the reserved area".' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_USERNAME_NOTA_SSO';
+UPDATE localstrings SET stringvalue='Login credentials' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_UTENZA';
+UPDATE localstrings SET stringvalue='Login identifier as an Economic Operator' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REGISTRA_OE_UTENZA_LOGINCF';
+UPDATE localstrings SET stringvalue='Are you sure you want to put the product back in the catalogue?' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REINSERIRE_PRODOTTO_A_CATALOGO';
+UPDATE localstrings SET stringvalue='Re-enter product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REINSERISCI_PRODOTTO';
+UPDATE localstrings SET stringvalue='Possession of  requirements to get on the tower' WHERE langcode='en' AND customized=0 AND keycode='LABEL_REQUISITI_ASCESA_TORRE';
+UPDATE localstrings SET stringvalue='Rectify request for participation' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RETTIFICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Rectify offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RETTIFICA_OFFERTA';
+UPDATE localstrings SET stringvalue='Your request for an update has been successfully completed and will be examined as soon as possible.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHIESTA_AGGIORNAMENTO_A_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='Your request for subscription has been successfully completed and will be examined as soon as possible.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHIESTA_ISCRIZIONE_ISCRALBO';
+UPDATE localstrings SET stringvalue='You selected to cancel the submission of an offer to a tender procedure.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHPART_ANNULLA_INVIO_OFFERTA_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the details of the starting procedure, "Back to offer submission" to go back to the data entry form and continue the compilation.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHPART_ANNULLA_INVIO_OFFERTA_2';
+UPDATE localstrings SET stringvalue='You selected to cancel the submission of a request for participation in a tender procedure.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHPART_ANNULLA_PARTECIPAZIONE_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the start procedure details, "Back to the request for participation" to go back to the data entry form and continue the compilation.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICHPART_ANNULLA_PARTECIPAZIONE_2';
+UPDATE localstrings SET stringvalue='Your request will be examined as soon as possible; if accepted, the company''s data details will be changed as requested.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICH_VARIAZIONE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='To go back to the master data details, select the button shown below.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RICH_VARIAZIONE_SUCCESS_3';
+UPDATE localstrings SET stringvalue='NORMATIVE REFERENCES' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RIFERIMENTI_NORMATIVI';
+UPDATE localstrings SET stringvalue='Normative Ref.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RIFNORM';
+UPDATE localstrings SET stringvalue='Bid' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RILANCIO';
+UPDATE localstrings SET stringvalue='Auction bids' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RILANCI_ASTA';
+UPDATE localstrings SET stringvalue='Bids table' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RILANCI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Renewal of the registration in the anti-mafia registry' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RINNOVO_ISCRIZIONE_ANAGRAFE';
+UPDATE localstrings SET stringvalue='Awarded RTI' WHERE langcode='en' AND customized=0 AND keycode='LABEL_RTI_AGGIUDICATARIA';
+UPDATE localstrings SET stringvalue='Saving drafts for future changes to the catalogue products' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SALVATAGGIO_BOZZE_PER_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Download the excel document with the entire product catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARICA_XLS_CON_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Download the Excel file containing your product catalogue' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARICA_XLS_CON_TUO_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Select this action to download an Excel file containing all the products in the catalogue, then check the product data and vary only the price and / or the expiry date offered.' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARICA_XLS_PRODOTTI_VARIAZIONE_PREZZI';
+UPDATE localstrings SET stringvalue='Maximum discard of the bid' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARTO_MASSIMO_RILANCIO';
+UPDATE localstrings SET stringvalue='Maximum auction bid compared to the last offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARTO_MASSIMO_RILANCIO_DA_ULTIMA_OFFERTA';
+UPDATE localstrings SET stringvalue='Minimum bidding gap' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARTO_MINIMO_RILANCIO';
+UPDATE localstrings SET stringvalue='Minimum auction bid compared to the last offer' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCARTO_MINIMO_RILANCIO_DA_ULTIMA_OFFERTA';
+UPDATE localstrings SET stringvalue='Technical sheet' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCHEDA_TECNICA';
+UPDATE localstrings SET stringvalue='Technical sheets' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SCHEDE_TECNICHE';
+UPDATE localstrings SET stringvalue='List of invoices sent' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SDI_FATTURE_INVIATE';
+UPDATE localstrings SET stringvalue='Main office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SEDE';
+UPDATE localstrings SET stringvalue='All contracting authorities' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SELEZIONE_SA_ANNULLA_FILTRO';
+UPDATE localstrings SET stringvalue='Social Security Number/VAT' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SELEZIONE_SA_CODFISC_PIVA';
+UPDATE localstrings SET stringvalue='Active contracting authority' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SELEZIONE_SA_STAZIONE_ATTIVA';
+UPDATE localstrings SET stringvalue='List of contracting authorities' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SELEZIONE_SA_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Confirm the contracting authority' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SELEZIONE_SA_TITLE_CONFIRM';
+UPDATE localstrings SET stringvalue='Skip the addresses list and go to the data entry form' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SKIP_INDIRIZZI';
+UPDATE localstrings SET stringvalue='Skip the list of subjects and go to the data entry form' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SKIP_SOGGETTI';
+UPDATE localstrings SET stringvalue='Subjects authorized to hadle transactions in the account (name and fiscal code)' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SOGGETTI_ABILITATI_CC_DEDICATO';
+UPDATE localstrings SET stringvalue='Members' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SOGGETTI_ADERENTI';
+UPDATE localstrings SET stringvalue='Extreme urgency' WHERE langcode='en' AND customized=0 AND keycode='LABEL_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='Participation request status' WHERE langcode='en' AND customized=0 AND keycode='LABEL_STATO_DOMANDA';
+UPDATE localstrings SET stringvalue='Contracting authorities' WHERE langcode='en' AND customized=0 AND keycode='LABEL_STAZIONI_APPALTANTI';
+UPDATE localstrings SET stringvalue='Auction base amount' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_BASE_ASTA';
+UPDATE localstrings SET stringvalue='Municipality of Tender Office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_COMUNE';
+UPDATE localstrings SET stringvalue='Call for tenders Deadline Date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_DATA_SCAD';
+UPDATE localstrings SET stringvalue='Publication Results Deadline Date' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_DATA_SCAD_PUBB_ESITO';
+UPDATE localstrings SET stringvalue='Address of the Tender Office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_INDIRIZZO';
+UPDATE localstrings SET stringvalue='Province of the Tender Office' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TABINF_INDICIZZAZIONE_PROVINCIA';
+UPDATE localstrings SET stringvalue='RTI' WHERE langcode='en' AND customized=0 AND keycode='LABEL_TIPO_PARTECIPAZIONE_RTI';
+UPDATE localstrings SET stringvalue='Last offer with unit prices' WHERE langcode='en' AND customized=0 AND keycode='LABEL_ULTIMA_OFFERTA_PREZZI_UNITARI';
+UPDATE localstrings SET stringvalue='Confirm username' WHERE langcode='en' AND customized=0 AND keycode='LABEL_USERNAME_CONFIRM';
+UPDATE localstrings SET stringvalue='Zero employees entered, if wrong please correct' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WARNING_ZERO_DIPENDENTI';
+UPDATE localstrings SET stringvalue='Update product catalogue for economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_AGGPRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for registration in the electronic market for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_ISCR_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for registration in the list for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_ISCR_ELENCO';
+UPDATE localstrings SET stringvalue='Sending the offer of the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_OFFERTA';
+UPDATE localstrings SET stringvalue='Request for participation of the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_PREQUALIFICA';
+UPDATE localstrings SET stringvalue='Request for renewal of registration in the electronic market for the economic operator {0} (Fiscal code {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_RINNOVO_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for renewal of registration in the list for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND customized=0 AND keycode='LABEL_WSDM_OGGETTO_RINNOVO_ELENCO';
+UPDATE localstrings SET stringvalue='Register to the Economic Operators List' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_ICRIZIONE_A_ELENCO';
+UPDATE localstrings SET stringvalue='Call for tenders' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_BANDI_GARA';
+UPDATE localstrings SET stringvalue='Your data' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_DATI_OP';
+UPDATE localstrings SET stringvalue='Tender sale procedures at the awarding stage or completed' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_PROC_AGGIUDIC_VEN';
+UPDATE localstrings SET stringvalue='Offer of purchase requests' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_RICHIESTE_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='Offer of sale requests' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_RICHIESTE_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='Search for economic operators' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_SEARCHOE';
+UPDATE localstrings SET stringvalue='communications for remedying deficiencies' WHERE langcode='en' AND customized=0 AND keycode='LINK_AREA_PERSONALE_SOCCORSI_ISTRUTTORI';
+UPDATE localstrings SET stringvalue='Back' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK';
+UPDATE localstrings SET stringvalue='Back to detail' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO';
+UPDATE localstrings SET stringvalue='Back to catalogue detail' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_CATALOGO';
+UPDATE localstrings SET stringvalue='Back to product management' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_GESTIONE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Back to registration announcement' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Go back to the product modification of the catalogue' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Back to news' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_NEWS';
+UPDATE localstrings SET stringvalue='Back to the summary of changes in progress' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_RIEPILOGO_MODIFICHE';
+UPDATE localstrings SET stringvalue='Back to search' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_SEARCH';
+UPDATE localstrings SET stringvalue='Back to update' WHERE langcode='en' AND customized=0 AND keycode='LINK_BACK_TO_UPDATE';
+UPDATE localstrings SET stringvalue='Back to tender procedure detail' WHERE langcode='en' AND customized=0 AND keycode='LINK_DETTAGLIO_ESITO_BACK_TO_GARA';
+UPDATE localstrings SET stringvalue='Go to home page' WHERE langcode='en' AND customized=0 AND keycode='LINK_GO_TO_HOMEPAGE';
+UPDATE localstrings SET stringvalue='Go to accessibility page' WHERE langcode='en' AND customized=0 AND keycode='LINK_GO_TO_PAGE_ACCESSIBILITY';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for updating data and documentation for registration to the list "{6}" of the procurement portal.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for updating data and documentation for registration to the list "{6}" of the procurement portal. The documents uloaded are attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of request for registration update {0} "{1}"' WHERE langcode='en' AND customized=0 AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating data or documents for entry on the "{1}" list was submitted on {2}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the list "{1}" was submitted on {2} and registered under year {3} and number {4}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, has entered on {5} the confirmation of bidding for the electronic auction "{6}".' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ASTE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the communication has been sent and presented on {1}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ASTE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the communication has been sent and presented on {1} and is registered under year {2} and number {3}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ASTE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered the request for product modification of the catalogue "{6}" on {5}.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered the request for product modification of the catalogue "{6}" on {5}. The document summarizing the changes signed digitally is attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of sending request for modification of the products of the catalogue "{0}".' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for modification of products in catalogue "{1}" was submitted on {2}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for modification of the products in the catalogue "{1}" was submitted on {2} and is registered with year {3} and number {4}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request for updating the offer for prices and deadlines in the catalogue "{6}".' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_VARPRZ_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request to update the offer for prices and deadlines in the catalogue "{6}". The document summarizing the changes signed digitally is attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_VARPRZ_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of request for updating the offer for prices and deadlines of the products in the catalogue "{0}".' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the offer for prices and deadlines of the products in the catalogue "{1}" was submitted on {2}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the offer for prices and deadlines of the products in the catalogue "{1}" was submitted on {2} and is registered under year {3} and number {4}. Best regards ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request for {6} in the tender "{7}". The documents uploaded in the application are attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='It is confirmed that {0} presented on {1} was canceled as per your request from the portal. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_TESTO';
+UPDATE localstrings SET stringvalue='It is confirmed that {0} presented on {1} was canceled as per your request from the portal. Proceed with the complete reintroduction {2} of the changes and with the re-sending of the same. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RICEVUTA_RETTIFICA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator "{0}" that the request for {1} in the call for tenders "{2}" was submitted on {3}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator "{0}" that the request for {1} in the call for tenders "{2}" was submitted on {3} and is registered under year {4} and number {5}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Notification of tender offer waiver submitted ref. procedure {1} with subject "{0}"' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the waiver of tender offer {2} "{3}" has been sent and submitted on {1}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the waiver of tender offer {4} "{5}" has been sent and submitted on {1} and is registered under year {2} and number {3}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, sent a new communication on {5} for the procedure with code "{6}".  Text and documents uploaded in the communication are attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_INVCOM_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='We hereby notify the "economic operator" {0} "that the communication has been sent and submitted on {1}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_INVCOM_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the "economic operator" {0} "that the communication has been sent and submitted on {1} and is registered under year {2} and number {3}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_INVCOM_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for registration to the list "{6}" of the procurement portal.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ISCRIZIONE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has inserted on {5} the request for registration to the list "{6}" of the procurement portal. The documents uploaded in the application are attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for registration to the list "{1}" was submitted on {2}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ISCRIZIONE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for registration to the list "{1}" was presented on {2} and is registered under year {3} and number {4}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_ISCRIZIONE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Dear {0}, on {1} you requested the reinstatement of your account on the {2} portal. [[The request was activated by authenticating a subject with id {4}.]] Please select within 48 hours the link {3} to confirm and complete the process. ----- This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, entered {5} the request for renewal {7} "{6}" of the procurement portal on {5}.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_RINNOVO_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, entered {5} the request for renewal {7} "{6}" of the procurement portal on {5}. The documents uploaded in the application are attached.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_RINNOVO_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Confirmation of request for renewal of registration submitted {0} "{1}"' WHERE langcode='en' AND customized=0 AND keycode='MAIL_RINNOVO_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator {0} that the request for renewal of the registration {1} "{2}" was submitted on {3}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_RINNOVO_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator {0} that the request for renewal of the registration {1} "{2}" was submitted on {3} and is registered under year {3} and number {4}. Best regards ----- This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND customized=0 AND keycode='MAIL_RINNOVO_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Data update and documentation for registration to the list cod. {0}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_AGGISCRIZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='AUCTIONS - data {0}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_ASTE_ALLEGATO_DESCRIZIONE';
+UPDATE localstrings SET stringvalue='The economic operator "{0}" has sent the confirmation of the bidding in the auction phase.' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_ASTE_TESTO';
+UPDATE localstrings SET stringvalue='Summary of product changes in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SAVE_ALLEGATO';
+UPDATE localstrings SET stringvalue='Saving catalogue {0} products to be updated' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SAVE_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} has saved some changes to the products in the catalogue {1}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SAVE_TESTO';
+UPDATE localstrings SET stringvalue='Request for catalogue products changes' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SEND_ALLEGATO';
+UPDATE localstrings SET stringvalue='Request for updating of the products in the catalogue for the economic operator "{0}"' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SEND_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} requests to be able to update products for catalogue {1}. Best regards' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_SEND_TESTO';
+UPDATE localstrings SET stringvalue='Request for variation of the products offered in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_ALLEGATO';
+UPDATE localstrings SET stringvalue='Request for variation of products offer in the catalogue for the economic operator "{0}"' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} to be able to update the prices offer and deadlines of the products in the catalogue {1}. Best regards' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} sent a {1}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_GARETEL_TESTO';
+UPDATE localstrings SET stringvalue='Request for registration to the list cod. {0}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_ISCRIZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} asks to be able to register to the list {1} of the procurement portal for the contracting authority {2}. Best regards' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_ISCRIZIONE_TESTO';
+UPDATE localstrings SET stringvalue='Type of economic operator participation' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_PARTECIPAZIONE_ALLEGATO_DESCRIZIONE';
+UPDATE localstrings SET stringvalue='Type of participation in the tender cod. {1} for user {0}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_PARTECIPAZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} requests to update the type of participation of the economic operator in the tender. Best regards' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_PARTECIPAZIONE_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} sent a {1}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_RIEPILOGO_TESTO';
+UPDATE localstrings SET stringvalue='Sending communication of registration renewal {0} {1}' WHERE langcode='en' AND customized=0 AND keycode='NOTIFICA_RINNOVO_OGGETTO';
+UPDATE localstrings SET stringvalue='-- Choose a contracting authority --' WHERE langcode='en' AND customized=0 AND keycode='OPT_190_CHOOSE_STRUTTURA_PROPONENTE';
+UPDATE localstrings SET stringvalue='-- Choose a request type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_ASSISTENZA_TECNICA_CHOOSE_TIPOLOGIA';
+UPDATE localstrings SET stringvalue='-- Choose a tender result --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_ESITO_GARA';
+UPDATE localstrings SET stringvalue='-- Choose a legal form --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_NATURA_GIURIDICA';
+UPDATE localstrings SET stringvalue='-- Choose a country --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_NAZIONE';
+UPDATE localstrings SET stringvalue='-- Choose a province --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_PROVINCIA';
+UPDATE localstrings SET stringvalue='-- Choose a tender status --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_STATO_GARA';
+UPDATE localstrings SET stringvalue='-- Choose a contracting authority --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_STAZIONE_APPALTANTE';
+UPDATE localstrings SET stringvalue='-- Choose an item type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_TIPOLOGIA_ARTICOLO';
+UPDATE localstrings SET stringvalue='-- Choose a contract type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_TIPO_APPALTO';
+UPDATE localstrings SET stringvalue='-- Choose a tender notice type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_TIPO_AVVISO';
+UPDATE localstrings SET stringvalue='-- Choose a company type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_TIPO_IMPRESA';
+UPDATE localstrings SET stringvalue='-- Choose an address type --' WHERE langcode='en' AND customized=0 AND keycode='OPT_CHOOSE_TIPO_INDIRIZZO';
+UPDATE localstrings SET stringvalue='All types' WHERE langcode='en' AND customized=0 AND keycode='OPT_TUTTE_LE_TIPOLOGIE';
+UPDATE localstrings SET stringvalue='out of' WHERE langcode='en' AND customized=0 AND keycode='SEARCH_RESULTS_COUNT';
+UPDATE localstrings SET stringvalue='Login using the authentication system' WHERE langcode='en' AND customized=0 AND keycode='SSO_LOGIN';
+UPDATE localstrings SET stringvalue='Update the signatory for the current principal' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AGGIORNA_FIRMATARIO_MANDANTE';
+UPDATE localstrings SET stringvalue='Undo all changes made to the catalogue so far' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ANNULLA_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='Opens the wizard for inserting a new product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_APRI_WIZARD_INSERIMENTO_PRODOTTO';
+UPDATE localstrings SET stringvalue='Subscribe to the Economic Operators List' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_ICRIZIONE_A_ELENCO';
+UPDATE localstrings SET stringvalue='Go to the list of documents requests for proof of requirements' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='View all communications archived (over 90 days)' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_COM_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='View all communications sent' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_COM_INVIATE';
+UPDATE localstrings SET stringvalue='Go to the summary of your master data' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_DATI_OP';
+UPDATE localstrings SET stringvalue='Tender sales procedures at the awarding stage or completed' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_PROC_AGGIUDIC_VEN';
+UPDATE localstrings SET stringvalue='Purchase offer requests' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_RICHIESTE_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='Sales offer requests' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AREA_PERSONALE_RICHIESTE_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='Item not available' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ARTICOLO_NON_DISPONIBILE';
+UPDATE localstrings SET stringvalue='Attach file' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ATTACH_FILE';
+UPDATE localstrings SET stringvalue='Attach file Excel' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ATTACH_FILE_EXCEL';
+UPDATE localstrings SET stringvalue='Attach digitally signed file' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ATTACH_FILE_FIRMATO';
+UPDATE localstrings SET stringvalue='Attach PDF file' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ATTACH_FILE_PDF';
+UPDATE localstrings SET stringvalue='Copy the master data of the subject' WHERE langcode='en' AND customized=0 AND keycode='TITLE_AZIONE_COPIA_SOGGETTO';
+UPDATE localstrings SET stringvalue='Return to the upload form of the excel file with changes in prices and deadlines' WHERE langcode='en' AND customized=0 AND keycode='TITLE_BACK_TO_UPLOAD_XLS_PREZZI';
+UPDATE localstrings SET stringvalue='Return to the upload form of the excel file with re-checked and correct products' WHERE langcode='en' AND customized=0 AND keycode='TITLE_BACK_TO_UPLOAD_XLS_PRODOTTI';
+UPDATE localstrings SET stringvalue='Detail of communication sent' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_INVIATA';
+UPDATE localstrings SET stringvalue='Detail of request sent' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_INVIO';
+UPDATE localstrings SET stringvalue='Detail of communication received' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_RICEVUTA';
+UPDATE localstrings SET stringvalue='Communications sent' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_INVIATE';
+UPDATE localstrings SET stringvalue='List of communications archived' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_LISTA_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='List of communications received' WHERE langcode='en' AND customized=0 AND keycode='TITLE_COMUNICAZIONI_LISTA_RICEVUTE';
+UPDATE localstrings SET stringvalue='Allows the transfer of catalogue changes to the back office' WHERE langcode='en' AND customized=0 AND keycode='TITLE_CONSENTE_TRASFERIMENTO_MODIFICHE_A_BO';
+UPDATE localstrings SET stringvalue='Access the wizard to enter a new product' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_ARTICOLO_INSERISCI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this announcement' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_AGGIORNA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Open the catalogue product management page' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_AGGIORNA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this announcement' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Open the catalogue product management page' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Complete the registration draft for the announcement' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Complete the renewal draft for the announcement' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Open the catalogue registration renewal page' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DETTAGLIO_CATALOGO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Documents ready' WHERE langcode='en' AND customized=0 AND keycode='TITLE_DOCUMENTI_PRONTI';
+UPDATE localstrings SET stringvalue='Return to the page from which you started the procedure for updating the economic operator data' WHERE langcode='en' AND customized=0 AND keycode='TITLE_EDIT_DATI_OE_SUCCESS_BUTTON_NEXT';
+UPDATE localstrings SET stringvalue='Delete from the edit cart' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ELIMINA_DAL_CARRELLO';
+UPDATE localstrings SET stringvalue='Signatory inserted, data ready for PDF generation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_FIRMATARIO_INSERITO_GENERAZIONE_PDF_PRONTA';
+UPDATE localstrings SET stringvalue='The function is temporarily disabled due to the presence of a previously sent request waiting to be processed by the system' WHERE langcode='en' AND customized=0 AND keycode='TITLE_FUNZIONE_DISABILITATA_RICHIESTA_GIA_INVIATA';
+UPDATE localstrings SET stringvalue='Generate the economic offer PDF with the data entered' WHERE langcode='en' AND customized=0 AND keycode='TITLE_GARETEL_GENERA_DF_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Generate PDF with changes to catalogue products' WHERE langcode='en' AND customized=0 AND keycode='TITLE_GENERA_PDF_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Generate the PDF with the price and expiry variations of the products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_GENERA_PDF_VARIAZIONI_PREZZO';
+UPDATE localstrings SET stringvalue='Update prices and deadlines of the products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_IMPORTA';
+UPDATE localstrings SET stringvalue='Send the request for price and product expiry variation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_INVIA_VARIAZIONE_PREZZO';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_AGGIORNA_DATI_DOCUMENTI_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Update the registration documents entered for this list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_AGGIORNA_DOCUMENTI_INSERITI';
+UPDATE localstrings SET stringvalue='Open the page for the registration to the list renewal' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_APRI_PAGINA_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Update the registration documents entered for this list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_COMPLETAMETO_DOCUMENTI_INSERITI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Complete the registration draft for the list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_COMPLETA_ISCRIZIONE_INIZIATA';
+UPDATE localstrings SET stringvalue='Complete the renewal draft for the list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_COMPLETA_RINNOVO_INIZIATO';
+UPDATE localstrings SET stringvalue='Register to the list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_ISCRALBO_RICHIESTA_ISCRIZIONE_ALBO';
+UPDATE localstrings SET stringvalue='Cancellation economic operator data editing' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ABORT_EDIT_DATI_OE';
+UPDATE localstrings SET stringvalue='Consents acceptance' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_AREA_PERSONALE_ACCETTA_CONSENSI';
+UPDATE localstrings SET stringvalue='Activate economic operator authenticated with external system' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO';
+UPDATE localstrings SET stringvalue='Personal area of the subject' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_AREA_PERSONALE_SSO';
+UPDATE localstrings SET stringvalue='Confirm final offer of the auction' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ASTA_CONFERMA_OFFERTA_FINALE';
+UPDATE localstrings SET stringvalue='Auction bid' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ASTA_RILANCIO';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ASTA_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Cancellation of economic operator registration' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CANCEL_REGISTRAZIONE_OE';
+UPDATE localstrings SET stringvalue='Cancellation product update' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Cancellation product insetion' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_ANNULLA_INSERIMENTO';
+UPDATE localstrings SET stringvalue='Product import result' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_ESITO_IMPORT';
+UPDATE localstrings SET stringvalue='Export items to insert new products from excel' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_EXPORT_ARTICOLI';
+UPDATE localstrings SET stringvalue='Import changes at prices and expiry dates' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_IMPORTA_VARIAZIONE_PREZZI';
+UPDATE localstrings SET stringvalue='Insertion of one or more products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_INSERIMENTO_PRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Send request for products changes' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CATALOGHI_INVIO_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Cancellation sending communication' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_COMUNICAZIONI_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Send contract documents' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_CONFERMA_INVIO_STIPULA';
+UPDATE localstrings SET stringvalue='Item detail' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_DETTAGLIO_ARTICOLO';
+UPDATE localstrings SET stringvalue='Notice detail' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_DETTAGLIO_AVVISO';
+UPDATE localstrings SET stringvalue='Edit economic operator data' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_EDIT_DATI_OE';
+UPDATE localstrings SET stringvalue='Creation Invoice per Order' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_EORDERS_FATTURA_CREA';
+UPDATE localstrings SET stringvalue='Invoices Archived per Order' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_EORDERS_LISTA_FATTURE';
+UPDATE localstrings SET stringvalue='Send Invoice per Order' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_EORDERS_UPLOAD_FATTURE';
+UPDATE localstrings SET stringvalue='Confirmation of requirements' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_CONFERMA_COMPROVA_REQ';
+UPDATE localstrings SET stringvalue='Confirmation request for participation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_CONFERMA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Deletion of the offer in compilation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_ELIMINAZIONE_INVIO';
+UPDATE localstrings SET stringvalue='Deletion of the application for participation in compilation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_ELIMINAZIONE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Sending telematic offer envelopes' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_INVIO_BUSTE_OFFERTA';
+UPDATE localstrings SET stringvalue='Sending electronic envelopes for participation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_INVIO_BUSTE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Submit request for participation' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_LISTA_DOMANDE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_LISTA_OFFERTE';
+UPDATE localstrings SET stringvalue='Application for participation deleted' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_PARTECIPAZIONE_ELIMINATA';
+UPDATE localstrings SET stringvalue='Application for participation cancelled' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_PARTECIPAZIONE_RETTIFICATA';
+UPDATE localstrings SET stringvalue='Summary tender offer waiver' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_GARETEL_RIEPILOGO_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Update registration to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_AGGIORNAMENTO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Cancellation update registration to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Cancellation registration to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Cancellation registration renewal to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_RINNOVO';
+UPDATE localstrings SET stringvalue='catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_CATALOGO';
+UPDATE localstrings SET stringvalue='Confirmation registration renewal' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_CONFERMA_RINNOVO';
+UPDATE localstrings SET stringvalue='operators list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_ELENCO_OE';
+UPDATE localstrings SET stringvalue='Request for updating registration to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_AGGIORNAMENTO_A';
+UPDATE localstrings SET stringvalue='Request for registration to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Request for registration renewal to' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal completed' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_ISCRALBO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Items list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Notices list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_AVVISI';
+UPDATE localstrings SET stringvalue='Expired notices list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_AVVISI_SCADUTI';
+UPDATE localstrings SET stringvalue='Registration announcements for the electronic market' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_CATALOGHI';
+UPDATE localstrings SET stringvalue='Assignments results list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_ESITI_AFFIDAMENTI';
+UPDATE localstrings SET stringvalue='Lots list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_LOTTI';
+UPDATE localstrings SET stringvalue='Requests for tender list' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_NEGOZIATE';
+UPDATE localstrings SET stringvalue='Procedures to be awarded or concluded' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE';
+UPDATE localstrings SET stringvalue='Purchase procedures to be awarded or concluded' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE_ACQ';
+UPDATE localstrings SET stringvalue='Sales procedures to be awarded or concluded' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE_VEN';
+UPDATE localstrings SET stringvalue='Extreme urgencies summary' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_LISTA_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='Change prices and deadlines' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_MODIFICA_PREZZI_SCADENZE_CATALOGO';
+UPDATE localstrings SET stringvalue='Modify products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_MODIFICA_PRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Modified product (changes to be sent)' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_PRODOTTO_MODIFICATO_CATALOGO';
+UPDATE localstrings SET stringvalue='Economic operator registration to the portal' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_REGISTRA_OE';
+UPDATE localstrings SET stringvalue='Search for notices' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICERCA_AVVISI';
+UPDATE localstrings SET stringvalue='Cancellation of documentation submission' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='You selected to cancel the presentation of the documentation to prove the requirements for participation in a tender procedure.' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the starting procedure details, "Back to sending documentation" to return to the data entry form and continue the compilation.' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE_2';
+UPDATE localstrings SET stringvalue='Cancellation offer submission in a tender procedure' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_OFFERTA';
+UPDATE localstrings SET stringvalue='Cancellation of request for participation in a tender procedure' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_ANNULLA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Documentation submission' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_PRESENTA_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='Submission of request for participation in the tender' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_RICHPART_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Contracting authority selection' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_SELEZIONE_SA';
+UPDATE localstrings SET stringvalue='Updating a product in the cart' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_STEP_AGGIORNA_PRODOTTO_CARRELLO';
+UPDATE localstrings SET stringvalue='Updating a product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_STEP_AGGIORNA_PRODOTTO_CATALOGO';
+UPDATE localstrings SET stringvalue='Export items to insert new products from excel' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_STEP_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Insertion of a new product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_PAGE_STEP_INSERISCI_PRODOTTO_CATALOGO';
+UPDATE localstrings SET stringvalue='Send the registration request' WHERE langcode='en' AND customized=0 AND keycode='TITLE_REGISTRA_OE_INVIA_REGISTRAZIONE';
+UPDATE localstrings SET stringvalue='Digital signature required for the attached document' WHERE langcode='en' AND customized=0 AND keycode='TITLE_RICHIESTA_FIRMA_DIGITALE';
+UPDATE localstrings SET stringvalue='Go back to the details page of the economic operator data' WHERE langcode='en' AND customized=0 AND keycode='TITLE_RICH_VARIAZIONE_SUCCESS_BUTTON_NEXT';
+UPDATE localstrings SET stringvalue='Restore item to "In catalogue" status' WHERE langcode='en' AND customized=0 AND keycode='TITLE_RIPRISTINA_ELEMENTO_IN_CATALOGO';
+UPDATE localstrings SET stringvalue='Download the filtered items' WHERE langcode='en' AND customized=0 AND keycode='TITLE_SCARICA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND customized=0 AND keycode='TITLE_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Displays the cart of changes in progress' WHERE langcode='en' AND customized=0 AND keycode='TITLE_VISUALIZZA_CARRELLO_MODIFICHE';
+UPDATE localstrings SET stringvalue='Displays the economic operator data' WHERE langcode='en' AND customized=0 AND keycode='TITLE_VISUALIZZA_DATI_OP';
+UPDATE localstrings SET stringvalue='Displays the page for downloading the products catalogue and uploading the excel document for changing prices and deadlines' WHERE langcode='en' AND customized=0 AND keycode='TITLE_VISUALIZZA_DOWNLOAD_UPLOAD_XLS_PREZZI';
+UPDATE localstrings SET stringvalue='Displays and allows modification of products in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_VISUALIZZA_E_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Displays ranking' WHERE langcode='en' AND customized=0 AND keycode='TITLE_VISUALIZZA_GRADUATORIA';
+UPDATE localstrings SET stringvalue='Opens the wizard for exporting catalogue items' WHERE langcode='en' AND customized=0 AND keycode='TITLE_WIZARD_EXPORT_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Generate PDF for registration' WHERE langcode='en' AND customized=0 AND keycode='TITLE_WIZARD_GENERA_PDF_ISCRIZIONE_ELENCO';
+UPDATE localstrings SET stringvalue='Generate PDF for technical offer' WHERE langcode='en' AND customized=0 AND keycode='TITLE_WIZARD_GENERA_PDF_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='Opens the wizard for inserting a new product in the catalogue' WHERE langcode='en' AND customized=0 AND keycode='TITLE_WIZARD_INSERIMENTO_NUOVO_PRODOTTO';
+UPDATE localstrings SET stringvalue='Send registration request' WHERE langcode='en' AND customized=0 AND keycode='TITLE_WIZARD_SEND_SUBSCRIPTION';
+UPDATE localstrings SET stringvalue='Missing minimum data for invoice submission' WHERE langcode='en' AND customized=0 AND keycode='WARN_FATT_NO_DATA';
+UPDATE localstrings SET stringvalue='The invoice indicates a different order from the one in the page' WHERE langcode='en' AND customized=0 AND keycode='WARN_FATT_NO_MATCHING_ORDER';
+UPDATE localstrings SET stringvalue='The invoice has already been sent, you cannot send it.' WHERE langcode='en' AND customized=0 AND keycode='WARN_FATT_NO_SEND';
+UPDATE localstrings SET stringvalue='Invoice ready to be sent.' WHERE langcode='en' AND customized=0 AND keycode='WARN_FATT_SEND';
+UPDATE localstrings SET stringvalue='Invoice sent successfully' WHERE langcode='en' AND customized=0 AND keycode='WARN_FATT_SENT';
+UPDATE localstrings SET stringvalue='If you have an electronic identity card and a mobile phone with NFC support, you can login by clicking on ''Login with CIE''' WHERE langcode='en' AND customized=0 AND keycode='auth_CIE_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Login with CNS' WHERE langcode='en' AND customized=0 AND keycode='auth_CNS_LOGIN_BUTTON';
+UPDATE localstrings SET stringvalue='If you have a Digital Certificate (CNS), insert the support in your device (Smart Card or USB Token) and click on the button ''Login with CNS''.' WHERE langcode='en' AND customized=0 AND keycode='auth_CNS_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Marche Region, click on ''Login with Cohesion''' WHERE langcode='en' AND customized=0 AND keycode='auth_COHESION_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Login with fedERa' WHERE langcode='en' AND customized=0 AND keycode='auth_FEDERA_LOGIN_BUTTON';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Emilia-Romagna Region, click on ''Login with fedERa''' WHERE langcode='en' AND customized=0 AND keycode='auth_FEDERA_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Lombardia Region, click on ''Login with GEL''' WHERE langcode='en' AND customized=0 AND keycode='auth_GEL_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Veneto Region, click on ''Login with MyID''' WHERE langcode='en' AND customized=0 AND keycode='auth_MYID_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you want to login through the identity management service, click on the ''Login'' button' WHERE langcode='en' AND customized=0 AND keycode='auth_SHIBBOLETH_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you have a SPID Business account, the Italian Public Digital Identity System, you can login by clicking on ''Login''' WHERE langcode='en' AND customized=0 AND keycode='auth_SPID_BUSINESS_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you have a SPID account, the Italian Public Digital Identity System, you can login by clicking pn ''Log in with SPID''' WHERE langcode='en' AND customized=0 AND keycode='auth_SPID_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Add an item to the list' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_ADDITEM_LIST';
+UPDATE localstrings SET stringvalue='Move down' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_ITEM_MOVEDOWN';
+UPDATE localstrings SET stringvalue='Move up at position' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_ITEM_MOVEUP_IN';
+UPDATE localstrings SET stringvalue='Warning, please check the following errors on the module' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_MESSAGE_TITLE_FIELDERRORS';
+UPDATE localstrings SET stringvalue='Your password was updated successfully.' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_PASSWORD_UPDATED';
+UPDATE localstrings SET stringvalue='Please login in order to change your password' WHERE langcode='en' AND customized=0 AND keycode='jpuserprofile_PLEASE_LOGIN_TO_EDIT_PASSWORD';
+UPDATE localstrings SET stringvalue='User activated successfully.' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_ACTIVATION_CONFIRM_MSG';
+UPDATE localstrings SET stringvalue='An error has occurred during user activation. Probably you are operating with data already used or out of time' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_ACTIVATION_ERROR_MSG';
+UPDATE localstrings SET stringvalue='User already logged, you can''t use recover password functionality. You must logout.' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_ERROR_USER_LOGGED';
+UPDATE localstrings SET stringvalue='Confirm your password' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_PASSWORD_CONFIRM';
+UPDATE localstrings SET stringvalue='Password recovered successfully' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_PASSWORD_RECOVER_SUCCESS_MSG';
+UPDATE localstrings SET stringvalue='An error has occurred during user reactivation. Probably you are operating with data already used or out of time' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_REACTIVATION_ERROR_MSG';
+UPDATE localstrings SET stringvalue='User Suspension' WHERE langcode='en' AND customized=0 AND keycode='jpuserreg_SUSPENDING_CONFIRM_MSG';
+
+	-- import export prezzi unitari excel
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_DA_EXCEL', 'it', 'Modifica da Excel');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_DA_EXCEL', 'en', 'Change via Excel');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_MODIFICA_PREZZI_UNITARI', 'it', 'Modifica prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_MODIFICA_PREZZI_UNITARI', 'en', 'Change unitprice');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_MODIFICA_PREZZI_UNITARI', 'it', 'E'' possibile procedere con l''aggiornamento dei prezzi unitari, ad esclusione degli eventuali attributi aggiuntivi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_MODIFICA_PREZZI_UNITARI', 'en', 'It is possible to proceed with updating the unit prices, with the exception of the additional attributes.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_PREZZI_UNITARI', 'it', 'Scarica il document excel, con tutti i prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_PREZZI_UNITARI', 'en', 'Download the excel document, with all unit prices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI', 'it', 'Scarica il file Excel contenente i prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI', 'en', 'Download the Excel file containing the unit prices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI_INFO', 'it', 'Seleziona questa azione per scaricare un file Excel contenente tutti i prezzi unitari, quindi verificarne i dati e variarli.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI_INFO', 'en', 'Select this action to download an Excel file containing all unit prices, then verify the data and change them.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_WIZARD_IMPORTA_PREZZI', 'it', 'Importa nuovi prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_WIZARD_IMPORTA_PREZZI', 'en', 'Import new unit prices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTA_NUOVI_PREZZI_UNITARI_E_VALIDA', 'it', 'Importa nuovi prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTA_NUOVI_PREZZI_UNITARI_E_VALIDA', 'en', 'Import new unit prices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIORNA_PREZZI_UNITARI_INSERITI_IN_XLS', 'it', 'Seleziona questa azione per aggiornare i prezzi unitari inseriti nel file Excel scaricato a partire dalla voce precedente. Le due informazioni relative ai prezzi unitari vengono controllate ed acquisite, ma per procedere con l''aggiornamento effettivo dei prezzi unitari si deve procedere con lo step di conferma ed invio modifiche.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIORNA_PREZZI_UNITARI_INSERITI_IN_XLS', 'en', 'Select this action to update the unit prices inserted in the Excel file downloaded from the previous item. The two information relating to the unit prices are checked and acquired, but to proceed with the actual updating of the unit prices you must proceed with the step of confirming and sending changes.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_IMPORTA_PREZZI_UNITARI', 'it', 'Importa prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_IMPORTA_PREZZI_UNITARI', 'en', 'Import unit prices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_IMPORT_PREZZI_UNITARI', 'it', 'Inserire il file da caricare ed utilizzare "Importa". Eventuali righe del file rimaste inalterate verranno scartate in automatico.
+I prezzi unitari variati con successo saranno disponibili dalla funzione di "Riepilogo modifiche in corso".<br/><strong>Attenzione: in caso di presenza di errori in fase di importazione è possibile correggere il file di origine e ricaricarlo nuovamente.</strong>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_IMPORT_PREZZI_UNITARI', 'en', 'Insert the file to upload and use "Import". Any lines of the file that remain unaltered will be automatically discarded.
+The unit prices changed successfully will be available from the "Summary of changes in progress" function.<br/><strong>Warning: in case of errors during the import phase, it is possible to correct the source file and reload it again.</strong>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_PREZZI_UNITARI_DA_AGGIORNARE', 'it', 'File contenente i prezzi unitari da aggiornare');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_PREZZI_UNITARI_DA_AGGIORNARE', 'en', 'File containing the unit prices to be updated');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PREZZI_UNITARI_ESITO_IMPORT', 'it', 'Esito importazione prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_PREZZI_UNITARI_ESITO_IMPORT', 'en', 'Unit prices import result');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_PROCESSATI', 'it', 'Prezzi unitari processati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_PROCESSATI', 'en', 'Unit prices processed');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_IMPORTABILI', 'it', 'Prezzi unitari importabili');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_IMPORTABILI', 'en', 'Unit prices that can be imported');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_IMPORTATI_CORRETTAMENTE', 'it', 'Prezzi unitari importati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_IMPORTATI_CORRETTAMENTE', 'en', 'Unit prices imported');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_SCARTATI', 'it', 'Prezzi unitari scartati in quanto uguali all''originale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_SCARTATI', 'en', 'Unit prices discarded as they are the same as the original');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZO_UNITARIO_ALLA_RIGA', 'it', 'Prezzo unitario');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZO_UNITARIO_ALLA_RIGA', 'en', 'Unit price');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_ERRATI', 'it', 'Prezzi unitari errati, perch&egrave; contenenti valori non corretti in uno o pi&ugrave; campi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PREZZI_UNITARI_ERRATI', 'en', 'Wrong unit prices, because it is containing incorrect values in one or more fields');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_BACK_TO_PREZZI_UNITARI', 'it', 'Torna allo step prezzi unitari');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_BACK_TO_PREZZI_UNITARI', 'en', 'Back to unit prices step');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.21.0';
+	UPDATE ppcommon_ver SET version = '3.22.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.21.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.22.0-M1_to_3.22.0-M2
+-- 3.22.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.22.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+-- elimina etichette duplicate
+DELETE FROM localstrings WHERE keycode = 'LABEL_SCARICA_XLS_CON_PREZZI_UNITARI';
+DELETE FROM localstrings WHERE keycode = 'LABEL_APRI_WIZARD_IMPORTA_PREZZI';
+
+-- fix revisione per le etichette in lingua inglese (829)
+UPDATE localstrings SET stringvalue='Enter the further personal informations and the registration data of the economic operator.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_IMPRESA_ALTRI_DATI_ANAGR_IMPRESA';
+UPDATE localstrings SET stringvalue='Below you can find the summary data of the economic operator. If all the information is correct, complete the update process by clicking on "Send".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_IMPRESA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='To add new owners, members or administrators with representation charge and technical directors, enter the personal data and click on "Add". For subjects already existent in the registry it is not possible to change the starting date of the assignment and the Italian social security number.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_IMPRESA_SOGGETTI_IMPRESA';
+UPDATE localstrings SET stringvalue='In this page it is possible to attach (upload) any documents to be submitted with the request for updating; furthermore, the list of documents required for registration remains available with the possibility of downloading any facsimile models.<br/><br/>To upload files related to any documents already on the list, click on "Browse ..."<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are listed below. To change the personal data or view the details, click on "Edit".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_IMPRESA';
+UPDATE localstrings SET stringvalue='It is possible to request registration for additional contracting authorities (in addition to those for which the application has already been submitted).' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_SA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the update request that must be verified, if necessary completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Scaricare il file PDF contenente la domanda di aggiornamento iscrizione che dovra'' essere verificata, eventualmente completata, sottoscritta e caricata al passo successivo ("Documentazione richiesta"). Prima di procedere a generare il documento, indicare il firmatario del documento per ogni partecipante al raggruppamento temporaneo.<br/><strong>Attenzione: la funzione di generazione del PDF diventa disponibile solo dopo aver compilato correttamente i firmatari di tutte le partecipanti al raggruppamento.</strong>' WHERE langcode='it' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the update registration request that must be verified, if necessary completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, indicate the signatory of the document for each participant in the temporary grouping. <br/> <strong> Warning: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping . </strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='The list of any other documents is showed below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ALTRI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Information relating to transparency on contracts awarded in accordance with Legislative Decree 50/2016.<br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link is available on the CIG field to consult the relevant detail. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it in horizontal direction, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AMMTRASP_CONTRATTI_LISTA';
+UPDATE localstrings SET stringvalue='The tab below shows the detailed information of the selected contract. To return to the procurement list, click on the "Back to list" link at the bottom of the card.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AMMTRASP_CONTRATTO_SCHEDA';
+UPDATE localstrings SET stringvalue='In the personal area, once the user has logged-in, links for accessing specific functions are available, such as managing personal data, changing the password, accessing information for which he is registered or enabled, and access any communications received from the Administration.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AREA_PERSONALE';
+UPDATE localstrings SET stringvalue='A new version of the consents has been defined to be approved in the platform. If you have arrived on this page it means that the previously accepted consents are different from those in force, or it is the first access following the management of the consent registration. <br/> To proceed, therefore, accept the items below and click on "Confirm".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AREA_PERSONALE_ACCETTA_CONSENSI';
+UPDATE localstrings SET stringvalue='It is possible to delegate to one of the previously registered traders or to register a new one.<br/><strong>ATTENTION: the operator selection function is available only on operators acquired and processed by the system (therefore not simply registered) and only once per user session</strong>; in case of need to change the economic operator in use it is therefore mandatory to log out to make the new selection.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_AREA_PERSONALE_SSO';
+UPDATE localstrings SET stringvalue='Bid indicating the new value offered to improve the previous offer.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ASTA_RILANCIO';
+UPDATE localstrings SET stringvalue='The list of any documents and deeds required by c. 1 art. 29 of Legislative Decree 50/2016 for the purposes of transparency is showed below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ATTI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the administrative envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_BUSTA_AMMINISTRATIVA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the economic envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_BUSTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the prequalification envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_BUSTA_PREQUALIFICA';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the technical envelope.<br/>To upload files related to any documents already on the list, click on "Browse...".<br/>To add documents to the list, you must first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the instructions of the call for tenders or the invitation letter and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_BUSTA_TECNICA';
+UPDATE localstrings SET stringvalue='List of categories/provisions of the selected registration announcement.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_CATEGORIE_DETTAGLIO_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='List of categories/provisions and any classifications to which the candidate is registered for the selected registration announcement. To modify the data entered, go back to the registration announcement, and if the terms are still open, use the "Update data / documents" function.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_CATEGORIE_OPERATORE_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='List of the categories/provisions to which it appears registered for the registration tender to the selected electronic market. To modify the data entered, go back to the electronic market registration tender, and if the terms are still open, use the "Data/documents update" function.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_CATEGORIE_OPERATORE_DETTAGLIO_CATALOGO';
+UPDATE localstrings SET stringvalue='List of communications received by the Administration and automatically filed after 90 days after receiving. To consult the details of a communication, select the subject of the communication of interest.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_COMUNICAZIONI_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='In this section you can consult contract resolutions and equivalent acts according to the timeframe provided for in the contract regulations.<br/>The publication obligation is provided by the art. 29 of Legislative Decree 50/2016.<br/><br/>Set a search criterion to consult the data. A link to consult or download the document is available under the description.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DELIBERE_A_CONTRARRE';
+UPDATE localstrings SET stringvalue='This feature allows you to view the data and detailed documents of an item. In case of an economic operator authenticated to the system, authorized and that already selected the product category during registration, it is also possible to request the inclusion of a new product.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_ARTICOLO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data of the selected tender notice, including documents. In case of a portal with the management of economic operators lists, in a notice referring to a list, the "Detail of the announcement of the operators list" button  appears, which allows to access the detailed information of the list.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_AVVISO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the data of the selected procedure, including the documents related to the announcement, or related to the documents that are required to competitors. Click on "Lots" you can view the detailed information on the lots included in the procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_BANDO';
+UPDATE localstrings SET stringvalue='This feature allows you to view detailed data relating to a notice of registration for economic operators lists, including the documents that are required to the operators. The "Subscription request" button, activated for registered users only, allows you to activate the operator registration procedure for a list of economic operators for the chosen contracting authority.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data relating to a registration tender for the electronic market, including the documents that are required to economic operators. The "Subscription request" button, activated for registered users only, allows the operator registration process to be activated for an electronic market for the chosen contracting authority.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_CATALOGO';
+UPDATE localstrings SET stringvalue='This feature allows you to view the detailed data of the selected tender result, including the documents. Clicking on "Lots" you can view the detailed information on the tender lots, while clicking on "Call for tenders" you can access the call for tender detail associated to this tender result' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_ESITO';
+UPDATE localstrings SET stringvalue='The summary of the request sent with attached documents is shown below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_INVIO';
+UPDATE localstrings SET stringvalue='The product data is presented below. By clicking on  "Modify", you can edit the content of the product.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_PRODOTTO';
+UPDATE localstrings SET stringvalue='This feature allows to view the information about the selected contract. By clicking on "Contract documents" it is possibile to see the detail of the contract documents.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETTAGLIO_STIPULA';
+UPDATE localstrings SET stringvalue='The data of the communication sent with any attached documents is shown below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETT_COMUNICAZIONE_INVIATA';
+UPDATE localstrings SET stringvalue='The data of the communication received with any attached documents is shown below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETT_COMUNICAZIONE_RICEVUTA';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are shown below. It is possible to display all the personal data using the "Download detailed PDF" command which allows you to download a file in PDF format. To modify the personal data, click on "Edit", while to enter a request for changing the identification of operator data (company name, VAT number, fiscal code, ...) click on "Request identification data change"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DETT_IMPRESA';
+UPDATE localstrings SET stringvalue='The list of auction invitation documents and defined phases are showed below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DOCUMENTI_FASI_ASTA';
+UPDATE localstrings SET stringvalue='The list of documents related to the selected contract is shown below. By clicking on each document name it is possibile to download the file. Once the files have been uploaded, click on SEND CONTRACT to send documents to the Contracting Authority.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_DOCUMENTI_STIPULE';
+UPDATE localstrings SET stringvalue='General invoice data entering page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_EORDERS_FATTURA_CREA';
+UPDATE localstrings SET stringvalue='Invoice summary data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_EORDERS_FATTURA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='List of the invoices submitted via SDI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_EORDERS_LISTA_FATTURE';
+UPDATE localstrings SET stringvalue='Page for sending invoices' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_EORDERS_UPLOAD_FATTURE';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators. For each envelope the economic operator or grouping, the status relating to the administrative envelope, and at the end the admission to the next phase are listed. By selecting the single envelope it is possible to access the detailed data.<br/>Attention: in case of an administrative documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_APERTURA_DOC_AMM';
+UPDATE localstrings SET stringvalue='Detail of the administrative envelope related to the selected envelope, showing the data of the economic operator or the composition of the group, the list of attached documents and the list of lots for which the offer was submitted (only in the case of lot tenders ).' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_APERTURA_DOC_AMM_OP';
+UPDATE localstrings SET stringvalue='The various phases of the tender procedure are presented below. Select the phase of interest to access the information published to the participating economic operators.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_FASI';
+UPDATE localstrings SET stringvalue='List of economic operators admitted to the ranking. For each envelope the economic operator or the grouping, the value of its offer and the ranking are listed.<br/>Attention: if the ranking is not completed yet, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_GRADUATORIA';
+UPDATE localstrings SET stringvalue='Select the lot to proceed with the consultation of the ranking.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_GRADUATORIA_LOTTI';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators admitted to the economic offer evaluation phase. For each envelope the economic operator or grouping, the status of the economic envelope, the value of its offer, and at the end the admission to the next phase are listed. By selecting the single envelope it is possible to access the detailed data.<br/>Attention: in case of an economic documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Detail of the economic envelope related to the selected envelope, showing the data of the economic operator or the composition of the group, the list of attached documents and the value of its offer.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_OFFERTA_ECONOMICA_OP';
+UPDATE localstrings SET stringvalue='List of envelopes received containing offers submitted by economic operators admitted to the technical assessment phase. For each envelope, the economic operator or grouping, the status of the technical envelope and the phase completed, the admission to the next phase are listed. By selecting the single envelope, it is possible to access the detailed data.<br/>Attention: in case of the technical documentation opening phase still in progress, the "Refresh" button is available to request an update of the displayed list.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GARA_TEL_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='This feature allows you to change your product catalogue. <br/> Use "Enter a new product" to define new products, "Modify products in the catalogue" to modify or delete existing products or restore previously deleted products, "Change prices and deadlines "to change only the price or the expiry date validity of the offer of the products in the catalogue. <br/> At any time you can consult the list of new products or changes made starting from "Summary of changes in progress ". <br/> The actual transmission of the operations carried out takes place using the "Confirm and send changes" function.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GESTIONE_PRODOTTI';
+UPDATE localstrings SET stringvalue='List of products included in the catalogue. It is possible to apply a search filter on the products in the catalogue by setting the search terms (words of at least 3 characters) in the field identified by "Filter products by", or search for products by switching to an advanced search mode and expressing the filter criteria on one or more information indicated. <br/> From the list of extracted products it is possible to access the detail or request the elimination of the product in the catalogue.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GESTIONE_PRODOTTI_CATALOGO_SISTEMA';
+UPDATE localstrings SET stringvalue='Summary of the changes to be made to the catalogue such as: products inserted (to be sent or drafted), products modified, eliminated or restored. <br/> From the list it is possible to access the details of a single product or request the cancellation of the variation at catalogue (cancellation of new product insertion, cancellation of a modification, deletion and restoration). <br/> <strong> Warning: the variations have not yet been transmitted </strong>; to complete the submission use the appropriate function from the main page of Product Management.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_GESTIONE_PRODOTTI_RIEPILOGO_MODIFICHE';
+UPDATE localstrings SET stringvalue='The system provides for the uploading of files in several "digital envelopes" in a manner conceptually similar to the traditional paper handling. Only after completion the operator can proceed with the sending of the offer, i.e. the "digital envelope" containing all the "digital envelopes" is transmitted. Therefore to proceed with the sending of the electronic envelopes for the offer it is necessary to proceed as follows: 
+<ul> 
+<li>select "Start compiling offer" to set some basic information for the envelopes to be sent, such as the method of participation and any tender lots of interest, where applicable; with confirmation at the end of the procedure the envelopes provided for the tender are activated</li> 
+<li>select each envelope provided to attach and save the related documentation</li> 
+<li>check the data and documents collected by the procedure in the summary</li> 
+<li>select "Confirm and send offer" to proceed with the actual sending of the data; in case of lots tenders, the offer can be sent only when the data and documents have been completely entered</li> 
+</ul>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_OFFERTA';
+UPDATE localstrings SET stringvalue='To send the prequalification electronic envelope to require the participation, you have to proceed as follows: 
+<ul> 
+<li>select "Start compiling the application" to set some basic information, such as how to participate and any tender lots of interest, if any; with the confirmation at the end of the procedure the compilation of the prequalification envelope is activated</li> 
+<li>attach and save the documentation related to the prequalification envelope</li> 
+<li>check the data and documents collected by the procedure in the summary</li> 
+<li>select "Confirm and send request" to proceed with the actual sending of the data.</li> 
+</ul>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Summary of entered data and uploaded attachments. Attention: the data are saved but not sent to the Administration yet.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_BUSTE_TELEMATICHE_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Enter the agent''s participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_DOC_ART48_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_DOC_ART48_IMPRESA';
+UPDATE localstrings SET stringvalue='In case the company participated in the procedure as a temporary grouping, it is necessary that the data entry operations on this website are carried out by the grouping company specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_DOC_ART48_RTI';
+UPDATE localstrings SET stringvalue='Enter the agent''s participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_OFFERTA_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_OFFERTA_IMPRESA';
+UPDATE localstrings SET stringvalue='If applicable by the tender announcement, it is possible to present an offer as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the grouping company specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_INVIO_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='The categories provided for the Operators List ar listed below. Indicate for which categories and any classifications you intend to register for. The operator will be invited to submit offers based on these lists. The operator must document his economic-financial and technical-organizational capacity also based on the categories and classifications indicated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_CATEGORIE';
+UPDATE localstrings SET stringvalue='To register, it is necessary to present the request, attaching the documents indicated in the call for tenders/notice of the Economic Operators List, or in the published regulations. <br/> To upload files related to any documents already present in the list, click on "Browse ...". <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next registration step is blocked until the operator data is completely updated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_IMPRESA';
+UPDATE localstrings SET stringvalue='Check that you have attached all the required documents (upload), then press "Send request" to definitively submit the application, or press "Save draft" to save and send it later.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_RIEPILOGO';
+UPDATE localstrings SET stringvalue='If applicable in the announcement of registration to the Operators List, it is possible to participate in the List as a temporary grouping. In this case, it is necessary that the data entry operations on this website are carried out by the group leader or agent, specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_RTI';
+UPDATE localstrings SET stringvalue='The Operators List you are subscribing to may be used by one or more of the following Contracting Stations. Indicate which Contracting Stations you wish to operate for.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_SA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the request for registration which must be verified, completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, select its signatory.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the request for registration which must be verified, completed, signed and uploaded in the next step ("Required documentation"). Before generating the document, indicate the signatory of the document for each participant in the temporary grouping. <br/> <strong> Warning: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping . </strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Here you can find the categories provided for the electronic market registration tender. Indicate which categories you intend to register for. The operator must document his economic-financial and technical-organizational capacity also based on the categories indicated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_CATALOGO_CATEGORIE';
+UPDATE localstrings SET stringvalue='To register it is necessary to present the documentation required by the announcement and by the Electronic Market Documents. <br/> To upload files related to any documents already on the list, click on "Browse ...". <Br /> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_CATALOGO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='If required by the electronic market registration announcement, it is possible to participate in the electronic market as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the group leader or agent, specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_ISCR_CATALOGO_RTI';
+UPDATE localstrings SET stringvalue='To use this function, it is necessary to enable Javascript code execution in the browser.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_JAVASCRIPT_REQUIRED';
+UPDATE localstrings SET stringvalue='List of items defined in the registration announcement for the selected electronic market; the items are paginated and the commands for consulting the extracted records are available at the bottom of the page. To reduce the number of extracted elements, filter by search criteria.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Below you can find the electronic auctions in progress in which the operator participated in the offer phase, regardless of the admission to the auction phase. To access the details, select the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_ASTE_IN_CORSO';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for the search for tenders. Click on "Search" to access the list of tenders that satisfy the set criteria, and from the list it will be possible to access the detailed data of a single tender.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_CON_ESITO';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_IN_CORSO';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the purchase tenders currently IN PROGRESS and not subject to the application of the current legislation on public procurement.<br/> 
+<br/> 
+The detailed data of the purchasing procedures can be consulted by selecting the "View detail" link' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_IN_CORSO_ACQ';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the sales tenders IN PROGRESS.<br/> 
+The detailed data of the public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_IN_CORSO_VEN';
+UPDATE localstrings SET stringvalue='List of notices for registration for currently published economic operators lists. If you want to register in a list of economic operators, you must be registered on the portal. For further details about the registration procedure consult the manual "Access to the reserved area".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Below you can find the tender procedures or tender offer requests (RDO) in progress, for which you must submit documentation (for example relating to the certification of self-certified requirements, clarifications, price justification, etc.). To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='The tender offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA';
+UPDATE localstrings SET stringvalue='The purchase offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='The sales offer requests (RDO), i.e. the invitations to submit an offer for the tender procedures in progress, are listed below. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_RICH_INVIO_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the tender announcements <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_SCADUTI';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the EXPIRED purchase tenders not subject to the application of the current legislation on public procurement.<br/> 
+<br/> 
+The detailed data of the purchasing procedures can be consulted by selecting the link "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_SCADUTI_ACQ';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the EXPIRED sales tenders.<br/> 
+The detailed data of the public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_BANDI_SCADUTI_VEN';
+UPDATE localstrings SET stringvalue='List of current iscription announcements for the electronic market. To request registration you must be registered on the portal, for more details about the registration procedure consult the manual under "Access to the reserved area".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_CATALOGHI';
+UPDATE localstrings SET stringvalue='The economic operator who has access to the platform can fill in the participation form either as a "single economic operator" or as a group leader/agent on behalf of a temporary grouping of companies "RTI".<br/> 
+In lots tenders it is possible to compete in different forms in different lots. It is possible to submit a single request, as a single or on behalf of the same RTI, for one or more lots. For example, it is possible to participate as a single company in a lot (or more) and as a RTI in another lot (or more). It is also possible to participate as another a RTI in another lot (or more).<br/> 
+A "digital envelope" linked to the competitor (single or RTI) for one or more lots is then created for each request for participation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_DOMANDE_PARTECIPAZIONE_TELEMATICHE';
+UPDATE localstrings SET stringvalue='In this section it is possible to consult the results of tenders according to the deadlines set by the contracts legislation.<br/>The obligation to publish the tender results is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_ESITI_IN_CORSO';
+UPDATE localstrings SET stringvalue='List of requests sent to the Administration. To consult the details of an item, select the type of request of your interest.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_INVII';
+UPDATE localstrings SET stringvalue='The economic operator who has access to the platform can fill in the offer form either as a "single economic operator" or as a group leader/agent on behalf of a temporary grouping of companies "RTI".<br/> 
+In lots tenders it is possible to compete in different forms in different lots. It is possible to submit a single request, as a single or on behalf of the same RTI, for one or more lots. For example, it is possible to participate as a single company in a lot (or more) and as a RTI in another lot (or more). It is also possible to participate as another a RTI in another lot (or more).<br/> 
+A "digital envelope" linked to the competitor (single or RTI) for one or more lots is then created.<br/> 
+ATTENTION: in case of reserved procedures, the digital envelopes for each invitation request received will be always displayed.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_OFFERTE_TELEMATICHE';
+UPDATE localstrings SET stringvalue='This section summarises the procedures created in cases of extreme urgency, pursuant to articles 163 or 63 of Legislative Decree 50/2016. 
+
+The detailed data of the public procedures can be consulted by selecting the link "View Detail".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='The list below includes all the the contracts assigned to the economic operator, already activated or to be signed.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LISTA_STIPULE';
+UPDATE localstrings SET stringvalue='Select the lot of interest to participate with an auction bid or view the offer summary.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LOTTI_ASTA';
+UPDATE localstrings SET stringvalue='List of the lots of the selected procedure with their details.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LOTTI_BANDO';
+UPDATE localstrings SET stringvalue='List of selected lots for which the economic envelope is required. Select the link on the lot to activate the uploading of the related documentation and the economic offer. Once all the documentation required for a specific lot has been entered and saved, a check appears in the "Ready to send" column.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LOTTI_BUSTE_ECONOMICHE';
+UPDATE localstrings SET stringvalue='List of selected lots for which the technical envelope is required. Select the link on the lot to activate the uploading of the related documentation and the economic offer. Once all the documentation required for a specific lot has been entered and saved, a check appears in the "Ready to send" column.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_LOTTI_BUSTE_TECNICHE';
+UPDATE localstrings SET stringvalue='It is possible to proceed with the update of the price and the expiry date offered for your products in the catalogue using the functions below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_MODIFICA_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='List of registered and authorized economic operators. By selecting the link on the categories of an operator, it is possible to consult the list of categories for which he is registered with any classifications, if required.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_OPERATORI_ABILITATI_E_CAT_BANDO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Enter the group leader participation fee and the data relating to all the principals participating in the temporary grouping.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PART_GARA_DETTAGLIO_RTI';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete data, the access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PART_GARA_IMPRESA';
+UPDATE localstrings SET stringvalue='Select only the tender lots for which you intend to request for participation. <br/> ATTENTION: the request for participation will be sent only when the data and documents have been entered on all the selected lots. It is not possible to send a request of participation without having completed all the lots of interest.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PART_GARA_LOTTI';
+UPDATE localstrings SET stringvalue='If required by the tender, it is possible to participate in the procedure as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the group leader specifying "Yes" in the box below and indicating the name.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PART_GARA_RTI';
+UPDATE localstrings SET stringvalue='Summary tables of the assignments for works, services and supplies (Compliance with art.1 paragraph 32 Law 190/2012). Select the year to access the published data.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PROSPETTO_ANNI_ANTICORRUZIONE';
+UPDATE localstrings SET stringvalue='Information relating to tender and contract acquisition procedures, published pursuant to Article 1 of Law No. 190 of 6 November 2012.<br/>Set a search criterion to consult the data. If at least one occurrence is extracted, a link to export the extracted data is available at the end of the page.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_PROSPETTO_ANTICORRUZIONE';
+UPDATE localstrings SET stringvalue='Enter the additional personal information and registration data of the economic operator.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_ALTRI_DATI_ANAGR_IMPRESA';
+UPDATE localstrings SET stringvalue='ATTENTION: once registration has been completed and data has been sent, the information relating to Company Name, Legal Form, Social Security Number and VAT Number cannot be changed. Any changes must be requested using the "Request dentification data change" button from your personal area.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_DATI_PRINC_IMPRESA';
+UPDATE localstrings SET stringvalue='If you have already registered on another e-procurement platform that supports the M-XML format, you can download the registry data from that platform in M-XML format and import them into this one. <br/> Search in the other platform the data export function in M-XML format. Typically the export function can be found in the "Personal Area", "Profile", "Your data" section. <br/> If you have a M-XML file click on "Import from M-XML file" to upload the compatible/available data and then proceed by verifying and supplementing any additional data that may be required.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_FROM_PORTALE';
+UPDATE localstrings SET stringvalue='The summary data of the registry of the economic operator and of the other data entered are listed below. If all the information entered is correct, complete the registration process by clicking on "Send".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Complete the registration by entering a username as desired. Repeat the username in the appropriate field for confirmation and check. The username must be kept and not communicated to others. Accept the consent for the processing of personal data and proceed to complete the registration phase.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_UTENZA';
+UPDATE localstrings SET stringvalue='The username is defined by the system using the social security number/tax code. Accest the consent for the processing of personal data and proceed to complete the registration phase.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_REG_IMPRESA_UTENZA_LOGINCF';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for searching of tender notices. Click on "Search" to access the list of tender notices that satisfy the set criteria, and then it is possible to access the detailed data of a single tender notice.<br/><br/>To search announcements or tender results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_AVVISI';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for tenders announcements. Click on "Search" to access the list of tenders that satisfy the set criteria, and  from the that you can view the detailed data of a single tender.<br/><br/>To search for tender notices or results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_BANDI';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage purchase tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG_ACQ';
+UPDATE localstrings SET stringvalue='The awarded or at the award stage sales tenders for which an offer has been submitted are listed below. It is possible to set a search criterion on the list. To access the tender of interest, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_BANDI_PROC_AGG_VEN';
+UPDATE localstrings SET stringvalue='The purchase orders received from the Administration are listed below. It is possible to set a search criterion to limit the data displayed. To access the order form, use the "View detail" link.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_CONTRATTI';
+UPDATE localstrings SET stringvalue='In this section you can set the selection criteria for tenders announcements. Click on "Search" to access the list of tenders that satisfy the set criteria, and  from the that you can view the detailed data of a single tender.<br/><br/>To search for tender notices or results select the corresponding entry in the "Search for" line.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICERCA_ESITI';
+UPDATE localstrings SET stringvalue='The function should be used <strong> exclusively </strong> to communicate changes regarding the following data: 
+<ul> 
+<li> Company name or denomination </li> 
+<li> Type </ li> 
+<li> Legal form </li> 
+<li> Social Security Number</li> 
+<li> VAT number </li> 
+</ul>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RICH_VARIAZIONE_DATI_IMPR';
+UPDATE localstrings SET stringvalue='Summary of the data entered with the possibility of checking the information loaded in the envelopes of the offer submitted.<br/>If the deadline for submitting the offer is still open and the application sent is incorrect, it is possible to cancel the submission made and reinsert the correct data/attachments using the "Cancel and resubmit offer" button.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIEPILOGO_OFFERTA';
+UPDATE localstrings SET stringvalue='Summary of the data entered with the possibility of checking the information loaded in the prequalification envelope submitted.<br/>If the deadline for submitting the participation request is still open and the application sent is incorrect, it is possible to cancel the submission made and reinsert the correct data/attachments using the "Cancel and resubmit participation request" button.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='The reasons for waiving the offer are listed below. If the deadline for submitting the offer has not expired yet, it is possible to cancel the waiver and return to submitting the offer by clicking on "Cancel waiver".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIEPILOGO_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Enter the reason why you intend to waive the tender offer, then click on "Waive tender offer" to notify the contracting authority of the reason.<br/>Please note: receipt of the waiver will take place at the same time as the acquisition of offers.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='To renew the registration, it is necessary to present the application, attaching the documents indicated in the notice/announcement of the Economic Operators List, or in the published regulations. <br/> To upload the files related to any documents already on the list , click on "Browse ...". <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIN_ISCR_ALBO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The data entered are summarized below. Check that you have attached all the required documents (upload), then click on "Send renewal" to definitively submit the application.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIN_ISCR_ALBO_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the renewal request that must be verified, completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIN_ISCR_ALBO_SCARICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the renewal request that must be verified, completed, signed and uploaded in the next step ("Required Documentation"). Before generating the document, select the signatory of the document for each participant in the temporary grouping.<br/><strong>Attention: the PDF generation function becomes available only after having correctly completed the signatories of all the participants in the grouping.</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIN_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='To renew the registration, it is necessary to present the documentation required by the Announcement and by the Electronic Market Documents.<br/>To upload files related to any documents already on the list, click on "Browse ...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_RIN_ISCR_CATALOGO_DOCUMENTI';
+UPDATE localstrings SET stringvalue='List of the contracting authorities available in the portal. Select a contracting authority to filter all data extraction features for the selected one. By selecting the first occurrence ("All contracting authorities") it is possible to cancel the set filter and return to the extraction of all the elements.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_SELEZIONE_STAZIONE_APPALTANTE';
+UPDATE localstrings SET stringvalue='Insert any attachments to the communication. <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_COMUNICAZIONE_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Attach the final economic auction offer file downloaded in the previous step (after having digitally signed it). <br/> To upload the file click on "Browse ...".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_CONFERMA_ASTA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The final offer submitted when participating in the auction is indicated below. If no bisd have been submitted, the offer submitted in the preliminary round applies.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_CONFERMA_ASTA_OFFERTA';
+UPDATE localstrings SET stringvalue='The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, the access to the next step is blocked as long as the operator data is not completely updated.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_CONFERMA_ASTA_OPERATORE';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the final economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_CONFERMA_ASTA_SCARICA_OFFERTA';
+UPDATE localstrings SET stringvalue='Chack and correct the selection of the signatory for the group leader and of the signatories for each principal. Once all the signatories have been confirmed, the "Generate pdf" button will appear and you will be able to download the PDF file containing the final economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_CONFERMA_ASTA_SCARICA_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the economic envelope, <strong>including the PDF file digitally signed in the previous step.</strong><br/>To upload files related to documents already in the list, click on "Browse...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the indications of the call for tenders/tender or letter of invitation and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_DOCUMENTI_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Attach the documentation required for the technical envelope, <strong>including the PDF file digitally signed in the previous step.</strong><br/>To upload files related to documents already in the list, click on "Browse...".<br/>To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse..."<br/><strong>ATTENTION: the competitor MUST ALWAYS refer to the indications of the call for tenders/tender or letter of invitation and attach ALL the documentation required!</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_DOCUMENTI_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='Summary of the item selected in the previous step to proceed with the insertion of new products; in case the Electronic Market provides the opportunity to load more products for each item, it is also necessary to indicate the maximum number of products that can be inserted for each item. Use "Download model" to download the Excel file to be modified to insert the new products in the catalogue.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_EXPORT_ARTICOLI_CONFIRM';
+UPDATE localstrings SET stringvalue='Insert the file to be uploaded and use "Upload products". All the lines of the file that are not completely filled in will be automatically discarded.<br/>Successfully uploaded products are available from the "Summary of changes in progress" function, eventually in a draft status if you must include attachments.<br/><br/><strong>Attention: in case of errors during the import phase it is possible to correct the source file and reload it; the system will only import products that have not been successfully processed yet.</strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_IMPORT_PRODOTTI';
+UPDATE localstrings SET stringvalue='Insert the file to upload and use "Import". All the unaltered lines of the file will be automatically discarded. <br/> Successfully changed products will be available from the "Summary of changes in progress" function. <br/> <br/> <strong> Attention: in case of errors in the import phase it is possible to correct the source file and reload it. </strong>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_IMPORT_VARIAZIONE_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='Enter the overall offer with the required information and, if applicable, company safety and labour costs.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Enter the technical offer by inserting values for each required evaluation criterion.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='You can change the attachments previously uploaded for the product. Each uploaded file must be selected and immediately sent using the corresponding "Browse ..." button. It is also possible to download any fac-similes of the required certifications.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_AGG_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Edit the product detail data that changed.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_AGG_PRODOTTO';
+UPDATE localstrings SET stringvalue='Check the modified data and continue by confirming the data with the "Save" button, thus making the product ready to send its modifications.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_AGG_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Insert image, technical data sheets and certifications required for the product. Each uploaded file must be selected and sent immediately using the corresponding "Browse ..." button. It is also possible to download any fac-similes of the required certifications.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_INS_DOCUMENTI';
+UPDATE localstrings SET stringvalue='It is possible to proceed with the insertion of a single product starting from an item present in the enabled product categories, or inserting more products by first exporting an Excel file prepared for compilation, compiling it and then importing it.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_INS_PRODOTTO_CHOICES';
+UPDATE localstrings SET stringvalue='Check the data entered and proceed with the draft entry if you intend to continue the compilation after, otherwise, if the compilation has been completed and the product is ready to be sent, add the product.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_PRODOTTO_INS_RIEPILOGO';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Select the signatory for the group leader/agent and enter the signatory for each principal. Once all the signatories have been entered, save the data. After saving, the "Generate pdf offer" button will appear to download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_RTI_OFFERTA_TEL';
+UPDATE localstrings SET stringvalue='Select the signatory for the group leader/agent and enter the signatory for each principal. Once all the signatories have been entered, save the data. After saving, the "Generate pdf technical offer" button will appear to download the PDF file containing the economic offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_TECNICA_RTI_TEL';
+UPDATE localstrings SET stringvalue='Download the PDF file containing the technical offer that must be digitally signed and uploaded in the next step ("Documents").' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_WIZ_SCARICA_OFFERTA_TECNICA_TEL';
+UPDATE localstrings SET stringvalue='Enter your old and new passwords (repeat twice to check). The new password must contain a minimum of 14 characters (using letters and at least 2 numbers) up to a maximum of 20. It is recommended to use upper and lower case letters as well as a special character between . (dot) _ (underscore) & (commercial e) $ (dollar) @ (snail) ! (exclamation mark) and - (minus)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_jpadminprofile_EDITPASSWORD';
+UPDATE localstrings SET stringvalue='Enter your old and new passwords (repeat twice to check). The new password must contain a minimum of 8 characters (using letters and at least 2 numbers) up to a maximum of 20. It is recommended to use upper and lower case letters as well as a special character between . (dot) and _ (underscore).' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BALLOON_jpuserprofile_EDITPASSWORD';
+UPDATE localstrings SET stringvalue='Data/documents completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Registration completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Renewal completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_CATALOGO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_CATALOGO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_CATALOGO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Tender notice' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_ESITO_BANDO';
+UPDATE localstrings SET stringvalue='Cancel waiver' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA';
+UPDATE localstrings SET stringvalue='Submit requirements documentation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_PRESENTA_OFFERTA';
+UPDATE localstrings SET stringvalue='Submit participation request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Participation request summary' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Waive summary' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_RIEPILOGO_RINUNCIA';
+UPDATE localstrings SET stringvalue='Waive tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_DETTAGLIO_GARA_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Place a bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ESEGUI_RILANCIO';
+UPDATE localstrings SET stringvalue='Order details' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_FATT_BACK_ORDER';
+UPDATE localstrings SET stringvalue='Data/documents completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ISCRALBO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Registration completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ISCRALBO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Renewal completion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ISCRALBO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ISCRALBO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_ISCRALBO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Add participation request as single' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_NUOVA_DOMANDA';
+UPDATE localstrings SET stringvalue='Add participation request in RTI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_NUOVA_DOMANDA_RTI';
+UPDATE localstrings SET stringvalue='Add offer in RTI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_NUOVA_OFFERTA_RTI';
+UPDATE localstrings SET stringvalue='Bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_RILANCIA';
+UPDATE localstrings SET stringvalue='Save product as draft' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_SAVE_PRODOTTO_BOZZA';
+UPDATE localstrings SET stringvalue='Search' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_SEARCH';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Back to registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_WIZARD_BACK_TO_ISCRIZIONE_ISCRALBO';
+UPDATE localstrings SET stringvalue='Back to the participation request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_WIZARD_BACK_TO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Generate pdf' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_WIZARD_GENERA_PDF';
+UPDATE localstrings SET stringvalue='Generate pdf offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_WIZARD_GENERA_PDF_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Generate pdf technical offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='BUTTON_WIZARD_GENERA_PDF_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='The PEC (Certified Email) is the PEC (Posta Elettronica Certificata) is the preferred tool for sending communications and correspondence to the economic operator. In case the <strong> PEC </strong> is <strong> defined but not active yet</strong> please <strong> postpone the procedure </strong>otherwise the Administration will not be able to send communications that cannot yet be delivered correctly.<br/>' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='DATI_IMPRESA_INFO_PEC';
+UPDATE localstrings SET stringvalue='The Contracting Authority is authorised to send any notices and/or correspondence to the email addresses indicated, pursuant to Article 76, paragraph 4, of Legislative Decree 50/2016, in the knowledge that notices and/or correspondence correctly sent to the aforementioned addresses shall be deemed to be known to the addressee.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='DATI_IMPRESA_INFO_PEC2';
+UPDATE localstrings SET stringvalue='Economic operator addresses list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='ELENCO_INDIRIZZI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Economic operator subjects list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='ELENCO_SOGGETTI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Amount provided' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_190_IMPORTO_CORRISPOSTO';
+UPDATE localstrings SET stringvalue='Results of the beneficiaries prospectus summary' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_190_PROSPETTO_SOGGETTI_BENEFICIARI_SUMMARY';
+UPDATE localstrings SET stringvalue='Contracting authority' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_190_STRUTTURA_PROPONENTE';
+UPDATE localstrings SET stringvalue='You selected to cancel the economic operator data update procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ABORT_EDIT_DATI_OE_1';
+UPDATE localstrings SET stringvalue='you selected to cancel the insertion of a request to change the identification data of the economic operator.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ABORT_RICH_VARIAZIONE_DATI_OE_1';
+UPDATE localstrings SET stringvalue='Attention: any data or documents uploaded and not yet saved in the session to be terminated will be lost!' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ACCESSO_SIMULTANEO_OPTION_2_2';
+UPDATE localstrings SET stringvalue='Select this action to update in your catalogue the price and/or the expiry date offered inserted in the Excel file downloaded starting from the previous item. The two information relating to the products are checked and acquired, but to proceed with the actual updating of the catalogue, it is necessary to proceed with the step of confirming and sending changes.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_AGGIORNA_CATALOGO_PREZZI_INSERITI_IN_XLS';
+UPDATE localstrings SET stringvalue='Order attachments' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ALLEGATI_ORDINE';
+UPDATE localstrings SET stringvalue='Other certifications' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ALTRE_CERTIFICAZIONI_ATTESTAZIONI';
+UPDATE localstrings SET stringvalue='Cancel request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ANNULLA_DOMANDA';
+UPDATE localstrings SET stringvalue='Are you sure you want to cancel all changes to the catalogue?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ANNULLA_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='It is necessary to login using the authentication system if you want to enter your personal area' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_AREA_PERSONALE_SSO_PLEASE_LOGIN';
+UPDATE localstrings SET stringvalue='Please remember, in case you need to make new requests related to this one, to include in the description of the new request the ticket number assigned to this one' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASSISTENZA_TECNICA_FUTURE_SEGNALAZIONI';
+UPDATE localstrings SET stringvalue='Enter a new request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASSISTENZA_TECNICA_INS_RICHIESTA';
+UPDATE localstrings SET stringvalue='We recommend you to send your requests by completing the online form available above. However, it is also possible to ask for assistance from the following references:' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASSISTENZA_TECNICA_RIFERIMENTI_TESTO';
+UPDATE localstrings SET stringvalue='Attention: the economic operator is NOT subject to the hiring obligations set out in Law 68/1999 when he employs fewer than 16 employees or when he employs 16 to 35 employees and has not hired new employees after 01/15/2000 when the law came into force.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASSUNZIONI_OBBLIGATE_NOTA';
+UPDATE localstrings SET stringvalue='Auction open' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASTA_APERTA';
+UPDATE localstrings SET stringvalue='You selected to cancel the final offer confirmation for the auction.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ASTE_CANCEL_OFFERTA_1';
+UPDATE localstrings SET stringvalue='Notices' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_AVVISI';
+UPDATE localstrings SET stringvalue='Notice for' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_AVVISO_PER';
+UPDATE localstrings SET stringvalue='Actions on the line' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_AZIONI';
+UPDATE localstrings SET stringvalue='Fixed-price or T&M' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_A_CORPO_O_MISURA';
+UPDATE localstrings SET stringvalue='You selected to cancel the updating of the data and documents relating to the subscription' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_AGGIORNAMENTO_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the subscription' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_ISCRIZIONE_ISCRALBO_1';
+UPDATE localstrings SET stringvalue=', "Back to registration" to return to the data entry form and continue the registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_ISCRIZIONE_ISCRALBO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for sending a new communication.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_REGISTRAZIONE_COMUNICAZIONI_1';
+UPDATE localstrings SET stringvalue='You selected to register the economic operator to the portal.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_REGISTRAZIONE_OE_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the registration renewal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='Select "Confirm cancellation" to cancel the registration renewal and return to detail,' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_2';
+UPDATE localstrings SET stringvalue='"Back to renewal" to return to the data entry form and continue renewing the registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CANCEL_RINNOVO_ISCRALBO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the updating of data and documents relating to the product' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_ANNULLA_AGGIORNAMENTO_1';
+UPDATE localstrings SET stringvalue='You selected to cancel the insertion of a new product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_ANNULLA_INSERIMENTO_1';
+UPDATE localstrings SET stringvalue='During the import phase, you can import a maximum of 20 products for each item.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_IMPORT_MAX_20_PRODOTTI';
+UPDATE localstrings SET stringvalue='has been successfully updated, click on "Go back to product management" and follow the procedure to send the product to the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_PRODOTTO_AGGIORNATO_CON_SUCCESSO';
+UPDATE localstrings SET stringvalue='The new product has been entered correctly, click on "Go back to product management" and follow the procedure to send the product to the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_PRODOTTO_INSERITO_CON_SUCCESSO';
+UPDATE localstrings SET stringvalue='Deletion request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_RICHIESTA_ELIMINAZIONE';
+UPDATE localstrings SET stringvalue='A deletion request is in progress' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_RICHIESTA_ELIMINAZIONE_IN_CORSO';
+UPDATE localstrings SET stringvalue='Request for modification' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_RICHIESTA_MODIFICA';
+UPDATE localstrings SET stringvalue='A request for modification is in progress' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_RICHIESTA_MODIFICA_IN_CORSO';
+UPDATE localstrings SET stringvalue='Item selection' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATALOGHI_STEP_SELEZIONE_ARTICOLO';
+UPDATE localstrings SET stringvalue='Category/Activity' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATEGORIA_PRESTAZIONE';
+UPDATE localstrings SET stringvalue='Categories with electronic catalogue items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CATEGORIE_ARTICOLI_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='Italian Social Security Number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CODICE_FISCALE';
+UPDATE localstrings SET stringvalue='I.S.S.N.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CODICE_FISCALE_ABBR';
+UPDATE localstrings SET stringvalue='Contract code' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COD_STIPULA';
+UPDATE localstrings SET stringvalue='Expected remuneration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMPENSO_PREVISTO';
+UPDATE localstrings SET stringvalue='Components' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMPONENTI';
+UPDATE localstrings SET stringvalue='Grouping components' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMPONENTI_RAGGRUPPAMENTO';
+UPDATE localstrings SET stringvalue='Date of sending' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMUNICAZIONI_DATAINVIO';
+UPDATE localstrings SET stringvalue='Date of acquisition' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMUNICAZIONI_DATA_ACQUISIZIONE';
+UPDATE localstrings SET stringvalue='Date of submission' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COMUNICAZIONI_DATA_PRESENTAZIONE';
+UPDATE localstrings SET stringvalue='Confirm and send request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CONFERMA_INVIO_DOMANDA';
+UPDATE localstrings SET stringvalue='Are you sure you want to proceed with the registration renewal request?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_CONFERMA_RINNOVO_ISCRALBO';
+UPDATE localstrings SET stringvalue='Labour costs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COSTI_MANODOPERA';
+UPDATE localstrings SET stringvalue='Company safety costs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_COSTI_SICUREZZA_AZIENDALE';
+UPDATE localstrings SET stringvalue='Contract date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_CONTRATTO';
+UPDATE localstrings SET stringvalue='Registration date in professional Register' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Registration date in Building Fund' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_ISCRIZIONE_CASSA_EDILE';
+UPDATE localstrings SET stringvalue='Registration date in Companies Register' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Registration date in anti-mafia whitelist' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_ISCRIZIONE_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Order changes accepted until' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_LIMITE_MOD';
+UPDATE localstrings SET stringvalue='Date time bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_ORA_RILANCIO';
+UPDATE localstrings SET stringvalue='Date of publication' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_PUBBLICAZIONE_AVVISO';
+UPDATE localstrings SET stringvalue='Date of publication' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_PUBBLICAZIONE_BANDO';
+UPDATE localstrings SET stringvalue='Tender results date of publication' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_PUBBLICAZIONE_ESITO';
+UPDATE localstrings SET stringvalue='Bid date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_RILANCIO';
+UPDATE localstrings SET stringvalue='Expiry date of the certification' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_CERTIFICAZIONE';
+UPDATE localstrings SET stringvalue='Expiry date of the ISO 9001 certification' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_CERTIFICAZIONE_ISO';
+UPDATE localstrings SET stringvalue='Expiry date of the intermediate certification (permanent consortia)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_INTERMEDIA';
+UPDATE localstrings SET stringvalue='Expiry date of the SOA certification (permanent consortia)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_INTERMEDIA_SOA';
+UPDATE localstrings SET stringvalue='Expiry date of the anti-mafia register subscription' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_ISCRIZIONE_ANAGRAFE';
+UPDATE localstrings SET stringvalue='Expiry date of the anti-mafia whitelist subscription' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_ISCRIZIONE_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Expiry date of the legality rating' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_POSSESSO_RATING';
+UPDATE localstrings SET stringvalue='Five-year expiry date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_QUINQUENNALE';
+UPDATE localstrings SET stringvalue='Five-year expiry date of the SOA' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_QUINQUENNALE_SOA';
+UPDATE localstrings SET stringvalue='Three-year expiry date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_TRIENNALE';
+UPDATE localstrings SET stringvalue='Three-year expiry date of the SOA' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_SCADENZA_TRIENNALE_SOA';
+UPDATE localstrings SET stringvalue='Contract date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATA_STIPULA';
+UPDATE localstrings SET stringvalue='Master data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATI_ANAGRAFICI';
+UPDATE localstrings SET stringvalue='Item general data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATI_GENERALI_ARTICOLO';
+UPDATE localstrings SET stringvalue='Product general data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATI_GENERALI_PRODOTTO';
+UPDATE localstrings SET stringvalue='Birth date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATI_NASCITA';
+UPDATE localstrings SET stringvalue='Download the PDF containing the complete details of the master data of the economic operator' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DATI_OE_STAMPA_ANAGRAFICA';
+UPDATE localstrings SET stringvalue='of the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='RTI name' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DENOMINAZIONE_RTI';
+UPDATE localstrings SET stringvalue='Item description' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DESCRIZIONE_ARTICOLO';
+UPDATE localstrings SET stringvalue='Fac-simile certifications' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_ARTICOLO_FACSIMILE_CERTIFICAZIONI';
+UPDATE localstrings SET stringvalue='Products information' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_ARTICOLO_INFO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Products uploaded by other economic operators' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_ARTICOLO_PROD_CARICATI_ALTRI_OE';
+UPDATE localstrings SET stringvalue='Uploaded products' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_ARTICOLO_PROD_CARICATI_OE';
+UPDATE localstrings SET stringvalue='Submit the documentation to prove requirements' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Documentation required to competitors' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_DOCUMENTAZIONE_CONCORRENTI';
+UPDATE localstrings SET stringvalue='Tender documentation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_DOCUMENTAZIONE_GARA';
+UPDATE localstrings SET stringvalue='View the tender phases' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_FASI_GARA';
+UPDATE localstrings SET stringvalue='Submit a new offer in the electronic auction' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_OFFERTA_ASTA';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_PRESENTA_OFFERTA';
+UPDATE localstrings SET stringvalue='Submit the request for participation to the tender' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Requirements required to competitors' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_REQUISITI_CONCORRENTI';
+UPDATE localstrings SET stringvalue='View the summary of the tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_RIEPILOGO_OFFERTA';
+UPDATE localstrings SET stringvalue='View the summary of the request for participation to the tender' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_RIEPILOGO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Deadlines before rectification' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_SCADENZE_PRECEDENTI';
+UPDATE localstrings SET stringvalue='Deadlines for offers submission before rectification' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DETTAGLIO_GARA_TERMINI_OFFERTE_PRECEDENTI';
+UPDATE localstrings SET stringvalue='Use the <b>M-DGUE</b> service integrated in the platform to compile the electronic <b>ESPD</b> and once the "XML Response" file has been produced, return here to upload it.<br>To compile a <b>new ESPD</b> retrieving the data entered in the platform (master data of the company or of the group leader in case of RTI, lots, etc.).' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DGUE_LINK_FIRST';
+UPDATE localstrings SET stringvalue='For any <b>further ESPDs</b> required to other parties (members of the group, auxiliary companies, subcontractors...) use or share' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DGUE_LINK_SECOND';
+UPDATE localstrings SET stringvalue='To modify or reuse an existing "XML Response", or to perform other operations' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DGUE_LINK_THIRD';
+UPDATE localstrings SET stringvalue='The portal user has been successfully disconnected from any external system. To login now you need to authenticate only by entering your user and password.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DISABILITA_ACCESSO_CON_SUCCESS';
+UPDATE localstrings SET stringvalue='of which not subject to discount is' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DI_CUI_NON_SOGGETTO_RIBASSO';
+UPDATE localstrings SET stringvalue='of which design costs are' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DI_CUI_ONERI_PROGETTAZIONE';
+UPDATE localstrings SET stringvalue='of which safety costs are' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DI_CUI_SICUREZZA';
+UPDATE localstrings SET stringvalue='Attachment' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DOCSTIPULE_ALLEGATO';
+UPDATE localstrings SET stringvalue='The documents marked with (<span class="required-field">*</span>) are mandatory to send the request.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DOCUMENTI_OBBLIGATORI_PER_PROCEDERE';
+UPDATE localstrings SET stringvalue='Participation request with single participation form already exinsting' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_DOMANDA_IMPRESA_SINGOLA_PRESENTE';
+UPDATE localstrings SET stringvalue='Master data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EDIT_DATI_OE_STEP_ALTRI_DATI_ANAGRAFICI';
+UPDATE localstrings SET stringvalue='Economic operator data updated succesfully.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EDIT_DATI_OE_SUCCESS_1';
+UPDATE localstrings SET stringvalue='To return to the function previously consulted before starting the master data update procedure, select the button below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EDIT_DATI_OE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='and items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ED_ARTICOLI';
+UPDATE localstrings SET stringvalue='Addresses list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ELENCO_INDIRIZZI';
+UPDATE localstrings SET stringvalue='List of subjects' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ELENCO_SOGGETTI';
+UPDATE localstrings SET stringvalue='Delete participation request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ELIMINA_DOMANDA';
+UPDATE localstrings SET stringvalue='Remove the product from the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ELIMINA_PRODOTTO_DA_CATALOGO';
+UPDATE localstrings SET stringvalue='Confirm email' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EMAIL_CONFIRM';
+UPDATE localstrings SET stringvalue='Order Invoices Section' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATTURAZIONE';
+UPDATE localstrings SET stringvalue='Order confirmed, but not delivered yet' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATTURAZIONE_WARN';
+UPDATE localstrings SET stringvalue='Archived Invoices' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATT_ARCHIVIO';
+UPDATE localstrings SET stringvalue='Send Invoice' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATT_INVIO';
+UPDATE localstrings SET stringvalue='Change Lines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATT_LINE_MOD';
+UPDATE localstrings SET stringvalue='Regenerate Invoice' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATT_REGEN';
+UPDATE localstrings SET stringvalue='Data Lines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_EORDERS_FATT_STEP_DATI_LINEE';
+UPDATE localstrings SET stringvalue='Number invoice missing or invalid format, it must have at least one number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ERR_FATT_CODICEFATT';
+UPDATE localstrings SET stringvalue='Date of document is missing or not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ERR_FATT_DATAFATT';
+UPDATE localstrings SET stringvalue='Transport document date is not in the correct format (YYYY-MM-dd, dd / MM / YYYY, YYYY-MM-dd)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ERR_FATT_DDTDATA';
+UPDATE localstrings SET stringvalue='Date of acceptance changes error' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ERR_ORDER_LIMITDATE';
+UPDATE localstrings SET stringvalue='Reverse procedure result' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ESITO_PROCEDURA_INVERSA';
+UPDATE localstrings SET stringvalue='Fac-simile certifications' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FACSIMILE_CERTIFICAZIONI';
+UPDATE localstrings SET stringvalue='Development phases' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FASI_SVOLGIMENTO';
+UPDATE localstrings SET stringvalue='Phases table' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FASI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Fixed-price contract data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_CORPO';
+UPDATE localstrings SET stringvalue='Rate (%) of the contribution, if any, for the fund to which it belongs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_DATCASSPREV_ALRIT';
+UPDATE localstrings SET stringvalue='Status' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_DATCASSPREV_NATURA';
+UPDATE localstrings SET stringvalue='Withholding' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_DATCASSPREV_RITENUTA';
+UPDATE localstrings SET stringvalue='Transport Document Date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_DDT_DATA';
+UPDATE localstrings SET stringvalue='Surname' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_IDFISCIVA_COGN';
+UPDATE localstrings SET stringvalue='Name' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_IDFISCIVA_NOME';
+UPDATE localstrings SET stringvalue='Honorary title' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_IDFISCIVA_TIT';
+UPDATE localstrings SET stringvalue='Order Lines List' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_LINEEORDINE';
+UPDATE localstrings SET stringvalue='Permanent Establishment' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_STAB_ORG';
+UPDATE localstrings SET stringvalue='Header Data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATTURA_TESTATA';
+UPDATE localstrings SET stringvalue='Supplier Code' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_CODIMPFORNITORE';
+UPDATE localstrings SET stringvalue='Creation Date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_CREATEDDATE';
+UPDATE localstrings SET stringvalue='Invoice Date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DATAFATTURA';
+UPDATE localstrings SET stringvalue='Date of sending' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DATAINVIO';
+UPDATE localstrings SET stringvalue='Date of Receiving SDI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DATARICSDI';
+UPDATE localstrings SET stringvalue='Blocking of data relating to the professional group to which it belongs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DATCASSPREV';
+UPDATE localstrings SET stringvalue='Stamp duty paid pursuant to MEF decree of 17 June 2014 (art. 6)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DATT_BOL_FIXTEXT';
+UPDATE localstrings SET stringvalue='Transport Document Number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DDT_N';
+UPDATE localstrings SET stringvalue='Blocking of withholding data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DG_DATIRITENUTA';
+UPDATE localstrings SET stringvalue='Type of withholding' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_DG_DR_TR';
+UPDATE localstrings SET stringvalue='Financial institute' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_PAG_ISTFIN';
+UPDATE localstrings SET stringvalue='Progressive Number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_PROGINVIO';
+UPDATE localstrings SET stringvalue='Tax Summary' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_TOTRIEPILOGOIMPOSTA';
+UPDATE localstrings SET stringvalue='Invoice Upload' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FATT_UPLOAD';
+UPDATE localstrings SET stringvalue='File containing the products to be uploaded' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FILE_PRODOTTI_DA_CARICARE';
+UPDATE localstrings SET stringvalue='Filter categories/services by' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FILTRA_CATEGORIE_PER';
+UPDATE localstrings SET stringvalue='Certifying authority data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_DATI_ENTE_CERTIFICATORE';
+UPDATE localstrings SET stringvalue='The document doesn''t exist in the database' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_DOCUMENTO_NON_TROVATO';
+UPDATE localstrings SET stringvalue='The certificate is reliable on date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_DOMANDA_ATTENDIBILE';
+UPDATE localstrings SET stringvalue='List of untrusted certificates on date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_LISTA_UNTRUSTED';
+UPDATE localstrings SET stringvalue='Timestamp data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_MARCA_TEMPORALE';
+UPDATE localstrings SET stringvalue='Timestamps' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_MARCHE_TEMPORALI';
+UPDATE localstrings SET stringvalue='the certificate is not legally valid as it does not have the non-repudiation attribute' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DIGITALE_NO_RIPUDIO';
+UPDATE localstrings SET stringvalue='it was not possible to verify the digital signature, so make sure the document is correctly signed before proceeding!' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FIRMA_DOCUMENTI_NON_VERIFICABILE_2';
+UPDATE localstrings SET stringvalue='Form of participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_FORMA_DI_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='You have requested to cancel the compilation of the offer for which you have received an invitation. As you proceed, in the list of tenders the selected occurrence will still be retained as it is associated with an invitation, and in order to allow you, in case of deletion by mistake, to return to re-compile the tender. <br/> 
+However, ALL completed envelopes will be removed and ALL lots of interest to the tender will be deselected.<br/> 
+In the event that it is no longer of interest to submit a tender in this form, the envelope will then be permanently cancelled but will remain visible in the list of envelopes without lots and in the compilation state.<br/> 
+<br/> 
+Do you really want to cancel the completion of this offer?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLAMENTO_INVIO';
+UPDATE localstrings SET stringvalue='You requested to cancel the request to participate in the tender, then all the data entered will be deleted.<br/> 
+<br/> 
+Do you really want to cancel the compilation of this tender partecipation request?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLAMENTO_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='The request for participation {0} has been successfully deleted.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='You have requested the cancellation of your tender offer waiver previously sent.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_1';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous tender offer waiver, therefore it will be necessary to proceed again with the insertion and the sending of the data.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2';
+UPDATE localstrings SET stringvalue='Do you really want to cancel the tender offer waiver?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for entering data and documents for the economic offer.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_ECO_1';
+UPDATE localstrings SET stringvalue='Select "Cancel confirmation" to cancel the procedure and return to the offer submission menu, select "Back to edit" to return to the data entry form and continue editing.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_ECO_2';
+UPDATE localstrings SET stringvalue='You selected to cancel the procedure for entering data and documents for the technical offer.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_CANCEL_INSERIMENTO_TEC_1';
+UPDATE localstrings SET stringvalue='requirements proof' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='Request sent successfully.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_CONFERMA_INVIO';
+UPDATE localstrings SET stringvalue='You have requested to delete the completion of the request for participation, therefore all data entered will be removed.<br/> 
+<br/> 
+Do you really want to delete this request?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_ELIMINAZIONE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Are you sure you want to proceed with the request for' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_PROCEDERE_CON_RICHIESTA';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous offer, therefore it will be necessary to proceed again with the insertion and the sending of the data.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_RETTIFICA_INVIO_2';
+UPDATE localstrings SET stringvalue='Do you really want to cancel the previous submission to submit a new offer?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_RETTIFICA_INVIO_3';
+UPDATE localstrings SET stringvalue='You requested the cancellation of your previous request for participation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_RETTIFICA_PARTECIPAZIONE_1';
+UPDATE localstrings SET stringvalue='This operation will definitively cancel the sending of the previous request for participation, therefore it will be necessary to proceed to enter and send the data again.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_RETTIFICA_PARTECIPAZIONE_2';
+UPDATE localstrings SET stringvalue='Waive tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Confirm the data of your request and submit' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_CONFERMA_INOLTRA_DOMANDA';
+UPDATE localstrings SET stringvalue='and it is not most economically advantageous tender or does not include a technical envelope' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_GARA_NO_OEPV_BUSTATEC';
+UPDATE localstrings SET stringvalue='Opens the wizard to start filling in the partecipation request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_INIZIA_DOMANDA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Opens the wizard to start compiling the offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_INIZIA_OFFERTA';
+UPDATE localstrings SET stringvalue='There are no communications for envelopes' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_NO_COMUNICAZIONI_BUSTE';
+UPDATE localstrings SET stringvalue='View the data summary to be sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_RIEPILOGO';
+UPDATE localstrings SET stringvalue='View the data summary to be sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GARETEL_WIZARD_RIEPILOGO_DATI';
+UPDATE localstrings SET stringvalue='Go to notices search' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_GO_TO_SEARCH_AVVISI';
+UPDATE localstrings SET stringvalue='Foreign tax ID' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IDENTIFICATIVO_FISCALE_ESTERO';
+UPDATE localstrings SET stringvalue='Correct' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IDONEA';
+UPDATE localstrings SET stringvalue='Cart product' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IL_PRODOTTO_DEL_CARRELLO';
+UPDATE localstrings SET stringvalue='catalogue product' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IL_PRODOTTO_DEL_CATALOGO';
+UPDATE localstrings SET stringvalue='the summary of the request sent on' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IL_RIEPILOGO_RICHIESTA_DEL';
+UPDATE localstrings SET stringvalue='Tender amount' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_BANDO';
+UPDATE localstrings SET stringvalue='Tender base amount' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_BASE_GARA';
+UPDATE localstrings SET stringvalue='design costs included' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_CON_ONERI_PROGETTAZIONE';
+UPDATE localstrings SET stringvalue='safety costs included, not subject to discounts' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_CON_ONERI_SICUREZZA_NON_SOGGETTI';
+UPDATE localstrings SET stringvalue='amounts not subject to discounts included' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_CON_SOGGETTI_A_RIBASSO';
+UPDATE localstrings SET stringvalue='net of safety costs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_NETTO_ONERI_SICUREZZA';
+UPDATE localstrings SET stringvalue='Offer amount' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_OFFERTA';
+UPDATE localstrings SET stringvalue='Final amount offered' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_IMPORTO_OFFERTO_FINALE';
+UPDATE localstrings SET stringvalue='Select this action when you plan to insert more products or if you want to pre-fill the data of new products out of the portal and by filling in the Excel file that will be downloaded.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_INFO_WIZARD_EXPORT_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Select this action to upload the products included in the Excel file downloaded in the previous step into your catalogue. All products for which attachments are required will be inserted as drafts, and the required attachments will be inserted using the editing function.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_INFO_WIZARD_IMPORT_MASSIVO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Select this action to access the guided creation of a new product in the catalogue, specifying all its characteristics and attaching any files.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_INFO_WIZARD_INSERIMENTO_NUOVO_PRODOTTO';
+UPDATE localstrings SET stringvalue='There is a consignment pending processing by the Administration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_INVIO_IN_ATTESA_DI_ELABORAZIONE';
+UPDATE localstrings SET stringvalue='List of items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_ARTICOLI_ELENCO';
+UPDATE localstrings SET stringvalue='Electronic market items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_ARTICOLI_MEPA';
+UPDATE localstrings SET stringvalue='Stamp serial number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_NUMERO_MARCA_BOLLO';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_RIEPILOGO_CATEGORIE';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_SCARICA_DOMANDA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Download update request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Download registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Download renewal request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_SCARICA_RICHIESTA_RINNOVO';
+UPDATE localstrings SET stringvalue='View the categories provided for in the registration notice' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRALBO_VISUALIZZA_CATEGORIE_PREVISTE_BANDO';
+UPDATE localstrings SET stringvalue='Registered?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRITTO';
+UPDATE localstrings SET stringvalue='Registered in anti-mafia registry (art.30 c.6 Law Decree 189/2016)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRITTO_ANAGRAFE_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Registered with the Chamber of Commerce?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRITTO_CCIAA';
+UPDATE localstrings SET stringvalue='Registered in special professional list (art.34 Law Decree 189/2016)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRITTO_ELENCO_SPECIALE_PROF';
+UPDATE localstrings SET stringvalue='Registered in anti-mafia whitelist?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRITTO_WHITELIST_ANTIMAFIA';
+UPDATE localstrings SET stringvalue='Registration in Professional Register' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Chamber of Commerce registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='KB availabe in the entire catalogue considering all the products.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_KB_LIBERI_NEL_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='My items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LISTA_ARTICOLI_MIEI_ARTICOLI';
+UPDATE localstrings SET stringvalue='Participation requests list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LISTA_DOMANDE';
+UPDATE localstrings SET stringvalue='Offers list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LISTA_OFFERTE';
+UPDATE localstrings SET stringvalue='List of valid subjects with the right to sign. Select the signatory' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LISTA_SOGGETTI_DIRITTO_FIRMA';
+UPDATE localstrings SET stringvalue='Place of registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOCALITA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Place of Building Fund registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOCALITA_ISCRIZIONE_CASSA_EDILE';
+UPDATE localstrings SET stringvalue='Place of INAIL registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOCALITA_ISCRIZIONE_INAIL';
+UPDATE localstrings SET stringvalue='INPS office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOCALITA_ISCRIZIONE_INPS';
+UPDATE localstrings SET stringvalue='Start importing...' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOG_IMPORT_INIZIO';
+UPDATE localstrings SET stringvalue='Lots in which he participates' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOTTI_A_CUI_PARTECIPA';
+UPDATE localstrings SET stringvalue='Minimum lot per unit of measurement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_LOTTO_MINIMO_UNITA_MISURA';
+UPDATE localstrings SET stringvalue='Group leader/agent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MANDATARIA';
+UPDATE localstrings SET stringvalue='You can upload an attachment with a maximum size of' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MAX_FILE_SIZE';
+UPDATE localstrings SET stringvalue='please note that no documents are uploaded!</strong> Please note that each document to be attached must <strong>be uploaded individually</strong> in the previous step (Required documentation) by clicking the corresponding "Attach" button' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MESSAGE_NO_DOCUMENTS';
+UPDATE localstrings SET stringvalue='<p> 
+For safety reasons some operations cannot be done, in particular: 
+</p> 
+<ol> 
+<li>using the browser''s "Back" button: navigation must take place exclusively using the application links</li> 
+<li>using the browser''s "Update" / "Reload current page" (or F5) command: a request already sent will be discarded if sent again</li> 
+<li>double click on the buttons (save, send, etc...): similar to the previous case</li> 
+<li>opening of new "Navigation Tabs" on the platform: navigation must take place in the only page open on the platform</li> 
+</ol> 
+<p> 
+See further details in the user manuals. 
+</p> 
+In case you view this page, navigation must restart from the homepage.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MESSAGE_TOKEN_ERROR';
+UPDATE localstrings SET stringvalue='Best offer submitted' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MIGLIOR_OFFERTA_PRESENTATA';
+UPDATE localstrings SET stringvalue='Best price offered for the item of' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MIGLIOR_PREZZO_OFFERTO_PER_ARTICOLO';
+UPDATE localstrings SET stringvalue='Edit prices and deadlines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MODIFICA_PREZZI_SCADENZE';
+UPDATE localstrings SET stringvalue='Edit products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Some changes have not be saved yet. Use the "Save" command to avoid losing your changes.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MODIFICHE_NON_ANCORA_SALVATE';
+UPDATE localstrings SET stringvalue='Click here to delete the entire contents of the envelope and start again.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='It is necessary to cancel the envelope and start again.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_MODULISTICA_CAMBIATA_INFO2';
+UPDATE localstrings SET stringvalue='Status' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NATURA';
+UPDATE localstrings SET stringvalue='Legal status' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NATURA_GIURIDICA';
+UPDATE localstrings SET stringvalue='There is no modification to the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NESSUNA_MODIFICA_CATALOGO';
+UPDATE localstrings SET stringvalue='Name' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NOME';
+UPDATE localstrings SET stringvalue='Trade name' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NOME_COMMERCIALE';
+UPDATE localstrings SET stringvalue='Not correct' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NON_IDONEA';
+UPDATE localstrings SET stringvalue='Not submitted' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NON_PRESENTATA';
+UPDATE localstrings SET stringvalue='The "Generate pdf for economic offer" button appears once the value of this field has been entered. Indicate "n.d." if not provided for the procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NOTA_PASSOE_INDICARE_ND_SE_NON_PREVISTO';
+UPDATE localstrings SET stringvalue='Notes' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NOTE';
+UPDATE localstrings SET stringvalue='No image uploaded' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NO_IMMAGINE';
+UPDATE localstrings SET stringvalue='Unsaved changes have been made to the documents.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NO_MODIFICHE_AI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='The necessary documentation has not been read' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NO_VISIONE_DOCUMENTAZIONE_NECESSARIA';
+UPDATE localstrings SET stringvalue='Directory number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUMERO_REPERTORIO';
+UPDATE localstrings SET stringvalue='Registration number in professional Register' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUM_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Registration number in Chamber of Commerce' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUM_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Directory number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUM_REPERTORIO';
+UPDATE localstrings SET stringvalue='No. of units in which the price is expressed, components of the unit of measurement to which the purchase refers' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUM_UNITA_PREZZO_ACQUISTO';
+UPDATE localstrings SET stringvalue='New technical sheet' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_NUOVA_SCHEDA_TECNICA';
+UPDATE localstrings SET stringvalue='Offer with participation form as single already present' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_OFFERTA_IMPRESA_SINGOLA_PRESENTE';
+UPDATE localstrings SET stringvalue='Company object' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_OGGETTO_SOCIALE';
+UPDATE localstrings SET stringvalue='Participant' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PARTECIPANTE';
+UPDATE localstrings SET stringvalue='Participants in the temporary grouping' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PARTECIPANTI_RTI';
+UPDATE localstrings SET stringvalue='participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Participates as an agent of a RTI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PARTECIPA_COME_MANDATARIA_RTI';
+UPDATE localstrings SET stringvalue='Percentage labour costs' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PERCENTUALE_COSTI_MANODOPERA';
+UPDATE localstrings SET stringvalue='Has a legality rating' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_POSSIEDE_RATING_LEGALITA';
+UPDATE localstrings SET stringvalue='The initial offer only is present, without bids.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRESENTE_SOLO_OFFERTA_SENZA_RILANCI';
+UPDATE localstrings SET stringvalue='Proceed by sending the changes to the catalogue or cancel the operation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PROCEDERE_INVIO_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='Proceed by sending the price and expiry variations or cancel the operation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PROCEDERE_INVIO_VARIAZIONI_PREZZO';
+UPDATE localstrings SET stringvalue='Wrong products, because there are incorrect values in one or more fields' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTI_ERRATI';
+UPDATE localstrings SET stringvalue='products inserted for this item by other E.O.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTI_INSERITI_PER_ARTICOLO_DA_ALTRI_OE';
+UPDATE localstrings SET stringvalue='Outdated products, because price or expiry date are invalid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTI_NON_AGGIORNATI_PER_DATI_INVALIDI';
+UPDATE localstrings SET stringvalue='Products processed' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTI_PROCESSATI';
+UPDATE localstrings SET stringvalue='Discarded products because without changes in the price or validity date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTI_SCARTATI_PER_NO_VARIAZIONI';
+UPDATE localstrings SET stringvalue='Produced at the line' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTO_ALLA_RIGA';
+UPDATE localstrings SET stringvalue='Before being available in the catalogue, the product will be verified by the Contracting Authority.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PRODOTTO_SOGGETTO_A_VERIFICA_SA';
+UPDATE localstrings SET stringvalue='Tender participation number' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PROGRESSIVO_DOMANDA';
+UPDATE localstrings SET stringvalue='Registration province in professional Register' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PROVINCIA_ISCRIZIONE_ALBO_PROF';
+UPDATE localstrings SET stringvalue='Chamber of Commerce main office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_PROVINCIA_ISCRIZIONE_CCIAA';
+UPDATE localstrings SET stringvalue='Are you sure you want to delete the subject' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_QUESTION_CONFIRM_DEL_SOGGETTO_1';
+UPDATE localstrings SET stringvalue='Are you sure you want to continue without indicating any consortium member?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA';
+UPDATE localstrings SET stringvalue='Your request will be examined as soon as possible and you will receive an email at' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='containing a link to open with your browser to activate your user and set the password' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_3';
+UPDATE localstrings SET stringvalue='if you do not proceed by carrying out the indicated operation within the maximum time indicated in the email, your registration will be cancelled.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRAZIONE_OE_SUCCESS_4';
+UPDATE localstrings SET stringvalue='Click on "Compile manually" to enter the data in the following forms relating to the economic operator master data.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_ISTRUZIONI_MANUALE';
+UPDATE localstrings SET stringvalue='we inform you that a test email has been sent to your email address, in order to verify the reference email that the portal will use to send you communications' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_1';
+UPDATE localstrings SET stringvalue='Before sending your request, please check that it has been received and that it is consistent with the data indicated in the summary.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_2';
+UPDATE localstrings SET stringvalue='we inform you that a test email has been sent to your email address' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_DOPO_INVIO_1';
+UPDATE localstrings SET stringvalue='The email address was entered as the reference address for the company, but was changed again after it was sent. <strong>Before sending the request, please check that the e-mail details in the summary are correct</strong> and, if necessary, go back to the "Main data" page to make the necessary corrections.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_MAIL_VARIATA_DOPO_INVIO_2';
+UPDATE localstrings SET stringvalue='also declares that the personal data provided and acquired at the time of registration for the chosen services, as well as the data necessary for the provision of such services, will be processed, in compliance with the guarantees of confidentiality and the security measures provided for by the regulations in force, by means of computerised, telematic and manual tools, with logic strictly related to the purposes of processing.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_PRIVACY_NOTA';
+UPDATE localstrings SET stringvalue='User' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_STEP_UTENZA';
+UPDATE localstrings SET stringvalue='Maximum 20 alphanumeric characters (letters or numbers or dot)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_USERNAME_NOTA_1';
+UPDATE localstrings SET stringvalue='The User ID can be used as an alternative access solution to the digital identity system used (SPID, CIE, etc.) and corresponds to the "username" associated with the economic operator''s personal data. If you wish to activate this method of access, you will need to use the "Forgotten password" function to receive a link via e-mail to set the password to be used together with the identifier. For further information please refer to the manual "Technical procedures for using the electronic platform and access the reserved area".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_USERNAME_NOTA_SSO';
+UPDATE localstrings SET stringvalue='Login credentials' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_UTENZA';
+UPDATE localstrings SET stringvalue='Login identifier as an Economic Operator' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REGISTRA_OE_UTENZA_LOGINCF';
+UPDATE localstrings SET stringvalue='Are you sure you want to put the product back in the catalogue?' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REINSERIRE_PRODOTTO_A_CATALOGO';
+UPDATE localstrings SET stringvalue='Re-enter product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REINSERISCI_PRODOTTO';
+UPDATE localstrings SET stringvalue='Possession of  requirements to get on the tower' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_REQUISITI_ASCESA_TORRE';
+UPDATE localstrings SET stringvalue='Rectify request for participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RETTIFICA_DOMANDA';
+UPDATE localstrings SET stringvalue='Rectify offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RETTIFICA_OFFERTA';
+UPDATE localstrings SET stringvalue='Your request for an update has been successfully completed and will be examined as soon as possible.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHIESTA_AGGIORNAMENTO_A_ISCRALBO_1';
+UPDATE localstrings SET stringvalue='Your request for subscription has been successfully completed and will be examined as soon as possible.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHIESTA_ISCRIZIONE_ISCRALBO';
+UPDATE localstrings SET stringvalue='You selected to cancel the submission of an offer to a tender procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHPART_ANNULLA_INVIO_OFFERTA_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the details of the starting procedure, "Back to offer submission" to go back to the data entry form and continue the compilation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHPART_ANNULLA_INVIO_OFFERTA_2';
+UPDATE localstrings SET stringvalue='You selected to cancel the submission of a request for participation in a tender procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHPART_ANNULLA_PARTECIPAZIONE_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the start procedure details, "Back to the request for participation" to go back to the data entry form and continue the compilation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICHPART_ANNULLA_PARTECIPAZIONE_2';
+UPDATE localstrings SET stringvalue='Your request will be examined as soon as possible; if accepted, the company''s data details will be changed as requested.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICH_VARIAZIONE_SUCCESS_2';
+UPDATE localstrings SET stringvalue='To go back to the master data details, select the button shown below.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RICH_VARIAZIONE_SUCCESS_3';
+UPDATE localstrings SET stringvalue='NORMATIVE REFERENCES' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RIFERIMENTI_NORMATIVI';
+UPDATE localstrings SET stringvalue='Normative Ref.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RIFNORM';
+UPDATE localstrings SET stringvalue='Bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RILANCIO';
+UPDATE localstrings SET stringvalue='Auction bids' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RILANCI_ASTA';
+UPDATE localstrings SET stringvalue='Bids table' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RILANCI_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Renewal of the registration in the anti-mafia registry' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RINNOVO_ISCRIZIONE_ANAGRAFE';
+UPDATE localstrings SET stringvalue='Awarded RTI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_RTI_AGGIUDICATARIA';
+UPDATE localstrings SET stringvalue='Saving drafts for future changes to the catalogue products' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SALVATAGGIO_BOZZE_PER_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Download the excel document with the entire product catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARICA_XLS_CON_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Download the Excel file containing your product catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARICA_XLS_CON_TUO_CATALOGO_PRODOTTI';
+UPDATE localstrings SET stringvalue='Select this action to download an Excel file containing all the products in the catalogue, then check the product data and vary only the price and / or the expiry date offered.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARICA_XLS_PRODOTTI_VARIAZIONE_PREZZI';
+UPDATE localstrings SET stringvalue='Maximum discard of the bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARTO_MASSIMO_RILANCIO';
+UPDATE localstrings SET stringvalue='Maximum auction bid compared to the last offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARTO_MASSIMO_RILANCIO_DA_ULTIMA_OFFERTA';
+UPDATE localstrings SET stringvalue='Minimum bidding gap' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARTO_MINIMO_RILANCIO';
+UPDATE localstrings SET stringvalue='Minimum auction bid compared to the last offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCARTO_MINIMO_RILANCIO_DA_ULTIMA_OFFERTA';
+UPDATE localstrings SET stringvalue='Technical sheet' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCHEDA_TECNICA';
+UPDATE localstrings SET stringvalue='Technical sheets' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SCHEDE_TECNICHE';
+UPDATE localstrings SET stringvalue='List of invoices sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SDI_FATTURE_INVIATE';
+UPDATE localstrings SET stringvalue='Main office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SEDE';
+UPDATE localstrings SET stringvalue='All contracting authorities' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SELEZIONE_SA_ANNULLA_FILTRO';
+UPDATE localstrings SET stringvalue='Social Security Number/VAT' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SELEZIONE_SA_CODFISC_PIVA';
+UPDATE localstrings SET stringvalue='Active contracting authority' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SELEZIONE_SA_STAZIONE_ATTIVA';
+UPDATE localstrings SET stringvalue='List of contracting authorities' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SELEZIONE_SA_TABELLA_SUMMARY';
+UPDATE localstrings SET stringvalue='Confirm the contracting authority' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SELEZIONE_SA_TITLE_CONFIRM';
+UPDATE localstrings SET stringvalue='Skip the addresses list and go to the data entry form' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SKIP_INDIRIZZI';
+UPDATE localstrings SET stringvalue='Skip the list of subjects and go to the data entry form' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SKIP_SOGGETTI';
+UPDATE localstrings SET stringvalue='Subjects authorized to hadle transactions in the account (name and fiscal code)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SOGGETTI_ABILITATI_CC_DEDICATO';
+UPDATE localstrings SET stringvalue='Members' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SOGGETTI_ADERENTI';
+UPDATE localstrings SET stringvalue='Extreme urgency' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='Participation request status' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_STATO_DOMANDA';
+UPDATE localstrings SET stringvalue='Contracting authorities' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_STAZIONI_APPALTANTI';
+UPDATE localstrings SET stringvalue='Auction base amount' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_BASE_ASTA';
+UPDATE localstrings SET stringvalue='Municipality of Tender Office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_COMUNE';
+UPDATE localstrings SET stringvalue='Call for tenders Deadline Date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_DATA_SCAD';
+UPDATE localstrings SET stringvalue='Publication Results Deadline Date' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_DATA_SCAD_PUBB_ESITO';
+UPDATE localstrings SET stringvalue='Address of the Tender Office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_INDIRIZZO';
+UPDATE localstrings SET stringvalue='Province of the Tender Office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TABINF_INDICIZZAZIONE_PROVINCIA';
+UPDATE localstrings SET stringvalue='RTI' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_TIPO_PARTECIPAZIONE_RTI';
+UPDATE localstrings SET stringvalue='Last offer with unit prices' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_ULTIMA_OFFERTA_PREZZI_UNITARI';
+UPDATE localstrings SET stringvalue='Confirm username' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_USERNAME_CONFIRM';
+UPDATE localstrings SET stringvalue='Zero employees entered, if wrong please correct' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WARNING_ZERO_DIPENDENTI';
+UPDATE localstrings SET stringvalue='Update product catalogue for economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_AGGPRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for registration in the electronic market for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_ISCR_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for registration in the list for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_ISCR_ELENCO';
+UPDATE localstrings SET stringvalue='Sending the offer of the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_OFFERTA';
+UPDATE localstrings SET stringvalue='Request for participation of the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_PREQUALIFICA';
+UPDATE localstrings SET stringvalue='Request for renewal of registration in the electronic market for the economic operator {0} (Fiscal code {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_RINNOVO_CATALOGO';
+UPDATE localstrings SET stringvalue='Request for renewal of registration in the list for the economic operator {0} (I.S.S.N. {1})' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LABEL_WSDM_OGGETTO_RINNOVO_ELENCO';
+UPDATE localstrings SET stringvalue='Register to the Economic Operators List' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_ICRIZIONE_A_ELENCO';
+UPDATE localstrings SET stringvalue='Call for tenders' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_BANDI_GARA';
+UPDATE localstrings SET stringvalue='Your data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_DATI_OP';
+UPDATE localstrings SET stringvalue='Tender sale procedures at the awarding stage or completed' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_PROC_AGGIUDIC_VEN';
+UPDATE localstrings SET stringvalue='Offer of purchase requests' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_RICHIESTE_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='Offer of sale requests' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_RICHIESTE_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='Search for economic operators' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_SEARCHOE';
+UPDATE localstrings SET stringvalue='communications for remedying deficiencies' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_AREA_PERSONALE_SOCCORSI_ISTRUTTORI';
+UPDATE localstrings SET stringvalue='Back' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK';
+UPDATE localstrings SET stringvalue='Back to detail' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO';
+UPDATE localstrings SET stringvalue='Back to catalogue detail' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_CATALOGO';
+UPDATE localstrings SET stringvalue='Back to product management' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_GESTIONE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Back to registration announcement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Go back to the product modification of the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Back to news' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_NEWS';
+UPDATE localstrings SET stringvalue='Back to the summary of changes in progress' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_RIEPILOGO_MODIFICHE';
+UPDATE localstrings SET stringvalue='Back to search' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_SEARCH';
+UPDATE localstrings SET stringvalue='Back to update' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_BACK_TO_UPDATE';
+UPDATE localstrings SET stringvalue='Back to tender procedure detail' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_DETTAGLIO_ESITO_BACK_TO_GARA';
+UPDATE localstrings SET stringvalue='Go to home page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_GO_TO_HOMEPAGE';
+UPDATE localstrings SET stringvalue='Go to accessibility page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='LINK_GO_TO_PAGE_ACCESSIBILITY';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for updating data and documentation for registration to the list "{6}" of the procurement portal.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for updating data and documentation for registration to the list "{6}" of the procurement portal. 
+
+The documents uloaded are attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of request for registration update {0} "{1}"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating data or documents for entry on the "{1}" list was submitted on {2}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the list "{1}" was submitted on {2} and registered under year {3} and number {4}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_AGGISCRIZIONE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, has entered on {5} the confirmation of bidding for the electronic auction "{6}".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ASTE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the communication has been sent and presented on {1}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ASTE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the communication has been sent and presented on {1} and is registered under year {2} and number {3}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ASTE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered the request for product modification of the catalogue "{6}" on {5}.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered the request for product modification of the catalogue "{6}" on {5}. 
+
+The document summarizing the changes signed digitally is attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of sending request for modification of the products of the catalogue "{0}".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for modification of products in catalogue "{1}" was submitted on {2}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for modification of the products in the catalogue "{1}" was submitted on {2} and is registered with year {3} and number {4}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request for updating the offer for prices and deadlines in the catalogue "{6}".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_VARPRZ_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request to update the offer for prices and deadlines in the catalogue "{6}". 
+
+The document summarizing the changes signed digitally is attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_VARPRZ_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Notification of request for updating the offer for prices and deadlines of the products in the catalogue "{0}".' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the offer for prices and deadlines of the products in the catalogue "{1}" was submitted on {2}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for updating the offer for prices and deadlines of the products in the catalogue "{1}" was submitted on {2} and is registered under year {3} and number {4}. 
+
+Best regards 
+
+----- 
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_CATALOGHI_VARPRZ_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, P.I. {2}, mail {3}, with main office in {4}, entered on {5} the request for {6} in the tender "{7}". 
+
+The documents uploaded in the application are attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='It is confirmed that {0} presented on {1} was canceled as per your request from the portal. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RICEVUTA_ANNULLA_RINUNCIA_TESTO';
+UPDATE localstrings SET stringvalue='It is confirmed that {0} presented on {1} was canceled as per your request from the portal. Proceed with the complete reintroduction {2} of the changes and with the re-sending of the same. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RICEVUTA_RETTIFICA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator "{0}" that the request for {1} in the call for tenders "{2}" was submitted on {3}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator "{0}" that the request for {1} in the call for tenders "{2}" was submitted on {3} and is registered under year {4} and number {5}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Notification of tender offer waiver submitted ref. procedure {1} with subject "{0}"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the waiver of tender offer {2} "{3}" has been sent and submitted on {1}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the waiver of tender offer {4} "{5}" has been sent and submitted on {1} and is registered under year {2} and number {3}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_GARETEL_RINUNCIA_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, sent a new communication on {5} for the procedure with code "{6}".  
+
+Text and documents uploaded in the communication are attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_INVCOM_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='We hereby notify the "economic operator" {0} "that the communication has been sent and submitted on {1}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_INVCOM_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the "economic operator" {0} "that the communication has been sent and submitted on {1} and is registered under year {2} and number {3}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_INVCOM_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has entered on {5} the request for registration to the list "{6}" of the procurement portal.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ISCRIZIONE_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, has inserted on {5} the request for registration to the list "{6}" of the procurement portal. 
+
+The documents uploaded in the application are attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for registration to the list "{1}" was submitted on {2}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ISCRIZIONE_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We hereby notify the economic operator "{0}" that the request for registration to the list "{1}" was presented on {2} and is registered under year {3} and number {4}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_ISCRIZIONE_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Dear {0}, 
+on {1} you requested the reinstatement of your account on the {2} portal. 
+[[The request was activated by authenticating a subject with id {4}.]] 
+Please select within 48 hours the link {3} to confirm and complete the process. 
+
+----- 
+
+This email is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_REGISTRAZIONE_OE_RECUPERA_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, entered {5} the request for renewal {7} "{6}" of the procurement portal on {5}.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_RINNOVO_PROTOCOLLO_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator "{0}", I.S.S.N. {1}, VAT {2}, mail {3}, with main office in {4}, entered {5} the request for renewal {7} "{6}" of the procurement portal on {5}. 
+
+The documents uploaded in the application are attached.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_RINNOVO_PROTOCOLLO_TESTOCONALLEGATI';
+UPDATE localstrings SET stringvalue='Confirmation of request for renewal of registration submitted {0} "{1}"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_RINNOVO_RICEVUTA_OGGETTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator {0} that the request for renewal of the registration {1} "{2}" was submitted on {3}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_RINNOVO_RICEVUTA_TESTO';
+UPDATE localstrings SET stringvalue='We confirm to the economic operator {0} that the request for renewal of the registration {1} "{2}" was submitted on {3} and is registered under year {3} and number {4}. 
+
+Best regards 
+
+----- 
+This mail is generated by an automated system, please do not reply.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='MAIL_RINNOVO_RICEVUTA_TESTOCONPROTOCOLLO';
+UPDATE localstrings SET stringvalue='Data update and documentation for registration to the list cod. {0}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_AGGISCRIZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='AUCTIONS - data {0}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_ASTE_ALLEGATO_DESCRIZIONE';
+UPDATE localstrings SET stringvalue='The economic operator "{0}" has sent the confirmation of the bidding in the auction phase.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_ASTE_TESTO';
+UPDATE localstrings SET stringvalue='Summary of product changes in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SAVE_ALLEGATO';
+UPDATE localstrings SET stringvalue='Saving catalogue {0} products to be updated' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SAVE_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} has saved some changes to the products in the catalogue {1}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SAVE_TESTO';
+UPDATE localstrings SET stringvalue='Request for catalogue products changes' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SEND_ALLEGATO';
+UPDATE localstrings SET stringvalue='Request for updating of the products in the catalogue for the economic operator "{0}"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SEND_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} requests to be able to update products for catalogue {1}. Best regards' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_SEND_TESTO';
+UPDATE localstrings SET stringvalue='Request for variation of the products offered in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_ALLEGATO';
+UPDATE localstrings SET stringvalue='Request for variation of products offer in the catalogue for the economic operator "{0}"' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} to be able to update the prices offer and deadlines of the products in the catalogue {1}. Best regards' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_CATALOGHI_VARPRZ_SEND_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} sent a {1}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_GARETEL_TESTO';
+UPDATE localstrings SET stringvalue='Request for registration to the list cod. {0}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_ISCRIZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} asks to be able to register to the list {1} of the procurement portal for the contracting authority {2}. Best regards' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_ISCRIZIONE_TESTO';
+UPDATE localstrings SET stringvalue='Type of economic operator participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_PARTECIPAZIONE_ALLEGATO_DESCRIZIONE';
+UPDATE localstrings SET stringvalue='Type of participation in the tender cod. {1} for user {0}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_PARTECIPAZIONE_OGGETTO';
+UPDATE localstrings SET stringvalue='The supplier {0} requests to update the type of participation of the economic operator in the tender. Best regards' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_PARTECIPAZIONE_TESTO';
+UPDATE localstrings SET stringvalue='The economic operator {0} sent a {1}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_RIEPILOGO_TESTO';
+UPDATE localstrings SET stringvalue='Sending communication of registration renewal {0} {1}' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='NOTIFICA_RINNOVO_OGGETTO';
+UPDATE localstrings SET stringvalue='-- Choose a contracting authority --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_190_CHOOSE_STRUTTURA_PROPONENTE';
+UPDATE localstrings SET stringvalue='-- Choose a request type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_ASSISTENZA_TECNICA_CHOOSE_TIPOLOGIA';
+UPDATE localstrings SET stringvalue='-- Choose a tender result --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_ESITO_GARA';
+UPDATE localstrings SET stringvalue='-- Choose a legal form --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_NATURA_GIURIDICA';
+UPDATE localstrings SET stringvalue='-- Choose a country --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_NAZIONE';
+UPDATE localstrings SET stringvalue='-- Choose a province --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_PROVINCIA';
+UPDATE localstrings SET stringvalue='-- Choose a tender status --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_STATO_GARA';
+UPDATE localstrings SET stringvalue='-- Choose a contracting authority --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_STAZIONE_APPALTANTE';
+UPDATE localstrings SET stringvalue='-- Choose an item type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_TIPOLOGIA_ARTICOLO';
+UPDATE localstrings SET stringvalue='-- Choose a contract type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_TIPO_APPALTO';
+UPDATE localstrings SET stringvalue='-- Choose a tender notice type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_TIPO_AVVISO';
+UPDATE localstrings SET stringvalue='-- Choose a company type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_TIPO_IMPRESA';
+UPDATE localstrings SET stringvalue='-- Choose an address type --' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_CHOOSE_TIPO_INDIRIZZO';
+UPDATE localstrings SET stringvalue='All types' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='OPT_TUTTE_LE_TIPOLOGIE';
+UPDATE localstrings SET stringvalue='out of' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='SEARCH_RESULTS_COUNT';
+UPDATE localstrings SET stringvalue='Login using the authentication system' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='SSO_LOGIN';
+UPDATE localstrings SET stringvalue='Update the signatory for the current principal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AGGIORNA_FIRMATARIO_MANDANTE';
+UPDATE localstrings SET stringvalue='Undo all changes made to the catalogue so far' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ANNULLA_MODIFICHE_CATALOGO';
+UPDATE localstrings SET stringvalue='Opens the wizard for inserting a new product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_APRI_WIZARD_INSERIMENTO_PRODOTTO';
+UPDATE localstrings SET stringvalue='Subscribe to the Economic Operators List' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_ICRIZIONE_A_ELENCO';
+UPDATE localstrings SET stringvalue='Go to the list of documents requests for proof of requirements' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_COMPROVA_REQUISITI';
+UPDATE localstrings SET stringvalue='View all communications archived (over 90 days)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_COM_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='View all communications sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_COM_INVIATE';
+UPDATE localstrings SET stringvalue='Go to the summary of your master data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_DATI_OP';
+UPDATE localstrings SET stringvalue='Tender sales procedures at the awarding stage or completed' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_PROC_AGGIUDIC_VEN';
+UPDATE localstrings SET stringvalue='Purchase offer requests' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_RICHIESTE_OFFERTA_ACQ';
+UPDATE localstrings SET stringvalue='Sales offer requests' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AREA_PERSONALE_RICHIESTE_OFFERTA_VEN';
+UPDATE localstrings SET stringvalue='Item not available' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ARTICOLO_NON_DISPONIBILE';
+UPDATE localstrings SET stringvalue='Attach file' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ATTACH_FILE';
+UPDATE localstrings SET stringvalue='Attach file Excel' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ATTACH_FILE_EXCEL';
+UPDATE localstrings SET stringvalue='Attach digitally signed file' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ATTACH_FILE_FIRMATO';
+UPDATE localstrings SET stringvalue='Attach PDF file' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ATTACH_FILE_PDF';
+UPDATE localstrings SET stringvalue='Copy the master data of the subject' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_AZIONE_COPIA_SOGGETTO';
+UPDATE localstrings SET stringvalue='Return to the upload form of the excel file with changes in prices and deadlines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_BACK_TO_UPLOAD_XLS_PREZZI';
+UPDATE localstrings SET stringvalue='Return to the upload form of the excel file with re-checked and correct products' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_BACK_TO_UPLOAD_XLS_PRODOTTI';
+UPDATE localstrings SET stringvalue='Detail of communication sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_INVIATA';
+UPDATE localstrings SET stringvalue='Detail of request sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_INVIO';
+UPDATE localstrings SET stringvalue='Detail of communication received' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_DETTAGLIO_RICEVUTA';
+UPDATE localstrings SET stringvalue='Communications sent' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_INVIATE';
+UPDATE localstrings SET stringvalue='List of communications archived' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_LISTA_ARCHIVIATE';
+UPDATE localstrings SET stringvalue='List of communications received' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_COMUNICAZIONI_LISTA_RICEVUTE';
+UPDATE localstrings SET stringvalue='Allows the transfer of catalogue changes to the back office' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_CONSENTE_TRASFERIMENTO_MODIFICHE_A_BO';
+UPDATE localstrings SET stringvalue='Access the wizard to enter a new product' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_ARTICOLO_INSERISCI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this announcement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_AGGIORNA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Open the catalogue product management page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_AGGIORNA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this announcement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Open the catalogue product management page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Complete the registration draft for the announcement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Complete the renewal draft for the announcement' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_COMPLETA_RINNOVO';
+UPDATE localstrings SET stringvalue='Open the catalogue registration renewal page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DETTAGLIO_CATALOGO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Documents ready' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_DOCUMENTI_PRONTI';
+UPDATE localstrings SET stringvalue='Return to the page from which you started the procedure for updating the economic operator data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_EDIT_DATI_OE_SUCCESS_BUTTON_NEXT';
+UPDATE localstrings SET stringvalue='Delete from the edit cart' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ELIMINA_DAL_CARRELLO';
+UPDATE localstrings SET stringvalue='Signatory inserted, data ready for PDF generation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_FIRMATARIO_INSERITO_GENERAZIONE_PDF_PRONTA';
+UPDATE localstrings SET stringvalue='The function is temporarily disabled due to the presence of a previously sent request waiting to be processed by the system' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_FUNZIONE_DISABILITATA_RICHIESTA_GIA_INVIATA';
+UPDATE localstrings SET stringvalue='Generate the economic offer PDF with the data entered' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_GARETEL_GENERA_DF_OFFERTA_ECONOMICA';
+UPDATE localstrings SET stringvalue='Generate PDF with changes to catalogue products' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_GENERA_PDF_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Generate the PDF with the price and expiry variations of the products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_GENERA_PDF_VARIAZIONI_PREZZO';
+UPDATE localstrings SET stringvalue='Update prices and deadlines of the products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_IMPORTA';
+UPDATE localstrings SET stringvalue='Send the request for price and product expiry variation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_INVIA_VARIAZIONE_PREZZO';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_AGGIORNA_DATI_DOCUMENTI_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Update the registration documents entered for this list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_AGGIORNA_DOCUMENTI_INSERITI';
+UPDATE localstrings SET stringvalue='Open the page for the registration to the list renewal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_APRI_PAGINA_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Update the registration documents entered for this list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_COMPLETAMETO_DOCUMENTI_INSERITI';
+UPDATE localstrings SET stringvalue='Update the data or documents of the registration entered for this list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_COMPLETA_DATI_DOCUMENTI';
+UPDATE localstrings SET stringvalue='Complete the registration draft for the list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_COMPLETA_ISCRIZIONE_INIZIATA';
+UPDATE localstrings SET stringvalue='Complete the renewal draft for the list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_COMPLETA_RINNOVO_INIZIATO';
+UPDATE localstrings SET stringvalue='Register to the list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_ISCRALBO_RICHIESTA_ISCRIZIONE_ALBO';
+UPDATE localstrings SET stringvalue='Cancellation economic operator data editing' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ABORT_EDIT_DATI_OE';
+UPDATE localstrings SET stringvalue='Consents acceptance' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_AREA_PERSONALE_ACCETTA_CONSENSI';
+UPDATE localstrings SET stringvalue='Activate economic operator authenticated with external system' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_AREA_PERSONALE_COLLEGA_UTENZA_SSO';
+UPDATE localstrings SET stringvalue='Personal area of the subject' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_AREA_PERSONALE_SSO';
+UPDATE localstrings SET stringvalue='Confirm final offer of the auction' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ASTA_CONFERMA_OFFERTA_FINALE';
+UPDATE localstrings SET stringvalue='Auction bid' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ASTA_RILANCIO';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ASTA_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Cancellation of economic operator registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CANCEL_REGISTRAZIONE_OE';
+UPDATE localstrings SET stringvalue='Cancellation product update' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Cancellation product insetion' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_ANNULLA_INSERIMENTO';
+UPDATE localstrings SET stringvalue='Product import result' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_ESITO_IMPORT';
+UPDATE localstrings SET stringvalue='Export items to insert new products from excel' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_EXPORT_ARTICOLI';
+UPDATE localstrings SET stringvalue='Import changes at prices and expiry dates' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_IMPORTA_VARIAZIONE_PREZZI';
+UPDATE localstrings SET stringvalue='Insertion of one or more products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_INSERIMENTO_PRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Send request for products changes' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CATALOGHI_INVIO_MODIFICHE_PRODOTTI';
+UPDATE localstrings SET stringvalue='Cancellation sending communication' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_COMUNICAZIONI_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Send contract documents' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_CONFERMA_INVIO_STIPULA';
+UPDATE localstrings SET stringvalue='Item detail' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_DETTAGLIO_ARTICOLO';
+UPDATE localstrings SET stringvalue='Notice detail' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_DETTAGLIO_AVVISO';
+UPDATE localstrings SET stringvalue='Edit economic operator data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_EDIT_DATI_OE';
+UPDATE localstrings SET stringvalue='Creation Invoice per Order' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_EORDERS_FATTURA_CREA';
+UPDATE localstrings SET stringvalue='Invoices Archived per Order' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_EORDERS_LISTA_FATTURE';
+UPDATE localstrings SET stringvalue='Send Invoice per Order' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_EORDERS_UPLOAD_FATTURE';
+UPDATE localstrings SET stringvalue='Confirmation of requirements' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_CONFERMA_COMPROVA_REQ';
+UPDATE localstrings SET stringvalue='Confirmation request for participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_CONFERMA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Deletion of the offer in compilation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_ELIMINAZIONE_INVIO';
+UPDATE localstrings SET stringvalue='Deletion of the application for participation in compilation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_ELIMINAZIONE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Sending telematic offer envelopes' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_INVIO_BUSTE_OFFERTA';
+UPDATE localstrings SET stringvalue='Sending electronic envelopes for participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_INVIO_BUSTE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Submit request for participation' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_LISTA_DOMANDE_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Submit tender offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_LISTA_OFFERTE';
+UPDATE localstrings SET stringvalue='Application for participation deleted' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_PARTECIPAZIONE_ELIMINATA';
+UPDATE localstrings SET stringvalue='Application for participation cancelled' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_PARTECIPAZIONE_RETTIFICATA';
+UPDATE localstrings SET stringvalue='Summary tender offer waiver' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_GARETEL_RIEPILOGO_RINUNCIA_OFFERTA';
+UPDATE localstrings SET stringvalue='Update registration to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_AGGIORNAMENTO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Cancellation update registration to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_AGGIORNAMENTO';
+UPDATE localstrings SET stringvalue='Cancellation registration to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Cancellation registration renewal to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_ANNULLA_RINNOVO';
+UPDATE localstrings SET stringvalue='catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_CATALOGO';
+UPDATE localstrings SET stringvalue='Confirmation registration renewal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_CONFERMA_RINNOVO';
+UPDATE localstrings SET stringvalue='operators list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_ELENCO_OE';
+UPDATE localstrings SET stringvalue='Request for updating registration to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_AGGIORNAMENTO_A';
+UPDATE localstrings SET stringvalue='Request for registration to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Request for registration renewal to' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_RICHIESTA_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Registration renewal completed' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_ISCRALBO_RINNOVO_ISCRIZIONE';
+UPDATE localstrings SET stringvalue='Items list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Notices list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_AVVISI';
+UPDATE localstrings SET stringvalue='Expired notices list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_AVVISI_SCADUTI';
+UPDATE localstrings SET stringvalue='Registration announcements for the electronic market' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_CATALOGHI';
+UPDATE localstrings SET stringvalue='Assignments results list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_ESITI_AFFIDAMENTI';
+UPDATE localstrings SET stringvalue='Lots list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_LOTTI';
+UPDATE localstrings SET stringvalue='Requests for tender list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_NEGOZIATE';
+UPDATE localstrings SET stringvalue='Procedures to be awarded or concluded' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE';
+UPDATE localstrings SET stringvalue='Purchase procedures to be awarded or concluded' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE_ACQ';
+UPDATE localstrings SET stringvalue='Sales procedures to be awarded or concluded' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE_VEN';
+UPDATE localstrings SET stringvalue='Extreme urgencies summary' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_LISTA_SOMMA_URGENZA';
+UPDATE localstrings SET stringvalue='Change prices and deadlines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_MODIFICA_PREZZI_SCADENZE_CATALOGO';
+UPDATE localstrings SET stringvalue='Modify products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_MODIFICA_PRODOTTI_CATALOGO';
+UPDATE localstrings SET stringvalue='Modified product (changes to be sent)' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_PRODOTTO_MODIFICATO_CATALOGO';
+UPDATE localstrings SET stringvalue='Economic operator registration to the portal' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_REGISTRA_OE';
+UPDATE localstrings SET stringvalue='Search for notices' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICERCA_AVVISI';
+UPDATE localstrings SET stringvalue='Cancellation of documentation submission' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='You selected to cancel the presentation of the documentation to prove the requirements for participation in a tender procedure.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE_1';
+UPDATE localstrings SET stringvalue='Select "Cancel Confirmation" to cancel the operation and go back to the starting procedure details, "Back to sending documentation" to return to the data entry form and continue the compilation.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_DOCUMENTAZIONE_2';
+UPDATE localstrings SET stringvalue='Cancellation offer submission in a tender procedure' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_ANNULLA_INVIO_OFFERTA';
+UPDATE localstrings SET stringvalue='Cancellation of request for participation in a tender procedure' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_ANNULLA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Documentation submission' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_PRESENTA_DOCUMENTAZIONE';
+UPDATE localstrings SET stringvalue='Submission of request for participation in the tender' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_RICHPART_PRESENTA_PARTECIPAZIONE';
+UPDATE localstrings SET stringvalue='Contracting authority selection' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_SELEZIONE_SA';
+UPDATE localstrings SET stringvalue='Updating a product in the cart' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_STEP_AGGIORNA_PRODOTTO_CARRELLO';
+UPDATE localstrings SET stringvalue='Updating a product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_STEP_AGGIORNA_PRODOTTO_CATALOGO';
+UPDATE localstrings SET stringvalue='Export items to insert new products from excel' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_STEP_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Insertion of a new product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_PAGE_STEP_INSERISCI_PRODOTTO_CATALOGO';
+UPDATE localstrings SET stringvalue='Send the registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_REGISTRA_OE_INVIA_REGISTRAZIONE';
+UPDATE localstrings SET stringvalue='Digital signature required for the attached document' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_RICHIESTA_FIRMA_DIGITALE';
+UPDATE localstrings SET stringvalue='Go back to the details page of the economic operator data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_RICH_VARIAZIONE_SUCCESS_BUTTON_NEXT';
+UPDATE localstrings SET stringvalue='Restore item to "In catalogue" status' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_RIPRISTINA_ELEMENTO_IN_CATALOGO';
+UPDATE localstrings SET stringvalue='Download the filtered items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_SCARICA_ARTICOLI';
+UPDATE localstrings SET stringvalue='Bids history' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_STORIA_RILANCI';
+UPDATE localstrings SET stringvalue='Displays the cart of changes in progress' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_VISUALIZZA_CARRELLO_MODIFICHE';
+UPDATE localstrings SET stringvalue='Displays the economic operator data' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_VISUALIZZA_DATI_OP';
+UPDATE localstrings SET stringvalue='Displays the page for downloading the products catalogue and uploading the excel document for changing prices and deadlines' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_VISUALIZZA_DOWNLOAD_UPLOAD_XLS_PREZZI';
+UPDATE localstrings SET stringvalue='Displays and allows modification of products in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_VISUALIZZA_E_MODIFICA_PRODOTTI';
+UPDATE localstrings SET stringvalue='Displays ranking' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_VISUALIZZA_GRADUATORIA';
+UPDATE localstrings SET stringvalue='Opens the wizard for exporting catalogue items' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_WIZARD_EXPORT_ARTICOLI_CATALOGO';
+UPDATE localstrings SET stringvalue='Generate PDF for registration' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_WIZARD_GENERA_PDF_ISCRIZIONE_ELENCO';
+UPDATE localstrings SET stringvalue='Generate PDF for technical offer' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_WIZARD_GENERA_PDF_VALUTAZIONE_TECNICA';
+UPDATE localstrings SET stringvalue='Opens the wizard for inserting a new product in the catalogue' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_WIZARD_INSERIMENTO_NUOVO_PRODOTTO';
+UPDATE localstrings SET stringvalue='Send registration request' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='TITLE_WIZARD_SEND_SUBSCRIPTION';
+UPDATE localstrings SET stringvalue='Missing minimum data for invoice submission' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='WARN_FATT_NO_DATA';
+UPDATE localstrings SET stringvalue='The invoice indicates a different order from the one in the page' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='WARN_FATT_NO_MATCHING_ORDER';
+UPDATE localstrings SET stringvalue='The invoice has already been sent, you cannot send it.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='WARN_FATT_NO_SEND';
+UPDATE localstrings SET stringvalue='Invoice ready to be sent.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='WARN_FATT_SEND';
+UPDATE localstrings SET stringvalue='Invoice sent successfully' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='WARN_FATT_SENT';
+UPDATE localstrings SET stringvalue='If you have an electronic identity card and a mobile phone with NFC support, you can login by clicking on ''Login with CIE''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_CIE_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Login with CNS' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_CNS_LOGIN_BUTTON';
+UPDATE localstrings SET stringvalue='If you have a Digital Certificate (CNS), insert the support in your device (Smart Card or USB Token) and click on the button ''Login with CNS''.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_CNS_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Marche Region, click on ''Login with Cohesion''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_COHESION_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Login with fedERa' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_FEDERA_LOGIN_BUTTON';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Emilia-Romagna Region, click on ''Login with fedERa''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_FEDERA_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Lombardia Region, click on ''Login with GEL''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_GEL_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you use the federated authentication system of the Veneto Region, click on ''Login with MyID''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_MYID_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Se vuoi accedere tramite il servizio di gestione identita'' clicca sul bottone ''Accedi''' WHERE langcode='it' AND (customized = 0 OR customized IS NULL) AND keycode='auth_SHIBBOLETH_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you want to login through the identity management service, click on the ''Login'' button' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_SHIBBOLETH_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you have a SPID Business account, the Italian Public Digital Identity System, you can login by clicking on ''Login''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_SPID_BUSINESS_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='If you have a SPID account, the Italian Public Digital Identity System, you can login by clicking pn ''Log in with SPID''' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='auth_SPID_LOGIN_DESCRIPTION';
+UPDATE localstrings SET stringvalue='Add an item to the list' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_ADDITEM_LIST';
+UPDATE localstrings SET stringvalue='Move down' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_ITEM_MOVEDOWN';
+UPDATE localstrings SET stringvalue='Move up at position' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_ITEM_MOVEUP_IN';
+UPDATE localstrings SET stringvalue='Warning, please check the following errors on the module' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_MESSAGE_TITLE_FIELDERRORS';
+UPDATE localstrings SET stringvalue='Your password was updated successfully.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_PASSWORD_UPDATED';
+UPDATE localstrings SET stringvalue='Please login in order to change your password' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserprofile_PLEASE_LOGIN_TO_EDIT_PASSWORD';
+UPDATE localstrings SET stringvalue='User activated successfully.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_ACTIVATION_CONFIRM_MSG';
+UPDATE localstrings SET stringvalue='An error has occurred during user activation. Probably you are operating with data already used or out of time' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_ACTIVATION_ERROR_MSG';
+UPDATE localstrings SET stringvalue='User already logged, you can''t use recover password functionality. You must logout.' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_ERROR_USER_LOGGED';
+UPDATE localstrings SET stringvalue='Confirm your password' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_PASSWORD_CONFIRM';
+UPDATE localstrings SET stringvalue='Password recovered successfully' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_PASSWORD_RECOVER_SUCCESS_MSG';
+UPDATE localstrings SET stringvalue='An error has occurred during user reactivation. Probably you are operating with data already used or out of time' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_REACTIVATION_ERROR_MSG';
+UPDATE localstrings SET stringvalue='User Suspension' WHERE langcode='en' AND (customized = 0 OR customized IS NULL) AND keycode='jpuserreg_SUSPENDING_CONFIRM_MSG';
+
+DELETE FROM localstrings WHERE keycode = 'BALLOON_WIZ_IMPORT_PREZZI_UNITARI' AND langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_IMPORT_PREZZI_UNITARI', 'it', 'Inserire il file da caricare ed utilizzare "Importa". Eventuali righe del file rimaste inalterate verranno scartate in automatico.
+I prezzi unitari variati con successo saranno disponibili dalla funzione di "Riepilogo modifiche in corso".<br/><strong>Attenzione: in caso di presenza di errori in fase di importazione e'' possibile correggere il file di origine e ricaricarlo nuovamente.</strong>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_GREEN', 'en', 'Environment protection'); 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_GREEN', 'it', 'Tutela ambiente'); 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_RECYCLE', 'en', 'Material recycling'); 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_RECYCLE', 'it', 'Riciclaggio materiali'); 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_SOCIETA_COOPERATIVA', 'it', 'Società cooperativa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_SOCIETA_COOPERATIVA', 'en', 'Cooperative company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_TIPO_SOCIETA_COOPERATIVA', 'it', '-- Scegli una società cooperativa --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_TIPO_SOCIETA_COOPERATIVA', 'en', '-- Choose a cooperative company --');
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PREFISSO-TELEFONO', 'IMPRESA', 'MAN', 0); 
+
+
+--
+--Elenchi
+--
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES (
+	'ppgare_opEcArchiviati', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Announcements and notices of subscription archived</property>
+<property key="it">Lista bandi e avvisi d''iscrizione archiviati</property>
+</properties>'
+, NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/listAllIscrizioneArchiviata.action</property>
+</properties>', 1);
+
+UPDATE PAGES SET POS = POS+1 WHERE PARENTCODE = 'ppgare_oper_economici' AND CODE <> 'ppgare_oper_ec_bandi_avvisi';
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_op_ec_bandi_archiviati', 'ppgare_oper_economici', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Announcements and notices of subscription archived</property>
+<property key="it">Bandi e avvisi d''iscrizione archiviati</property>
+</properties>', 'free', 1);
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code = 'ppgare_op_ec_bandi_archiviati';
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 7, 'ppgare_opEcArchiviati', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_op_ec_bandi_archiviati', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_op_ec_bandi_archiviati' AND framepos = 9);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_ELENCHI_OE_ARCHIVIATI', 'it', 'Bandi e avvisi d''iscrizione archiviati per elenchi operatori economici');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_ELENCHI_OE_ARCHIVIATI', 'en', 'Announcements and notices of subscription archived for lists of economic operators');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_ISCRIZIONE_ARCHIVIATI', 'it', 'Elenco dei bandi d''iscrizione archiviati per gli elenchi operatori.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_ISCRIZIONE_ARCHIVIATI', 'en', 'List of archived notices for registration for economic operators lists.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_ELENCO_OE_ARCHIVIATO', 'it', 'Dettaglio bando d''iscrizione archiviato per elenchi operatori');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_ELENCO_OE_ARCHIVIATO', 'en', 'Detail of the archived announcement for operators lists');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_BANDO_ISCRIZIONE_ARCHIVIATO', 'it', 'Questa funzionalità permette di visualizzare i dati di dettaglio relativi ad un bando d''iscrizione archiviato per elenchi operatori economici, compresi i documenti che erano richiesti agli operatori.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_BANDO_ISCRIZIONE_ARCHIVIATO', 'en', 'This feature allows you to view detailed data relating to a notice of archived registration for economic operators lists, including the documents that were required to the operators.');
+
+--
+--Cataloghi
+--
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_cataloghi_archiviati', 'ppgare_cataloghi', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Announcements and notices of subscription archived</property>
+<property key="it">Bandi e avvisi d''iscrizione archiviati</property>
+</properties>', 'free', 1);
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code = 'ppgare_cataloghi_archiviati';
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES (
+	'ppgare_listCataloghiArchiviati', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">List of archived electronic catalogs</property>
+<property key="it">Lista cataloghi elettronici archiviati</property>
+</properties>'
+, NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Cataloghi/listAllCataloghiArchiviati.action</property>
+</properties>', 1);
+
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 7, 'ppgare_listCataloghiArchiviati', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_cataloghi_archiviati', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_cataloghi_archiviati' AND framepos = 9);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_CATALOGHI_ARCHIVIATI', 'it', 'Bandi e avvisi d''iscrizione archiviati per il mercato elettronico');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_CATALOGHI_ARCHIVIATI', 'en', 'Archived registration announcements for the electronic market');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_CATALOGHI_ARCHIVIATI', 'it', 'Elenco dei bandi d''iscrizione archiviati per gli elenchi operatori economici.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_CATALOGHI_ARCHIVIATI', 'en', 'List of archived iscription announcements for the electronic market.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_CATALOGO_ARCHIVIATO', 'it', 'Dettaglio bando d''iscrizione archiviato per il mercato elettronico');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_CATALOGO_ARCHIVIATO', 'en', 'Notice of archived registration for the electronic market');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_CATALOGO_ARCHIVIATO', 'it', 'Questa funzionalità permette di visualizzare i dati di dettaglio relativi ad un bando d''iscrizione per elenchi operatori economici, compresi i documenti che sono richiesti agli operatori.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_CATALOGO_ARCHIVIATO', 'en', 'This feature allows you to view the detailed data relating to a registration tender for the electronic market, including the documents that are required from economic operators.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_RESET', 'it', 'Reset');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_RESET', 'en', 'Reset');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0-M1';
+	UPDATE ppcommon_ver SET version = '3.22.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.22.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.22.0-M2_to_3.22.0-M3
+-- 3.22.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.22.0-M2') THEN
+
+
+UPDATE LOCALSTRINGS SET STRINGVALUE = 'Voce riga {0} del file' WHERE keycode = 'LABEL_PREZZO_UNITARIO_ALLA_RIGA' and LANGCODE = 'it';
+UPDATE LOCALSTRINGS SET STRINGVALUE = 'Line {0} entry of the file' WHERE keycode = 'LABEL_PREZZO_UNITARIO_ALLA_RIGA' and LANGCODE = 'en';
+
+-- dialog per l'accettazione dei cookie di navigazione
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('BOTFILTER', 'ABILITACOOKIES', 'ACT', 0);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_SITE_COOKIES', 'it', 'In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali, ai sensi dell''art. 122 del codice privacy e del Provvedimento del Garante dell''8 maggio 2014, non è richiesto alcun consenso da parte dell''interessato.<br/>
+Nessun dato personale degli utenti viene in proposito acquisito dal sito.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_SITE_COOKIES', 'en', 'This site uses only technical cookies strictly necessary for navigation and site configuration, with respect to which, pursuant to art. 122 of the privacy code and the Provision of the Guarantor of 8 May 2014, no consent is required from the interested party.<br/>
+No personal user data is acquired by the site in this regard.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_COOKIES', 'it', 'Accetta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_COOKIES', 'en', 'Confirm');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO', 'it', 'I numeri di telefono o fax vanno inseriti nel formato previsto per i bandi europei (SIMAP), ovvero "+" iniziale, prefisso internazionale (39 per Italia), spazio, numero telefonico eventualmente con caratteri "-" per separare le cifre.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO', 'en', 'Telephone or fax numbers must be entered in the format envisaged for European calls (SIMAP), ie initial "+", international prefix (39 for Italy), space, telephone number possibly with "-" characters to separate the digits.');
+
+DELETE FROM ppcommon_customizations WHERE objectid = 'PREFISSO-TELEFONO';
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-RECAPITITEL', 'FORMATOSIMAP', 'ACT', 0);
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0-M2';
+	UPDATE ppcommon_ver SET version = '3.22.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.22.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.22.0-M3_to_3.22.0-M4
+-- 3.22.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.22.0-M3') THEN
+
+-- fix aggiornamenti 3.22 errati entrati come utf-8 (solo per postgres)
+UPDATE localstrings SET stringvalue='Scaricare il file PDF contenente la domanda di aggiornamento iscrizione che dovrà essere verificata, eventualmente completata, sottoscritta e caricata al passo successivo ("Documentazione richiesta"). Prima di procedere a generare il documento, indicare il firmatario del documento per ogni partecipante al raggruppamento temporaneo.<br/><strong>Attenzione: la funzione di generazione del PDF diventa disponibile solo dopo aver compilato correttamente i firmatari di tutte le partecipanti al raggruppamento.</strong>' WHERE langcode='it' AND customized = 0 AND keycode='BALLOON_AGG_ISCR_ALBO_SCARICA_DOMANDA_RTI';
+DELETE FROM localstrings WHERE keycode = 'BALLOON_WIZ_IMPORT_PREZZI_UNITARI' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_IMPORT_PREZZI_UNITARI', 'it', 'Inserire il file da caricare ed utilizzare "Importa". Eventuali righe del file rimaste inalterate verranno scartate in automatico.
+I prezzi unitari variati con successo saranno disponibili dalla funzione di "Riepilogo modifiche in corso".<br/><strong>Attenzione: in caso di presenza di errori in fase di importazione è possibile correggere il file di origine e ricaricarlo nuovamente.</strong>');
+DELETE FROM localstrings WHERE keycode = 'LABEL_TIPO_SOCIETA_COOPERATIVA' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_SOCIETA_COOPERATIVA', 'it', 'Società cooperativa');
+DELETE FROM localstrings WHERE keycode = 'OPT_CHOOSE_TIPO_SOCIETA_COOPERATIVA' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_TIPO_SOCIETA_COOPERATIVA', 'it', '-- Scegli una società cooperativa --');
+DELETE FROM localstrings WHERE keycode = 'BALLOON_DETTAGLIO_BANDO_ISCRIZIONE_ARCHIVIATO' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_BANDO_ISCRIZIONE_ARCHIVIATO', 'it', 'Questa funzionalità permette di visualizzare i dati di dettaglio relativi ad un bando d''iscrizione archiviato per elenchi operatori economici, compresi i documenti che erano richiesti agli operatori.');
+DELETE FROM localstrings WHERE keycode = 'BALLOON_DETTAGLIO_CATALOGO_ARCHIVIATO' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_CATALOGO_ARCHIVIATO', 'it', 'Questa funzionalità permette di visualizzare i dati di dettaglio relativi ad un bando d''iscrizione per elenchi operatori economici, compresi i documenti che sono richiesti agli operatori.');
+DELETE FROM localstrings WHERE keycode = 'LABEL_INFO_SITE_COOKIES' and langcode = 'it';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_SITE_COOKIES', 'it', 'In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali, ai sensi dell''art. 122 del codice privacy e del Provvedimento del Garante dell''8 maggio 2014, non è richiesto alcun consenso da parte dell''interessato.<br/>
+Nessun dato personale degli utenti viene in proposito acquisito dal sito.');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_IS_GREEN';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_GREEN', 'it', 'Appalto green');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_GREEN', 'en', 'Green procurement');
+
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_IS_RECYCLE';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_RECYCLE', 'it', 'Appalto per materiali riciclati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_RECYCLE', 'en', 'Procurement for recycled materials');
+
+-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0-M3';
+	UPDATE ppcommon_ver SET version = '3.22.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.22.0-M3';
+	-- FINE AGGIORNAMENTI
+	END IF;
+
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.22.0-M4_to_3.22.0
+-- 3.22.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.22.0-M4') THEN
+	
+UPDATE ppcommon_properties SET value=NULL WHERE name='dgue-jwtkey' and category='dgue';
+ 
+DELETE FROM localstrings WHERE keycode = 'LABEL_ASTE_UTENTE';
+ 
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.22.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0-M4';
+	UPDATE ppcommon_ver SET version = '3.22.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.22.0-M4';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.22.0_to_3.23.0-M1
+-- 3.23.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.22.0') THEN
+	-- INIZIO AGGIORNAMENTI
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('MULTILINGUA', 'TABELLATI', 'ACT', 0);
+
+--Società per azioni
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_1', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_1', 'en', 'Joint-stock company');
+--Società a responsabilità limitata
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_2', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_2', 'en', 'Limited Liability Company');
+--Società in accomandita per azioni
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_3', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_3', 'en', 'Limited partnership limited by shares');
+--Società semplice
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_4', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_4', 'en', 'Simple company');
+--Società in nome collettivo
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_5', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_5', 'en', 'General partnership');
+--Società in accomandita semplice
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_6', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_6', 'en', 'Limited simple partnership');
+--Studio associato o società di professionisti
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_7', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_7', 'en', 'Associated study or professionals company');
+--Società di fatto
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_8', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_8', 'en', 'De facto company');
+--Impresa individuale
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_9', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_9', 'en', 'Individual enterprise');
+--Lavoratore autonomo o libero professionista
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_10', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_10', 'en', 'Self-employed or freelance');
+--Società cooperativa
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_11', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_11', 'en', 'Cooperative Society');
+--Organizzazione non lucrativa di utilità sociale
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_12', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_12', 'en', 'Non-profit social utility organization');
+--Consorzio
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_13', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_13', 'en', 'Consortium');
+--Società consortile
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_14', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_14', 'en', 'Consortium company');
+--Ente pubblico
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_15', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_15', 'en', 'Public entity');
+--Forma giuridica estera
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_16', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_16', 'en', 'Foreign legal form');
+--Altro
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_17', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_17', 'en', 'Other');
+
+--Impresa (art.45 c.2/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'en', 'Company (Art.45 paragraph 2/a Legislative Decree 50/2016)');
+--Consorzio (art.45 c.2/b,c DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'en', 'Consortium (Art.45 c.2/b,c Legislative Decree 50/2016)');
+--Raggruppamento temporaneo di concorrenti (art.45 c.2/d,e,f,g  DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'en', 'Temporary grouping of competitors (Art.45 c.2/d,e,f,g Legislative Decree 50/2016)');
+--Gruppo europeo di interesse economico (GEIE) (art.34 c.1/f DLgs 163/2006)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_4', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_4', 'en', 'European Economic Interest Grouping (EEIG) (Art.34 c.1/f Legislative Decree 163/2006)');
+--Operatore economico stabilito in altri Stati membri (art.45 c.1 DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'en', 'Economic operator established in other Member States (Art.45 c.1 Legislative Decree 50/2016)');
+--Libero professionista (art.46 c.1/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'en', 'Freelancer (Art.46 c.1/a Legislative Decree 50/2016)');
+--Società di professionisti (art.46 c.1/b DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'en', 'Professionals company (Art.46 c.1/b Legislative Decree 50/2016)');
+--Società di ingegneria (art.46 c.1/c DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'en', 'Engineering company (Art.46 c.1/c Legislative Decree 50/2016)');
+--Prestatore di servizi stabilito in altri Stati membri (art.46 c.1/d DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'en', 'Service provider established in other Member States (Art.46 c.1/d Legislative Decree 50/2016)');
+--Raggruppamento temporaneo di professionisti (art.46 c.1/e DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'en', 'Temporary grouping of professionals (Art.46 c.1/e Legislative Decree 50/2016)');
+--Consorzio stabile di società di professionisti o di ingegneria (art.46 c.1/f DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'en', 'Stable consortium of professional or engineering companies (Art.46 c.1/f Legislative Decree 50/2016)');
+--Studio associato (art.46 c.1/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'en', 'Associated study (Art.46 c.1/a Legislative Decree 50/2016)');
+--Impresa sociale (art.45 c.2/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'en', 'Social enterprise (Art.45 c.2/a Legislative Decree 50/2016)');
+--Rete di imprese con soggettività giuridica (art.45 c.2/f DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'en', 'Business network with legal subjectivity (Art.45 c.2/f Legislative Decree 50/2016)');
+
+--Operatore economico italiano
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_ambitoTerritoriale_1', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_ambitoTerritoriale_1', 'en', 'Italian economic operator');
+--Operatore economico UE (non italiano) o extra UE
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_ambitoTerritoriale_2', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_ambitoTerritoriale_2', 'en', 'EU (non-Italian) or non-EU economic operator');
+ 
+	UPDATE localstrings SET stringvalue = 'SPID Professionale' WHERE keycode = 'SPID_BUSINESS_LOGIN_TITLE' AND langcode = 'it';
+	UPDATE localstrings SET stringvalue = 'SPID Professional' WHERE keycode = 'SPID_BUSINESS_LOGIN_TITLE' AND langcode = 'en';
+	UPDATE localstrings SET stringvalue = 'SPID per uso professionale è lo SPID "tipo 3" riservato ai liberi professionisti o lo SPID "tipo 4" rilasciato alla persona fisica che opera per conto di una persona giuridica (l’identità` digitale contiene gli attributi della persona giuridica e della persona fisica cui sono state rilasciate le credenziali di autenticazione).' WHERE keycode = 'auth_SPID_BUSINESS_LOGIN_DESCRIPTION' AND langcode = 'it';
+	UPDATE localstrings SET stringvalue = 'SPID for professional use is the "type 3" SPID reserved for freelancers or the "type 4" SPID issued to the natural person who works on behalf of a legal person (the digital identity contains the attributes of the legal person and the natural person to whom authentication credentials have been issued).' WHERE keycode = 'auth_SPID_BUSINESS_LOGIN_DESCRIPTION' AND langcode = 'en';
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GENERATE_DGUE', 'it', 'Genera m-dgue');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GENERATE_DGUE', 'en', 'Generate m-dgue');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_CON_DGUE', 'it', 'Apri con m-dgue');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_CON_DGUE', 'en', 'Open with m-dgue');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_DGUE', 'it', 'Importa i dati da un file DGUE in formato XML');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_DGUE', 'en', 'Import data from an ESPD file in XML format');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_DGUE', 'it', 'Se disponi del file XML di un DGUE compilato recentemente e contenente i tuoi dati anagrafici aggiornati, clicca sul pulsante "Importa da file DGUE in formato XML" per caricare i dati compatibili/disponibili e quindi prosegui verificando e integrando quelli ulteriori eventualmente richiesti.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_DGUE', 'en', 'If you have the XML file of an ESPD recently compiled and containing your updated personal data, click on the button "Import from ESPD file in XML format" to load the compatible/available data and then proceed by verifying and integrating any additional data requested.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_IMPORT_DGUE', 'it', 'Importa da file DGUE in formato XML');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_IMPORT_DGUE', 'en', 'Import from ESPD files in XML format');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_IMPORT_DGUE', 'it', 'Importa i dati da un file XML DGUE/ESPD');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_IMPORT_DGUE', 'en', 'Import data from an ESPD/ESPD XML file');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_CRITERIA', 'it', 'Ordina per');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_CRITERIA', 'en', 'Order by');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_DGUE_XML', 'it', 'Importa i dati da un file DGUE XML Response');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_DGUE_XML', 'en', 'Import data from a DGUE XML Response file');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID_BUSINESS', 'it', 'SPID Professionale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID_BUSINESS', 'en', 'SPID BUSINESS');
+
+	UPDATE ppcommon_customizations SET objectId = 'IMPRESA-DATIULT-CCIAA'  WHERE objectId = 'IMPRESA-DATIULT' AND attrib = 'SETTOREATTIVITA' AND feature = 'MAN';
+
+	UPDATE LOCALSTRINGS SET STRINGVALUE = 'Reimposta' WHERE keycode = 'BUTTON_RESET' and langcode = 'it' AND (customized IS NULL or customized = 0);
+
+	UPDATE localstrings SET stringvalue = 'Criteri di ricerca avanzati' WHERE keycode = 'LABEL_RICERCA_AVANZATA' AND langcode = 'it' AND (customized IS NULL or customized = 0); 
+	UPDATE localstrings SET stringvalue = 'Advanced search criteria' WHERE keycode = 'LABEL_RICERCA_AVANZATA' AND langcode = 'en' AND (customized IS NULL or customized = 0); 
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.23.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.22.0';
+	UPDATE ppcommon_ver SET version = '3.23.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.22.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.23.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.23.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+DELETE FROM localstrings WHERE keycode='LABEL_IDONEA';
+DELETE FROM localstrings WHERE keycode='LABEL_NON_IDONEA';
+
+DELETE FROM localstrings WHERE keycode='LABEL_ESITO_PROCEDURA_INVERSA' AND langcode in ('it','en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ESITO_PROCEDURA_INVERSA', 'it', 'Ammessa con procedura inversa?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ESITO_PROCEDURA_INVERSA', 'en', 'Admitted by reverse procedure?');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.23.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.23.0-M1';
+	UPDATE ppcommon_ver SET version = '3.23.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.23.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.23.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.23.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.23.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.23.0-M2';
+	UPDATE ppcommon_ver SET version = '3.23.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.23.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+-- 3.23.0_to_3.24.0-M1
+-- 3.24.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.23.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIULT-ALTRIDATI','IBAN','MAN',0);
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATA_TERMINE_RICHIESTA_CHIARIMENTI', 'it', 'Data termine richiesta chiarimenti');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATA_TERMINE_RICHIESTA_CHIARIMENTI', 'en', 'Deadline for clarification request');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATA_TERMINE_RISPOSTA_CHIARIMENTI', 'it', 'Data termine risposta chiarimenti agli operatori');
+	INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATA_TERMINE_RISPOSTA_CHIARIMENTI', 'en', 'Deadline for answering clarifications to economic operators');
+
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('digital-signature-checker-provider', 'I', 'Modalità verifica firma digitale. Valori ammessi: 0 [default]=BouncyCastle, 1=servizi Maggioli, 2=Infocert', '0', '0','digital-signature-check', 12040);
+DELETE FROM ppcommon_customizations WHERE ATTRIB = 'VERIFICACONWS';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.24.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.23.0';
+	UPDATE ppcommon_ver SET version = '3.24.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.23.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.24.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.24.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PDF', 'UPLOADPDF-A', 'ACT', 0);
+	
+	-- si aggiornano le url del servizio m-dgue, preservando pero' eventuali configurazioni che puntano all'ambiente di collaudo
+	UPDATE ppcommon_properties SET value = 'https://dgue.maggiolicloud.it/m-dgue' WHERE name = 'dgue-url-mdgue' and (value is null or value <> 'https://dgue-dev.maggiolicloud.it/m-dgue-dev');
+	UPDATE ppcommon_properties SET defvalue = 'https://dgue.maggiolicloud.it/m-dgue' WHERE name = 'dgue-url-mdgue';
+
+	-- aggiunta accettazione estensione XML tra i formati allegabili nel default value
+	UPDATE ppcommon_properties SET defvalue = 'PDF,P7M,XLS,XLSX,XML,ODS,DOC,DOCX,RTF,ODT,ZIP' WHERE name = 'estensioniAmmesseDocIscrizione';
+
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AREAPERSONALE', 'ALBI', 'VIS', 1);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AREARISERVATA', 'VENDORRATING', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('DELIBERECONTRARRE', 'EXPORT', 'VIS', 0);
+
+INSERT INTO ppcommon_customreports VALUES (50, 'com-bari', 1, 'DomandaIscrizioneAlboMedici', 'Domanda iscrizione albo medici consulenti per Comune di Bari');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_PNRR', 'en', 'PNRR procurement');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IS_PNRR', 'it', 'Appalto PNRR');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_VALIDITA_DA', 'it', 'Validità dal');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_VALIDITA_DA', 'en', 'Valid from');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_VALIDITA_FINO_A', 'it', 'Validità fino al');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_VALIDITA_FINO_A', 'en', 'Valid until');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('BALLOON_VENDOR_RATING', 'it', 'Di seguito viene fornito l''indice di valutazione corrente attribuito all''operatore per il trimestre in vigore, l''indicazione di una eventuale sospensione e, nel qual caso siano disponibili le informazioni, i medesimi dati calcolati per il trimestre successivo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('BALLOON_VENDOR_RATING', 'en', 'Below is the current vendor rating assigned to the operator for the current quarter, the indication of any suspension and, if the information is available, calculated data related the next quarter.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('TITLE_VENDOR_RATING', 'en', 'Vendor Rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('TITLE_VENDOR_RATING', 'it', 'Vendor Rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING', 'en', 'Vendor rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING', 'it', 'Vendor rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_SECTION_VENDOR_RATING_FUTURO', 'it', 'Vendor rating trimestre futuro');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_SECTION_VENDOR_RATING_FUTURO', 'en', 'Vendor rating next quarter');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_SECTION_VENDOR_RATING', 'en', 'Vendor rating current quarter');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_SECTION_VENDOR_RATING', 'it', 'Vendor rating trimestre corrente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_NON_CALCOLATO', 'it', 'Non calcolato');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('LABEL_VENDOR_RATING_NON_CALCOLATO', 'en', 'Not calculated');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('MAIL_TOKEN_ATTIVAZIONE_TESTO', 'it', '#');
+INSERT INTO localstrings (keycode, langcode, stringvalue) values ('MAIL_TOKEN_ATTIVAZIONE_TESTO', 'en', '#');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CATEGORY_PROCESSED', 'it', 'Attive (acquisite e verificate)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CATEGORY_PROCESSED', 'en', 'Active (acquired and verified)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CATEGORY_NOT_PROCESSED', 'it', 'Inviate ma non ancora elaborate');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_CATEGORY_NOT_PROCESSED', 'en', 'Sent but not processed yet');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_NOT_FOUND_WITH_FILTER', 'it', 'Non sono presenti richieste inviate da acquisire');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_NOT_FOUND_WITH_FILTER', 'en', 'There are no submitted requests to capture');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FILTER_FOR_STATUS', 'it', 'Visualizza le tue categorie/prestazioni:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FILTER_FOR_STATUS', 'en', 'View your categories/performances:');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FOUND_WITH_FILTER', 'it', 'Non sono presenti richieste acquisite');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FOUND_WITH_FILTER', 'en', 'There are no acquired requests');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_CON_ID', 'it', 'La sua richiesta è stata inviata il {0} e risulta presa in carico dal protocollo con ticket {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_CON_ID', 'en', 'Your request was sent on {0} and is taken care of by the protocol with ticket {1}');
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.24.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.24.0-M1';
+	UPDATE ppcommon_ver SET version = '3.24.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.24.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.24.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.24.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- cambio url dal 16/01/2023
+	UPDATE ppcommon_properties SET value = 'https://login.maggiolicloud.it/realms/progetto_segreteria/protocol/openid-connect/token/' WHERE name = 'digital-signature-check-authurl';
+	UPDATE ppcommon_properties SET defvalue = 'https://login.maggiolicloud.it/realms/progetto_segreteria/protocol/openid-connect/token/' WHERE name = 'digital-signature-check-authurl';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.24.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.24.0-M2';
+	UPDATE ppcommon_ver SET version = '3.24.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.24.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+

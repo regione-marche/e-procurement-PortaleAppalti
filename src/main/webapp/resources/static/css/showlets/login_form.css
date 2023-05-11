@@ -1,0 +1,23 @@
+.login-box p {
+	padding: .5em 5px;
+	margin: 0;
+}
+
+.login-box .links {
+	padding: .3em 15px;
+}
+
+.login-box form div {
+	text-align: right;
+	padding: .5em 5px .5em 2px;
+}
+
+.login-box .text {
+	width: 7em;
+}
+
+.welcome-message span {
+	font-style: italic;
+	padding: 0;
+	display: inline;
+}

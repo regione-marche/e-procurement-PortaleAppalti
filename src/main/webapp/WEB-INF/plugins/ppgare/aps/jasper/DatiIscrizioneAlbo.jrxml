@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d28fb7e0-3eb9-43e8-a584-516819e7e2f7">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="219"/>
+	<subDataset name="dsSA" uuid="64d16d77-dcb3-4028-b185-876651b96571">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/stazioniAppaltanti/stazioneAppaltante]]>
+		</queryString>
+		<field name="stazioneAppaltante" class="java.lang.String">
+			<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCategorie" uuid="1560bc4e-9e9c-4f8e-84c4-88f6fcb94632">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
+		</queryString>
+		<field name="categoria" class="java.lang.String">
+			<fieldDescription><![CDATA[categoria]]></fieldDescription>
+		</field>
+		<field name="classificaMinima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+		</field>
+		<field name="classificaMassima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+		</field>
+		<variable name="lastTitoloCat" class="java.lang.String" resetType="None">
+			<initialValueExpression><![CDATA[$F{categoria} + "|" + $F{categoria}.substring(0,  $F{categoria}.indexOf( "*" ))]]></initialValueExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="dsDocumenti" uuid="d8b48d45-9fbb-427e-beed-3f1ae2b6a1c5">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/documenti/documento]]>
+		</queryString>
+		<field name="descrizione" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizione]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\progetti_eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_SA" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si gestiscono più SA, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_CAT" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si sono presenti categorie, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/IscrizioneImpresaElencoOperatori"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ELENCO" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se elenco, 0 se catalogo]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRIZIONE" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se iscrizione, 0 se aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATIULTVISIBILI" class="java.lang.Integer"/>
+	<parameter name="INDIRIZZIVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTCCIAVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTPREVVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTSOAVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTISOVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTWLVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTALTRIDATIVISIBILI" class="java.lang.Integer"/>
+	<parameter name="SOC_COOP_VISIBLE" class="java.lang.Boolean"/>
+	<queryString language="xPath">
+		<![CDATA[/IscrizioneImpresaElencoOperatori]]>
+	</queryString>
+	<field name="denominazioneRTI" class="java.lang.String">
+		<fieldDescription><![CDATA[denominazioneRTI]]></fieldDescription>
+	</field>
+	<field name="requisitiCoordinatoreSicurezza" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[requisitiCoordinatoreSicurezza]]></fieldDescription>
+	</field>
+	<field name="requisitiAscesaTorre" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[requisitiAscesaTorre]]></fieldDescription>
+	</field>
+	<field name="partecipantiRaggruppamento" class="java.lang.String">
+		<fieldDescription><![CDATA[partecipantiRaggruppamento]]></fieldDescription>
+	</field>
+	<title>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="555" height="20" uuid="8926fb24-961e-40be-b722-7caaf4f63e2e"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati anagrafici operatore economico]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="71" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="33" width="280" height="25" uuid="60e9aa9b-9a81-493b-9eb3-68abdeeec134"/>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SOC_COOP_VISIBLE">
+					<subreportParameterExpression><![CDATA[$P{SOC_COOP_VISIBLE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/impresa")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DatiPrincipaliImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="397dc585-d833-48f4-b1b5-a8c2126b5811"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati principali]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="58" width="150" height="13" uuid="40d4fc5b-7c36-428a-86ad-bf6e8b26c8cd"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="c002b78d-4772-4cdb-8e9b-f51fc1ef48e8"/>
+			</line>
+		</band>
+		<band height="73">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="d0e88d92-0c07-4fde-95e6-f2e0468c27b0"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Altri indirizzi]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="60" width="150" height="13" uuid="444afc4b-8224-4fe8-a20c-1bbc11949a1e"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="18" width="555" height="1" uuid="3e8074e5-d4f6-476b-adcb-c2b4939e393f"/>
+			</line>
+			<subreport>
+				<reportElement x="0" y="32" width="200" height="28" uuid="4d7ccf76-56ac-43fe-bd11-a21647ef157f"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/impresa/indirizzo")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "IndirizziImpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="71">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="42" width="230" height="5" isRemoveLineWhenBlank="true" uuid="9ac63a44-a72d-4156-9c0e-41ff9070d02e"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/altraCarica")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="37" width="230" height="5" isRemoveLineWhenBlank="true" uuid="6e7a75fb-daf0-4dea-bee1-655d526b43be"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/direttoreTecnico")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="230" height="5" isRemoveLineWhenBlank="true" uuid="9de8140a-a4c9-4ee1-88ad-d26f86617ae0"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/legaleRappresentante")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="0" y="0" width="217" height="20" uuid="1846d1a4-204c-4211-bde0-8842bc181909"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Altri dati anagrafici]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="57" width="150" height="13" uuid="5f690138-6802-47ce-9d97-caf197d1d80a"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="4f79c6e6-7b6e-4e4f-80c9-10f8df1c1adf"/>
+			</line>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="47" width="230" height="5" isRemoveLineWhenBlank="true" uuid="fdfd447f-ba43-4de8-8fef-3b9b2b6a88ba"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/collaboratore")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ReferentiImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="52" width="230" height="5" isRemoveLineWhenBlank="true" uuid="c91e2917-4191-4c63-b39d-7c5678d7f35a"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//altriDatiAnagrafici")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "AltriDatiAnagrImpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="69">
+			<printWhenExpression><![CDATA[$P{DATIULTVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="af71c17b-0ecb-43e0-b459-40b32b5bf54a"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dati ulteriori]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="ac4ddbf9-95aa-42cb-911a-fcb605f72f61"/>
+			</line>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="230" height="23" uuid="6f9b5111-37d1-478c-9f58-9cd3b1b932f3"/>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTWLVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTWLVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTISOVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTISOVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTSOAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTSOAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTPREVVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTPREVVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTCCIAVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTCCIAVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATIULTALTRIDATIVISIBILI">
+					<subreportParameterExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datiImpresa/impresa")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DatiUlterioriImpresa.jasper"]]></subreportExpression>
+			</subreport>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="55" width="150" height="13" uuid="2e0231f4-a00d-4219-a074-f40b78a073de"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+		<band height="50">
+			<break>
+				<reportElement x="0" y="1" width="100" height="1" uuid="07319c6b-aa65-43f6-bae7-34661473abae"/>
+			</break>
+			<textField>
+				<reportElement x="0" y="14" width="555" height="20" uuid="214967f4-e2e4-41e2-a3aa-7484eedd59ca"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Dati " + ($P{ISCRIZIONE} == 1 ? "" : "aggiornamento ") + "iscrizione " + ($P{ELENCO} == 1 ? "all'albo fornitori" : "al mercato elettronico")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="59">
+			<printWhenExpression><![CDATA[$P{VISUALIZZA_SA} == 1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="150" height="20" uuid="ac4ac0e2-dd93-4d09-8590-0dd71f4be899"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stazioni appaltanti]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="a8b89179-be81-4630-80f2-abfae6b75a80"/>
+			</line>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="33" width="555" height="13" uuid="a12444d7-4e37-4031-91f0-7e9e612f466c"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dsSA" uuid="da6b0dbb-9e79-4f9c-883a-25c577260c51">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource($P{ROOT_TAG}+"/stazioniAppaltanti/stazioneAppaltante")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="13" width="555">
+						<textField textAdjust="StretchHeight">
+							<reportElement positionType="Float" x="0" y="0" width="555" height="13" uuid="1121dd13-7116-4111-a3ab-83ce3242eacb"/>
+							<textFieldExpression><![CDATA["- " + $F{stazioneAppaltante}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="46" width="150" height="13" uuid="7604ddf7-da5d-442e-9768-a47a01d6ddf0"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+		<band height="71">
+			<printWhenExpression><![CDATA[$P{ISCRIZIONE} == 1 && $F{partecipantiRaggruppamento} != ""]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="2" width="555" height="69" uuid="d4c1ee6b-8ae2-428f-9586-956c529cd018">
+					<printWhenExpression><![CDATA[$F{denominazioneRTI}!= null ||  $F{partecipantiRaggruppamento}.length() > 1]]></printWhenExpression>
+				</reportElement>
+				<subreport>
+					<reportElement positionType="Float" x="0" y="52" width="200" height="16" uuid="eb465d66-ad3c-4f8e-8ea7-f656045f670b"/>
+					<subreportParameter name="DENOMINAZIONE_RTI">
+						<subreportParameterExpression><![CDATA[$F{denominazioneRTI}]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//partecipantiRaggruppamento/partecipante")]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "PartecipanteRTI.jasper"]]></subreportExpression>
+				</subreport>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+					<reportElement positionType="Float" x="0" y="32" width="555" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="d194b96c-520e-4f16-b084-6d7063e458cc">
+						<printWhenExpression><![CDATA[$F{denominazioneRTI} != null]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA["L'impresa partecipa come mandataria del raggruppamento temporaneo denominato " + ($F{denominazioneRTI} != null ? $F{denominazioneRTI} : "")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement positionType="Float" x="0" y="0" width="555" height="20" uuid="ec123ffd-4531-4136-aedb-22358f5a18a4"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{denominazioneRTI} != null ? "Raggruppamento temporaneo" : "Ditte consorziate esecutrici"]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement positionType="Float" x="0" y="20" width="555" height="1" uuid="fe36a780-86b3-4a93-b8b2-745b0f76ecd6"/>
+				</line>
+			</frame>
+		</band>
+		<band height="114">
+			<printWhenExpression><![CDATA[$P{VISUALIZZA_CAT} == 1]]></printWhenExpression>
+			<textField>
+				<reportElement positionType="Float" x="0" y="35" width="174" height="38" isRemoveLineWhenBlank="true" uuid="803d2f3b-6b84-4af0-a888-8f198cbfb29d">
+					<printWhenExpression><![CDATA[$F{requisitiCoordinatoreSicurezza} != null]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA["Possesso requisiti Coordinatore della Sicurezza - art. 98 D.Lgs. 81/2008? :"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="150" height="20" uuid="b447bf67-2367-4707-8293-cebca8a83d98"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Categorie d'iscrizione]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="cf6d49ff-ffe1-4247-bf66-f0695d7fcdfc"/>
+			</line>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="91" width="280" height="23" uuid="340e6d57-86ac-4828-b3db-9cae6dc3c8e9"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//categorieIscrizione/categoria")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizione.jasper"]]></subreportExpression>
+			</subreport>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="22" width="150" height="13" uuid="2c512c03-6eac-42d3-a379-6c9acc656ec0"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement positionType="Float" x="174" y="35" width="381" height="38" isRemoveLineWhenBlank="true" uuid="5834592b-0b3e-4bcd-b347-84a8dd63ca05">
+					<printWhenExpression><![CDATA[$F{requisitiCoordinatoreSicurezza} != null]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{requisitiCoordinatoreSicurezza} ? "SI" : "NO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="73" width="174" height="18" isRemoveLineWhenBlank="true" uuid="52501c46-4ac6-4f30-a74d-06029fcd748a">
+					<printWhenExpression><![CDATA[$F{requisitiAscesaTorre} != null]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA["Possesso requisiti di ascesa torre? :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="174" y="73" width="381" height="18" isRemoveLineWhenBlank="true" uuid="5906cc5a-f869-4992-ab76-05f84972b696">
+					<printWhenExpression><![CDATA[$F{requisitiAscesaTorre} != null]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{requisitiAscesaTorre} ? "SI" : "NO"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="71">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="150" height="20" uuid="bef8c28a-2374-4f53-8cbd-8494809fdf48"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Documenti allegati]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="5011c7b3-362e-4881-ab2e-701593e70883"/>
+			</line>
+			<rectangle>
+				<reportElement positionType="Float" x="0" y="58" width="150" height="13" uuid="500a9a87-0282-4379-bf71-8bb8dd3aa7bd"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="200" height="26" uuid="424c72bb-e2c3-4830-a01f-1ba33b3da703"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//documenti/documento")]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DocumentiAllegati.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

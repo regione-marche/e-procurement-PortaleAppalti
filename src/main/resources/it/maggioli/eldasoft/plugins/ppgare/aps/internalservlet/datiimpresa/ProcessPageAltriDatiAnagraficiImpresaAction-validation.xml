@@ -1,0 +1,73 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+	
+	<field name="dataNascita">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="cognome">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="nome">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="comuneNascita">
+		<field-validator type="requiredstring">
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="tipologiaAlboProf">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblIscrizione && tipologiaAlboProf.length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="numIscrizioneAlboProf">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblIscrizione && numIscrizioneAlboProf.length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="dataIscrizioneAlboProf">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblIscrizione && dataIscrizioneAlboProf.length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+		<field-validator type="regex" short-circuit="true">
+			<param name="expression"><![CDATA[[0-9]{2}/[0-9]{2}/(19|20)[0-9]{2}]]></param>
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+		<field-validator type="dateItaly">
+			<message key="localstrings.wrongDate" />
+		</field-validator>
+	</field>
+
+	<field name="provinciaIscrizioneAlboProf">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!(obblIscrizione && provinciaIscrizioneAlboProf.length() == 0)]]></param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+</validators>

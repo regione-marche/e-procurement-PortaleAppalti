@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/ComPisa" namespace="/do/FrontEnd/ComPisa"
+		extends="pp-common">
+		
+		<action name="*earch" class="monitoraggioAppaltiFinderAction" method="{1}earch">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcompisa/aps/jsp/internalServlet/monitappalti/lista.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppalto</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="searchAppaltiLavori" class="monitoraggioAppaltiFinderAction" method="searchAppaltiLavori">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcompisa/aps/jsp/internalServlet/monitappalti/lista.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAppalto</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="view*" class="monitoraggioAppaltiAction" method="view{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcompisa/aps/jsp/internalServlet/monitappalti/${destinazione}
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="atto*" class="documentazioneAppaltoAction" method="viewAtto{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcompisa/aps/jsp/internalServlet/monitappalti/atto.jsp
+			</result>
+			<result type="chain" name="error">${destinazione}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="downloadAtto" class="downloadAllegatoAttoAction" method="download">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+		
+	</package>
+
+</struts>

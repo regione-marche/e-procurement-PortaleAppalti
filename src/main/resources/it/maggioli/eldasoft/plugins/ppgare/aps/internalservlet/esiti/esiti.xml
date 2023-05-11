@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Esiti" namespace="/do/FrontEnd/Esiti"
+		extends="pp-common">
+
+		<action name="listAll*" class="esitiFinderAction" method="listAll{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/esitiInCorsoList.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAppalto,sino,tipoAltriSoggetti</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openSearch" class="esitiFinderAction" method="openSearch">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/esitiFind.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAppalto,sino,tipoAltriSoggetti</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="search" class="esitiFinderAction" method="find">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/esitiFind.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"> 
+			</interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAppalto,sino,tipoAltriSoggetti</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="view" class="esitiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/esitoView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAppalto,statiDettaglioGara</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="viewLotti" class="esitiAction" method="viewLotti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/lottiView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="viewAttiDocumenti" class="esitiAction" method="viewAttiDocumenti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/attiDocumentiView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+	</package>
+
+</struts>

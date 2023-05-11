@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiModificheProdotti" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Wed Feb 05 15:49:26 CET 2014"/>
+	<subDataset name="prodotti_inseriti">
+		<queryString language="xPath">
+			<![CDATA[/ReportGestioneProdotti/inserimenti/prodotto]]>
+		</queryString>
+		<field name="codiceArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceArticolo]]></fieldDescription>
+		</field>
+		<field name="marcaProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[marcaProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="nomeCommerciale" class="java.lang.String">
+			<fieldDescription><![CDATA[nomeCommerciale]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoFornitore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoFornitore]]></fieldDescription>
+		</field>
+		<field name="descrizioneAggiuntiva" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneAggiuntiva]]></fieldDescription>
+		</field>
+		<field name="dimensioni" class="java.lang.String">
+			<fieldDescription><![CDATA[dimensioni]]></fieldDescription>
+		</field>
+		<field name="quantitaUMPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMPrezzo]]></fieldDescription>
+		</field>
+		<field name="aliquotaIVA" class="java.lang.String">
+			<fieldDescription><![CDATA[aliquotaIVA]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitario" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+		</field>
+		<field name="quantitaUMAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMAcquisto]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitarioPerAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitarioPerAcquisto]]></fieldDescription>
+		</field>
+		<field name="garanzia" class="java.lang.String">
+			<fieldDescription><![CDATA[garanzia]]></fieldDescription>
+		</field>
+		<field name="tempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[tempoConsegna]]></fieldDescription>
+		</field>
+		<field name="dataScadenzaOfferta" class="java.lang.String">
+			<fieldDescription><![CDATA[dataScadenzaOfferta]]></fieldDescription>
+		</field>
+		<field name="stato" class="java.lang.String">
+			<fieldDescription><![CDATA[stato]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraDetermPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraDetermPrezzo]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraAcquisto]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraTempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraTempoConsegna]]></fieldDescription>
+		</field>
+		<field name="tipoArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[tipoArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneTecnicaArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneTecnicaArticolo]]></fieldDescription>
+		</field>
+		<field name="nomeImmagine" class="java.lang.String">
+			<fieldDescription><![CDATA[immagine/nomeFile]]></fieldDescription>
+		</field>
+		<field name="numSchedeTecniche" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(schedeTecniche/*)]]></fieldDescription>
+		</field>
+		<field name="numCertificazioniRichieste" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(certificazioniRichieste/*)]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="prodotti_modificati">
+		<queryString language="xPath">
+			<![CDATA[/ReportGestioneProdotti/aggiornamenti/prodotto]]>
+		</queryString>
+		<field name="codiceArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceArticolo]]></fieldDescription>
+		</field>
+		<field name="marcaProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[marcaProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="nomeCommerciale" class="java.lang.String">
+			<fieldDescription><![CDATA[nomeCommerciale]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoFornitore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoFornitore]]></fieldDescription>
+		</field>
+		<field name="descrizioneAggiuntiva" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneAggiuntiva]]></fieldDescription>
+		</field>
+		<field name="dimensioni" class="java.lang.String">
+			<fieldDescription><![CDATA[dimensioni]]></fieldDescription>
+		</field>
+		<field name="quantitaUMPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMPrezzo]]></fieldDescription>
+		</field>
+		<field name="aliquotaIVA" class="java.lang.String">
+			<fieldDescription><![CDATA[aliquotaIVA]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitario" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+		</field>
+		<field name="quantitaUMAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMAcquisto]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitarioPerAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitarioPerAcquisto]]></fieldDescription>
+		</field>
+		<field name="garanzia" class="java.lang.String">
+			<fieldDescription><![CDATA[garanzia]]></fieldDescription>
+		</field>
+		<field name="tempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[tempoConsegna]]></fieldDescription>
+		</field>
+		<field name="dataScadenzaOfferta" class="java.lang.String">
+			<fieldDescription><![CDATA[dataScadenzaOfferta]]></fieldDescription>
+		</field>
+		<field name="stato" class="java.lang.String">
+			<fieldDescription><![CDATA[stato]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraDetermPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraDetermPrezzo]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraAcquisto]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraTempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraTempoConsegna]]></fieldDescription>
+		</field>
+		<field name="tipoArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[tipoArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneTecnicaArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneTecnicaArticolo]]></fieldDescription>
+		</field>
+		<field name="nomeImmagine" class="java.lang.String">
+			<fieldDescription><![CDATA[immagine/nomeFile]]></fieldDescription>
+		</field>
+		<field name="numSchedeTecniche" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(schedeTecniche/*)]]></fieldDescription>
+		</field>
+		<field name="numCertificazioniRichieste" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(certificazioniRichieste/*)]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="prodotti_archiviati">
+		<queryString language="xPath">
+			<![CDATA[/ReportGestioneProdotti/archiviazioni/prodotto]]>
+		</queryString>
+		<field name="codiceArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceArticolo]]></fieldDescription>
+		</field>
+		<field name="marcaProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[marcaProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoProduttore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoProduttore]]></fieldDescription>
+		</field>
+		<field name="nomeCommerciale" class="java.lang.String">
+			<fieldDescription><![CDATA[nomeCommerciale]]></fieldDescription>
+		</field>
+		<field name="codiceProdottoFornitore" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceProdottoFornitore]]></fieldDescription>
+		</field>
+		<field name="descrizioneAggiuntiva" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneAggiuntiva]]></fieldDescription>
+		</field>
+		<field name="dimensioni" class="java.lang.String">
+			<fieldDescription><![CDATA[dimensioni]]></fieldDescription>
+		</field>
+		<field name="quantitaUMPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMPrezzo]]></fieldDescription>
+		</field>
+		<field name="aliquotaIVA" class="java.lang.String">
+			<fieldDescription><![CDATA[aliquotaIVA]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitario" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+		</field>
+		<field name="quantitaUMAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[quantitaUMAcquisto]]></fieldDescription>
+		</field>
+		<field name="prezzoUnitarioPerAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[prezzoUnitarioPerAcquisto]]></fieldDescription>
+		</field>
+		<field name="garanzia" class="java.lang.String">
+			<fieldDescription><![CDATA[garanzia]]></fieldDescription>
+		</field>
+		<field name="tempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[tempoConsegna]]></fieldDescription>
+		</field>
+		<field name="dataScadenzaOfferta" class="java.lang.String">
+			<fieldDescription><![CDATA[dataScadenzaOfferta]]></fieldDescription>
+		</field>
+		<field name="stato" class="java.lang.String">
+			<fieldDescription><![CDATA[stato]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraDetermPrezzo" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraDetermPrezzo]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraAcquisto" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraAcquisto]]></fieldDescription>
+		</field>
+		<field name="unitaMisuraTempoConsegna" class="java.lang.String">
+			<fieldDescription><![CDATA[unitaMisuraTempoConsegna]]></fieldDescription>
+		</field>
+		<field name="tipoArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[tipoArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneArticolo]]></fieldDescription>
+		</field>
+		<field name="descrizioneTecnicaArticolo" class="java.lang.String">
+			<fieldDescription><![CDATA[descrizioneTecnicaArticolo]]></fieldDescription>
+		</field>
+		<field name="nomeImmagine" class="java.lang.String">
+			<fieldDescription><![CDATA[immagine/nomeFile]]></fieldDescription>
+		</field>
+		<field name="numSchedeTecniche" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(schedeTecniche/*)]]></fieldDescription>
+		</field>
+		<field name="numCertificazioniRichieste" class="java.lang.Integer">
+			<fieldDescription><![CDATA[count(certificazioniRichieste/*)]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\apache-tomcat\\tomcat6\\webapps\\PortaleAppalti\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/IscrizioneImpresaElencoOperatori"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CATALOGO" class="java.lang.String">
+		<parameterDescription><![CDATA[Titolo del catalogo in esame]]></parameterDescription>
+		<defaultValueExpression><![CDATA["Catalogo 2013, versione A.02 per Lavori e Servizi"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_HEADER" class="java.lang.String"/>
+	<parameter name="REPORT_FOOTER" class="java.lang.String"/>
+	<queryString language="xPath">
+		<![CDATA[/ReportGestioneProdotti]]>
+	</queryString>
+	<field name="numeroProdottiInseriti" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count(inserimenti/prodotto/*)]]></fieldDescription>
+	</field>
+	<field name="numeroProdottiModificati" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count(aggiornamenti/prodotto/*)]]></fieldDescription>
+	</field>
+	<field name="numeroProdottiEliminati" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count(archiviazioni/prodotto/*)]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="85" splitType="Immediate">
+			<subreport>
+				<reportElement x="0" y="0" width="483" height="17"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ROOT_TAG">
+					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="17" width="483" height="17" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{numeroProdottiInseriti} > 0]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="STATO_PRODOTTO">
+					<subreportParameterExpression><![CDATA["PRODOTTO INSERITO"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ROOT_TAG">
+					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti/inserimenti/prodotto")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Prodotti.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="34" width="483" height="17" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{numeroProdottiModificati} > 0]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="STATO_PRODOTTO">
+					<subreportParameterExpression><![CDATA["PRODOTTO MODIFICATO"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ROOT_TAG">
+					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti/aggiornamenti/prodotto")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Prodotti.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="51" width="483" height="17" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{numeroProdottiEliminati} > 0]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="STATO_PRODOTTO">
+					<subreportParameterExpression><![CDATA["PRODOTTO ARCHIVIATO"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ROOT_TAG">
+					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti/archiviazioni/prodotto")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Prodotti.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="68" width="483" height="16"/>
+				<subreportParameter name="CATALOGO">
+					<subreportParameterExpression><![CDATA[$P{CATALOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="36" splitType="Prevent"/>
+	</pageFooter>
+</jasperReport>

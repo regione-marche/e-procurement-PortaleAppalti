@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Report" namespace="/do/FrontEnd/Report"
+		extends="pp-common">
+
+		<action name="checkProspetto" class="checkProspettoAction" method="check">
+			<result type="chain" name="success">getProspetto</result>
+			<result type="chain" name="setParametri">setParamProspetto</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="setParamProspetto" class="setParamProspettoAction" method="check">
+			<result type="chain" name="success">getProspetto</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="getProspetto" class="getProspettoAction" method="getReport">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/report/risultatoReport.jsp
+			</result>
+			<result name="download" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+				<param name="allowCaching">false</param> 
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+	</package>
+
+</struts>

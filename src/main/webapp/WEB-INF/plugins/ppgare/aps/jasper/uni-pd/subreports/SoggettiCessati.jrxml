@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SoggettiCessati" language="groovy" pageWidth="483" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="483" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DELTA" class="java.lang.Integer"/>
+	<parameter name="STAMPA" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[true se il report va stampato, false se serve per il calcolo del numero di elementi estratti, da ritornare per aggiornare una variabile globale.
+Occorre effettuare un trucco, ovvero lanciare il calcolo senza generare l'output, quindi cambiare banda in modo da avere le variabili globali aggiornate, e rilanciare la generazione della stampa]]></parameterDescription>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/legaleRappresentante]]>
+	</queryString>
+	<field name="cognome" class="java.lang.String">
+		<fieldDescription><![CDATA[cognome]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[nome]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="dataNascita" class="java.util.Date">
+		<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+	</field>
+	<field name="provinciaNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="indirizzoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivico" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+	</field>
+	<field name="cap" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+	</field>
+	<field name="comune" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+	</field>
+	<field name="provincia" class="java.lang.String">
+		<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+	</field>
+	<field name="dataFineIncarico" class="java.util.Date">
+		<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+	</field>
+	<field name="qualifica" class="java.lang.String">
+		<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+	</field>
+	<field name="dataInizioIncarico" class="java.util.Date">
+		<fieldDescription><![CDATA[dataInizioIncarico]]></fieldDescription>
+	</field>
+	<variable name="NUM_RECORD" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="40" y="0" width="443" height="20">
+					<printWhenExpression><![CDATA[$P{STAMPA}]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", cessato in data " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}) + " dalla qualifica di " + $F{qualifica}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="40" height="20">
+					<printWhenExpression><![CDATA[$P{STAMPA}]]></printWhenExpression>
+				</reportElement>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($P{DELTA} + $V{REPORT_COUNT}) + "."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

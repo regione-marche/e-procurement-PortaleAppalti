@@ -1,0 +1,1703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="7"/>
+	<subDataset name="dsLR">
+		<parameter name="codiceFiscaleFirmatario" class="java.lang.String" isForPrompting="false">
+			<parameterDescription><![CDATA[codiceFiscaleFirmatario]]></parameterDescription>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+		</field>
+		<field name="dataFineIncarico" class="java.util.Date">
+			<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+		</field>
+		<field name="codiceFiscale" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsDT">
+		<parameter name="codiceFiscaleFirmatario" class="java.lang.String">
+			<parameterDescription><![CDATA[codiceFiscaleFirmatario]]></parameterDescription>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+		</field>
+		<field name="dataFineIncarico" class="java.util.Date">
+			<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+		</field>
+		<field name="codiceFiscale" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsAltreCariche">
+		<parameter name="codiceFiscaleFirmatario" class="java.lang.String">
+			<parameterDescription><![CDATA[codiceFiscaleFirmatario]]></parameterDescription>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+		</field>
+		<field name="dataFineIncarico" class="java.util.Date">
+			<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+		</field>
+		<field name="codiceFiscale" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCollaboratori">
+		<parameter name="codiceFiscaleFirmatario" class="java.lang.String">
+			<parameterDescription><![CDATA[codiceFiscaleFirmatario]]></parameterDescription>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+		</field>
+		<field name="dataFineIncarico" class="java.util.Date">
+			<fieldDescription><![CDATA[dataFineIncarico]]></fieldDescription>
+		</field>
+		<field name="codiceFiscale" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceFiscale]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsCategorie">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
+		</queryString>
+		<field name="categoria" class="java.lang.String">
+			<fieldDescription><![CDATA[categoria]]></fieldDescription>
+		</field>
+		<field name="classificaMinima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMinima]]></fieldDescription>
+		</field>
+		<field name="classificaMassima" class="java.lang.String">
+			<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
+		</field>
+		<field name="nota" class="java.lang.String">
+			<fieldDescription><![CDATA[nota]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsSediOperative">
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/indirizzo[tipoIndirizzo='sede operativa']]]>
+		</queryString>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[provincia]]></fieldDescription>
+		</field>
+		<field name="nazione" class="java.lang.String">
+			<fieldDescription><![CDATA[nazione]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="dsFirmatario">
+		<parameter name="codiceFiscaleFirmatario" class="java.lang.String" isForPrompting="false">
+			<parameterDescription><![CDATA[codiceFiscaleFirmatario]]></parameterDescription>
+		</parameter>
+		<parameter name="comuneSedeLegale" class="java.lang.String">
+			<parameterDescription><![CDATA[comuneSedeLegale]]></parameterDescription>
+		</parameter>
+		<queryString language="xPath">
+			<![CDATA[/IscrizioneImpresaElencoOperatori/firmatario]]>
+		</queryString>
+		<field name="cognome" class="java.lang.String">
+			<fieldDescription><![CDATA[cognome]]></fieldDescription>
+		</field>
+		<field name="nome" class="java.lang.String">
+			<fieldDescription><![CDATA[nome]]></fieldDescription>
+		</field>
+		<field name="codiceFiscaleFirmatario" class="java.lang.String">
+			<fieldDescription><![CDATA[codiceFiscaleFirmatario]]></fieldDescription>
+		</field>
+		<field name="dataNascita" class="java.util.Date">
+			<fieldDescription><![CDATA[dataNascita]]></fieldDescription>
+		</field>
+		<field name="comuneNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
+		</field>
+		<field name="provinciaNascita" class="java.lang.String">
+			<fieldDescription><![CDATA[provinciaNascita]]></fieldDescription>
+		</field>
+		<field name="qualifica" class="java.lang.String">
+			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
+		</field>
+		<field name="indirizzo" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/indirizzo]]></fieldDescription>
+		</field>
+		<field name="numCivico" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/numCivico]]></fieldDescription>
+		</field>
+		<field name="cap" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/cap]]></fieldDescription>
+		</field>
+		<field name="comune" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/comune]]></fieldDescription>
+		</field>
+		<field name="provincia" class="java.lang.String">
+			<fieldDescription><![CDATA[residenza/provincia]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="LIBERO_PROFESSIONISTA" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se l'impresa e' un libero professionista, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGES_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente le immagini]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Users\\Stefano.Sabbadin\\Documents\\images\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Progetti_Eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\com-grugliasco\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_CAT" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si sono presenti categorie, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VISUALIZZA_SA" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se si gestiscono più SA, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRIZIONE" class="java.lang.Integer">
+		<parameterDescription><![CDATA[1 se iscrizione, 0 se aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAILRECAPITO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ELENCO" class="java.lang.String">
+		<parameterDescription><![CDATA[Oggetto dell'elenco]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RTI" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[1 se è presente una RTI, 0 altrimenti]]></parameterDescription>
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_DENOMINAZIONE" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CF" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_INDIRIZZO" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_LOCALITA" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CAP" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_PROVINCIA" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_CIVICO" class="java.lang.String"/>
+	<parameter name="SA_MAIL" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_PEC" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SA_WEB" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_HEADER" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{SUBREPORT_DIR} + "DomandaIscrizioneAlboHeader.jasper"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_FOOTER" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{SUBREPORT_DIR} + "DomandaIscrizioneAlboFooter.jasper"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/IscrizioneImpresaElencoOperatori]]>
+	</queryString>
+	<field name="ragioneSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/ragioneSociale]]></fieldDescription>
+	</field>
+	<field name="codiceFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="partitaIVA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/partitaIVA]]></fieldDescription>
+	</field>
+	<field name="indirizzoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/numCivico]]></fieldDescription>
+	</field>
+	<field name="capSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/cap]]></fieldDescription>
+	</field>
+	<field name="comuneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/provincia]]></fieldDescription>
+	</field>
+	<field name="nazioneSedeLegale" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/sedeLegale/nazione]]></fieldDescription>
+	</field>
+	<field name="telefonoRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/telefono]]></fieldDescription>
+	</field>
+	<field name="faxRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/fax]]></fieldDescription>
+	</field>
+	<field name="emailRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/email]]></fieldDescription>
+	</field>
+	<field name="pecRecapito" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/recapiti/pec]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINAIL" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inail/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneINPS" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/inps/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="localitaIscrizioneCassaEdile" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cassaEdile/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="provinciaIscrizioneCCIAA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cciaa/provinciaIscrizione]]></fieldDescription>
+	</field>
+	<field name="dataIscrizioneSOA" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="organismoCertificatoreSOA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/organismoCertificatore]]></fieldDescription>
+	</field>
+	<field name="cognome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/cognome]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/nome]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleLR" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscale]]></fieldDescription>
+	</field>
+	<field name="dataNascita" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="indirizzoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/indirizzo]]></fieldDescription>
+	</field>
+	<field name="numCivicoResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/numCivico]]></fieldDescription>
+	</field>
+	<field name="capResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/cap]]></fieldDescription>
+	</field>
+	<field name="comuneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/comune]]></fieldDescription>
+	</field>
+	<field name="provinciaResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="nazioneResidenza" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/residenza/nazione]]></fieldDescription>
+	</field>
+	<field name="qualifica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/qualifica]]></fieldDescription>
+	</field>
+	<field name="naturaGiuridica" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/naturaGiuridica]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneSOA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/soa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="numIscrizioneCCIAA" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/cciaa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="sesso" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/sesso]]></fieldDescription>
+	</field>
+	<field name="provinciaNascita" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="dataNascitaLiberoProfessionista" class="java.util.Date">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/dataNascita]]></fieldDescription>
+	</field>
+	<field name="comuneNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/comuneNascita]]></fieldDescription>
+	</field>
+	<field name="provinciaNascitaLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/provinciaNascita]]></fieldDescription>
+	</field>
+	<field name="sessoLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/sesso]]></fieldDescription>
+	</field>
+	<field name="codiceFiscaleFirmatario" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/firmatario/codiceFiscaleFirmatario]]></fieldDescription>
+	</field>
+	<field name="denominazioneRTI" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/denominazioneRTI]]></fieldDescription>
+	</field>
+	<field name="serialNumberMarcaBollo" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/serialNumberMarcaBollo]]></fieldDescription>
+	</field>
+	<field name="nomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/nome]]></fieldDescription>
+	</field>
+	<field name="cognomeLiberoProfessionista" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/cognome]]></fieldDescription>
+	</field>
+	<variable name="categorieLavoriCount" class="java.lang.Integer">
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="categorieNotLavoriCount" class="java.lang.Integer">
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<detail>
+		<band height="15" splitType="Prevent">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="14"/>
+				<subreportParameter name="SA_DENOMINAZIONE">
+					<subreportParameterExpression><![CDATA[$P{SA_DENOMINAZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_LOCALITA">
+					<subreportParameterExpression><![CDATA[$P{SA_LOCALITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CF">
+					<subreportParameterExpression><![CDATA[$P{SA_CF}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_WEB">
+					<subreportParameterExpression><![CDATA[$P{SA_WEB}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_PROVINCIA">
+					<subreportParameterExpression><![CDATA[$P{SA_PROVINCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CIVICO">
+					<subreportParameterExpression><![CDATA[$P{SA_CIVICO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_CAP">
+					<subreportParameterExpression><![CDATA[$P{SA_CAP}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_PEC">
+					<subreportParameterExpression><![CDATA[$P{SA_PEC}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_MAIL">
+					<subreportParameterExpression><![CDATA[$P{SA_MAIL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SA_INDIRIZZO">
+					<subreportParameterExpression><![CDATA[$P{SA_INDIRIZZO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SERIAL_MARCA_BOLLO">
+					<subreportParameterExpression><![CDATA[$F{serialNumberMarcaBollo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="54" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="18" width="511" height="36"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="11" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["DOMANDA DI ISCRIZIONE ELENCO OPERATORI ECONOMICI PER L’ESECUZIONE DI LAVORI ED OPERE DI CUI ALL’AVVISO " + $P{ELENCO}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="16"/>
+		<band height="29" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
++
+($P{LIBERO_PROFESSIONISTA}
+    ? ($F{cognomeLiberoProfessionista}+" "+$F{nomeLiberoProfessionista})
+    : (($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))
+) +
+", nato/a a "
++
+($P{LIBERO_PROFESSIONISTA}
+    ? $F{comuneNascitaLiberoProfessionista}
+    : $F{comuneNascita}
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? ($F{provinciaNascitaLiberoProfessionista} == null
+        ? ""
+        : " (" + $F{provinciaNascitaLiberoProfessionista} + ")")
+    : ($F{provinciaNascita} == null
+        ? ""
+        : " (" + $F{provinciaNascita} + ")")
+) +
+($P{LIBERO_PROFESSIONISTA}
+    ? " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascitaLiberoProfessionista})
+    : " il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita})
+) + ", codice fiscale " + $F{codiceFiscaleFirmatario} + " " +
+($P{LIBERO_PROFESSIONISTA}
+    ? "in qualità di Libero Professionista"
+    : "in qualità di " + $F{qualifica}
+) +
+("Procuratore".equals($F{qualifica})
+    ? " (come da copia della procura allegata) "
+    : ""
+) +
+" dell'operatore " + $F{ragioneSociale} + " " +
+($F{naturaGiuridica} != null ? $F{naturaGiuridica} : "") + " " +
+"numero di telefono " + ($F{telefonoRecapito} ? $F{telefonoRecapito} : "________________") + " " +
+"n. fax " + ($F{faxRecapito} ? $F{faxRecapito} : "________________") + " " +
+"codice fiscale " + ($F{codiceFiscale} ? $F{codiceFiscale} : "________________") + " " +
+"partita I.V.A " + ($F{partitaIVA} != null ? $F{partitaIVA} : "___________") +
+"<br>" +
+"sede legale       " + ($F{comuneSedeLegale} != null ? $F{comuneSedeLegale} : "") +
+($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale}+ ") ") +
+($F{capSedeLegale} != null ? "  C.A.P. " +  $F{capSedeLegale} : "") +
+($F{indirizzoSedeLegale} != null ? ", " +  $F{indirizzoSedeLegale}  : "") +
+($F{numCivicoSedeLegale} != null ? " n. civ. " +  $F{numCivicoSedeLegale} : "")]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="sediOperative" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsSediOperative">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/indirizzo[tipoIndirizzo='sede operativa']")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="77">
+						<jr:detailCell height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="77" height="13"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[sede operativa]]></text>
+							</staticText>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="509">
+						<jr:detailCell height="13" rowSpan="1">
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="509" height="13"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{comune} != null ? $F{comune} + " " : "") +
+($F{provincia} == null ? "" : "(" + $F{provincia}+ ") ") +
+($F{cap} != null ? "C.A.P. " +  $F{cap}: "") +
+($F{indirizzo} != null ? ", " +  $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. civ. " +  $F{numCivico} : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="13" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="-1" y="0" width="511" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($P{RTI}
+    ? "mandatario per il raggruppamento \"" + $F{denominazioneRTI} + "\" composto dai seguenti operatori economici mandanti:"
+    : ""
+)]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="16" splitType="Prevent">
+			<printWhenExpression><![CDATA[$P{RTI}]]></printWhenExpression>
+			<subreport>
+				<reportElement positionType="Float" x="15" y="0" width="495" height="15"/>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="47" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="15" width="512" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CHIEDE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="30" width="512" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[di essere iscritto all’elenco operatori economici per procedure negoziate e, a tal fine,]]></text>
+			</staticText>
+		</band>
+		<band height="96" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="14" width="512" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DICHIARA,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="30" width="511" height="56" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[consapevole della responsabilità penale in cui incorre chi sottoscrive dichiarazioni mendaci e delle relative sanzioni penali di cui all’art. 76 del d.p.r. 445/2000, nonché delle conseguenze amministrative di decadenza dai benefici eventualmente conseguiti al provvedimento emanato, <b>ai sensi del d.p.r. 28/12/2000 n. 445 </b> che i fatti, stati e qualità riportati nei successivi paragrafi corrispondono a verità. ]]></text>
+			</staticText>
+		</band>
+		<band height="56" splitType="Prevent">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="1" width="511" height="39" backcolor="#CCCCCC"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="1">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="1" y="1" width="508" height="37" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font fontName="Arial" size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[A) DICHIARAZIONI SOSTITUTIVE DI CERTIFICAZIONI E DICHIARAZIONI SOSTITUTIVE DI ATTO DI NOTORIETA’ (art.46 e 47, d.p.r. 28/12/2000 n.445) attestanti:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="66" splitType="Prevent">
+			<frame>
+				<reportElement x="0" y="1" width="186" height="18" backcolor="#CCCCCC"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="1">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="1" y="1" width="183" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="Arial" size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[A1) REQUISITO PROFESSIONALE]]></text>
+				</staticText>
+			</frame>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="19" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Iscrizione alla Camera di Commercio della Provincia di " + ($F{provinciaIscrizioneCCIAA} != null ? $F{provinciaIscrizioneCCIAA} : "....................") + " " +
+"al numero" + ($F{numIscrizioneCCIAA} != null ? $F{numIscrizioneCCIAA} : "....................") + ", " +
+"data di iscrizione..................." + ", " +
+"R.E.A. n....................."]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="166" splitType="Prevent">
+			<frame>
+				<reportElement x="0" y="1" width="284" height="18" backcolor="#CCCCCC"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="1">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="1" y="1" width="282" height="17" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="Arial" size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[A2) REQUISITI GENERALI EX ART 80 D.LGS. 50/2016]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="19" width="511" height="131" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>1)</b><br>
+<b>a) Dati anagrafici e di residenza del titolare</b>, se si tratta di impresa individuale; di un socio, se si tratta di società in nome collettivo; dei soci accomandatari, se si tratta di società in accomandita semplice; dei membri del consiglio di amministrazione cui sia stata conferita la legale rappresentanza, di direzione o di vigilanza o dei soggetti muniti di poteri di rappresentanza, di direzione o di controllo e del socio unico persona fisica, ovvero del socio di maggioranza in caso di società con meno di quattro soci, se si tratta di altro tipo di società o consorzio. <br>
+In caso di società, diverse dalle società in nome collettivo e dalle società in accomandita semplice, nelle quali siano presenti due soli soci, ciascuno in possesso del cinquanta per cento della partecipazione azionaria, le dichiarazioni devono essere rese da entrambi i soci. <br>
+<u>Dovranno essere indicati gli institori e i procuratori speciali muniti di potere di rappresentanza.</u>]]></text>
+			</staticText>
+		</band>
+		<band height="14" splitType="Prevent">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="90" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cognome e nome]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="90" y="0" width="90" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Nato a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="180" y="0" width="56" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[In data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="236" y="0" width="121" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Residente a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="357" y="0" width="49" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Provincia]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="406" y="0" width="90" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Carica ricoperta]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="sociLR" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsLR">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="507">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="15" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="15"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="485" height="15"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="sociAltreCariche" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsAltreCariche">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="508">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="486" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="sociCollaboratori" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsCollaboratori">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="506">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="484" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="13"/>
+		<band height="67" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="54" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Consapevole delle sanzioni penali, richiamate dall'art. 76 del medesimo D.P.R., per le ipotesi di falsità in atti e dichiarazioni mendaci ivi indicate, DICHIARA di avere diretta conoscenza che a carico delle persone su elencate non sussiste alcuna delle cause di esclusione previste dall’art. 80 del D.L.vo 18 aprile 2016 n° 50]]></text>
+			</staticText>
+		</band>
+		<band height="27" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="18" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>b) DIRETTORI TECNICI (nominativi, dati anagrafici, residenza) </b>]]></text>
+			</staticText>
+		</band>
+		<band height="15" splitType="Prevent">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="14"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="90" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cognome e nome]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="90" y="0" width="90" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Nato a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="180" y="0" width="56" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[In data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="236" y="0" width="121" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Residente a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="357" y="0" width="49" height="14" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Provincia]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="sociDT" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsDT">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="502">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="480" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="15"/>
+		<band height="59" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="45" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>c) Dati anagrafici delle figure indicate ai precedenti punti a) e b) (compresi gli institori e i procuratori speciali muniti di potere di rappresentanza), eventualmente cessati nell’anno precedente.</b> <br>
+(nominativi, dati anagrafici, residenza, carica sociale e relativa data di cessazione dall’incarico)]]></text>
+			</staticText>
+		</band>
+		<band height="35" splitType="Prevent">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="35"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="90" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cognome e nome]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="90" y="0" width="90" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Nato a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="180" y="0" width="56" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[In data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="236" y="0" width="115" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Residente a]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="351" y="0" width="28" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Prov.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="379" y="0" width="75" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Carica
+ricoperta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="454" y="0" width="56" height="35" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<text><![CDATA[Data cessazione incarico]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="cessatiLR" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsDT">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(not(dataFineIncarico) or dataFineIncarico='')]")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="502">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="480" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} + " " : "") +
+($F{dataFineIncarico} != null ? "cessato il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}) : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="cessatiDT" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsDT">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(not(dataFineIncarico) or dataFineIncarico='')]")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="502">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="480" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} + " " : "") +
+($F{dataFineIncarico} != null ? "cessato il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}) : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="cessatiAltreCariche" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsDT">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(not(dataFineIncarico) or dataFineIncarico='')]")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="502">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="480" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} + " " : "") +
+($F{dataFineIncarico} != null ? "cessato il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}) : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="1" splitType="Prevent">
+			<componentElement>
+				<reportElement key="cessatiCollaboratori" positionType="Float" x="0" y="0" width="510" height="1" isRemoveLineWhenBlank="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dsCollaboratori">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(not(dataFineIncarico) or dataFineIncarico='')]")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="501">
+						<jr:columnHeader height="0" rowSpan="1"/>
+						<jr:detailCell height="16" rowSpan="1">
+							<staticText>
+								<reportElement positionType="Float" x="0" y="0" width="22" height="16"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<text><![CDATA[•]]></text>
+							</staticText>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="22" y="0" width="479" height="16"/>
+								<textElement>
+									<font fontName="Arial" size="11"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[($F{cognome} != null ? $F{cognome} + " " : "") + ($F{nome} != null ? $F{nome} + " " : "") +
+($F{comuneNascita} != null ? "nato a " + $F{comuneNascita} + " " : "") +
+($F{dataNascita} != null ? "il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " " : "") +
+($F{comune} != null ? "residente a " + $F{comune} + " ": "") +
+($F{indirizzo} != null ? "in " + $F{indirizzo} + " " : "") +
+($F{numCivico} != null ? "n. " + $F{numCivico} + " " : "") +
+($F{cap} != null ? "C.A.P. " + $F{cap} + " " : "") +
+($F{provincia} != null ? "(" + $F{provincia} + ") " : "") +
+($F{qualifica} != null ? "in qualità di " + $F{qualifica} + " " : "") +
+($F{dataFineIncarico} != null ? "cessato il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataFineIncarico}) : "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="16"/>
+		<band height="69" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="54" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Consapevole delle sanzioni penali, richiamate dall'art. 76 del medesimo D.P.R., per le ipotesi di falsità in atti e dichiarazioni mendaci ivi indicate, DICHIARA di avere diretta conoscenza che a carico delle persone su elencate non sussiste alcuna delle cause di esclusione previste dall’art. 80 del D.L.vo 18 aprile 2016 n° 50]]></text>
+			</staticText>
+		</band>
+		<band height="35" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="19" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>2)</b> di non incorrere in alcuna delle cause di esclusione di cui all’art. 80 del D.Lgs. 18 aprile 2016 n° 50]]></text>
+			</staticText>
+		</band>
+		<band height="71" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="29" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>3)</b> l’insussistenza di situazioni di conflitto di interesse ai sensi dell'articolo 42, comma 2° del Codice, non diversamente risolvibile.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="15" width="511" height="46" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[                                                   (Si ha conflitto d’interesse quando il personale di una stazione appaltante o di un prestatore di servizi che, anche per conto della stazione appaltante, interviene nello svolgimento della procedura di aggiudicazione degli appalti e delle concessioni o può influenzarne, in qualsiasi modo, il risultato, ha, direttamente o indirettamente, un interesse finanziario, economico o altro interesse personale che può essere percepito come una minaccia alla sua imparzialità e indipendenza nel contesto della procedura di appalto o di concessione)]]></text>
+			</staticText>
+		</band>
+		<band height="59" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="43" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>4)</b> attesta di essere informato, ai sensi e per gli effetti del d.lgs. 30 giugno 2003, n. 196, che i dati personali raccolti saranno trattati, anche con strumenti informatici, esclusivamente nell’ambito del procedimento per il quale la dichiarazione viene resa. ]]></text>
+			</staticText>
+		</band>
+		<band height="55" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="44" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>5)</b> dichiara di essere consapevole che, qualora fosse accertata la non veridicità del contenuto della presente dichiarazione, l’Impresa, oltre a subire le conseguenze penali del caso, verrà esclusa dall’elenco degli operatori economici e verranno effettuate le debite segnalazioni.]]></text>
+			</staticText>
+		</band>
+		<band height="3" splitType="Prevent">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="3"/>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="stampa">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="soloLavori">
+					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<returnValue subreportVariable="categorieCount" toVariable="categorieLavoriCount"/>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlboLavori.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="3" splitType="Prevent">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="3"/>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="soloLavori">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="stampa">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<returnValue subreportVariable="categorieCount" toVariable="categorieNotLavoriCount"/>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlboLavori.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="23" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieLavoriCount} > 0]]></printWhenExpression>
+			<textField>
+				<reportElement positionType="Float" x="-1" y="0" width="511" height="18" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>" + Integer.toString(6 + ($V{categorieLavoriCount} > 0 ? 1 : 0) - 1) + ") " +
+"di possedere, la certificazione SOA per le seguenti categorie di opere ai sensi DPR 207/2010</b>"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="24" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieLavoriCount} > 0]]></printWhenExpression>
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="10"/>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="soloLavori">
+					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlboLavori.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="37" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieLavoriCount} > 0]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="35" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[<b>Solo per affidamenti inferiori ad € 150.000,00 in assenza di qualificazione SOA (ai sensi dell’art. 86 comma 5 e dell’allegato XVII Parte II del D.Lgs. 18 aprile 2016 n° 50):</b>]]></text>
+			</staticText>
+		</band>
+		<band height="56" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieLavoriCount} > 0]]></printWhenExpression>
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="44" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>" + Integer.toString(7 + ($V{categorieLavoriCount} > 0 ? 1 : 0) - 1) + ")</b> " +
+"in fase di gara verrà richiesta comprova di aver realizzato, nell’ultimo quinquennio (2013-2017), " +
+"lavori analoghi per un importo complessivo pari, almeno, a due volte l’importo a base di gara, " +
+"di cui almeno uno di importo pari all’importo posto a base di gara."]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="23" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieNotLavoriCount} > 0]]></printWhenExpression>
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="18" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>" + Integer.toString(6 + ($V{categorieLavoriCount} > 0 ? 2 : 0) + ($V{categorieNotLavoriCount} > 0 ? 1 : 0) - 1) + ")</b> " +
+"di richiedere l’iscrizione per le seguenti categorie "]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="24" splitType="Prevent">
+			<printWhenExpression><![CDATA[$V{categorieNotLavoriCount} > 0]]></printWhenExpression>
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="10"/>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="soloLavori">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlboLavori.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="75" splitType="Prevent">
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="44" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>" + Integer.toString(7 + ($V{categorieLavoriCount} > 0 ? 2 : 0) + ($V{categorieNotLavoriCount} > 0 ? 1 : 0) - 1) + ")</b> " +
+"Di essere a conoscenza degli obblighi derivanti dal codice di comportamento adottato " +
+"dalla stazione appaltante e l’impegno ad osservare e a far osservare ai propri " +
+"dipendenti e collaboratori il suddetto codice, pena la risoluzione del contratto."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="38" width="511" height="26" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[(Il codice è reperibile all’indirizzo: http://www.comune.grugliasco.to.it/amministrazione-trasparente/disposizioni-generali-2/cat_view/214-amministrazione-trasparente/145-disposizioni-generali/166-atti-generali/382-codice-disciplinare-e-codice-di-condotta.html)]]></text>
+			</staticText>
+		</band>
+		<band height="74" splitType="Prevent">
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="58" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>" + Integer.toString(8 + ($V{categorieLavoriCount} > 0 ? 1 : 0) + ($V{categorieNotLavoriCount} > 0 ? 2 : 0) - 1) + ")</b> " +
+"Di autorizzare espressamente la stazione appaltante a trasmettere le comunicazioni " +
+"di cui all’art. 76 del d.lgs. 50/2016, nonché tutte le altre comunicazioni inerenti " +
+"la gara attraverso la piattaforma telematica e/o per posta elettronica certificata " +
+"al seguente indirizzo " + ($F{pecRecapito} != null ? $F{pecRecapito} :"__________________________________________") + ","]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="23" splitType="Prevent">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="10"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomandaIscrizioneAlbo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="9"/>
+		<band height="51" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="45" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Qualora la documentazione venga sottoscritta dal “procuratore/i” della società ed dovrà essere allegata copia della relativa procura notarile (GENERALE O SPECIALE) o altro documento da cui evincere i poteri di rappresentanza. ]]></text>
+			</staticText>
+		</band>
+		<band height="20"/>
+		<band height="55" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="50" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" markup="none">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[----------------------------------------------------------
+ATTENZIONE: QUESTO DOCUMENTO NON HA VALORE SE PRIVO DELLA SOTTOSCRIZIONE A MEZZO FIRMA DIGITALE]]></text>
+			</staticText>
+		</band>
+		<band height="14" splitType="Prevent">
+			<subreport runToBottom="false">
+				<reportElement x="0" y="0" width="511" height="10">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGES_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGES_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LIBERO_PROFESSIONISTA">
+					<subreportParameterExpression><![CDATA[$P{LIBERO_PROFESSIONISTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ABILITAZIONEPREVENTIVA">
+					<subreportParameterExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ZONEATTIVITA">
+					<subreportParameterExpression><![CDATA[$P{ZONEATTIVITA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ISCRIZIONE">
+					<subreportParameterExpression><![CDATA[$P{ISCRIZIONE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ELENCO">
+					<subreportParameterExpression><![CDATA[$P{ELENCO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EMAILRECAPITO">
+					<subreportParameterExpression><![CDATA[$P{EMAILRECAPITO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RTI">
+					<subreportParameterExpression><![CDATA[$P{RTI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATANULLAOSTAANTIMAFIA">
+					<subreportParameterExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_CAT">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_CAT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="VISUALIZZA_SA">
+					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

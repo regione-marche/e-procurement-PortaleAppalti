@@ -1,0 +1,1089 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiUlterioriImpresa" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="NoPages" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b0acb041-8e2d-4afe-a505-23d135100c8b">
+	<property name="ireport.zoom" value="1.2100000000000009"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="142"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#CCCCCC">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dsDatiAnnui" uuid="167a0e7c-0c3f-4136-8b5e-cce6c52ad2dd">
+		<queryString language="xPath">
+			<![CDATA[datoAnnuo]]>
+		</queryString>
+		<field name="anno" class="java.lang.String">
+			<fieldDescription><![CDATA[anno]]></fieldDescription>
+		</field>
+		<field name="dipendenti" class="java.lang.String">
+			<fieldDescription><![CDATA[dipendenti]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="DATANULLAOSTAANTIMAFIA" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ABILITAZIONEPREVENTIVA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONEATTIVITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ISCRELENCHIDL189" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RATINGLEGALITA" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIPOIMPRESA" class="java.lang.String"/>
+	<parameter name="DATIULTALTRIDATIVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTWLVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTISOVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTSOAVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTPREVVISIBILI" class="java.lang.Integer"/>
+	<parameter name="DATIULTCCIAVISIBILI" class="java.lang.Integer"/>
+	<queryString language="xPath">
+		<![CDATA[/impresa]]>
+	</queryString>
+	<field name="cciaaIscritto" class="java.lang.String">
+		<fieldDescription><![CDATA[cciaa/iscritto]]></fieldDescription>
+	</field>
+	<field name="cciaaNumRegistroDitte" class="java.lang.String">
+		<fieldDescription><![CDATA[cciaa/numRegistroDitte]]></fieldDescription>
+	</field>
+	<field name="cciaaDataDomandaIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[cciaa/dataDomandaIscrizione]]></fieldDescription>
+	</field>
+	<field name="cciaaNumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[cciaa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="cciaaDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[cciaa/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="cciaaProvinciaIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[cciaa/provinciaIscrizione]]></fieldDescription>
+	</field>
+	<field name="cciaaDataNullaOstaAntimafia" class="java.util.Date">
+		<fieldDescription><![CDATA[cciaa/dataNullaOstaAntimafia]]></fieldDescription>
+	</field>
+	<field name="soggettoDURC" class="java.lang.String">
+		<fieldDescription><![CDATA[soggettoDURC]]></fieldDescription>
+	</field>
+	<field name="settoreProduttivo" class="java.lang.String">
+		<fieldDescription><![CDATA[settoreProduttivo]]></fieldDescription>
+	</field>
+	<field name="inpsNumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[inps/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="inpsPosizContributivaIndividuale" class="java.lang.String">
+		<fieldDescription><![CDATA[inps/posizContributivaIndividuale]]></fieldDescription>
+	</field>
+	<field name="inpsDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[inps/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="inpsLocalitaIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[inps/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="inailNumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[inail/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="inailPosizAssicurativa" class="java.lang.String">
+		<fieldDescription><![CDATA[inail/posizAssicurativa]]></fieldDescription>
+	</field>
+	<field name="inailDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[inail/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="inailLocalitaIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[inail/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="cassaEdileNumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[cassaEdile/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="cassaEdileCodice" class="java.lang.String">
+		<fieldDescription><![CDATA[cassaEdile/codice]]></fieldDescription>
+	</field>
+	<field name="cassaEdileDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[cassaEdile/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="cassaEdileLocalitaIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[cassaEdile/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="altriIstitutiPrevidenziali" class="java.lang.String">
+		<fieldDescription><![CDATA[altriIstitutiPrevidenziali]]></fieldDescription>
+	</field>
+	<field name="soaNumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[soa/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="soaDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="soaDataScadenzaQuinquennale" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataScadenza]]></fieldDescription>
+	</field>
+	<field name="soaDataUltimaRichiestaIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataUltimaRichiestaIscrizione]]></fieldDescription>
+	</field>
+	<field name="soaDataScadenzaTriennale" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataScadenzaTriennale]]></fieldDescription>
+	</field>
+	<field name="soaDataVerificaTriennale" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataVerificaTriennale]]></fieldDescription>
+	</field>
+	<field name="soaDataScadenzaIntermedia" class="java.util.Date">
+		<fieldDescription><![CDATA[soa/dataScadenzaIntermedia]]></fieldDescription>
+	</field>
+	<field name="soaOrganismoCertificatore" class="java.lang.String">
+		<fieldDescription><![CDATA[soa/organismoCertificatore]]></fieldDescription>
+	</field>
+	<field name="iso900NumIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[iso9001/numIscrizione]]></fieldDescription>
+	</field>
+	<field name="iso9001DataScadenza" class="java.util.Date">
+		<fieldDescription><![CDATA[iso9001/dataScadenza]]></fieldDescription>
+	</field>
+	<field name="iso9001OrganismoCertificatore" class="java.lang.String">
+		<fieldDescription><![CDATA[iso9001/organismoCertificatore]]></fieldDescription>
+	</field>
+	<field name="whitelistIscritto" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/iscritto]]></fieldDescription>
+	</field>
+	<field name="whitelistSedePrefettura" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/sedePrefetturaCompetente]]></fieldDescription>
+	</field>
+	<field name="whitelistSezioniIscrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/sezioniIscrizione]]></fieldDescription>
+	</field>
+	<field name="whitelistDataIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/dataIscrizione]]></fieldDescription>
+	</field>
+	<field name="whitelistDataScadenzaIscrizione" class="java.util.Date">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/dataScadenzaIscrizione]]></fieldDescription>
+	</field>
+	<field name="whitelistAggiornamento" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneWhitelistAntimafia/aggiornamento]]></fieldDescription>
+	</field>
+	<field name="anagrafeAntimafiaIscrittoEsecutori" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneElenchiRicostruzione/iscrittoAnagrafeAntimafiaEsecutori]]></fieldDescription>
+	</field>
+	<field name="anagrafeAntimafiaDataScadenza" class="java.util.Date">
+		<fieldDescription><![CDATA[iscrizioneElenchiRicostruzione/dataScadenza]]></fieldDescription>
+	</field>
+	<field name="anagrafeAntimafiaRinnovoInCorso" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneElenchiRicostruzione/rinnovoIscrizioneInCorso]]></fieldDescription>
+	</field>
+	<field name="anagrafeAntimafiaElencoSpecialeProf" class="java.lang.String">
+		<fieldDescription><![CDATA[iscrizioneElenchiRicostruzione/iscrittoElencoSpecialeProfessionisti]]></fieldDescription>
+	</field>
+	<field name="ratingPossiedeRating" class="java.lang.String">
+		<fieldDescription><![CDATA[ratingLegalita/possiedeRating]]></fieldDescription>
+	</field>
+	<field name="ratingRating" class="java.lang.String">
+		<fieldDescription><![CDATA[ratingLegalita/rating]]></fieldDescription>
+	</field>
+	<field name="ratingDataScadenza" class="java.util.Date">
+		<fieldDescription><![CDATA[ratingLegalita/dataScadenza]]></fieldDescription>
+	</field>
+	<field name="ratingAggiornamentoInCorso" class="java.lang.String">
+		<fieldDescription><![CDATA[ratingLegalita/aggiornamentoRatingInCorso]]></fieldDescription>
+	</field>
+	<field name="altreCertificazioniAttestazioni" class="java.lang.String">
+		<fieldDescription><![CDATA[altreCertificazioniAttestazioni]]></fieldDescription>
+	</field>
+	<field name="contoCorrenteEstremi" class="java.lang.String">
+		<fieldDescription><![CDATA[contoCorrente/estremi]]></fieldDescription>
+	</field>
+	<field name="contoCorrenteSoggettiAbilitati" class="java.lang.String">
+		<fieldDescription><![CDATA[contoCorrente/soggettiAbilitati]]></fieldDescription>
+	</field>
+	<field name="contoCorrenteBIC" class="java.lang.String">
+		<fieldDescription><![CDATA[contoCorrente/bic]]></fieldDescription>
+	</field>
+	<field name="socioUnico" class="java.lang.String">
+		<fieldDescription><![CDATA[socioUnico]]></fieldDescription>
+	</field>
+	<field name="regimeFiscale" class="java.lang.String">
+		<fieldDescription><![CDATA[regimeFiscale]]></fieldDescription>
+	</field>
+	<field name="settoreAttivitaEconomica" class="java.lang.String">
+		<fieldDescription><![CDATA[settoreAttivitaEconomica]]></fieldDescription>
+	</field>
+	<field name="abilPrevDataScadenzaRinnovo" class="java.util.Date">
+		<fieldDescription><![CDATA[abilitazionePreventiva/dataScadenzaRinnovo]]></fieldDescription>
+	</field>
+	<field name="abilPrevFaseRinnovo" class="java.lang.String">
+		<fieldDescription><![CDATA[abilitazionePreventiva/faseRinnovo]]></fieldDescription>
+	</field>
+	<field name="abilPrevDataRichiestaRinnovo" class="java.util.Date">
+		<fieldDescription><![CDATA[abilitazionePreventiva/dataRichiestaRinnovo]]></fieldDescription>
+	</field>
+	<field name="zoneAttivita" class="java.lang.String">
+		<fieldDescription><![CDATA[zoneAttivita]]></fieldDescription>
+	</field>
+	<field name="assunzioniObbligate" class="java.lang.String">
+		<fieldDescription><![CDATA[assunzioniObbligate]]></fieldDescription>
+	</field>
+	<field name="classeDimensione" class="java.lang.String">
+		<fieldDescription><![CDATA[classeDimensione]]></fieldDescription>
+	</field>
+	<field name="ulterioriDichiarazioni" class="java.lang.String">
+		<fieldDescription><![CDATA[ulterioriDichiarazioni]]></fieldDescription>
+	</field>
+	<field name="oggettoSociale" class="java.lang.String">
+		<fieldDescription><![CDATA[oggettoSociale]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="201">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$P{DATIULTCCIAVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement x="0" y="0" width="242" height="20" uuid="e96d05c0-653c-434c-b291-a74168314d3e"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Iscrizione CCIAA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="7a70983b-5da0-4e36-9d70-67400af0d7ca"/>
+					<text><![CDATA[Iscritto? :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="e5f88687-d420-4bc5-8df5-eead2bcbf1de"/>
+					<textFieldExpression><![CDATA[($F{cciaaIscritto} == null ? "" : ($F{cciaaIscritto}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="35d956d4-8ea7-44a6-96d0-a21e7a1d7d3f"/>
+					<text><![CDATA[Num. iscrizione Reg. Impr. :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="90fa46a8-461e-4465-b383-f0a36c17fe41"/>
+					<textFieldExpression><![CDATA[$F{cciaaNumIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="be3bfc67-c8e9-4f79-915c-d33e854f05cd"/>
+					<text><![CDATA[Data iscrizione Reg. Impr. :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="e9b06c29-1945-4b5a-8677-6623e7b21d48"/>
+					<textFieldExpression><![CDATA[$F{cciaaDataIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="26c808bc-2694-448b-9802-ea8393ac1a0d"/>
+					<text><![CDATA[Numero R.E.A. :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="6d2e0c16-284c-46c4-8655-f3602f9a35e2"/>
+					<textFieldExpression><![CDATA[$F{cciaaNumRegistroDitte}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="100" width="134" height="20" uuid="3a46766b-e91b-4a46-a266-04f7c6e81e10"/>
+					<text><![CDATA[Data iscrizione R.E.A. :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="100" width="382" height="20" isRemoveLineWhenBlank="true" uuid="52659b6f-0a09-4e84-8bd7-234d8b658dbc"/>
+					<textFieldExpression><![CDATA[$F{cciaaDataDomandaIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="120" width="134" height="20" uuid="6af6495d-c730-4755-b507-30431010caa9"/>
+					<text><![CDATA[Sede :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="120" width="382" height="20" isRemoveLineWhenBlank="true" uuid="f393a699-a3df-43f6-85ef-2c7ba36e9f2b"/>
+					<textFieldExpression><![CDATA[$F{cciaaProvinciaIscrizione}]]></textFieldExpression>
+				</textField>
+				<frame>
+					<reportElement x="39" y="140" width="516" height="21" uuid="32b89f08-b75d-4ccd-9bb4-0b93782cbd75"/>
+					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="133" y="0" width="371" height="20" isRemoveLineWhenBlank="true" uuid="15c7ae6b-1304-4837-8caa-434c31e172ea"/>
+						<textFieldExpression><![CDATA[$F{oggettoSociale}]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement positionType="Float" x="0" y="0" width="133" height="20" uuid="93399980-2cc1-45a6-8c40-9c709639cdf7"/>
+						<text><![CDATA[Oggetto sociale :]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="161" width="134" height="17" uuid="7ece097f-d331-4995-a354-f9f332c81782">
+						<printWhenExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[Data nullaosta antimafia :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="161" width="382" height="17" isRemoveLineWhenBlank="true" uuid="d8020534-8196-4554-b264-e1de16ed2e09">
+						<printWhenExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{cciaaDataNullaOstaAntimafia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="181" width="134" height="17" uuid="c6a0c37b-ee8c-479d-a9f8-54400a0e80f6">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<printWhenExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[Settore attività economica :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="178" y="181" width="382" height="17" isRemoveLineWhenBlank="true" uuid="6bbd95a2-02cb-4199-a059-190165afe5b1">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<printWhenExpression><![CDATA[$P{DATANULLAOSTAANTIMAFIA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{settoreAttivitaEconomica}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="70">
+			<printWhenExpression><![CDATA[$P{DATIULTPREVVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="242" height="20" uuid="e5378ab3-831b-419f-8e24-4f7fed910dd7"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[DURC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="30" uuid="fb671cc5-7756-41c8-8df9-8f24e9d497a9"/>
+				<text><![CDATA[Soggetto agli obblighi del DURC?]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="20" width="382" height="30" isRemoveLineWhenBlank="true" uuid="c52df5a9-52b3-47ac-b78e-835b89bbb955"/>
+				<textFieldExpression><![CDATA[($F{soggettoDURC} == null ? "" : ($F{soggettoDURC}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="50" width="134" height="20" uuid="330fca81-4cb5-4e55-848c-91a618340f7b"/>
+				<text><![CDATA[Settore produttivo :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="50" width="382" height="20" isRemoveLineWhenBlank="true" uuid="3d6e4b26-5f5f-4f39-bcae-8d18e6280d1a"/>
+				<textFieldExpression><![CDATA[$F{settoreProduttivo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="100">
+			<printWhenExpression><![CDATA[$P{DATIULTPREVVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="a524175c-1916-42e6-bf96-145b3f214838"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Iscrizione INPS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="723ca315-17a0-49a0-8239-78177005fc4f"/>
+					<text><![CDATA[Matricola :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="a095f377-9c98-43e0-acf4-31b03922af31"/>
+					<textFieldExpression><![CDATA[$F{inpsNumIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="4c117ce3-e7f0-48a0-be56-fbfd7d21062b"/>
+					<text><![CDATA[Posiz. contrib. individuale :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="b813310e-5557-4da1-a91b-4777c0405a1f"/>
+					<textFieldExpression><![CDATA[$F{inpsPosizContributivaIndividuale}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="7d0a24b3-a26f-4686-89d0-cf1d79753681"/>
+					<text><![CDATA[Data iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="3b7e6ca5-29c2-4f55-a85b-ba706704b052"/>
+					<textFieldExpression><![CDATA[$F{inpsDataIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="49a9f124-de64-45d3-8464-cab202da55c9"/>
+					<text><![CDATA[Sede competente :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="7d81241a-d1ee-411b-b273-473b3fa2b46c"/>
+					<textFieldExpression><![CDATA[$F{inpsLocalitaIscrizione}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="100">
+			<printWhenExpression><![CDATA[$P{DATIULTPREVVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="5349ece6-8dd9-46cd-bae6-c11f7ec43647"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Iscrizione alla Cassa Edile]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="4d555880-fbd1-4d4f-b979-9cd8347f0bc8"/>
+					<text><![CDATA[Codice impresa :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="b20d3e1e-285a-4aa3-bf38-814c46690a4e"/>
+					<textFieldExpression><![CDATA[$F{cassaEdileNumIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="229cc03d-3578-45aa-8940-558d31a46260"/>
+					<text><![CDATA[Codice Cassa Edile :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="1ce2b875-c62d-4dc9-bf73-904690620199"/>
+					<textFieldExpression><![CDATA[$F{cassaEdileCodice}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="a5db325c-eea8-4d1a-b963-726e11d07dd9"/>
+					<text><![CDATA[Data iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="6699f241-920d-4c97-b3ba-bfcdba215e1e"/>
+					<textFieldExpression><![CDATA[$F{cassaEdileDataIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="78d30b04-4a74-4161-bec5-6a33ac26b978"/>
+					<text><![CDATA[Località iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="c72d5551-609a-4a29-bd23-ff35cbfa6b69"/>
+					<textFieldExpression><![CDATA[$F{cassaEdileLocalitaIscrizione}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{DATIULTPREVVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="1f2bd1a4-0970-40f4-861a-0b236c06c01c"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Iscrizione ad altri Istituti Previdenziali]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="39" y="20" width="516" height="20" isRemoveLineWhenBlank="true" uuid="a23fa218-8512-4ec2-9ad8-2a7ce319e9e3"/>
+				<textFieldExpression><![CDATA[$F{altriIstitutiPrevidenziali}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="100">
+			<printWhenExpression><![CDATA[$P{DATIULTPREVVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="f95c6e36-a688-43f4-807a-5d6dc4dcdcea"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Iscrizione INAIL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="31aaa173-b19c-4aaa-bed2-5f2382fda125"/>
+					<text><![CDATA[Codice ditta :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="777ed8ed-90db-4417-82c7-937a2d99dda4"/>
+					<textFieldExpression><![CDATA[$F{inailNumIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="42cd671d-28ec-4505-b731-ceb824070045"/>
+					<text><![CDATA[Posiz. assicurativa :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="e746b20f-111a-4277-81e5-98880f001802"/>
+					<textFieldExpression><![CDATA[$F{inailPosizAssicurativa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="f0ec9ac3-e521-4cac-b7f4-58587497f2cc"/>
+					<text><![CDATA[Data iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="0f911c17-55d2-4253-b80b-1919c49ef422"/>
+					<textFieldExpression><![CDATA[$F{inailDataIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="f471c712-8e55-47fc-926e-15f3c4a9ddce"/>
+					<text><![CDATA[Località iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="90f0bbf5-312f-4e9e-932b-c04dda5a1763"/>
+					<textFieldExpression><![CDATA[$F{inailLocalitaIscrizione}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="100">
+			<printWhenExpression><![CDATA[$P{DATIULTSOAVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="5d1207e7-f9d7-4207-81ba-6e35038aa989"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Attestazione SOA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="b0cb9787-6fba-4343-b1e9-d9c5e0c5f832"/>
+				<text><![CDATA[Numero attestazione :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="9cd60618-729d-4eb4-a966-6d7dad95010f"/>
+				<textFieldExpression><![CDATA[$F{soaNumIscrizione}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="b839c404-de53-4988-ac9a-a8740579e5f1"/>
+				<text><![CDATA[Data rilascio :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="3904adac-0485-4629-8a4c-edd97a3255ee"/>
+				<textFieldExpression><![CDATA[$F{soaDataIscrizione}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="d7aa929e-9d3f-46d7-8ea3-dafb4271d5ce"/>
+				<text><![CDATA[Data scadenza triennale :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="1e1cee64-3de8-46c3-ac1a-cc677ad21fec"/>
+				<textFieldExpression><![CDATA[$F{soaDataScadenzaTriennale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="a7821aa3-0c64-41f5-849a-a4338d979cc5"/>
+				<text><![CDATA[Data verifica triennale :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="6b3f93c1-19fb-4e5b-a90f-751cadce096b"/>
+				<textFieldExpression><![CDATA[$F{soaDataVerificaTriennale}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA[($P{DATIULTSOAVISIBILI}==1) &&
+($P{TIPOIMPRESA} == "2" || $P{TIPOIMPRESA} == "11")]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="0" width="134" height="20" uuid="80dbe1a5-38b0-4f61-91fe-277be4076a42"/>
+				<text><![CDATA[Data scadenza intermedia :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="174" y="0" width="382" height="20" isRemoveLineWhenBlank="true" uuid="ae698735-c53c-43a1-b6d7-7ffa25a93b12"/>
+				<textFieldExpression><![CDATA[$F{soaDataScadenzaIntermedia}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="41">
+			<printWhenExpression><![CDATA[$P{DATIULTSOAVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="0" width="134" height="20" uuid="ca247bff-b57c-471a-8c6d-7e1cdee1d934"/>
+				<text><![CDATA[Data scadenza quinquennale:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="174" y="0" width="382" height="20" isRemoveLineWhenBlank="true" uuid="13ae22a2-1a78-40c0-bfdf-446c912ca711"/>
+				<textFieldExpression><![CDATA[$F{soaDataScadenzaQuinquennale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="a0418726-46e3-4e15-9a05-287d37b7e6ee"/>
+				<text><![CDATA[Organismo certificatore :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="174" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="82e5cda6-5f32-42be-ada6-e672f6499310"/>
+				<textFieldExpression><![CDATA[$F{soaOrganismoCertificatore}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="80">
+			<printWhenExpression><![CDATA[$P{DATIULTISOVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="419027fa-433d-4d5b-9bfe-ea3564cf9fcd"/>
+					<text><![CDATA[Numero iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="778f1878-80f3-44cc-8f19-f791a1cfd496"/>
+					<textFieldExpression><![CDATA[$F{iso9001OrganismoCertificatore}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="03c5a4ae-245c-4027-9fd7-b92b739ecd1b"/>
+					<text><![CDATA[Organismo certificatore :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="7363b026-bf80-4d3c-bf69-56e1139ac251"/>
+					<textFieldExpression><![CDATA[$F{iso9001DataScadenza}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="9b9944f4-a40a-4686-a6af-e7bd01e2fbb9"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Certificazione ISO 9001]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="ebcaa376-d125-4883-a42e-e3fd8548de36"/>
+					<text><![CDATA[Data scadenza :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="2962013a-00f2-4350-ba59-2d3d95233d46"/>
+					<textFieldExpression><![CDATA[$F{iso900NumIscrizione}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{DATIULTISOVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="45627643-f496-4bf2-9dce-f679c1dc14b7"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Altre certificazioni o attestazioni possedute]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="39" y="20" width="516" height="20" isRemoveLineWhenBlank="true" uuid="22c2cfb9-6033-49b6-9403-7983cdb91098"/>
+				<textFieldExpression><![CDATA[$F{altreCertificazioniAttestazioni}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="142">
+			<printWhenExpression><![CDATA[$P{DATIULTWLVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="16c1471a-582b-492f-ad29-f00224a6c8bd"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Iscrizione whitelist antimafia]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="43568188-f92a-4ffe-9c2f-3e762f912297"/>
+					<text><![CDATA[Iscritto whitelist antimafia :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="192c0e6a-67a5-4cff-b1a9-ec0715329c5d"/>
+					<textFieldExpression><![CDATA[($F{whitelistIscritto} == null ? "" : ($F{whitelistIscritto}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="9fceb071-70ab-49e5-b2e5-dee2218410b1"/>
+					<text><![CDATA[Sede prefettura competente:]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="5052237b-7d8a-401e-ba38-6d301d18c2b5"/>
+					<textFieldExpression><![CDATA[$F{whitelistSedePrefettura}]]></textFieldExpression>
+				</textField>
+				<frame>
+					<reportElement x="39" y="60" width="516" height="21" uuid="d4016597-7017-4e30-ae74-52c14895b96f"/>
+					<staticText>
+						<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="70a29a28-00c5-4141-91d5-ed1c8fc7ef15"/>
+						<text><![CDATA[Sezioni iscrizione :]]></text>
+					</staticText>
+					<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="134" y="0" width="382" height="20" isRemoveLineWhenBlank="true" uuid="92707787-8935-48ff-b192-9bdda8c8cb6a"/>
+						<textFieldExpression><![CDATA[$F{whitelistSezioniIscrizione}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="81" width="134" height="20" uuid="b780e9fd-4ef7-45f2-b4d1-3a57cc6236a5"/>
+					<text><![CDATA[Data iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="81" width="382" height="20" isRemoveLineWhenBlank="true" uuid="234df2fc-00f6-4316-9bb8-0cd4c903e328"/>
+					<textFieldExpression><![CDATA[$F{whitelistDataIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="101" width="134" height="20" uuid="8aec27ec-4af5-4c9d-9905-46381502cbe2"/>
+					<text><![CDATA[Data scadenza iscrizione :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="101" width="382" height="20" isRemoveLineWhenBlank="true" uuid="7fcfa731-f5d3-4ca3-bbd0-210e74a3257a"/>
+					<textFieldExpression><![CDATA[$F{whitelistDataScadenzaIscrizione}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="121" width="134" height="20" uuid="c29822ac-f026-428d-b1a0-063db30c13bf"/>
+					<text><![CDATA[Aggiornamento in corso :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="172" y="121" width="382" height="20" isRemoveLineWhenBlank="true" uuid="fdbed5b4-2e9d-4af0-9737-5ce6d704088e"/>
+					<textFieldExpression><![CDATA[($F{whitelistAggiornamento} == null ? "" : ($F{whitelistAggiornamento}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="102">
+			<printWhenExpression><![CDATA[$P{ISCRELENCHIDL189} == 1]]></printWhenExpression>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="0482d3ef-f14c-4ce2-950f-ba303a162262"/>
+				<textFieldExpression><![CDATA[($F{anagrafeAntimafiaIscrittoEsecutori} == null ? "" : ($F{anagrafeAntimafiaIscrittoEsecutori}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="614ac719-8d97-4440-afa9-efed1b334de9"/>
+				<text><![CDATA[Iscritto a anagrafe antimaf.:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="91450b55-2531-4b83-84d7-e607cc2b2031"/>
+				<textFieldExpression><![CDATA[$F{anagrafeAntimafiaDataScadenza}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="ddf4393e-8270-4853-a204-d72b74f92e2a"/>
+				<textFieldExpression><![CDATA[($F{anagrafeAntimafiaRinnovoInCorso} == null ? "" : ($F{anagrafeAntimafiaRinnovoInCorso}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="356" height="20" uuid="ea6d4dab-4e98-4160-be2e-b8287fc276d4"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[ Iscrizione elenchi ricostruzione (DL 189/2016)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="8c3c1012-5679-45aa-9e2f-cf314ca7282a"/>
+				<text><![CDATA[Rinnovo iscrizione in corso:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="20104496-72e6-4a69-bf8b-f93c6a185245"/>
+				<text><![CDATA[Data scadenza :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="013d194c-95ed-4ff8-b520-3f6075f39c83"/>
+				<text><![CDATA[Iscritto a elenco spec. prof.:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="57950e0d-a00c-4f5c-9e91-6a7aa7ca738c"/>
+				<textFieldExpression><![CDATA[($F{anagrafeAntimafiaElencoSpecialeProf} == null ? "" : ($F{anagrafeAntimafiaElencoSpecialeProf}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="103">
+			<printWhenExpression><![CDATA[$P{RATINGLEGALITA} == 1]]></printWhenExpression>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="df24c43d-2a11-4518-8c57-5e767836e69b"/>
+				<textFieldExpression><![CDATA[($F{ratingPossiedeRating} == null ? "" : ($F{ratingPossiedeRating}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="9019da62-9084-4331-8507-cf15074f7a9f"/>
+				<text><![CDATA[Data scadenza possesso:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="94910fc9-a425-4798-8441-a7251f84bd1d"/>
+				<text><![CDATA[Aggior. rating in corso:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="356" height="20" uuid="d6ac93ec-3141-4950-bd1a-4b0ad3e6d764"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[ Rating di legalità (DL 1/2012)]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="ad160d54-39b9-4a83-b954-4c87fa62e292"/>
+				<textFieldExpression><![CDATA[$F{ratingRating}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="89caf1f1-26cb-436c-9112-ee78ca45cb39"/>
+				<textFieldExpression><![CDATA[($F{ratingAggiornamentoInCorso} == null ? "" : ($F{ratingAggiornamentoInCorso}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="f4e49c52-1c51-415a-ae22-fa7247d3a791"/>
+				<text><![CDATA[Possiede rating di legalità:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="64652e26-e232-4a32-9f20-17bcfe18f479"/>
+				<text><![CDATA[Rating di legalità:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="24789079-8298-4c3f-bd14-77257b6b17c9"/>
+				<textFieldExpression><![CDATA[$F{ratingDataScadenza}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="80">
+			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="22608c95-5b4e-4a75-9e2e-e8cab5a95f55"/>
+					<textFieldExpression><![CDATA[$F{contoCorrenteSoggettiAbilitati}]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="353e83a8-dac1-49ee-aa7f-73baed185720"/>
+					<textFieldExpression><![CDATA[$F{contoCorrenteEstremi}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="046601fb-efed-4aec-b897-67e455301091"/>
+					<text><![CDATA[Soggetti abilitati :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="b13a9140-ecbf-429a-b8d9-c51801023306"/>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Conto corrente dedicato]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="c6e3accf-9f88-492a-b3b1-c53a631e7984"/>
+					<text><![CDATA[Codice IBAN :]]></text>
+				</staticText>
+			</elementGroup>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="889a8cc0-9a15-4b5a-b113-10101de839ec"/>
+				<textFieldExpression><![CDATA[$F{contoCorrenteBIC}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="49a929ce-6b75-41e0-b234-928cc86c37e1"/>
+				<text><![CDATA[Codice BIC:]]></text>
+			</staticText>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="ba000e27-58c3-43e3-90e4-d3feba4b79d1"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Socio unico]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="39" y="20" width="516" height="20" isRemoveLineWhenBlank="true" uuid="b95c47cc-eca3-4da9-bec2-19eea60698e2"/>
+				<textFieldExpression><![CDATA[($F{socioUnico} == null ? "" : ($F{socioUnico}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="71f9c19b-2a37-47ec-a2b8-d93025035c5b"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Regime fiscale]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="39" y="20" width="516" height="20" isRemoveLineWhenBlank="true" uuid="9c87186b-cd13-4da3-aab5-f0cf350a6984"/>
+				<textFieldExpression><![CDATA[$F{regimeFiscale}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="80">
+			<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1 && $P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="05918e21-6003-4261-9ddb-4cd300ea6ff6">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{abilPrevDataRichiestaRinnovo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="e7da2587-a2ff-4ed7-8c02-e24ae7a4f0c6">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[Data richiesta rinnovo :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="560136bf-3b1d-4152-b311-43978f0ca29e">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[In fase di rinnovo :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="51ab47ed-6d21-4f3e-8494-08ebdc86cd50">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Abilitazione preventiva]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="2c8b4230-2d91-411b-836c-39621f32c7ba">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[Data scadenza :]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="bb89c934-0a8a-436e-b0e4-01cf7e12dcf8">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[($F{abilPrevFaseRinnovo} == null ? "" : ($F{abilPrevFaseRinnovo}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="a6329311-1bf9-4294-b969-331acf0befc2">
+						<printWhenExpression><![CDATA[$P{ABILITAZIONEPREVENTIVA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{abilPrevDataScadenzaRinnovo}]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{ZONEATTIVITA} == 1 && $P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<elementGroup>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="202dbd63-6940-4a20-a643-79f83aebdbc9">
+						<printWhenExpression><![CDATA[$P{ZONEATTIVITA} == 1 && $F{zoneAttivita} != null]]></printWhenExpression>
+					</reportElement>
+					<textFieldExpression><![CDATA[($F{zoneAttivita}.charAt(0) == '1' ? "Piemonte" : "") +
+    ($F{zoneAttivita}.charAt(1) == '1' ? ($F{zoneAttivita}.substring(0, 1).indexOf("1") != -1 ? ", " : "") + "Valle d'Aosta" : "") +
+    ($F{zoneAttivita}.charAt(2) == '1' ? ($F{zoneAttivita}.substring(0, 2).indexOf("1") != -1 ? ", " : "") + "Liguria" : "") +
+    ($F{zoneAttivita}.charAt(3) == '1' ? ($F{zoneAttivita}.substring(0, 3).indexOf("1") != -1 ? ", " : "") + "Lombardia" : "") +
+    ($F{zoneAttivita}.charAt(4) == '1' ? ($F{zoneAttivita}.substring(0, 4).indexOf("1") != -1 ? ", " : "") + "Friuli Venezia Giulia" : "") +
+    ($F{zoneAttivita}.charAt(5) == '1' ? ($F{zoneAttivita}.substring(0, 5).indexOf("1") != -1 ? ", " : "") + "Trentino Alto Adige" : "") +
+    ($F{zoneAttivita}.charAt(6) == '1' ? ($F{zoneAttivita}.substring(0, 6).indexOf("1") != -1 ? ", " : "") + "Veneto" : "") +
+    ($F{zoneAttivita}.charAt(7) == '1' ? ($F{zoneAttivita}.substring(0, 7).indexOf("1") != -1 ? ", " : "") + "Emilia Romagna" : "") +
+    ($F{zoneAttivita}.charAt(8) == '1' ? ($F{zoneAttivita}.substring(0, 8).indexOf("1") != -1 ? ", " : "") + "Toscana" : "") +
+    ($F{zoneAttivita}.charAt(9) == '1' ? ($F{zoneAttivita}.substring(0, 9).indexOf("1") != -1 ? ", " : "") + "Umbria" : "") +
+    ($F{zoneAttivita}.charAt(10) == '1' ?($F{zoneAttivita}.substring(0, 10).indexOf("1") != -1 ? ", " : "") +  "Marche" : "") +
+    ($F{zoneAttivita}.charAt(11) == '1' ? ($F{zoneAttivita}.substring(0, 11).indexOf("1") != -1 ? ", " : "") + "Abruzzo" : "") +
+    ($F{zoneAttivita}.charAt(12) == '1' ? ($F{zoneAttivita}.substring(0, 12).indexOf("1") != -1 ? ", " : "") + "Molise" : "") +
+    ($F{zoneAttivita}.charAt(13) == '1' ? ($F{zoneAttivita}.substring(0, 13).indexOf("1") != -1 ? ", " : "") + "Lazio" : "") +
+    ($F{zoneAttivita}.charAt(14) == '1' ? ($F{zoneAttivita}.substring(0, 14).indexOf("1") != -1 ? ", " : "") + "Campania" : "") +
+    ($F{zoneAttivita}.charAt(15) == '1' ? ($F{zoneAttivita}.substring(0, 15).indexOf("1") != -1 ? ", " : "") + "Basilicata" : "") +
+    ($F{zoneAttivita}.charAt(16) == '1' ? ($F{zoneAttivita}.substring(0, 16).indexOf("1") != -1 ? ", " : "") + "Puglia" : "") +
+    ($F{zoneAttivita}.charAt(17) == '1' ? ($F{zoneAttivita}.substring(0, 17).indexOf("1") != -1 ? ", " : "") + "Calabria" : "") +
+    ($F{zoneAttivita}.charAt(18) == '1' ? ($F{zoneAttivita}.substring(0, 18).indexOf("1") != -1 ? ", " : "") + "Sardegna" : "") +
+    ($F{zoneAttivita}.charAt(19) == '1' ? ($F{zoneAttivita}.substring(0, 19).indexOf("1") != -1 ? ", " : "") +  "Sicilia" : "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="e3c9d5c9-9ffb-4fbc-9bd1-76e63aa3444f">
+						<printWhenExpression><![CDATA[$P{ZONEATTIVITA} == 1]]></printWhenExpression>
+					</reportElement>
+					<text><![CDATA[Regioni d'interesse :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="b78e845f-c1dd-4224-9dad-0b5bf09f3f11">
+						<printWhenExpression><![CDATA[$P{ZONEATTIVITA} == 1]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Zone attività]]></text>
+				</staticText>
+			</elementGroup>
+		</band>
+		<band height="137">
+			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="455c5cb5-2d02-46ec-9b29-4338c4fbb097"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Personale dipendente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="20" width="134" height="42" uuid="54f7d4c2-0201-471a-b7eb-3b0418e4b98f"/>
+				<text><![CDATA[Soggetto ad assunzioni obbligatorie di cui alla Legge 68/1999?:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="20" width="382" height="42" isRemoveLineWhenBlank="true" uuid="cdb73a18-2610-4e0f-bc36-a0ae53e91fa7"/>
+				<textFieldExpression><![CDATA[($F{assunzioniObbligate} == null ? "" : ($F{assunzioniObbligate}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="39" y="62" width="514" height="45" uuid="fe8642a4-3b70-4fb0-90ab-f2afd209f5bc"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="134" height="20" uuid="c4e59ed3-c4f2-41ec-b61b-bdb45206c77e"/>
+					<text><![CDATA[Dipendenti ultimo triennio :]]></text>
+				</staticText>
+				<componentElement>
+					<reportElement key="table" style="table" positionType="Float" x="134" y="0" width="146" height="43" uuid="eb505a2d-e45b-4feb-9b2e-1b740d34b73e"/>
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="dsDatiAnnui" uuid="1e73bc6f-9cd7-44cd-9dae-b4d734c71fd4">
+							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//datoAnnuo")]]></dataSourceExpression>
+						</datasetRun>
+						<jr:column width="90" uuid="5b52247d-6adf-45cd-94e8-44fea0616502">
+							<jr:columnHeader height="30" rowSpan="1">
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<staticText>
+									<reportElement style="table_TH" x="0" y="0" width="90" height="30" uuid="a9af414d-a89c-4593-ab47-70a2eb90a13e"/>
+									<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+										<pen lineWidth="0.0"/>
+										<topPen lineWidth="0.0"/>
+										<leftPen lineWidth="0.0"/>
+										<bottomPen lineWidth="0.0"/>
+										<rightPen lineWidth="0.0"/>
+									</box>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Anno]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell height="20" rowSpan="1">
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField textAdjust="StretchHeight">
+									<reportElement x="0" y="0" width="90" height="20" uuid="6cc3686e-f9d1-44f3-8c42-4b5809fff57d"/>
+									<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+										<pen lineWidth="0.0"/>
+										<topPen lineWidth="0.0"/>
+										<leftPen lineWidth="0.0"/>
+										<bottomPen lineWidth="0.0"/>
+										<rightPen lineWidth="0.0"/>
+									</box>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{anno}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="150" uuid="e055a844-8548-4127-b8f9-29b66aed9a26">
+							<jr:columnHeader height="30" rowSpan="1">
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<staticText>
+									<reportElement style="table_TH" x="0" y="0" width="150" height="30" uuid="15eacded-7422-4781-ba99-4f94a6bc76e8"/>
+									<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+										<pen lineWidth="0.0"/>
+										<topPen lineWidth="0.0"/>
+										<leftPen lineWidth="0.0"/>
+										<bottomPen lineWidth="0.0"/>
+										<rightPen lineWidth="0.0"/>
+									</box>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Numero medio dipendenti]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell height="20" rowSpan="1">
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField textAdjust="StretchHeight">
+									<reportElement x="0" y="0" width="150" height="20" uuid="f85f9a47-95bb-41a0-9aa4-2fdd8d3a4e0b">
+										<printWhenExpression><![CDATA[$F{dipendenti} != null]]></printWhenExpression>
+									</reportElement>
+									<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+										<pen lineWidth="0.0"/>
+										<topPen lineWidth="0.0"/>
+										<leftPen lineWidth="0.0"/>
+										<bottomPen lineWidth="0.0"/>
+										<rightPen lineWidth="0.0"/>
+									</box>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{dipendenti}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:table>
+				</componentElement>
+			</frame>
+			<staticText>
+				<reportElement positionType="Float" x="39" y="107" width="134" height="20" uuid="5ba8e9c6-1b3f-492c-8c80-a3ccba706c55"/>
+				<text><![CDATA[Classe di dimensione :]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="173" y="107" width="382" height="20" isRemoveLineWhenBlank="true" uuid="2f1b2a0f-cb75-4120-835c-b17d548ac5af"/>
+				<textFieldExpression><![CDATA[$F{classeDimensione}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="40" y="20" width="516" height="20" isRemoveLineWhenBlank="true" uuid="3f91a35f-1a44-4b2b-8a54-85a6d0fc7d7c"/>
+				<textFieldExpression><![CDATA[$F{ulterioriDichiarazioni}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="0" width="242" height="20" uuid="5dadf940-285b-405b-9b5e-c7667004739c"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Ulteriori dichiarazioni]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

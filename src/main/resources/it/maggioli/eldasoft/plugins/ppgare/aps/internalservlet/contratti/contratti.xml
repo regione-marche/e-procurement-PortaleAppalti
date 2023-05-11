@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/Contratti" namespace="/do/FrontEnd/Contratti"
+		extends="pp-common">
+
+		<action name="searchContratti" class="contrattiFinderAction" method="findContratti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/contrattiFind.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openStipulaContratti" class="stipulaContrattiAction" method="open">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/stipulaContratti.jsp</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, listaStatiStipule</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="searchStipulaContratti" class="stipulaContrattiAction" method="search">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/stipulaContratti.jsp</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, listaStatiStipule</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="dettaglioStipulaContratti" class="stipulaContrattiAction" method="detail">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/dettaglioStipulaContratti.jsp</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, listaFasiStipule, listaStatiStipule</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageDocumentiStipule" class="documentiContrattiAction" method="open">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti, listaFasiStipule, listaStatiStipule</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="downloadAllegatoStipula" class="documentiContrattiAction" method="downloadAllegatoStipula">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result type="chain" name="successFileFirmato">
+		        <param name="actionName">viewRiservato</param>
+		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
+		    </result>
+			<result name="input" type="redirect">${urlErrori}</result>
+		</action>
+		
+		<action name="deleteAllegatoStipula" class="documentiContrattiAction" method="deleteAllegatoStipula">
+			<result type="chain" name ="success">openPageDocumentiStipule</result>
+			<!--<result name="input" type="redirect">${urlErrori}</result>-->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="upload" class="documentiContrattiAction" method="upload">
+			<result type="chain" name ="success">openPageDocumentiStipule</result>
+			<!--<result name="input" type="redirect">${urlErrori}</result>-->
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="processPageDocumentiContratti" class="documentiContrattiAction">
+			<result type="chain" name ="success">openPageDocumentiStipule</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="confermaStipula" class="documentiContrattiAction" method="confermaStipula">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/confirmInvio.jsp</result>
+			<result type="chain" name ="input">openPageDocumentiStipule</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
+			</interceptor-ref>
+		</action>
+		
+		
+		<action name="confermaDialogInvio" class="documentiContrattiAction" method="confirmInvio">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
+			<result name="input" type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="confermaDialogDelete" class="documentiContrattiAction" method="confirmDelete">
+			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
+			<!--<result name="input" type="redirect">${urlErrori}</result>-->
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelDialogInvio" class="documentiContrattiAction" method="cancelInvio">
+			<result type="chain" name ="success">openPageDocumentiStipule</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelDialogDelete" class="documentiContrattiAction" method="cancelDelete">
+			<result type="chain" name ="success">openPageDocumentiStipule</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="view" class="contrattiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/contrattoView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="download" class="contrattiAction" method="download">
+			<!--
+			<result type="redirect">
+				<param name="location">/do/FrontEnd/DocDig/downloadDocumentoRiservato.action?id=${idDocumento}</param>
+			</result>
+			 -->
+			<result type="chain">
+		        <param name="actionName">downloadDocumentoRiservato</param>
+		        <param name="namespace">/do/FrontEnd/DocDig</param>
+		    </result>
+		</action>
+
+	</package>
+
+</struts>

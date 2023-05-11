@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	<package name="portgare_do/SSO" namespace="/do/SSO" extends="pp-common">
+
+		<action name="CohesionLoginResponse" class="loginCohesionAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="ShibbolethLoginResponse" class="loginShibbolethAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="SpidLogin" class="loginSpidAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="SpidBusinessLogin" class="loginSpidBusinessAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="SpidAdminLogin" class="loginSpidAction" method="prepareAdminLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="SpidLoginResponse" class="loginSpidAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="SpidBusinessLoginResponse" class="loginSpidBusinessAction" method="loginSpidBusiness">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<result name="redirect" type="redirect">${urlRedirect}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="SpidLoginAdminResponse" class="loginSpidAction" method="adminLogin">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CieLogin" class="loginCieAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CieLoginResponse" class="loginCieAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CrsLogin" class="loginCrsAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CrsLoginResponse" class="loginCrsAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CnsLogin" class="loginCnsAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="CnsLoginResponse" class="loginCnsAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="MyIdLogin" class="loginMyIdAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="MyIdLoginResponse" class="loginMyIdAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="GelLogin" class="loginGelAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="GelLoginResponse" class="loginGelAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="FederaLogin" class="loginFederaAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="FederaLoginResponse" class="loginFederaAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="GatewayLogin" class="loginGatewayAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="GatewayLoginResponse" class="loginGatewayAction" method="login">
+			<param name="token">${token}</param>
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="loginAs" class="loginSSOAction" method="loginAs">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="loginSSO" class="loginSSOAction" method="login">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="LogoutSSO" class="logoutSSOAction" method="logout">
+			<result name="success" type="redirect">${urlHome}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+	</package>
+</struts>

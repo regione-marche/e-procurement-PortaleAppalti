@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="VociDettaglio" language="groovy" pageWidth="483" pageHeight="842" columnWidth="483" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Error" isIgnorePagination="true" uuid="87b41f4b-3f16-4621-94e6-2c48c43c1dff">
+	<property name="ireport.zoom" value="1.502629601803157"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Wed Feb 05 15:49:26 CET 2014"/>
+	<subDataset name="dettaglioOfferta" whenResourceMissingType="Error" uuid="d5f0894d-b3a5-4885-be6e-3c2123c9c2fa">
+		<parameter name="CODICE_COMPO" class="java.lang.String"/>
+		<parameter name="DESCRIZIONE_COMPO" class="java.lang.String"/>
+		<queryString language="xPath">
+			<![CDATA[/ReportOffertaEconomica/offerta/listaComponentiDettaglio/componenteDettaglio/attributoAggiuntivo]]>
+		</queryString>
+		<field name="codiceVoceDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[codice]]></fieldDescription>
+		</field>
+		<field name="valoreStringaDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreStringa]]></fieldDescription>
+		</field>
+		<field name="valoreNumericoDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreNumerico]]></fieldDescription>
+		</field>
+		<field name="valoreDataDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[valoreData]]></fieldDescription>
+		</field>
+		<field name="tipoVoceDatoAgg" class="java.lang.String">
+			<fieldDescription><![CDATA[tipo]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[Cartella contenente i sottoreport]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Progetti_Eclipse\\PortaleAppalti\\src\\main\\webapp\\WEB-INF\\plugins\\ppgare\\aps\\jasper\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ROOT_TAG" class="java.lang.String">
+		<parameterDescription><![CDATA[Tag principale da usare per estrarre i dati nelle liste per iscrizione o aggiornamento]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/ReportGestioneProdotti"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CATALOGO" class="java.lang.String">
+		<parameterDescription><![CDATA[Titolo del catalogo in esame]]></parameterDescription>
+		<defaultValueExpression><![CDATA["Catalogo 2013, versione A.02 per Lavori e Servizi"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIPORIBASSO" class="java.lang.String">
+		<parameterDescription><![CDATA[TIPORIBASSO]]></parameterDescription>
+	</parameter>
+	<parameter name="ITER_GARA" class="java.lang.String">
+		<parameterDescription><![CDATA[ITER_GARA]]></parameterDescription>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[/ReportVociDettaglio]]>
+	</queryString>
+	<field name="codiceComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[codice]]></fieldDescription>
+	</field>
+	<field name="descrizioneComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizione]]></fieldDescription>
+	</field>
+	<field name="sentinellaAttributoAggiuntivo" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/codice]]></fieldDescription>
+	</field>
+	<field name="voceComponente" class="java.lang.String">
+		<fieldDescription><![CDATA[voce]]></fieldDescription>
+	</field>
+	<field name="codice" class="java.lang.String">
+		<fieldDescription><![CDATA[codice]]></fieldDescription>
+	</field>
+	<field name="unitaMisura" class="java.lang.String">
+		<fieldDescription><![CDATA[unitaMisura]]></fieldDescription>
+	</field>
+	<field name="qta" class="java.lang.String">
+		<fieldDescription><![CDATA[quantita]]></fieldDescription>
+	</field>
+	<field name="prezzoBase" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitarioBaseGara]]></fieldDescription>
+	</field>
+	<field name="prezzo" class="java.lang.String">
+		<fieldDescription><![CDATA[prezzoUnitario]]></fieldDescription>
+	</field>
+	<field name="importo" class="java.lang.String">
+		<fieldDescription><![CDATA[importo]]></fieldDescription>
+	</field>
+	<field name="descrizione" class="java.lang.String">
+		<fieldDescription><![CDATA[descrizione]]></fieldDescription>
+	</field>
+	<field name="voce" class="java.lang.String">
+		<fieldDescription><![CDATA[voce]]></fieldDescription>
+	</field>
+	<field name="codiceVoceDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/codice]]></fieldDescription>
+	</field>
+	<field name="valoreNumericoDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreNumerico]]></fieldDescription>
+	</field>
+	<field name="valoreDataDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreData]]></fieldDescription>
+	</field>
+	<field name="valoreStringaDatoAgg" class="java.lang.String">
+		<fieldDescription><![CDATA[attributoAggiuntivo/valoreStringa]]></fieldDescription>
+	</field>
+	<field name="peso" class="java.lang.String">
+		<fieldDescription><![CDATA[peso]]></fieldDescription>
+	</field>
+	<field name="ribassoPercentuale" class="java.lang.String">
+		<fieldDescription><![CDATA[ribasso]]></fieldDescription>
+	</field>
+	<field name="ribassoPesato" class="java.lang.String">
+		<fieldDescription><![CDATA[ribassoPesato]]></fieldDescription>
+	</field>
+	<field name="quantitaOfferta" class="java.lang.String">
+		<fieldDescription><![CDATA[quantitaOfferta]]></fieldDescription>
+	</field>
+	<field name="dataConsegnaRichiesta" class="java.lang.String">
+		<fieldDescription><![CDATA[dataConsegnaRichiesta]]></fieldDescription>
+	</field>
+	<field name="dataConsegnaOfferta" class="java.lang.String">
+		<fieldDescription><![CDATA[dataConsegnaOfferta]]></fieldDescription>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<fieldDescription><![CDATA[tipo]]></fieldDescription>
+	</field>
+	<field name="note" class="java.lang.String">
+		<fieldDescription><![CDATA[note]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="37" splitType="Prevent">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[($P{ITER_GARA}.isEmpty() || ("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta})))]]></printWhenExpression>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="483" height="20" backcolor="#CCCCCC" uuid="0a46d57a-d200-41f1-a3ed-6711e526fcb9">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textField>
+					<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="483" height="19" uuid="2978da57-cea3-429e-93a5-37b72ab84533">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA["LAVORAZIONE E FORNITURA " + ($F{codice} != null ? $F{codice} : "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="20" width="483" height="17" backcolor="#CCCCCC" uuid="b251c830-d310-4907-bd8a-915abaf671f5"/>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="217" height="17" uuid="566f6de3-8419-4f95-8fcd-74a1bb09a2ef"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrizione]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="217" y="0" width="266" height="17" isPrintWhenDetailOverflows="true" uuid="f093b8e8-82f7-433a-8427-722f420f2d6d"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{voce} != null ? $F{voce} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band splitType="Prevent">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+		</band>
+		<band height="9" splitType="Prevent">
+			<printWhenExpression><![CDATA[($F{sentinellaAttributoAggiuntivo} != null)
+&& 
+($P{ITER_GARA}.isEmpty() || ("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta})))]]></printWhenExpression>
+			<componentElement>
+				<reportElement key="table" positionType="Float" x="0" y="0" width="483" height="9" isPrintInFirstWholeBand="true" uuid="4296f270-b603-4cd0-92c3-25ddc93364d1"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dettaglioOfferta" uuid="6bf00076-95a8-4bec-8d8f-47616a37cb09">
+						<datasetParameter name="CODICE_COMPO">
+							<datasetParameterExpression><![CDATA[$F{codiceComponente}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="DESCRIZIONE_COMPO">
+							<datasetParameterExpression><![CDATA[$F{voceComponente} + "\n\n" + $F{descrizioneComponente}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("componenteDettaglio/attributoAggiuntivo")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:columnGroup width="483" uuid="ac14908b-1c39-4124-a71b-b67c05fc5833">
+						<jr:columnGroup width="483" uuid="29996d49-f5a3-4f89-beed-3a783357c3da">
+							<jr:column width="217" uuid="fee3b416-be1a-4734-a762-067b51c3eb32">
+								<jr:detailCell height="19" rowSpan="1">
+									<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="217" height="19" isPrintWhenDetailOverflows="true" uuid="e2830e4b-99d3-44a6-9a2e-19e9583559f6"/>
+										<box leftPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression><![CDATA[$F{codiceVoceDatoAgg}]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+							<jr:column width="266" uuid="bdb3cc86-60dc-42f8-aae4-013f3df75f8d">
+								<jr:detailCell height="19" rowSpan="1">
+									<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true" uuid="83776167-66dd-44e8-930f-f20f7dcdf7b2"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression><![CDATA[(($F{valoreStringaDatoAgg} == null || $F{valoreStringaDatoAgg} == "") ? "" : $F{valoreStringaDatoAgg})]]></textFieldExpression>
+									</textField>
+									<textField textAdjust="StretchHeight" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true" uuid="0b1e321b-2cf9-4150-896c-7084aebd3aa6"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression><![CDATA[($F{valoreDataDatoAgg} != null && $F{valoreDataDatoAgg} != "") ? (new SimpleDateFormat("yyyy-MM-dd")).parse($F{valoreDataDatoAgg}.substring(0,10)) : null]]></textFieldExpression>
+									</textField>
+									<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+										<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="266" height="19" isPrintWhenDetailOverflows="true" uuid="ad709be8-24b0-4eb5-9a12-b371d92536f2"/>
+										<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+											<pen lineWidth="0.5"/>
+											<topPen lineWidth="0.5"/>
+											<leftPen lineWidth="0.5"/>
+											<bottomPen lineWidth="0.5"/>
+											<rightPen lineWidth="0.5"/>
+										</box>
+										<textElement textAlignment="Justified" verticalAlignment="Middle">
+											<font fontName="Arial"/>
+										</textElement>
+										<textFieldExpression><![CDATA[( $F{tipoVoceDatoAgg} == "2" ? ($F{valoreNumericoDatoAgg}!= null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{valoreNumericoDatoAgg})) : null) : ( $F{valoreNumericoDatoAgg} != null ? new java.text.DecimalFormat("#,##0.#####",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{valoreNumericoDatoAgg})) : null ) )]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+						</jr:columnGroup>
+					</jr:columnGroup>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="67">
+			<printWhenExpression><![CDATA[(!"8".equals($P{ITER_GARA}))]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="17" uuid="3b56677a-2a25-48da-8b67-0a030820b18d">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="217" height="17" uuid="16c161eb-4616-476d-ad45-ad8e9af855fd"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="false"/>
+					</textElement>
+					<text><![CDATA[UM]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="217" y="0" width="266" height="17" isPrintWhenDetailOverflows="true" uuid="540550f7-58ad-404a-98f1-f05f143746b7"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unitaMisura} != null ? $F{unitaMisura} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement x="0" y="17" width="483" height="47" uuid="29a08809-d787-47a8-8b3a-68ba35f486bb">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[($P{ITER_GARA} == null) || ($P{ITER_GARA} != null && !"8".equals($P{ITER_GARA}))]]></printWhenExpression>
+				</reportElement>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="30" width="67" height="17" uuid="5628ab54-a57f-4be8-b28b-ad08065bea83">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{qta} != null ? new java.text.DecimalFormat("#,##0.00",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{qta})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="402" y="0" width="81" height="30" uuid="680a2ff9-1c9d-47b3-a2f3-f324058784cf"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Totale (IVA escl.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="67" height="30" uuid="b4cdb465-7098-4e9e-ad62-dc33a9c59988"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Qtà]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="335" y="0" width="67" height="30" uuid="16a74d2d-431f-4650-a523-e9759550a143"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="false">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="402" y="30" width="81" height="17" uuid="7e44ce4f-2e86-4ec6-b7b9-dc446ef4def9"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{importo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{importo})) : ""]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="335" y="30" width="67" height="17" uuid="8336f303-2205-498c-9f41-62c84fbde5b7"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{prezzo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzo})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="201" y="0" width="67" height="30" uuid="1560ba47-32f5-44e8-9683-b13f4a27d6e2"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Ribasso percentuale %]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="201" y="30" width="67" height="17" uuid="6cf3b64d-227b-4f04-86df-5da7c952782f"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ribassoPercentuale} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{ribassoPercentuale})) : null]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="134" y="30" width="67" height="17" uuid="212261f9-cd2e-4d32-b8a6-f342e99b25d6"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{peso} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{peso})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="134" y="0" width="67" height="30" uuid="7ebaa0f2-8e3e-4b30-8c43-83533ad5af8c"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Peso]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="268" y="30" width="67" height="17" uuid="9b7c88f7-ce09-4d0a-9c02-29094cd70064"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ribassoPesato} != null ? new java.text.DecimalFormat("#,##0.00###",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{ribassoPesato})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="268" y="0" width="67" height="30" uuid="77eecaa2-322b-4b4c-aff7-aa8a5c97b315"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Ribasso pesato %]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="67" y="30" width="67" height="17" uuid="c003995d-156a-4315-a072-15cd63f36ea6"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{prezzoBase} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzoBase})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="67" y="0" width="67" height="30" uuid="e64d4eea-b198-4915-bf4d-3c335e8a4b60"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario base di gara]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="34">
+			<printWhenExpression><![CDATA[("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta}))]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="483" height="34" uuid="e8e4183b-f8ab-488d-8e03-6b1d192c9844">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[($P{ITER_GARA} != null && "8".equals($P{ITER_GARA}))]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="217" height="17" uuid="cc1114d4-0917-4c10-983e-3be4d46f793f">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Data consegna richiesta]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="217" y="0" width="266" height="17" uuid="d4f55c18-8455-43cb-a5b4-4dd850a24c3f">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{dataConsegnaRichiesta} != null ? new java.text.SimpleDateFormat("dd/mm/yyyy").format(new java.text.SimpleDateFormat("yyyy-mm-dd").parse($F{dataConsegnaRichiesta})) : ""]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="17" width="217" height="17" uuid="472c760e-6042-4eba-924a-88fa13025e24">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Tipo]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="217" y="17" width="266" height="17" uuid="226ddd25-d4fc-4ca6-bf13-b9750366322d">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo} != null ? $F{tipo} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="17">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta}))]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="217" height="17" uuid="6783d4f0-2c14-42f4-8421-8b1721a549d4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Note]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="217" y="0" width="266" height="17" uuid="3ef984f8-0709-4044-abf7-7b9c63d2fd15">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{note} != null ? $F{note} : ""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="67">
+			<printWhenExpression><![CDATA[("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta}))]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="17" width="483" height="47" uuid="ade910d6-c456-40c5-b744-4f45250b44ff">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[($P{ITER_GARA} != null && "8".equals($P{ITER_GARA}))]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="120" height="30" uuid="c408ab46-1c06-4ca7-84c2-8e8f86cd0f02">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Qtà]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="30" width="120" height="17" uuid="d0a9f002-a31a-426a-8a9d-086328c6ebde">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{qta} != null ? new java.text.DecimalFormat("#,##0.00",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{qta})) : null]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="120" y="30" width="120" height="17" uuid="4313b429-cbeb-4fca-9aa6-1f6e8bc12615">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{prezzoBase} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzoBase})) : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="120" y="0" width="120" height="30" uuid="e071e12a-965c-4738-bc7f-4226b3d6e2e1">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario base di gara]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="240" y="0" width="120" height="30" uuid="e96c898c-2716-409d-a155-178c58681b38">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Prezzo unitario]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="240" y="30" width="120" height="17" uuid="321eeba9-f836-40db-bae5-f5ff133cb33e">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{prezzo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{prezzo})) : null]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="false">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="360" y="30" width="123" height="17" uuid="598756db-ac53-4da7-959a-a1ae4aa8a764"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{importo} != null ? new java.text.DecimalFormat("#,##0.##### €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{importo})) : ""]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="360" y="0" width="123" height="30" uuid="fa9d5c24-568e-4b7b-86e2-89613900b0e1">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Totale (IVA escl.)]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="483" height="17" uuid="bcfe7d8e-4714-416c-866a-f48a45fbe72e">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[($P{ITER_GARA} != null && "8".equals($P{ITER_GARA}))]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="217" height="17" uuid="3cf5ba07-ee4b-4620-a194-2ae3b31ded16">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="false"/>
+					</textElement>
+					<text><![CDATA[UM]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="217" y="0" width="266" height="17" isPrintWhenDetailOverflows="true" uuid="f8ee109e-41c2-44e2-8da4-78de7cad06f0">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unitaMisura} != null ? $F{unitaMisura} : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

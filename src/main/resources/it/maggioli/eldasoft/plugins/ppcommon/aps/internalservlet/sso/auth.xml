@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	<package name="portgare_do/FrontEnd/Auth" namespace="/do/FrontEnd/Auth"
+		extends="pp-common">
+
+		<action name="authAction" class="authAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/auth/auth.jsp
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+	</package>
+</struts>

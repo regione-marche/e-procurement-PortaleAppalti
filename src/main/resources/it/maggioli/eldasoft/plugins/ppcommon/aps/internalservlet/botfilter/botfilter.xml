@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+ 	<package name="BotFilter" namespace="/do" extends="pp-common"> 
+
+		<action name="fun*" class="adminfunAction" method="{1}">
+			<result type="dispatcher">/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/botfilter/adminfun.jsp</result>
+			<result type="chain" name="input">
+				<param name="namespace">/do</param>
+            	<param name="actionName">logout</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+			
+		<action name="allowCookies" class="allowCookiesAction" method="allowCookies">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<result name="input" type="dispatcher">/WEB-INF/apsadmin/jsp/common/error.jsp</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="cancelCookies" class="allowCookiesAction" method="cancelCookies">
+			<result name="success" type="dispatcher">/WEB-INF/apsadmin/jsp/common/error.jsp</result>
+			<result name="input" type="dispatcher">/WEB-INF/apsadmin/jsp/common/error.jsp</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+	</package>
+</struts>

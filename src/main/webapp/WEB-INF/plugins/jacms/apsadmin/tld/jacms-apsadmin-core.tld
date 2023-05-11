@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+  <description><![CDATA["jACMS apsadmin core tag library"]]></description>
+  <display-name>"jACMS apsadmin core tag library"</display-name>
+  <tlib-version>2.2</tlib-version>
+  <short-name>jacmsapsadmin</short-name>
+  <uri>/jacms-apsadmin-core</uri>
+    	
+	<tag>
+		<description>
+			This tag allows the preliminary execution of the showlet so to show the preview of the contents
+			within the content administration pages in the backend.
+			This tag class comes directly from the ExecShowletTag class used in the front-end to build the
+			pages of the portal. 
+		</description>
+		<name>contentPreviewExecShowlet</name>
+		<tag-class>com.agiletec.plugins.jacms.apsadmin.tags.ContentPreviewExecShowletTag</tag-class>
+		<body-content>empty</body-content>
+	</tag>
+	
+	<tag>
+		<description>
+			This returns the preview of the selected content.
+			This tags comes from the ContentTag class used in the front-end to render a content.  
+		</description>
+		<name>contentPreview</name>
+		<tag-class>com.agiletec.plugins.jacms.apsadmin.tags.ContentPreviewTag</tag-class>
+		<body-content>empty</body-content>
+	</tag>
+	
+</taglib>

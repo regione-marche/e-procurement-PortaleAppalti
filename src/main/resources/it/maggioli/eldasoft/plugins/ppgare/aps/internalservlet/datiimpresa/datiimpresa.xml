@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/DatiImpr" namespace="/do/FrontEnd/DatiImpr"
+		extends="pp-common">
+
+		<action name="view" class="impresaAction" method="get">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/datiImpresaView.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,ambitoTerritoriale,tipiImpresaIscrAlbo,province,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,sino</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="modify" class="impresaAction" method="get">
+			<result type="chain">openPageDatiPrincImpresa</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,sino</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageDatiPrincImpresa*" class="openPageDatiPrincImpresaAggImpresaAction" method="openPage{1}" >
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepDatiPrincipaliImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,ambitoTerritoriale,checkGruppoIVA,tipiImpresaIscrAlbo,province,nazioni,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaSociale,tipiImpresaConsorzio,checkPILiberoProf,checkPIImprSociale,checkPIImprSociale,sino,tipiSocietaCooperative,formeGiuridicheConSocCoop</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageIndirizziImpresa*" class="openPageIndirizziImpresaAggImpresaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepIndirizziImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiIndirizzo,province,nazioni</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageAltriDatiAnagrImpresa*" class="openPageAltriDatiAnagrImpresaAggImpresaAction" method="openPage{1}" >
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepDatiAnagraficiLiberoProf.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">titoliSoggetto,sesso,province,nazioni,albiProfessionali,cassePrevidenza</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageSoggettiImpresa*" class="openPageSoggettiImpresaAggImpresaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepSoggettiImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiSoggetto,tipiAltraCarica,sino,tipiCollaborazione,titoliSoggetto,sesso,province,nazioni,albiProfessionali,cassePrevidenza</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageDatiUltImpresa*" class="openPageDatiUltImpresaAggImpresaAction" method="openPage{1}">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepDatiUlterioriImpresa.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">province,certificatoriSOA,certificatoriISO,sino,tipiImpresaDittaIndiv,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,tipiRegimeFiscale,classiDimensione,settoreAttivitaEconomica</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openPageRiepilogo" class="openPageRiepilogoAggImpresaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,ambitoTerritoriale,sino</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="processPageDatiPrincImpresa" class="processPageDatiPrincImpresaAggImpresaAction">
+			<result type="chain" name="success">openPageIndirizziImpresaClear</result>
+			<result type="chain" name="successNoIndirizzi">openPageSoggettiImpresaClear</result>
+			<result type="chain" name="successNoIndirizziLiberoProf">openPageAltriDatiAnagrImpresa</result>
+			<result type="chain" name="input">openPageDatiPrincImpresaAfterError</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageIndirizziImpresa" class="processPageIndirizziImpresaAggImpresaAction">
+			<result type="chain" name="success">openPageSoggettiImpresaClear</result>
+			<result type="chain" name="successLiberoProf">openPageAltriDatiAnagrImpresa</result>
+			<result type="chain" name="input">openPageIndirizziImpresa</result>
+			<result type="chain" name="refresh">openPageIndirizziImpresaClear</result>
+			<result type="chain" name="modify">openPageIndirizziImpresaModify</result>
+			<result type="chain" name="back">openPageDatiPrincImpresa</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="modifyIndirizzoImpresa" class="processPageIndirizziImpresaAggImpresaAction" method="modify">
+			<result type="chain" name="modify">openPageIndirizziImpresaModify</result>
+		</action>
+
+		<action name="*eleteIndirizzoImpresa" class="processPageIndirizziImpresaAggImpresaAction" method="{1}elete">
+			<result type="chain" name="refresh">openPageIndirizziImpresaClear</result>
+		</action>
+
+		<action name="processPageAltriDatiAnagrImpresa" class="processPageAltriDatiAnagrImpresaAggImpresaAction">
+			<result type="chain" name="success">openPageDatiUltImpresa</result>
+			<result type="chain" name="successNoDatiUlteriori">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageAltriDatiAnagrImpresaAfterError</result>
+			<result type="chain" name="back">openPageIndirizziImpresaClear</result>
+			<result type="chain" name="backNoIndirizzi">openPageDatiPrincImpresa</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageSoggettiImpresa" class="processPageSoggettiImpresaAggImpresaAction">
+			<result type="chain" name="success">openPageDatiUltImpresa</result>
+			<result type="chain" name="successNoDatiUlteriori">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageSoggettiImpresa</result>
+			<result type="chain" name="refresh">openPageSoggettiImpresaClear</result>
+			<result type="chain" name="modify">openPageSoggettiImpresaModify</result>
+			<result type="chain" name="back">openPageIndirizziImpresaClear</result>
+			<result type="chain" name="backNoIndirizzi">openPageDatiPrincImpresa</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAltraCarica,tipiCollaborazione</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="modifySoggettoImpresa" class="processPageSoggettiImpresaAggImpresaAction" method="modify">
+			<result type="chain" name="modify">openPageSoggettiImpresaModify</result>
+		</action>
+
+		<action name="copySoggettoImpresa" class="processPageSoggettiImpresaAggImpresaAction" method="copy">
+			<result type="chain" name="copy">openPageSoggettiImpresaCopy</result>
+		</action>
+
+		<action name="*eleteSoggettoImpresa" class="processPageSoggettiImpresaAggImpresaAction" method="{1}elete">
+			<result type="chain" name="refresh">openPageSoggettiImpresaClear</result>
+		</action>
+
+		<action name="processPageDatiUltImpresa" class="processPageDatiUltImpresaAggImpresaAction">
+			<result type="chain" name="success">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageDatiUltImpresaAfterError</result>
+			<result type="chain" name="back">openPageSoggettiImpresaClear</result>
+			<result type="chain" name="backLiberoProf">openPageAltriDatiAnagrImpresa</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogo" class="aggiornamentoImpresaAction">
+			<result name="success" type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/aggiornamentoSuccess.jsp
+			</result>
+			<result type="chain" name="back">openPageDatiUltImpresa</result>
+			<result type="chain" name="backNoDatiUlteriori">openPageSoggettiImpresaClear</result>
+			<result type="chain" name="backNoDatiUlterioriLiberoProf">openPageAltriDatiAnagrImpresa</result>
+			<result type="chain" name="cancel">questionCancelAggiornamento</result>
+			<result name="errorAgg" type="chain">openPageRiepilogo</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="questionCancelAggiornamento" class="cancelAggImpresaAction" method="questionCancel">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/abortAggiornamento.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="*Aggiornamento" class="cancelAggImpresaAction" method="{1}">
+			<result type="redirect">${url}?actionPath=${actionPath}&amp;currentFrame=${currentFrame}&amp;ext=${ext}</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<!-- download di file non viene utilizzato TokenInterceptor -->
+		<action name="createPdf*" class="genPdfDatiImpresaAction" method="createPdf{1}">
+			<result type="stream">
+				<param name="contentType">application/pdf</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,checkGruppoIVA,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica,tipiSocietaCooperative</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="openVariazione" class="impresaAction" method="get">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/insertVariazione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="richVariazione" class="richVariazioneDatiImpresaAction">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/variazioneSuccess.jsp
+			</result>
+			<result type="chain" name="input">openVariazione</result>
+			<result type="chain" name="errorWS">openVariazione</result>
+			<result type="dispatcher" name="cancel">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/abortVariazione.jsp
+			</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="reloadVariazione" class="richVariazioneDatiImpresaAction" method="reload">
+			<result type="chain" name="input">openVariazione</result>
+		</action>
+
+		<!-- il download di file non viene utilizzato TokenInterceptor -->
+		<action name="exportDatiImpresa" class="impresaAction" method="exportXml">
+			<result type="stream">
+				<param name="contentType">application/xml</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiNaturaGiuridica,tipiImpresaIscrAlbo,province,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,sino</param>
+			</interceptor-ref>
+		</action>
+
+	</package>
+
+</struts>

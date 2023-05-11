@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p (%c:%L) - %m%n"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" />
+            </Filters>
+        </Console>
+        <RollingFile name="ApplicationLog" fileName="${sys:catalina.home}/logs/${nomeWebapp}.log" append="true" filePattern="${sys:catalina.home}/logs/${nomeWebapp}.log.%d{'.'yyyy-MM-dd}">
+            <PatternLayout pattern="&lt;%-5p&gt; [%d] [%t] %m%n"/>
+            <Filters>
+                <!-- VARIAZIONE LIVELLO LOG --><ThresholdFilter level="${log4j.appender.applicationLog.threshold}" />
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="eventLog" fileName="${sys:catalina.home}/logs/${nomeWebapp}-events.log" append="true" filePattern="${sys:catalina.home}/logs/${nomeWebapp}.log.%d{'.'yyyy-MM-dd}">
+            <PatternLayout pattern="%m%n"/>
+            <Filters>
+                <ThresholdFilter level="${log4j.appender.applicationLog.threshold}" />
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+            </Policies>
+        </RollingFile>
+    </appenders>
+    <Loggers>
+        <Logger name="noModule" level="FATAL" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="org.springframework" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="com.opensymphony.xwork2.ObjectFactory" level="FATAL" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="entando.digester" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="it.maggioli.eldasoft" level="ALL" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="entando" level="ALL" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="com.opensymphony.xwork2.ognl" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="com.agiletec" level="ALL" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="org.apache.tiles.impl" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="org.apache.struts2.components" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="org.apache.struts2" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="com.opensymphony" level="ERROR" additivity="false">
+            <AppenderRef ref="ApplicationLog"/>
+        </Logger>
+        <Logger name="events" level="INFO" additivity="false">
+            <AppenderRef ref="eventLog"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="ApplicationLog"/>
+        </Root>
+    </Loggers>
+</Configuration>

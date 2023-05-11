@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="core_do/ppcommon/CustomConfig" namespace="/do/ppcommon/CustomConfig"
+		extends="japs-default">
+
+		<action name="editInterface" class="customInterfaceAction"
+			method="edit">
+			<result type="tiles">admin.ppcommon.CustomInterface.entryInterface
+			</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+		<action name="saveInterface" class="customInterfaceAction"
+			method="save">
+			<result type="tiles">admin.ppcommon.CustomInterface.saveInterfaceConfirmed
+			</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="editAppParam" class="applicationParamAction"
+			method="edit">
+			<result type="tiles">admin.ppcommon.ApplicationParam.entryAppParam
+			</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+
+		<action name="saveAppParam" class="applicationParamAction">
+			<result type="tiles">admin.ppcommon.ApplicationParam.saveAppParamConfirmed
+			</result>
+			<result name="noCheck" type="chain">editAppParam</result>
+			<result name="input" type="tiles">admin.ppcommon.ApplicationParam.entryAppParam
+			</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="listCustomPdf" class="customPdfAction" method="list">
+			<result type="tiles">admin.ppcommon.CustomPdf.list</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="newCustomPdf" class="customPdfAction" method="newCustomPdf">
+			<result type="tiles">admin.ppcommon.CustomPdf.add</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="saveCustomPdf" class="customPdfAction" method="saveCustomPdf">
+			<result type="chain">listCustomPdf</result>
+			<result type="chain" name="input">newCustomPdf</result>
+			<interceptor-ref name="japsValidationStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="trashCustomPdf" class="customPdfAction" method="trashCustomPdf">
+			<result type="tiles">admin.ppcommon.CustomPdf.trash</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="deleteCustomPdf" class="customPdfAction" method="deleteCustomPdf">
+			<result type="chain">listCustomPdf</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">superuser</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="searchEvents" class="searchEvents">
+			<result type="tiles">admin.ppcommon.SearchEvents</result>
+			<interceptor-ref name="japsDefaultStack">
+				<param name="requestAuth.requiredPermission">viewUsers</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="searchEventsByCriteria" class="searchEvents" method="search">
+            <result type="tiles">admin.ppcommon.SearchEvents</result>
+            <result type="chain" name="input">searchEvents</result> 
+        	<interceptor-ref name="japsValidationStack"><param name="requestAuth.requiredPermission">viewUsers</param></interceptor-ref>
+        </action>
+        
+        <action name="openEventDetail" class="searchEvents" method="openEventDetail">
+            <result type="tiles">admin.ppcommon.SearchEvents.openEventDetail</result>
+        	<interceptor-ref name="japsDefaultStack"><param name="requestAuth.requiredPermission">viewUsers</param></interceptor-ref>
+        </action>
+        
+        <action name="backFromDetail" class="searchEvents" method="backFromDetail">
+            <result type="tiles">admin.ppcommon.SearchEvents</result>
+        	<interceptor-ref name="japsDefaultStack"><param name="requestAuth.requiredPermission">viewUsers</param></interceptor-ref>
+        </action>
+        
+	</package>
+</struts>

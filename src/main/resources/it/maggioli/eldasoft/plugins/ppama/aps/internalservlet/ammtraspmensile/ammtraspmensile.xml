@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/AMA/AmmTraspMensile" namespace="/do/FrontEnd/AMA/AmmTraspMensile"  
+		extends="pp-common">
+		
+ 		<!-- risponde a openSearch, search -->
+ 		<action name="*earch" class="ammTraspMensileFinderAction" method="{1}earch">
+			<result type="dispatcher">			
+ 				/WEB-INF/plugins/ppama/aps/jsp/internalservlet/ammtraspmensile/list.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>		
+
+		<action name="view" class="dettaglioProceduraTraspMensileAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppama/aps/jsp/internalservlet/ammtraspmensile/view.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">			
+				<param name="types">tipiAppalto</param>
+			</interceptor-ref> 			
+		</action>
+		
+		<action name="export" class="ammTraspMensileFinderAction" method="export">
+			<result name="export" type="stream">
+				<param name="contentType">text/csv</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="export.csv"</param>
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref> 	
+		</action>
+
+	</package>
+
+</struts>

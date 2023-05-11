@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<package name="portgare_do/FrontEnd/ContrattiLFS" namespace="/do/FrontEnd/ContrattiLFS"
+		extends="pp-common">
+
+		<action name="openPageComunicazioniRicevute" class="comunicazioniLFSRicevuteAction" method="openPageComunicazioniLFSRicevute">
+			<result type="chain">
+		        <param name="actionName">openPageComunicazioniLFSRicevute</param>
+		        <param name="namespace">/do/FrontEnd/Comunicazioni</param>
+		    </result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="searchContratti" class="contrattiLFSFinderAction" method="open">
+			<result type="dispatcher">
+				/WEB-INF/plugins/pplfs/aps/jsp/internalServlet/contratti/contrattiFind.jsp
+			</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="findContratti" class="contrattiLFSFinderAction" method="find">
+			<result type="dispatcher">
+				/WEB-INF/plugins/pplfs/aps/jsp/internalServlet/contratti/contrattiFind.jsp
+			</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="dettaglio" class="contrattiLFSFinderAction" method="detail">
+			<result type="dispatcher">
+				/WEB-INF/plugins/pplfs/aps/jsp/internalServlet/contratti/dettaglio.jsp
+			</result>
+			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="download" class="contrattiLFSAction" method="download">
+			<result type="chain">
+		        <param name="actionName">downloadDocumentoRiservato</param>
+		        <param name="namespace">/do/FrontEnd/DocDig</param>
+		    </result>
+		</action>
+
+	</package>
+
+</struts>

@@ -1,0 +1,146 @@
+/* Titillium Web */
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 300;
+    src: url(./titillium-web/TitilliumWeb-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./titillium-web/TitilliumWeb-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 600;
+    src: url(./titillium-web/TitilliumWeb-SemiBold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 700;
+    src: url(./titillium-web/TitilliumWeb-Bold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    src: url(./roboto/Roboto-Light.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./roboto/Roboto-Regular.ttf) format('truetype');
+}
+
+/* Roboto */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    src: url(./roboto/Roboto-Medium.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url(./roboto/Roboto-Bold.ttf) format('truetype');
+}
+
+/* Oswald */
+@font-face {
+    font-family: 'Oswald';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./oswald/Oswald-Regular.ttf) format('truetype');
+}
+
+
+@font-face {
+    font-family: 'montserrat';
+    src: url('./montserrat/montserrat-light-webfont.eot');
+    src: url('./montserrat/montserrat-light-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./montserrat/montserrat-light-webfont.woff2') format('woff2'),
+        url('./montserrat/montserrat-light-webfont.woff') format('woff'),
+        url('./montserrat/montserrat-light-webfont.ttf') format('truetype'),
+        url('./montserrat/montserrat-light-webfont.svg#montserratextralight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* Lato */
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 100;
+    src: local("Lato Thin"), local("Lato-Thin"), url("./Lato/Lato-Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Lato Light"), local("Lato-Light"), url("./Lato/Lato-Light.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Lato Regular"), local("Lato-Regular"), url("./Lato/Lato-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Lato Bold"), local("Lato-Bold"), url("./Lato/Lato-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 900;
+    src: local('Lato Black'), local('Lato-Black'), url(./Lato/Lato-Black.ttf) format('truetype');
+}
+
+/* Roboto Condensed */
+@font-face {
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 300;
+    src: url(./roboto-condensed/RobotoCondensed-Light.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./roboto-condensed/RobotoCondensed-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 700;
+    src: url(./roboto-condensed/RobotoCondensed-Bold.ttf) format('truetype');
+
+}
+
+  
+ 
+
+
+  
+  
+ 

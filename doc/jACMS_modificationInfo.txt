@@ -1,8 +1,0 @@
-
-- Rewriting interfaces:
-/WEB-INF/plugins/jacms/apsadmin/jsp/category/categoryReferences.jsp
-/WEB-INF/plugins/jacms/apsadmin/jsp/portal/pageReferences.jsp
-/WEB-INF/plugins/jacms/apsadmin/jsp/user/group/groupReferences.jsp
-
-- Override Bean "PageManager"
-Bean Definition on file /WEB-INF/plugins/jacms/conf/managers/baseManagersConfig.xml

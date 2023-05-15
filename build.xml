@@ -1,7 +1,0 @@
-<project name="PortaleAppalti" default="all" basedir=".">
-	<description>jAPS 2.0 - Build file</description>
-	
-	<import file="buildProperties.xml"/>
-	<import file="buildTasks.xml"/>
-	
-</project>

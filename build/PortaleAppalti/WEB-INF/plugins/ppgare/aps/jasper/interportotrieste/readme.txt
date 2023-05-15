@@ -1,2 +1,0 @@
-modelli copia di quelli standard con le seguenti differenze:
-- modello iscrizione elenco, aggiunto un paragrafo in coda a quelli esistenti (testo: " di aver preso visione del codice etico e del modello organizzativo e di rispettarne i contenuti").

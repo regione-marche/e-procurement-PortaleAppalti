@@ -1,1 +1,0 @@
-<jsp:forward page="/it/homepage.wp"/>

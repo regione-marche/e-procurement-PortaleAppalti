@@ -1,1 +1,0 @@
-modello copia del modello standard con la rimozione di tutto il testo fisso di premessa

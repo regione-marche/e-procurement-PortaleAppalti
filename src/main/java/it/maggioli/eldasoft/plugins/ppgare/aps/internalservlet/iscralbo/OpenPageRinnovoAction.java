@@ -13,6 +13,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IA
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -31,6 +33,10 @@ import java.util.List;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageRinnovoAction extends AbstractOpenPageAction implements SessionAware {
 	/**
 	 * UID
@@ -141,49 +147,18 @@ public class OpenPageRinnovoAction extends AbstractOpenPageAction implements Ses
 		this.tipoElenco = tipoElenco;
 	}
 
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-
-	public Integer getLimiteTotaleUploadDocIscrizione() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
-
-	public String getSTEP_IMPRESA() {
-		return WizardRinnovoHelper.STEP_IMPRESA;
-	}
-	
-	public String getSTEP_SCARICA_ISCRIZIONE() {
-		return WizardRinnovoHelper.STEP_SCARICA_ISCRIZIONE;
-	}
-	
-	public String getSTEP_DOCUMENTAZIONE_RICHIESTA_RINNOVO() {
-		return WizardRinnovoHelper.STEP_DOCUMENTAZIONE_RICHIESTA_RINNOVO;
-	}
-
-	public String getSTEP_PRESENTA_ISCRIZIONE() {
-		return WizardIscrizioneHelper.STEP_PRESENTA_ISCRIZIONE;
-	}
-	
-	public int getTIPOLOGIA_ELENCO_CATALOGO() {
-		return PortGareSystemConstants.TIPOLOGIA_ELENCO_CATALOGO;
-	}
-
-	public int getTIPOLOGIA_ELENCO_STANDARD() {
-		return PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD;
-	}
-
-	public int getDOCUMENTO_FORMATO_FIRMATO() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO;
-	}
-
-	public int getDOCUMENTO_FORMATO_PDF() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF;
-	}
-
-	public int getDOCUMENTO_FORMATO_EXCEL() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL;
-	}
+	/**
+	 * espone le costanti alla pagina JSP
+	 */
+	public String getSTEP_IMPRESA() { return WizardRinnovoHelper.STEP_IMPRESA; }
+	public String getSTEP_SCARICA_ISCRIZIONE() { return WizardRinnovoHelper.STEP_SCARICA_ISCRIZIONE; }
+	public String getSTEP_DOCUMENTAZIONE_RICHIESTA_RINNOVO() { return WizardRinnovoHelper.STEP_DOCUMENTAZIONE_RICHIESTA_RINNOVO; }
+	public String getSTEP_PRESENTA_ISCRIZIONE() { return WizardIscrizioneHelper.STEP_PRESENTA_ISCRIZIONE; }
+	public int getTIPOLOGIA_ELENCO_CATALOGO() { return PortGareSystemConstants.TIPOLOGIA_ELENCO_CATALOGO; }
+	public int getTIPOLOGIA_ELENCO_STANDARD() { return PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD; }
+	public int getDOCUMENTO_FORMATO_FIRMATO() { return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO; }
+	public int getDOCUMENTO_FORMATO_PDF() { return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF; }
+	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }
 
 	/**
 	 * Funzione di lettura dati dei documenti in base alla tipologia di busta
@@ -208,6 +183,7 @@ public class OpenPageRinnovoAction extends AbstractOpenPageAction implements Ses
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
 			try {
 				this.tipoElenco = rinnovoHelper.getTipologia();
+				
 				/* --- CESSATI --- */
 				WizardDatiImpresaHelper datiImpresaHelper = ImpresaAction.getLatestDatiImpresa(
 						this.getCurrentUser().getUsername(),
@@ -216,25 +192,16 @@ public class OpenPageRinnovoAction extends AbstractOpenPageAction implements Ses
 				this.session.put(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA, 
 								 datiImpresaHelper);
 				
-				TipoPartecipazioneType tipoPartecipazione = this.bandiManager
-					.getTipoPartecipazioneImpresa(
-							this.getCurrentUser().getUsername(),
-							rinnovoHelper.getIdBando(),
-							null);
-				
 				rinnovoHelper.setCodice(rinnovoHelper.getIdBando());
 				
-				List<DocumentazioneRichiestaType> documentiRichiestiDB = this.bandiManager
-					.getDocumentiRichiestiRinnovoIscrizione(
-							rinnovoHelper.getCodice(), 
-							datiImpresaHelper.getDatiPrincipaliImpresa().getTipoImpresa(), 
-							tipoPartecipazione.isRti());
+				getUploadValidator().setHelper(rinnovoHelper);
+				
+				List<DocumentazioneRichiestaType> documentiRichiestiDB = rinnovoHelper.getDocumentiRichiestiBO();
 
 				// con l'elenco dei documentiRichiestiDB richiesti si creano 2
 				// liste, una con gli elementi inseriti e una con quelli mancanti
 				List<DocumentazioneRichiestaType> documentiMancantiDB = new ArrayList<DocumentazioneRichiestaType>();
 				List<DocumentazioneRichiestaType> documentiInseritiDB = new ArrayList<DocumentazioneRichiestaType>();
-
 				for (int i = 0; i < documentiRichiestiDB.size(); i++) {
 					DocumentazioneRichiestaType elem = documentiRichiestiDB.get(i);
 
@@ -265,8 +232,8 @@ public class OpenPageRinnovoAction extends AbstractOpenPageAction implements Ses
 //					this.dimensioneAttualeFileCaricati += s;
 //				}
 				WizardDocumentiHelper wizardDocumentiHelper = rinnovoHelper.getDocumenti();
+				dimensioneAttualeFileCaricati += wizardDocumentiHelper.getTotalSize();
 				if (CollectionUtils.isNotEmpty(wizardDocumentiHelper.getRequiredDocs())) {
-					dimensioneAttualeFileCaricati += Attachment.sumSize(wizardDocumentiHelper.getRequiredDocs());
 					esisteFileConFirmaNonVerificata =
 							wizardDocumentiHelper.getRequiredDocs()
 									.stream()
@@ -274,7 +241,6 @@ public class OpenPageRinnovoAction extends AbstractOpenPageAction implements Ses
 					logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 				}
 				if (CollectionUtils.isNotEmpty(wizardDocumentiHelper.getAdditionalDocs())) {
-					dimensioneAttualeFileCaricati += Attachment.sumSize(wizardDocumentiHelper.getAdditionalDocs());
 					esisteFileConFirmaNonVerificata =
 							wizardDocumentiHelper.getAdditionalDocs()
 									.stream()

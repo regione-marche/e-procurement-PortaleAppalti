@@ -119,9 +119,8 @@ public class DgueBuilder {
 	public DgueBuilder() {
 		//ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
 		//configManager = (ConfigInterface) ctx.getBean(SystemConstants.BASE_CONFIG_MANAGER);
-		//appParamManager = (IAppParamManager) ctx.getBean(PortGareSystemConstants.APPPARAM_MANAGER);
 		configManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, ServletActionContext.getRequest());
-		appParamManager = (IAppParamManager) ApsWebApplicationUtils.getBean(PortGareSystemConstants.APPPARAM_MANAGER, ServletActionContext.getRequest());
+		appParamManager = (IAppParamManager) ApsWebApplicationUtils.getBean(CommonSystemConstants.APP_PARAM_MANAGER, ServletActionContext.getRequest());
 		eventManager = (IEventManager) ApsWebApplicationUtils.getBean(PortGareSystemConstants.EVENTI_MANAGER, ServletActionContext.getRequest());
 	}
 	

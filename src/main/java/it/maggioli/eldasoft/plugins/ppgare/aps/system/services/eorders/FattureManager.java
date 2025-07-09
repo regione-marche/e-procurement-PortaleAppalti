@@ -40,8 +40,8 @@ public class FattureManager extends AbstractService {
 	
 	@Override
 	public void init() throws Exception {
-		logger.info("init");
-		logger.info("this.wsOrdiniNSO: {}",this.wsOrdiniNSO.toString());
+		logger.debug("init");
+		logger.debug("this.wsOrdiniNSO: {}",this.wsOrdiniNSO.toString());
 		this.nso = wsOrdiniNSO.getNsoV11();
 		this.fattApi = wsOrdiniNSO.getApiFatture();
 	}
@@ -77,7 +77,7 @@ public class FattureManager extends AbstractService {
 	}
 
 	public FatturaElettronicaType getDatiGeneraliFattura(Long idFattura) throws ApiException {
-		logger.info("Getting dati testata for fattura {}",idFattura);
+		logger.debug("Getting dati testata for fattura {}",idFattura);
 		logger.debug("this.fattApi.getBasePath {}",this.fattApi.getApiClient().getBasePath());
 		logger.debug("this.fattApi.auth {}",this.fattApi.getApiClient().getAuthentication("Bearer"));
 		logger.debug("this.fattApi.auth {}",((ApiKeyAuth)this.fattApi.getApiClient().getAuthentication("Bearer")).getApiKey());
@@ -88,13 +88,13 @@ public class FattureManager extends AbstractService {
 	}
 	
 	public void updateDatiGeneraliFattura(Long idOrdine, FatturaElettronicaType fattura) throws ApiException {
-		logger.info("Called saveDatiTestataFattura");
+		logger.debug("Called saveDatiTestataFattura");
 		UpdateDatiGeneraliFatturaRequest req = new UpdateDatiGeneraliFatturaRequest();
 		req.setFatturaElettronica(fattura);
 		req.setNsoWsFattureId(idOrdine);
 		try {
 			BaseResponse br = this.fattApi.updateDatiGeneraliFatturaUsingPOST(req );
-			logger.info("{}",br);
+			logger.debug("{}",br);
 		} catch(ApiException ex) {
 			logger.error("Received response: {}",ex.getCode());
 			throw ex;
@@ -103,11 +103,11 @@ public class FattureManager extends AbstractService {
 	
 	public DatiBeniServiziType getDatiLinee(Long idFattura) throws ApiException {
 		try {
-			logger.info("getDatiLinee");
+			logger.debug("getDatiLinee");
 			GetDatiRigheFatturaResponse resp = this.fattApi.getInvoiceLinesDataUsingGET(idFattura);
-			logger.info("getDatiLinee responses {}",resp);
+			logger.debug("getDatiLinee responses {}",resp);
 			if(!resp.isEsito()) return null;
-			logger.info("getDatiLinee responses is esito true");
+			logger.debug("getDatiLinee responses is esito true");
 			return resp.getDatiBeniServizi();
 		} catch(ApiException e) {
 			logger.error("Error getting linee fatture {}",e.getMessage(),e);
@@ -119,14 +119,14 @@ public class FattureManager extends AbstractService {
 		UpdateDatiRigheFatturaRequest req = new UpdateDatiRigheFatturaRequest();
 		req.setNsoWsFattureId(idFattura);
 		req.setDatiBeniServizi(datiBeniServizi);
-		logger.info("{}",req);
+		logger.debug("{}",req);
 		BaseResponse resp = this.fattApi.updateDatiRigheFatturaUsingPOST(req );
-		logger.info("updateLinee {}",resp);
+		logger.debug("updateLinee {}",resp);
 	}
 
 	public NsoWsFatture getDatiFatturaById(Long idFatt, String type) throws ApiException {
 		NsoWsFattureResponse resp = this.fattApi.getNsoWsFattureByIdUsingGET(idFatt, type);
-		logger.info("getDatiFatturaById: {}",resp);
+		logger.debug("getDatiFatturaById: {}",resp);
 		if(resp.isEsito()) {
 			return resp.getFattura();
 		}
@@ -162,6 +162,6 @@ public class FattureManager extends AbstractService {
 		dd.setIdOrdine(idOrdine);
 		dd.setProgInvio(progInvio);
 		InvoiceDraftKeeper resp = this.nso.createDownloadUsingPUT(dd);
-		logger.info("Create Draft {}",resp);
+		logger.debug("Create Draft {}",resp);
 	}
 }

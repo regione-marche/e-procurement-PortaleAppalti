@@ -22,7 +22,7 @@ public class AvvisiSearchBean extends BaseSearchBean implements Serializable {
 	@Validate(EParamValidation.STAZIONE_APPALTANTE)
 	private String stazioneAppaltante;
 	@Validate(EParamValidation.OGGETTO_BANDI)
-	private String oggetto;
+	private String oggetto;	
 	@Validate(EParamValidation.TIPO_AVVISO)
 	private String tipoAvviso;
 	@Validate(EParamValidation.DATE_DDMMYYYY)
@@ -33,6 +33,8 @@ public class AvvisiSearchBean extends BaseSearchBean implements Serializable {
 	private String dataScadenzaDa;
 	@Validate(EParamValidation.DATE_DDMMYYYY)
 	private String dataScadenzaA;
+	@Validate(EParamValidation.STATO)
+    private String stato;
 	@Validate(EParamValidation.SI_NO)
 	private String altriSoggetti;
 	@Validate(EParamValidation.SI_NO)
@@ -43,7 +45,8 @@ public class AvvisiSearchBean extends BaseSearchBean implements Serializable {
 	private String isRecycle;
 	@Validate(EParamValidation.SI_NO)
 	private String isPnrr;
-
+	@Validate(EParamValidation.TIPO_AVVISO_GENERALI)
+	private String tipoAvvisoGenerale;
 
 	public String getStazioneAppaltante() {
 		return stazioneAppaltante;
@@ -104,6 +107,14 @@ public class AvvisiSearchBean extends BaseSearchBean implements Serializable {
 		if (!"".equals(dataScadenzaA))
 			this.dataScadenzaA = dataScadenzaA;
 	}
+	
+	public String getStato() {
+		return stato;
+	}
+
+	public void setStato(String stato) {
+		this.stato = stato;
+	}
 
 	public String getAltriSoggetti() {
 		return altriSoggetti;
@@ -143,8 +154,16 @@ public class AvvisiSearchBean extends BaseSearchBean implements Serializable {
 
 	public void setIsPnrr(String isPnrr) {
 		this.isPnrr = isPnrr;
-	}	
+	}
 
+	public String getTipoAvvisoGenerale() {
+		return tipoAvvisoGenerale;
+	}
+
+	public void setTipoAvvisoGenerale(String tipoAvvisoGenerale) {
+		this.tipoAvvisoGenerale = tipoAvvisoGenerale;
+	}
+	
 	// START - Getter custom
 
 	public boolean checkDataPubblicazioneDa(BaseAction action, String fromPage) {

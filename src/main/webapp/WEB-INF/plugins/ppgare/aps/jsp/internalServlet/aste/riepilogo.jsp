@@ -42,7 +42,7 @@
 		<wp:i18n key='LABEL_OFFERTA_INIZIALE_ASTA_NON_TROVATA'/> <s:property value="codice" />
 		<s:if test="%{codiceLotto != null && codiceLotto != ''}" >
 			- <wp:i18n key='LABEL_LOTTO'/> <s:property value="codiceLotto" />
-		</s:if> 	
+		</s:if>
 	</c:if>
 	<c:if test="${numRilanci > 0}">
 		<div class="detail-section first-detail-section">
@@ -75,7 +75,7 @@
 	
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_FASE" /> : </label>
-			<s:property value="dettaglioAsta.fase" />			
+			<s:property value="dettaglioAsta.fase" />
 		</div>
 		
 		<div class="detail-row">
@@ -85,17 +85,17 @@
 		
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_DURATA_MINIMA" /> : </label>
-			<s:property value="dettaglioAsta.durataMinima" />			
+			<s:property value="dettaglioAsta.durataMinima" />
 		</div>
 		
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_DURATA_MASSIMA" /> : </label>
-			<s:property value="dettaglioAsta.durataMassima" />			
+			<s:property value="dettaglioAsta.durataMassima" />
 		</div>
 		
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_TEMPO_BASE" /> : </label>
-			<s:property value="dettaglioAsta.tempoBase" />			
+			<s:property value="dettaglioAsta.tempoBase" />
 		</div>
 		
 		<div class="detail-row">
@@ -103,7 +103,7 @@
 			<s:date name="dettaglioAsta.dataOraChiusura" format="dd/MM/yyyy HH:mm:ss" />
 		</div>
 
-		<c:if test="${not empty dettaglioAsta.scartoRilancioMinimo}">				
+		<c:if test="${not empty dettaglioAsta.scartoRilancioMinimo}">
 			<div class="detail-row">
 				<label><wp:i18n key="LABEL_SCARTO_MINIMO_RILANCIO_DA_ULTIMA_OFFERTA" /> : </label>
 				<s:text name="format.money5dec"><s:param value="dettaglioAsta.scartoRilancioMinimo"/></s:text>&nbsp;${simboloOfferta}
@@ -119,12 +119,12 @@
 		
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_ULTIMO_VALORE_OFFERTO" /> : </label>
-			<s:if test="%{dettaglioAsta.tipoOfferta == 1}">					
+			<s:if test="%{dettaglioAsta.tipoOfferta == 1}">
 				<s:text name="format.money5dec"><s:param value="dettaglioAsta.ribassoUltimoRilancio"/></s:text>&nbsp;${simboloOfferta}
 			</s:if>
 			<s:else>
 				<s:text name="format.money5dec"><s:param value="dettaglioAsta.importoUltimoRilancio"/></s:text>&nbsp;${simboloOfferta}
-			</s:else>							
+			</s:else>
 		</div>
 		
 <%-- 		
@@ -133,10 +133,10 @@
 			<s:iterator value="maps['tipiClassificaAsta']">
 				<s:if test="%{key == dettaglioAsta.tipoClassifica}"><s:property value="%{value}"/></s:if>
 			</s:iterator>
-		</div>				
+		</div>
 --%>		
 
-		<div class="detail-row">			
+		<div class="detail-row">
 			<s:set var="elencoClassifica" value="classifica" />	
 			<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/inc/iteratorClassifica.jsp" >
 				<jsp:param name="tipoClassifica" value="${dettaglioAsta.tipoClassifica}" />
@@ -158,12 +158,18 @@
 					<input type="hidden" name="fase" value="${dettaglioAsta.fase}" />
 				</div>
 			</form>
-		</div>		
+		</div>
 	</c:if>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}">
-			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
-		</a>
+		<form action='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value="${codice}" />
+			<input type="hidden" name="ext" value="" />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
+			</a>
+		</form>
 	</div>
 </div>

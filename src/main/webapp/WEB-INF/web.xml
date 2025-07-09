@@ -79,6 +79,9 @@
   <listener>
     <listener-class>com.agiletec.apsadmin.system.resource.JapsPluginLabelListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>it.maggioli.eldasoft.plugins.ppcommon.aps.SessionListener</listener-class>
+  </listener>
   <servlet>
     <servlet-name>ControllerServlet</servlet-name>
     <servlet-class>com.agiletec.aps.servlet.ControllerServlet</servlet-class>
@@ -92,10 +95,6 @@
   <servlet>
     <servlet-name>Struts2ExtServlet</servlet-name>
     <servlet-class>com.agiletec.apsadmin.system.dispatcher.Struts2ServletDispatcher</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>CaptchaServlet</servlet-name>
-    <servlet-class>it.maggioli.eldasoft.plugins.ppcommon.aps.servlet.CaptchaServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ControllerServlet</servlet-name>
@@ -112,10 +111,6 @@
   <servlet-mapping>
     <servlet-name>ResourceControllerServlet</servlet-name>
     <url-pattern>/protected/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>CaptchaServlet</servlet-name>
-    <url-pattern>/captcha/*</url-pattern>
   </servlet-mapping>
   <session-config>
     <session-timeout>30</session-timeout>

@@ -13,6 +13,15 @@
 			</result>
 			<result name="input" type="redirect">${urlErrori}</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
 		</action>
+		
+		<action name="initSpidSA" class="authAction" method="initSpidSA">
+			<result name="success" type="chain">authAction</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
 	</package>
 </struts>

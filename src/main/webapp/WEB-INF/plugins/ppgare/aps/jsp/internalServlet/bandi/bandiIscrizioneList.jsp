@@ -51,13 +51,13 @@
 					<div class="list-action">
 						<c:choose>
 							<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}'
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>'
 									 title='<wp:i18n key="LINK_VIEW_DETAIL" />'>
 									<wp:i18n key="LINK_VIEW_DETAIL" />
 								</a>
 							</c:when>
 							<c:otherwise>
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}'
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>'
 									 title='<wp:i18n key="LINK_VIEW_DETAIL" />' class="bkg detail-very-big">
 									<wp:i18n key="LINK_VIEW_DETAIL" />
 								</a>

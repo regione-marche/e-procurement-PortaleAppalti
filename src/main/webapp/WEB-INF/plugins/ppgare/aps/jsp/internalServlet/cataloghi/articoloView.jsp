@@ -218,7 +218,7 @@
 	</c:if>
 
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=<s:property value="codiceCatalogo"/>&amp;last=1&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=<s:property value="codiceCatalogo"/>&amp;last=1">
 			<wp:i18n key="LINK_BACK_TO_ARTICLES_LIST" />
 		</a>
 	</div>

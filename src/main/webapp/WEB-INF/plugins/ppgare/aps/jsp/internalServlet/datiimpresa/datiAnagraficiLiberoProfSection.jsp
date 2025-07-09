@@ -48,20 +48,23 @@
 			<label><wp:i18n key="LABEL_DATI_NASCITA" /> : </label>
 		</div>
 		<div class="element">
-			<label for="dataNascita"><wp:i18n key="LABEL_DATI_NASCITA_NATO_IL" /> (<wp:i18n key="LABEL_FORMATO_DATA" />) : <span class="required-field">*</span></label>
-			<s:textfield name="dataNascita" id="dataNascita"  value="%{dataNascita}" 
-									 size="10" maxlength="10" />
-			<label for="comuneNascita"> <wp:i18n key="LABEL_DATI_NASCITA_NATO_A" /> : <span class="required-field">*</span></label>
-			<s:textfield name="comuneNascita" id="comuneNascita" value="%{comuneNascita}" 
-									 size="20" maxlength="100" />
-			<label for="provinciaNascita"> <wp:i18n key="LABEL_PROVINCIA" /> :</label>
-			<s:select list="maps['province']" name="provinciaNascita" id="provinciaNascita" value="%{provinciaNascita}"
-								headerKey="" headerValue="%{#attr.headerValueProvincia}" >
-			</s:select>
+			<div class="contents-group">
+				<label for="dataNascita"><wp:i18n key="LABEL_DATI_NASCITA_NATO_IL" /> (<wp:i18n key="LABEL_FORMATO_DATA" />) : <span class="required-field">*</span></label>
+				<s:textfield name="dataNascita" id="dataNascita"  value="%{dataNascita}" 
+										 size="10" maxlength="10" />
+				<label for="comuneNascita"> <wp:i18n key="LABEL_DATI_NASCITA_NATO_A" /> : <span class="required-field">*</span></label>
+				<s:textfield name="comuneNascita" id="comuneNascita" value="%{comuneNascita}" 
+										 size="20" maxlength="100" />
+			</div>
+			<div class="contents-group">
+				<label for="provinciaNascita"> <wp:i18n key="LABEL_PROVINCIA" /> :</label>
+				<s:select list="maps['province']" name="provinciaNascita" id="provinciaNascita" value="%{provinciaNascita}"
+									headerKey="" headerValue="%{#attr.headerValueProvincia}" >
+				</s:select>
+			</div>
 		</div>
 	</div>
 	
-
 	<!-- <div class="fieldset-row">
 		<div class="label">
 			<label for="sesso"><wp:i18n key="LABEL_SESSO" /> : </label>
@@ -74,7 +77,6 @@
 		</div>
 	</div> -->
 
-
 	<div class="fieldset-row">
 		<div class="label">
 			<label><wp:i18n key="LABEL_ISCRIZIONE_ALBO_PROF" /> : <c:if test="${obblIscrizione}"><span class="required-field">*</span></c:if></label>
@@ -86,7 +88,7 @@
 				<wp:i18n key="OPT_CHOOSE_TIPOLOGIA" var="headerValueTipologiaAlboProf" />
 				<s:select list="maps['albiProfessionali']" name="tipologiaAlboProf" id="tipologiaAlboProf" value="%{tipologiaAlboProf}"
 									headerKey="" headerValue="%{#attr.headerValueTipologiaAlboProf}" >
-			</s:select>
+				</s:select>
 			</div>
 			<div class="contents-group">
 				<label for="numIscrizioneAlboProf"><wp:i18n key="LABEL_NUM_ISCRIZIONE" /> :</label>

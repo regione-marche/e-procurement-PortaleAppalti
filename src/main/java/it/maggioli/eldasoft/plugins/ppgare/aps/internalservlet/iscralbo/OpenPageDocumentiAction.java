@@ -9,6 +9,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachme
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -27,12 +29,15 @@ import java.util.Map;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageDocumentiAction extends BaseAction implements SessionAware {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -9152265474737463671L;
-	private final Logger logger = ApsSystemUtils.getLogger();
 
 	private Map<String, Object> session;
 
@@ -116,65 +121,23 @@ public class OpenPageDocumentiAction extends BaseAction implements SessionAware 
 		this.docUlterioreDesc = docUlterioreDesc;
 	}
 
-	public String getSTEP_IMPRESA() {
-		return WizardIscrizioneHelper.STEP_IMPRESA;
-	}
+	/**
+	 * espone le costanti alla JSP 
+	 */
+	public String getSTEP_IMPRESA() { return WizardIscrizioneHelper.STEP_IMPRESA; }
+	public String getSTEP_DENOMINAZIONE_RTI() { return WizardIscrizioneHelper.STEP_DENOMINAZIONE_RTI; }
+	public String getSTEP_DETTAGLI_RTI() { return WizardIscrizioneHelper.STEP_DETTAGLI_RTI; }
+	public String getSTEP_SELEZIONE_CATEGORIE() { return WizardIscrizioneHelper.STEP_SELEZIONE_CATEGORIE; }
+	public String getSTEP_RIEPILOGO_CAGTEGORIE() { return WizardIscrizioneHelper.STEP_RIEPILOGO_CATEGORIE; }
+	public String getSTEP_SCARICA_ISCRIZIONE() { return WizardIscrizioneHelper.STEP_SCARICA_ISCRIZIONE; }
+	public String getSTEP_DOCUMENTAZIONE_RICHIESTA() { return WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA; }	
+	public String getSTEP_PRESENTA_ISCRIZIONE() { return WizardIscrizioneHelper.STEP_PRESENTA_ISCRIZIONE; }
+	public String getSTEP_QUESTIONARIO() { return WizardIscrizioneHelper.STEP_QUESTIONARIO; }
+	public String getSTEP_RIEPILOGO_QUESTIONARIO() { return WizardIscrizioneHelper.STEP_RIEPILOGO_QUESTIONARIO; }
+	public int getDOCUMENTO_FORMATO_FIRMATO() { return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO; }
+	public int getDOCUMENTO_FORMATO_PDF() { return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF; }
+	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }
 
-	public String getSTEP_DENOMINAZIONE_RTI() {
-		return WizardIscrizioneHelper.STEP_DENOMINAZIONE_RTI;
-	}
-
-	public String getSTEP_DETTAGLI_RTI() {
-		return WizardIscrizioneHelper.STEP_DETTAGLI_RTI;
-	}
-
-	public String getSTEP_SELEZIONE_CATEGORIE() {
-		return WizardIscrizioneHelper.STEP_SELEZIONE_CATEGORIE;
-	}
-	
-	public String getSTEP_RIEPILOGO_CAGTEGORIE() {
-		return WizardIscrizioneHelper.STEP_RIEPILOGO_CATEGORIE;
-	}
-    
-	public String getSTEP_SCARICA_ISCRIZIONE() {
-		return WizardIscrizioneHelper.STEP_SCARICA_ISCRIZIONE;
-	}
-	
-	public String getSTEP_DOCUMENTAZIONE_RICHIESTA() {
-		return WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA;
-	}
-	
-	public String getSTEP_PRESENTA_ISCRIZIONE() {
-		return WizardIscrizioneHelper.STEP_PRESENTA_ISCRIZIONE;
-	}
-	
-	public String getSTEP_QUESTIONARIO() {
-		return WizardIscrizioneHelper.STEP_QUESTIONARIO;
-	}
-	
-	public String getSTEP_RIEPILOGO_QUESTIONARIO() {
-		return WizardIscrizioneHelper.STEP_RIEPILOGO_QUESTIONARIO;
-	}
-
-	public int getDOCUMENTO_FORMATO_FIRMATO() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO;
-	}
-
-	public int getDOCUMENTO_FORMATO_PDF() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF;
-	}
-
-	public int getDOCUMENTO_FORMATO_EXCEL() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL;
-	}
-
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-	
-	public Integer getLimiteTotaleUploadDocIscrizione() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
 	
 	/**
 	 * ...
@@ -211,23 +174,17 @@ public class OpenPageDocumentiAction extends BaseAction implements SessionAware 
 		String target = SUCCESS;
 		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
 						.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
-
+		
 		if (iscrizioneHelper == null) {
 			// la sessione e' scaduta, occorre riconnettersi
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			// la sessione non e' scaduta, per cui proseguo regolarmente
-
-//			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
-//							PortGareSystemConstants.WIZARD_ISCRALBO_PAGINA_DOCUMENTI);
-
+			getUploadValidator().setHelper(iscrizioneHelper);
+			
 			try {
-				List<DocumentazioneRichiestaType> documentiRichiesti = this.bandiManager
-					.getDocumentiRichiestiBandoIscrizione(
-							iscrizioneHelper.getIdBando(), 
-							iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-							iscrizioneHelper.isRti());
+				List<DocumentazioneRichiestaType> documentiRichiesti = iscrizioneHelper.getDocumentiRichiestiBO();
 
 				// con l'elenco dei documentiRichiesti richiesti si creano 2
 				// liste, una
@@ -264,8 +221,8 @@ public class OpenPageDocumentiAction extends BaseAction implements SessionAware 
 //					this.dimensioneAttualeFileCaricati += s;
 //				}
 
+				dimensioneAttualeFileCaricati += documentiHelper.getTotalSize();
 				if (CollectionUtils.isNotEmpty(documentiHelper.getRequiredDocs())) {
-					dimensioneAttualeFileCaricati += Attachment.sumSize(documentiHelper.getRequiredDocs());
 					esisteFileConFirmaNonVerificata =
 							documentiHelper.getRequiredDocs()
 									.stream()
@@ -273,7 +230,6 @@ public class OpenPageDocumentiAction extends BaseAction implements SessionAware 
 					logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 				}
 				if (CollectionUtils.isNotEmpty(documentiHelper.getAdditionalDocs())) {
-					dimensioneAttualeFileCaricati += Attachment.sumSize(documentiHelper.getAdditionalDocs());
 					esisteFileConFirmaNonVerificata =
 							documentiHelper.getAdditionalDocs()
 									.stream()

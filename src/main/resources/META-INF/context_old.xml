@@ -25,8 +25,8 @@
 		maxActive="8" maxIdle="4" 
 		username="agile" password="agile" 
 		url="jdbc:postgresql://WIN-S6B6G8CPN8V:5432/appalti_ora_serv" />	
-		
- 
+	
+	<Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
 
 	<!-- Properties specifiche dell'applicativo -->
 	<Environment name="wsOperazioniGenerali" value="http://pc113:8090/WSAppalti/services/WSOperazioniGeneraliSOAP" type="java.lang.String" override="false" />

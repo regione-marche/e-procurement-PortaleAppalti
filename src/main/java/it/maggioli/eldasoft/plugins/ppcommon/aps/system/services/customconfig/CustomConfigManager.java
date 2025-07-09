@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.AbstractService;
 
@@ -199,6 +200,19 @@ public class CustomConfigManager extends AbstractService implements
 		return getConfigurationValue(objectId, attrib, this._activeFuntion);
 	}
 
+	@Override
+	public boolean isActiveFunction(String objectId, String attrib, boolean defValue) {
+		boolean value = defValue;
+		try {
+			this.checkConfiguration(objectId, attrib, FEATURE_ACTIVE_FUNCTION);
+			value = getConfigurationValue(objectId, attrib, this._activeFuntion);
+		} catch (Exception e) {
+			ApsSystemUtils.getLogger().warn("Non e' stato possibile leggere la configurazione ACT per l'objectId " + objectId + " feature " + attrib + ". Impostato default " + defValue);
+			value = defValue;
+		}
+		return value;
+	}
+	
 	/**
 	 * Verifica l'esistenza della configurazione basata sui dati di input
 	 * (chiave).

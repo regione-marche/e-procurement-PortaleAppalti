@@ -1,29 +1,25 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsSystemException;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CarrelloProdottiSessione;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardDocumentiProdottoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.InputStream;
-import java.time.Instant;
-import java.util.Date;
 
 /**
  * Action di gestione delle operazioni nella pagina dei documenti del wizard
@@ -31,6 +27,7 @@ import java.util.Date;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -71,9 +68,6 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		this.eventManager = eventManager;
 	}
 
-	/**
-	 * @param customConfigManager the customConfigManager to set
-	 */
 	public void setCustomConfigManager(ICustomConfigManager customConfigManager) {
 		this.customConfigManager = customConfigManager;
 	}
@@ -94,107 +88,62 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		this.certRicContentType = certRicContentType;
 	}
 
-	/**
-	 * @return the certRicFileName
-	 */
 	public String getCertRicFileName() {
 		return certRicFileName;
 	}
 
-	/**
-	 * @param certRicFileName the certRicFileName to set
-	 */
 	public void setCertRicFileName(String certRicFileName) {
 		this.certRicFileName = certRicFileName;
 	}
 
-	/**
-	 * @return the schedTec
-	 */
 	public File getSchedTec() {
 		return schedTec;
 	}
 
-	/**
-	 * @param schedTec the schedTec to set
-	 */
 	public void setSchedTec(File schedTec) {
 		this.schedTec = schedTec;
 	}
 
-	/**
-	 * @return the schedTecContentType
-	 */
 	public String getSchedTecContentType() {
 		return schedTecContentType;
 	}
 
-	/**
-	 * @param schedTecContentType the schedTecContentType to set
-	 */
 	public void setSchedTecContentType(String schedTecContentType) {
 		this.schedTecContentType = schedTecContentType;
 	}
 
-	/**
-	 * @return the schedTecFileName
-	 */
 	public String getSchedTecFileName() {
 		return schedTecFileName;
 	}
 
-	/**
-	 * @param schedTecFileName the schedTecFileName to set
-	 */
 	public void setSchedTecFileName(String schedTecFileName) {
 		this.schedTecFileName = schedTecFileName;
 	}
 
-	/**
-	 * @return the immagine
-	 */
 	public File getImmagine() {
 		return immagine;
 	}
 
-	/**
-	 * @param immagine the immagine to set
-	 */
 	public void setImmagine(File immagine) {
 		this.immagine = immagine;
 	}
 
-	/**
-	 * @return the immagineContentType
-	 */
 	public String getImmagineContentType() {
 		return immagineContentType;
 	}
 
-	/**
-	 * @param immagineContentType the immagineContentType to set
-	 */
 	public void setmmagineContentType(String immagineContentType) {
 		this.immagineContentType = immagineContentType;
 	}
 
-	/**
-	 * @return the immagineFileName
-	 */
 	public String getImmagineFileName() {
 		return immagineFileName;
 	}
 
-	/**
-	 * @param immagineFileName the immagineFileName to set
-	 */
 	public void setImmagineFileName(String immagineFileName) {
 		this.immagineFileName = immagineFileName;
 	}
 
-	/**
-	 * @return the inputStream
-	 */
 	public InputStream getInputStream() {
 		return inputStream;
 	}
@@ -216,36 +165,25 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		} else {
 			int dimensioneImmagine = FileUploadUtilities.getFileSize(this.immagine);
 			
-			// traccia l'evento di upload di un file...
-			Event evento = new Event();
-			evento.setUsername(this.getCurrentUser().getUsername());
-			evento.setDestination(prodottoHelper.getCodiceCatalogo());
-			evento.setLevel(Event.Level.INFO);
-			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-			evento.setIpAddress(this.getCurrentUser().getIpAddress());
-			evento.setSessionId(this.getRequest().getSession().getId());
-			evento.setMessage("Gestione prodotti: immagine prodotto "
-					+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
-					+ ", file=" + this.immagineFileName 
-					+ ", dimensione=" + dimensioneImmagine + "KB");
-
-//			controlliOk = controlliOk && this.checkFileSize(this.immagine, getActualTotalSize(prodottoHelper.getDocumenti()), this.appParamManager);
-//			controlliOk = controlliOk && this.checkFileName(this.immagineFileName);
-//			controlliOk = controlliOk && this.checkFileExtension(this.immagineFileName, this.appParamManager, AppParamManager.ESTENSIONI_AMMESSE_IMMAGINE);			
-
-			boolean controlliOk =
-					checkFileSize(immagine, immagineFileName, getActualTotalSize(prodottoHelper.getDocumenti()), appParamManager, evento)
-					&& checkFileName(immagineFileName, evento)
-					&& checkFileExtension(immagineFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_IMMAGINE, evento)
-					&& checkFileFormat(immagine, immagineFileName, null, evento, false);
-
-			if (controlliOk) {
-
+			// valida l'upload del documento...
+			getUploadValidator()
+					.setHelper(prodottoHelper)
+					.setDocumento(immagine)
+					.setDocumentoFileName(immagineFileName)
+					.setDocumentoFormato(null)
+					.setOnlyP7m(false)
+					.setEstensioniAmmesse( (String)appParamManager.getConfigurationValue(AppParamManager.ESTENSIONI_AMMESSE_IMMAGINE) )
+					.setEventoDestinazione(prodottoHelper.getCodiceCatalogo())
+					.setEventoMessaggio("Gestione prodotti: immagine prodotto "
+										+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
+										+ ", file=" + this.immagineFileName 
+										+ ", dimensione=" + dimensioneImmagine + "KB");
+			
+			if ( getUploadValidator().validate() ) {
 				// si inseriscono i documenti in sessione
 				WizardDocumentiProdottoHelper documentiHelper = prodottoHelper.getDocumenti();
 
 				if (!this.immagineFileName.equals(documentiHelper.getImmagineFileName())) {
-
 					File f = new File(this.immagine.getParent() + File.separatorChar + FileUploadUtilities.generateFileName());
 					this.immagine.renameTo(f);
 					documentiHelper.setImmagineSize(dimensioneImmagine);
@@ -259,7 +197,8 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 			} else {
 				target = INPUT;
 			}
-			this.eventManager.insertEvent(evento);
+			
+			this.eventManager.insertEvent(getUploadValidator().getEvento());
 		}
 		return target;
 	}
@@ -283,40 +222,27 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		} else {
 			int dimensioneCertificazione = FileUploadUtilities.getFileSize(this.certRic);
 			
-			// traccia l'evento di upload di un file...
-			Event evento = new Event();
-			evento.setUsername(this.getCurrentUser().getUsername());
-			evento.setDestination(prodottoHelper.getCodiceCatalogo());
-			evento.setLevel(Event.Level.INFO);
-			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-			evento.setIpAddress(this.getCurrentUser().getIpAddress());
-			evento.setSessionId(this.getRequest().getSession().getId());
-			evento.setMessage("Gestione prodotti: certificazione prodotto "
-					+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
-					+ ", file=" + this.certRicFileName 
-					+ ", dimensione=" + dimensioneCertificazione + "KB");
-
-			boolean controlliOk =
-					checkFileSize(certRic, certRicFileName, getActualTotalSize(prodottoHelper.getDocumenti()), appParamManager, evento)
-					&& checkFileName(certRicFileName, evento)
-					&& checkFileExtension(certRicFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-					&& checkFileFormat(certRic, certRicFileName, null, evento, false);
-
-			if (controlliOk) {
-				try {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = this.checkFileSignature(this.certRic, this.certRicFileName, null,checkDate, evento, false, this.appParamManager, this.customConfigManager);
-				} catch (ApsSystemException e) {
-					ApsSystemUtils.getLogger().error("Errore nella verifica della firma.",e);
-					this.addActionError(this.getText("Errors.cannotVerifySign"));
-				}
+			// valida l'upload del documento...
+			getUploadValidator()
+					.setHelper(prodottoHelper)
+					//.setActualTotalSize(prodottoHelper.getDocumenti().getActualTotalSize())
+					.setDocumento(certRic)
+					.setDocumentoFileName(certRicFileName)
+					.setOnlyP7m(false)
+					.setCheckFileSignature(true)
+					.setEventoDestinazione(prodottoHelper.getCodiceCatalogo())
+					.setEventoMessaggio("Gestione prodotti: certificazione prodotto "
+										+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
+										+ ", file=" + this.certRicFileName 
+										+ ", dimensione=" + dimensioneCertificazione + "KB");
+			
+			if ( getUploadValidator().validate() ) {
 				// si inseriscono i documenti in sessione
 				WizardDocumentiProdottoHelper documentiHelper = prodottoHelper.getDocumenti();
 
 				if (documentiHelper.getCertificazioniRichiesteFileName().contains(this.certRicFileName)) {
 					this.addActionError(this.getText("Errors.certificazioneRichiestaPresent"));
 				} else {
-
 					File f = new File(this.certRic.getParent() + File.separatorChar + FileUploadUtilities.generateFileName());
 					this.certRic.renameTo(f);
 					documentiHelper.getCertificazioniRichiesteSize().add(dimensioneCertificazione);
@@ -330,7 +256,8 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 			} else {
 				target = INPUT;
 			}			
-			this.eventManager.insertEvent(evento);
+			
+			this.eventManager.insertEvent(getUploadValidator().getEvento());
 		}
 		return target;
 	}
@@ -353,51 +280,27 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		} else {
 			int dimensioneSchedaTecnica = FileUploadUtilities.getFileSize(this.schedTec);
 			
-			// traccia l'evento di upload di un file...
-			Event evento = new Event();
-			evento.setUsername(this.getCurrentUser().getUsername());
-			evento.setDestination(prodottoHelper.getCodiceCatalogo());
-			evento.setLevel(Event.Level.INFO);
-			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-			evento.setIpAddress(this.getCurrentUser().getIpAddress());
-			evento.setSessionId(this.getRequest().getSession().getId());
-			evento.setMessage("Gestione prodotti: scheda tecnica prodotto "
-					+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
-					+ ", file=" + this.schedTecFileName 
-					+ ", dimensione=" + dimensioneSchedaTecnica + "KB");
+			// valida l'upload del documento...
+			getUploadValidator()
+					.setHelper(prodottoHelper)
+					//.setActualTotalSize(prodottoHelper.getDocumenti().getActualTotalSize())
+					.setDocumento(schedTec)
+					.setDocumentoFileName(schedTecFileName)
+					.setOnlyP7m(false)
+					.setCheckFileSignature(true)
+					.setEventoDestinazione(prodottoHelper.getCodiceCatalogo())
+					.setEventoMessaggio("Gestione prodotti: scheda tecnica prodotto "
+										+ prodottoHelper.getDettaglioProdotto().getCodiceProdottoFornitore() 
+										+ ", file=" + this.schedTecFileName 
+										+ ", dimensione=" + dimensioneSchedaTecnica + "KB");
 
-			boolean controlliOk =
-					checkFileSize(schedTec, schedTecFileName, getActualTotalSize(prodottoHelper.getDocumenti()), appParamManager, evento)
-					&& checkFileName(schedTecFileName, evento)
-					&& checkFileExtension(schedTecFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-					&& checkFileFormat(schedTec, schedTecFileName, null, evento, false);
-
-			DocumentiAllegatiFirmaBean checkFirma = null;
-			try {
-				Date checkDate = Date.from(Instant.now());
-				checkFirma = checkFileSignature(
-						schedTec
-						, schedTecFileName
-						, null
-						, checkDate
-						, evento
-						, Boolean.FALSE
-						, appParamManager
-						, customConfigManager
-				);
-			} catch (ApsSystemException e) {
-				logger.error("Errore nella verifica della firma digitale.",e);
-				this.addActionError(this.getText("Errors.cannotVerifySign"));
-			}
-						
-			if (controlliOk) {
+			if ( getUploadValidator().validate() ) {
 				// si inseriscono i documenti in sessione
 				WizardDocumentiProdottoHelper documentiHelper = prodottoHelper.getDocumenti();
 
 				if (documentiHelper.getSchedeTecnicheFileName().contains(this.schedTecFileName)) {
 					this.addActionError(this.getText("Errors.schedaTecnicaPresent"));
 				} else {
-
 					File f = new File(this.schedTec.getParent() + File.separatorChar + FileUploadUtilities.generateFileName());
 					this.schedTec.renameTo(f);
 					documentiHelper.getSchedeTecnicheSize().add(dimensioneSchedaTecnica);
@@ -411,30 +314,10 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 			} else {
 				target = INPUT;
 			}
-			this.eventManager.insertEvent(evento);
+			
+			this.eventManager.insertEvent(getUploadValidator().getEvento());
 		}
 		return target;
-	}
-
-	/**
-	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
-	 *
-	 * @param helper helper dei documenti
-	 *
-	 * @return totale in KB dei file caricati
-	 */
-	private int getActualTotalSize(WizardDocumentiProdottoHelper helper) {
-		int total = 0;
-		if (helper.getImmagine() != null) {
-			total += helper.getImmagineSize();
-		}
-		for (Integer s : helper.getCertificazioniRichiesteSize()) {
-			total += s;
-		}
-		for (Integer s : helper.getSchedeTecnicheSize()) {
-			total += s;
-		}
-		return total;
 	}
 
 	@Override
@@ -447,4 +330,5 @@ public class ProcessPageDocumentiProdottoAction extends AbstractProcessPageActio
 		String target = "back";
 		return target;
 	}
+
 }

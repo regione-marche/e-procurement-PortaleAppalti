@@ -53,16 +53,18 @@ public class LayoutSettingsFilter implements Filter {
 		//Wrapper che esclude dall'header i parametri non validi
 		RequestParamRemoverWrapper headerRemover = new RequestParamRemoverWrapper((HttpServletRequest) req);
 
+		PortalHTTPResponseWrapper wrappedResponse = new PortalHTTPResponseWrapper((HttpServletResponse) resp);
 		headerRemover.setCharacterEncoding("UTF-8");
 		// verifica se e' stato passato il parametro per la selezione del font e se è valido lo inserisco in un coockie...
-		addCookieIfValid(headerRemover, resp, FONT_PARAM_NAME, FONT);
+		addCookieIfValid(headerRemover, wrappedResponse, FONT_PARAM_NAME, FONT);
 		// verifica se e' stato passato il parametro per la selezione delo skin e se è valido lo inserisco in un coockie...
-		addCookieIfValid(headerRemover, resp, SKIN_PARAM_NAME, SKIN);
+		addCookieIfValid(headerRemover, wrappedResponse, SKIN_PARAM_NAME, SKIN);
 		// verifica se e' stato passato il parametro per la selezione del layout style e se è valido lo inserisco in un coockie...
-		addCookieIfValid(headerRemover, resp, LAYOUT_PARAM_NAME, LAYOUT);
+		addCookieIfValid(headerRemover, wrappedResponse, LAYOUT_PARAM_NAME, LAYOUT);
 
-		chain.doFilter(headerRemover, resp);
+		chain.doFilter(headerRemover, wrappedResponse);
 	}
+
 
 	/**
 	 * Aggiungo l'header ad un cookie se il valore dell'header è valido.
@@ -122,5 +124,7 @@ public class LayoutSettingsFilter implements Filter {
 		c.setMaxAge(MAX_AGE);
 		resp.addCookie(c);
 	}
+
+
 
 }

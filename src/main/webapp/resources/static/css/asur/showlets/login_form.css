@@ -1,0 +1,37 @@
+.login-box {
+	color: #005685;	
+	font-size:1em;
+	font-family: 'Oswald',sans-serif;
+}
+
+.login-box input{
+	border-radius: 4px 4px 4px 4px;
+    border: 1px solid #ccc;
+	background-color: white;
+}
+
+.login-box .button{
+   background-color: #337ab7;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #337ab7;
+    font: 13px "Titillium Web, Helvetica,Arial,sans-serif;", Lucida, Verdana, sans-serif;
+    height: 32px;
+    margin-right: 0;
+	color:#fff;
+	text-transform:uppercase;
+}
+
+.login-box .button:hover {
+    background-color: #06465D;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #06465D;
+    font: 13px "Titillium Web, Helvetica,Arial,sans-serif;", Lucida, Verdana, sans-serif;
+    height: 32px;
+    margin-right: 0;
+	color:#fff;
+	text-transform:uppercase;
+}

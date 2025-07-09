@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
 
 <s:set var="dettGara" value="%{#session['dettGara']}" />
 <s:set var="gara" value="%{#dettGara.datiGeneraliGara}" />
@@ -221,15 +221,22 @@
 	</c:if>
 
 	<div class="back-link">
-		<s:if test="%{lottiDistinti}">
-			<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/Aste/openAsta.action"/></c:set>			
-		</s:if>
-		<s:else>
-			<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/></c:set>
-		</s:else>
-		<a href="${href}&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}">
-			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
-		</a>
+		<c:set var="hrefBackto">
+			<s:if test="%{lottiDistinti}">
+					<wp:action path="/ExtStr2/do/FrontEnd/Aste/openAsta.action"/>
+			</s:if>
+			<s:else>
+					<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>
+			</s:else>
+		</c:set>
+		<form action='${hrefBackto}' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value="${codice}" />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
+			</a>
+		</form>
 	</div>
 </div>
 

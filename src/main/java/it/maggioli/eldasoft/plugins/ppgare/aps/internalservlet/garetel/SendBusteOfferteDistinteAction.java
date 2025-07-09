@@ -1,32 +1,12 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.xmlbeans.XmlException;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-import com.lowagie.text.DocumentException;
-
 import it.eldasoft.utils.utility.UtilityDate;
-import it.eldasoft.utils.utility.UtilityStringhe;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoType;
@@ -34,40 +14,38 @@ import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoTypeVerso;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaAmministrativa;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaEconomica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPrequalifica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.*;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.SaveWizardIscrizioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import it.maggioli.eldasoft.plugins.utils.ProtocolsUtils;
-import it.maggioli.eldasoft.ws.dm.WSDMFascicoloType;
-import it.maggioli.eldasoft.ws.dm.WSDMInserimentoInFascicoloType;
-import it.maggioli.eldasoft.ws.dm.WSDMLoginAttrType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloAllegatoType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloAnagraficaType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloDocumentoInType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloDocumentoType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloInOutType;
-import it.maggioli.eldasoft.ws.dm.WSDMTipoVoceRubricaType;
+import it.maggioli.eldasoft.ws.dm.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.interceptor.SessionAware;
+import org.apache.xmlbeans.XmlException;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * ...
  *  
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class SendBusteOfferteDistinteAction extends SendBusteAction implements SessionAware {
 	/**
 	 * UID
@@ -89,13 +67,17 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 	public String confirmInvio() {
 		this.setTarget("reopen");
 		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
+
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
 		{
 			this.setUsername(this.getCurrentUser().getUsername());
 
 			GestioneBuste buste = GestioneBuste.getFromSession();
-			BustaPartecipazione bustaPartecipazione = buste.getBustaPartecipazione();
 			BustaEconomica bustaEco = buste.getBustaEconomica();
 			BustaRiepilogo bustaRiepilogo = buste.getBustaRiepilogo();
 			RiepilogoBusteHelper riepilogo = bustaRiepilogo.getHelper();
@@ -123,207 +105,46 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 					//evento.setMessage("Controlli preinvio dati " + (domandaPartecipazione ? "domanda di partecipazione" : "richiesta di presentazione offerta"));
 					evento.setMessage("Controlli preinvio dati " + "richiesta di presentazione offerta");
 					
-					Date dataTermine = getDataTermine(dettGara, this.getOperazione());
-
-					//-----------------------------------------------------------------------
 					// traccia i tentativi di accesso alle funzionalita' fuori tempo massimo
-					if (dataTermine != null && this.getDataInvio().compareTo(dataTermine) > 0) {
+					if(controlliOk && isFuoriTempoMassimo(dettGara)) {
 						controlliOk = false;
-						this.addActionError(this.getText("Errors.richiestaFuoriTempoMassimo",
-											new String[] { nomeOperazione }));
-						
-						Event fuoriTempo = new Event();
-						fuoriTempo.setUsername(this.getCurrentUser().getUsername());
-						fuoriTempo.setDestination(dettGara.getDatiGeneraliGara().getCodice());
-						fuoriTempo.setLevel(Event.Level.ERROR);
-						fuoriTempo.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
-						fuoriTempo.setIpAddress(this.getCurrentUser().getIpAddress());
-						fuoriTempo.setSessionId(this.getRequest().getSession().getId());
-						fuoriTempo.setMessage("Accesso alla funzione " + this.getDescTipoEvento());
-						fuoriTempo.setDetailMessage(PortGareEventsConstants.DETAIL_MESSAGE_ERRORE_FUORI_TEMPO_MASSIMO + " (" + UtilityDate.convertiData(this.getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS) + ")");
-						this.getEventManager().insertEvent(fuoriTempo);
 					}
 					
 					// verifica se la gara e' sospesa...
-					boolean sospesa = ("4".equals(dettGara.getDatiGeneraliGara().getStato())); 
-					if(sospesa) {
+					if(controlliOk && isGaraSospesa(dettGara, evento)) {
 						controlliOk = false;
-						evento.setDetailMessage(this.getText("Errors.invioBuste.proceduraSospesa"));
-						evento.setLevel(Event.Level.ERROR);
-						this.addActionError(this.getText("Errors.invioBuste.proceduraSospesa"));
 					}
-
+					
+					// verifica se codice CNEL e' valorizzato
+					if(controlliOk && isCodiceCNELMancante(buste.getBustaPartecipazione(), evento)) {
+						controlliOk = false; 
+					}
+					
 					boolean integrazioneEffettuata = false;
 					if(controlliOk) {
 						// TEST SU EVENTUALE INTEGRAZIONE DOCUMENTI DA BO
 						integrazioneEffettuata = bustaRiepilogo.integraBusteFromBO();
-					}
-					
-					// CONTROLLO DOCUMENTAZIONE LOTTI
-					boolean documentiPrequalificaMancanti = false;
-					if(domandaPartecipazione) {
-						if(riepilogo.getBustaPrequalifica() != null) {
-							for(int i = 0; i < riepilogo.getBustaPrequalifica().getDocumentiMancanti().size() && !documentiPrequalificaMancanti; i++) {
-								documentiPrequalificaMancanti = documentiPrequalificaMancanti || riepilogo.getBustaPrequalifica().getDocumentiMancanti().get(i).isObbligatorio();
-							}
-						}
-						
-						// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-						if( !riepilogo.getPrimoAccessoPrequalificaEffettuato() ) {
-							this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-															 new String[] { "Busta prequalifica" }));
-							controlliOk = false;
-						}	
-					}
-					
-					boolean documentiAmministrativaMancanti = false;
-					if( !dettGara.getDatiGeneraliGara().isNoBustaAmministrativa() ) {
-						if(riepilogo.getBustaAmministrativa() != null) {
-							for(int i = 0; i < riepilogo.getBustaAmministrativa().getDocumentiMancanti().size() && !documentiAmministrativaMancanti; i++) {
-								documentiAmministrativaMancanti = documentiAmministrativaMancanti || riepilogo.getBustaAmministrativa().getDocumentiMancanti().get(i).isObbligatorio();
-							}
-							
-							// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-							if( !riepilogo.getPrimoAccessoAmministrativaEffettuato() ) {
-								this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-																 new String[] { "Busta amministrativa" }));
-								controlliOk = false;
-							}
-						}
-					}
-
-					// LOTTI BUSTE TECNICHE
-					boolean documentiTecnicheMancanti = false;
-					for(int i = 0; i < riepilogo.getListaCompletaLotti().size() && !documentiTecnicheMancanti; i++) {
-						String lottoCorrente = riepilogo.getListaCompletaLotti().get(i);
-						RiepilogoBustaBean bustaTecnicaLotto = riepilogo.getBusteTecnicheLotti().get(lottoCorrente);
-						if(bustaTecnicaLotto != null) {
-							for(int j = 0; j < bustaTecnicaLotto.getDocumentiMancanti().size(); j++){
-								documentiTecnicheMancanti = (documentiTecnicheMancanti || bustaTecnicaLotto.getDocumentiMancanti().get(j).isObbligatorio());
-								if( !riepilogo.getPrimoAccessoTecnicheEffettuato().get(lottoCorrente) ) {
-									documentiTecnicheMancanti = true;
-								}
-							}
-						}
-					}
-
-					// LOTTI BUSTE ECONOMICHE
-					boolean documentiEconomicheMancanti = false;
-					for(int i = 0; i < riepilogo.getListaCompletaLotti().size() && !documentiEconomicheMancanti; i++) {
-						String lottoCorrente = riepilogo.getListaCompletaLotti().get(i);
-						RiepilogoBustaBean bustaEconomicaLotto = riepilogo.getBusteEconomicheLotti().get(lottoCorrente);
-						if(bustaEconomicaLotto != null) {
-							for(int j = 0; j < bustaEconomicaLotto.getDocumentiMancanti().size(); j++) {
-								documentiEconomicheMancanti = (documentiEconomicheMancanti || bustaEconomicaLotto.getDocumentiMancanti().get(j).isObbligatorio()); 
-								if( !riepilogo.getPrimoAccessoEconomicheEffettuato().get(lottoCorrente) ) {
-									documentiEconomicheMancanti = true;
-								}
-							}
-						}
 					}
 
 					// in caso di integrazione di documenti inseriti da BO => aggiorno la FS11R 
 					if(integrazioneEffettuata) {
 						bustaRiepilogo.send(bustaEco);
 					}
-
-					if(documentiPrequalificaMancanti) {
-						this.addActionError(this.getText("Errors.invioBuste.changesNotSent", 
-											new String[] { PortGareSystemConstants.BUSTA_PRE }));
-						controlliOk = false;
-					} 
-					if(documentiAmministrativaMancanti) {
-						this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-											new String[] { PortGareSystemConstants.BUSTA_AMM }));
-						controlliOk = false;
-					}else if(documentiTecnicheMancanti) {
-						this.addActionError(this.getText("Errors.invioBusteLotti.dataNotSent",
-											new String[] { "Buste tecniche" }));
-						controlliOk = false;
-					}else if(documentiEconomicheMancanti) {
-						this.addActionError(this.getText("Errors.invioBusteLotti.dataNotSent",
-											new String[] { "Buste economiche" }));
-						controlliOk = false;
-					}
-					
-					if( !controlliOk && !sospesa ) {
-						String documentiMancanti = this.getListaDocumentiMancanti(riepilogo, false);
-						if(StringUtils.isNotEmpty(documentiMancanti)) {
-							evento.setDetailMessage(documentiMancanti);
-							evento.setLevel(Event.Level.ERROR);
-						}
-					}
-
-					// controlla se i lotti dell'offerta sono utilizzati anche in altre offerte...
-					if(controlliOk) {
-						boolean lottiInAltreOfferte = this.isLottiPresentiInAltreOfferte(bustaPartecipazione); 
-						if (lottiInAltreOfferte) {
-							// alcuni lotti dell'offerta sono presenti in altre offerte...
-							evento.setDetailMessage("Lotti presenti in altre offerte");
-							evento.setLevel(Event.Level.ERROR);
-							controlliOk = false;
-						}
-					}
 					
 					// controlla se esistono documenti senza contenuto nelle buste...
 					// o se esistono documenti nelle buste, con dimensione del contenuto inviato 
-					// diversa dall'originale ...
-					VerificaDocumentiCorrotti documentiCorrotti = new VerificaDocumentiCorrotti(bustaRiepilogo);
+					// diversa dall'originale...
 					if (controlliOk) {
-						controlliOk = controlliOk & !documentiCorrotti.isDocumentiCorrottiPresenti();
+						VerificaDocumentiCorrotti validazioneDocumenti = new VerificaDocumentiCorrotti(evento);
 						
-						if(documentiCorrotti.size() > 0) {
-							// visualizza la lista dei documenti nulli o corrotti
-							documentiCorrotti.addActionErrors(this);
-							evento.setDetailMessage(documentiCorrotti.getEventDetailMessage());
-							evento.setLevel(Event.Level.ERROR);
+						// verifica presa vissione, documenti obbligatori, documenti "corrotti" e QForm...
+						controlliOk = controlliOk && validazioneDocumenti.validate();
+						
+						if(validazioneDocumenti.isErroriPresenti()) {
+							validazioneDocumenti.addActionErrors(this, evento);
 						}
 					}
 					
-					// QUESTIONARI
-					// controlla se e' presente un questionario e se lo stato e' "completato"...
-					if (controlliOk) {
-						//if(domandaPartecipazione) {
-						//} else {
-						if( !dettGara.getDatiGeneraliGara().isNoBustaAmministrativa() ) {
-							if(riepilogo.getBustaAmministrativa() != null) {
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.getCodice(),
-										null,
-										null,
-										PortGareSystemConstants.BUSTA_AMMINISTRATIVA, 
-										riepilogo.getBustaAmministrativa(),
-										evento);
-							}
-						}
-						if(riepilogo.getBusteTecnicheLotti() != null) {
-							for(int i = 0; i < riepilogo.getListaCompletaLotti().size(); i++) {
-								String codLotto = riepilogo.getListaCompletaLotti().get(i);
-								RiepilogoBustaBean busta = riepilogo.getBusteTecnicheLotti().get(codLotto);
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.getCodice(),
-										codLotto,
-										riepilogo.getListaCodiciInterniLotti().get(codLotto),
-										PortGareSystemConstants.BUSTA_TECNICA, 
-										busta,
-										evento);
-							}
-						}
-						if(riepilogo.getBusteEconomicheLotti() != null) {
-							for(int i = 0; i < riepilogo.getListaCompletaLotti().size(); i++) {
-								String codLotto = riepilogo.getListaCompletaLotti().get(i);
-								RiepilogoBustaBean busta = riepilogo.getBusteEconomicheLotti().get(codLotto);
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.getCodice(),
-										codLotto,
-										riepilogo.getListaCodiciInterniLotti().get(codLotto),
-										PortGareSystemConstants.BUSTA_ECONOMICA, 
-										busta,
-										evento);
-							}
-						}
-					}
-
 					// inserisci l'evento di verifica preinvio
 					this.getEventManager().insertEvent(evento);
 					
@@ -333,9 +154,9 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 					}
 				}
 
-			} catch (Throwable e) {
-				ApsSystemUtils.logThrowable(e, this, "confirm");
-				ExceptionUtils.manageExceptionError(e, this);
+			} catch (Throwable t) {
+				ApsSystemUtils.logThrowable(t, this, "confirm");
+				ExceptionUtils.manageExceptionError(t, this);
 			} 
 		}else {
 			// la sessione e' scaduta, occorre riconnettersi
@@ -351,6 +172,11 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 	 */
 	public String invio() {
 		this.setTarget("reopen");
+
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
 
 		this.setCodiceSistema((String) this.getAppParamManager().getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA));		
 		this.setTipoProtocollazione(new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA));
@@ -369,7 +195,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 
 			WizardDatiImpresaHelper datiImpresa = null;
 			DettaglioGaraType dettGara = null;
-			String nomeOperazione = "";
+			String nomeOperazione = GestioneBuste.getNomeOperazione(this.getOperazione());
 			boolean controlliOk = true;
 			boolean inviataComunicazione = false;
 			boolean protocollazioneOk = true;
@@ -420,6 +246,13 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 					event.setDetailMessage(msgerr);
 					this.getEventManager().insertEvent(event);
 				}
+				
+				// calcola la data di invio e verifica se fuori tempo massimo...
+				if(controlliOk && isAccessoFuoriTempoMassimo(dettGara)) {
+					controlliOk = false;
+					this.addActionError(getText("Errors.invioRichiestaFuoriTempoMassimo", new String[] { nomeOperazione }));
+					this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+				}
 
 				// verifica se la gara e' sospesa...
 				if(controlliOk) {
@@ -434,12 +267,6 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 				}
 
 				if(controlliOk) {
-					// imposta la data di invio...
-					this.setDataInvio(retrieveDataInvio(
-							this.getNtpManager(), 
-							this, 
-							GestioneBuste.getNomeOperazione(this.getOperazione())));
-						
 					if (this.getDataInvio() != null) {
 					
 						if(domandaPartecipazione) {
@@ -476,7 +303,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 						bustaPartecipazione.get();
 						if(controlliOk && bustaPartecipazione.getId() > 0) {
 							bustaPartecipazione.getHelper().setDataPresentazione(this.getDataInvio());
-							inviataComunicazione = bustaPartecipazione.sendConfirm();
+							inviataComunicazione = bustaPartecipazione.sendConfirm(new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH)));
 						}
 					}
 				}
@@ -766,7 +593,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 				// se tutto e' andato a buon fine si eliminano
 				// le informazioni dalla sessione ...
 				this.getSession().remove(PortGareSystemConstants.SESSION_ID_PAGINA);
-				buste.resetSession();				
+				buste.resetSession();
 				this.setTarget("successPage");
 			}
 
@@ -779,6 +606,8 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		// concludi la protocollazione
 		this.getAppParamManager().setStazioneAppaltanteProtocollazione(null);
 
+		unlockAccessoFunzione();
+		
 		return this.getTarget();
 	}
 
@@ -870,7 +699,11 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		wsdmProtocolloDocumentoIn.setIdTitolazione(idTitolazione);
 		wsdmProtocolloDocumentoIn.setClassifica(classificaFascicolo);
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.getAppParamManager().getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -905,10 +738,10 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		String partitaIva = datiImpresaHelper.getDatiPrincipaliImpresa().getPartitaIVA();
 		String oggetto = null;
 		if (this.getOperazione() == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA) {
-			oggetto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("LABEL_WSDM_OGGETTO_OFFERTA"), 
+			oggetto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("LABEL_WSDM_OGGETTO_OFFERTA"),
 					   new Object[] {ragioneSociale200, codiceFiscale, dettGara.getDatiGeneraliGara().getOggetto(), dettGara.getDatiGeneraliGara().getCodice()});
 		} else if (this.getOperazione() == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA) {
-			oggetto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("LABEL_WSDM_OGGETTO_PREQUALIFICA"), 
+			oggetto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("LABEL_WSDM_OGGETTO_PREQUALIFICA"),
 					   new Object[] {ragioneSociale200, codiceFiscale, dettGara.getDatiGeneraliGara().getOggetto(), dettGara.getDatiGeneraliGara().getCodice()});
 		}
 		
@@ -989,6 +822,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -996,14 +830,6 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 			mittenti[0].setCognomeointestazione(ragioneSociale200);
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(impresa.getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1056,14 +882,9 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.getAppParamManager()
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.getAppParamManager()
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 		
 		WSDMProtocolloAllegatoType[] allegati = createAttachments(datiImpresaHelper, dettGara, bustaRiepilogativa,
 				comunicazionePartecipazione, nomeOperazione, fileRiepilogo, ragioneSociale, codiceFiscale, indirizzo,
@@ -1113,60 +934,79 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		return wsdmProtocolloDocumentoIn;
 	}
 
-	private WSDMProtocolloAllegatoType[] createAttachments(WizardDatiImpresaHelper datiImpresaHelper,
-			DettaglioGaraType dettGara, RiepilogoBusteHelper bustaRiepilogativa,
-			ComunicazioneType comunicazionePartecipazione, String nomeOperazione, byte[] fileRiepilogo,
-			String ragioneSociale, String codiceFiscale, String indirizzo, boolean inTesta)
-			throws Exception 
-	{
+	private WSDMProtocolloAllegatoType[] createAttachments(
+			WizardDatiImpresaHelper datiImpresaHelper
+			, DettaglioGaraType dettGara
+			, RiepilogoBusteHelper bustaRiepilogativa
+			, ComunicazioneType comunicazionePartecipazione
+			, String nomeOperazione
+			, byte[] fileRiepilogo
+			, String ragioneSociale
+			, String codiceFiscale
+			, String indirizzo
+			, boolean inTesta
+	) throws Exception {
 		WSDMProtocolloAllegatoType[] allegati = new WSDMProtocolloAllegatoType[2];
 
+		String titolo = MessageFormat.format(
+				this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_RICEVUTA_OGGETTO"),
+				this.getCodice(), nomeOperazione
+		);
+		
+		// PDF-A
+		boolean isActiveFunctionPdfA; 
+		try {
+			isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
+		} catch (Exception ex) {
+			throw new ApsException(ex.getMessage(),ex);
+		}
+		
+		// PDF-A ICC path
+		InputStream iccFilePath = new FileInputStream(getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
+		
+		// prepara il testo per "comunicazione.pdf"
+		String comunicazioneTxt = MessageFormat.format(
+				this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI"),
+				ragioneSociale,
+				codiceFiscale,
+				datiImpresaHelper.getDatiPrincipaliImpresa().getPartitaIVA(),
+				(String) ((IUserProfile) getCurrentUser().getProfile()).getValue("email"),
+				indirizzo,
+				UtilityDate.convertiData(getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
+				(getOperazione() == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA
+						? getI18nLabelFromDefaultLocale("LABEL_OFFERTA")
+						: getI18nLabelFromDefaultLocale("LABEL_PARTECIPAZIONE")),
+				dettGara.getDatiGeneraliGara().getOggetto()
+		);
+		
+		byte[] comunicazionePdf = JRPdfExporterEldasoft.textToPdf(
+				comunicazioneTxt
+				, "Riepilogo comunicazione"
+				, this
+		);
+		
+		// aggiungi l'allegato "comunicazione.pdf"
+		//
 		int n2 = allegati.length - 1;
 		if(inTesta) {
 			n2 = 0;
 		}
 		allegati[n2] = new WSDMProtocolloAllegatoType();
-		allegati[n2].setTitolo(MessageFormat.format(
-				this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_RICEVUTA_OGGETTO"),
-				new Object[] { this.getCodice(), nomeOperazione }));
-		allegati[n2].setTipo("pdf");
+		allegati[n2].setTitolo(titolo);
+		allegati[n2].setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
 		allegati[n2].setNome("comunicazione.pdf");
-		String contenuto = MessageFormat.format(
-				this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI"),
-				new Object[] {
-						ragioneSociale,
-						codiceFiscale,
-						datiImpresaHelper.getDatiPrincipaliImpresa().getPartitaIVA(),
-						(String) ((IUserProfile) this.getCurrentUser().getProfile()).getValue("email"),
-						indirizzo,
-						UtilityDate.convertiData(this.getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
-						(this.getOperazione() == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA
-								? this.getI18nLabelFromDefaultLocale("LABEL_OFFERTA") 
-								: this.getI18nLabelFromDefaultLocale("LABEL_PARTECIPAZIONE")),
-						dettGara.getDatiGeneraliGara().getOggetto() 
-				});
-		boolean isActiveFunctionPdfA = false;
-		try {
-			isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-		} catch (Exception e1) {
-			throw new ApsException(e1.getMessage(), e1);
-		}
-		InputStream iccFilePath = null;
-		if(isActiveFunctionPdfA) {
-			iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-		}
-		byte[] contenutoPdf = this.trasformaStringaInPdf(contenuto, isActiveFunctionPdfA, iccFilePath);
-		allegati[n2].setContenuto(contenutoPdf);
+		allegati[n2].setContenuto(comunicazionePdf);
 		// serve per Titulus
 		allegati[n2].setIdAllegato("W_INVCOM/"
 				+ CommonSystemConstants.ID_APPLICATIVO + "/"
 				+ comunicazionePartecipazione.getDettaglioComunicazione().getId() + "/" + n2);
-
 		int i = 0;
 		if(inTesta) {
 			i = 1;
 		}
 
+		// aggiungi l'allegato "Riepilogo_buste.pdf"
+		//
 		boolean hasMarcaturaTemporale = false;
 		try{
 			hasMarcaturaTemporale = this.customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE");
@@ -1174,10 +1014,10 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 			throw new ApsException("Non e' stato possibile leggere la configurazione ACT per l'objectId INVIOFLUSSI feature MARCATEMPORALE");
 		}
 		
-		// recupera il pdf di riepilogo delle buste (pdf/tsd) ed aggiungilo agli allegati del WSDM...		
+		// recupera il pdf di riepilogo delle buste (pdf/tsd) ed aggiungilo agli allegati del WSDM...
 		if(fileRiepilogo == null) {
 			BustaRiepilogo bustaRiepilogo = GestioneBuste.getBustaRiepilogoFromSession();
-			fileRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste();
+			fileRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste(iccFilePath);
 		}
 		
 		allegati[i] = new WSDMProtocolloAllegatoType();
@@ -1210,7 +1050,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 			String tipoRichiesta, 
 			String descBando, 
 			String data) 
-		throws ApsSystemException, ApsException, XmlException 
+		throws ApsSystemException, ApsException, XmlException
 	{
 		if (PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_MAIL == this.getTipoProtocollazione()) {
 			if (StringUtils.isBlank(this.getMailUfficioProtocollo())) {
@@ -1218,7 +1058,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 			}
 			// nel caso di email dell'ufficio protocollo, si
 			// procede con l'invio della notifica a tale ufficio
-			Map<String, byte[]> p = new HashMap<String, byte[]>();
+			Map<String, byte[]> p = new HashMap<>();
 
 			// solo se indicato da configurazione si allegano i doc inseriti
 			// nella domanda
@@ -1293,7 +1133,7 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 			if (this.getAllegaDocMailUfficioProtocollo() && !p.isEmpty()) {
 				// -- allegati
 				text = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI"),
-						new Object[] {ragioneSociale, codFiscale, partitaIVA, mail, sede, data, 
+						new Object[] {ragioneSociale, codFiscale, partitaIVA, mail, sede, data,
 									  tipoOperazione, descBando});
 			} else {
 				// -- notifica
@@ -1323,18 +1163,4 @@ public class SendBusteOfferteDistinteAction extends SendBusteAction implements S
 		}
 	}	
 	
-	private byte[] trasformaStringaInPdf(String contenuto, boolean isActiveFunctionPdfA, InputStream iccFilePath) throws DocumentException, IOException {
-		if(isActiveFunctionPdfA) {
-			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-				return UtilityStringhe.string2PdfA(contenuto,iccFilePath);
-			} catch (com.itextpdf.text.DocumentException e) {
-				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-				de.initCause(e);
-				throw de;
-			}
-		} else {
-			return UtilityStringhe.string2Pdf(contenuto);
-		}
-	}
 }

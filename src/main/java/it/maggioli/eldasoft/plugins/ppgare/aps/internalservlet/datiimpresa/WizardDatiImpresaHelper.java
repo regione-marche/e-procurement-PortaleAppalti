@@ -37,6 +37,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.codifiche.ICodi
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc.ImpresaImportExport;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.commons.collections.CollectionUtils;
@@ -182,7 +183,11 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	 * Flag per testare se i dati sono stati importati da XML
 	 */
 	private boolean xmlImported;
-		
+			
+	private String idAnagraficaEsterna;			// codice impresa Michelangelo (SACE)
+	
+    protected transient ImpresaImportExport importExport;
+	
 	/**
 	 * costruttore 
 	 */
@@ -206,6 +211,8 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 		this.mailVariata = false;
 		this.mailVariataDopoInvio = false;
 		this.xmlImported = false;
+		this.idAnagraficaEsterna = null;
+	    this.importExport = null;
 	}
 	
 	/**
@@ -298,6 +305,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 		this.tempFiles = new ArrayList<File>();
 		this.datiInviati = false;
 		this.liberoProfessionista = this.getLiberoProfessionistaFromCodifiche();
+		this.idAnagraficaEsterna = null;
 	}
 
 	@Override
@@ -585,7 +593,11 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	public static boolean isVatGroup(String vatGroup) {
 		return StringUtils.equalsIgnoreCase(vatGroup, "1");
 	}
-	
+		
+	public ImpresaImportExport getImportExport() {
+		return importExport;
+	}
+
 	/**
 	 * Crea l'oggetto documento per la generazione della stringa XML per l'inoltro
 	 * della richiesta di aggiornamento anagrafica al backoffice
@@ -641,7 +653,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	 * @param indirizzi altre sedi
 	 * @param altriDatiAnagrafici altri dati anagrafici, valorizzati solo per i
 	 * liberi professionisti
-	 * @param liberoProfessionista indica se ï¿½ o meno un libero professionista
+	 * @param liberoProfessionista indica se e' o meno un libero professionista
 	 * @param datiImpresa dati impresa in cui aggiungere un oggetto della classe
 	 * ImpresaType con i dati della sorgente
 	 */
@@ -651,7 +663,8 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 			ArrayList<IIndirizzoImpresa> indirizzi,
 			IAltriDatiAnagraficiImpresa altriDatiAnagrafici,
 			boolean liberoProfessionista, 
-			DatiImpresaType datiImpresa) {
+			DatiImpresaType datiImpresa) 
+	{
 		ImpresaType impresa = datiImpresa.addNewImpresa();
 
 		impresa.setRagioneSociale(datiPrincipali.getRagioneSociale());
@@ -662,9 +675,13 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 			impresa.setTipoSocietaCooperativa(datiPrincipali.getTipoSocietaCooperativa());
 		if (StringUtils.isNotBlank(datiPrincipali.getPartitaIVA())) {
 			impresa.setPartitaIVA(datiPrincipali.getPartitaIVA());
-		}
+		}		
 		if (StringUtils.isNotBlank(datiPrincipali.getVatGroup())) {
 			impresa.setGruppoIva(datiPrincipali.getVatGroup());
+		}
+		// idAnagraficaEsterna Michelangelo (SACE)
+		if (StringUtils.isNotBlank(datiPrincipali.getIdAnagraficaEsterna())) {
+			impresa.setIdAnagraficaEsterna(datiPrincipali.getIdAnagraficaEsterna());	
 		}
 		if (StringUtils.isNotBlank(datiUlteriori.getOggettoSociale())) {
 			impresa.setOggettoSociale(datiUlteriori.getOggettoSociale());
@@ -850,6 +867,11 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 			inps.setPosizContributivaIndividuale(datiUlteriori.getPosizContributivaIndividualeINPS());
 		}
 		
+		// codice CNEL
+		if (StringUtils.isNotBlank(datiUlteriori.getCodiceCNEL())) {
+			impresa.setCodiceCNEL(datiUlteriori.getCodiceCNEL());
+		}
+
 		// dati inail
 		INAILType inail = impresa.addNewInail();
 		if (StringUtils.isNotBlank(datiUlteriori.getNumIscrizioneINAIL())) {
@@ -1014,6 +1036,11 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 		
 		// dati conto corrente dedicato
 		ContoCorrenteDedicatoType ccDedicato = impresa.addNewContoCorrente();
+		if (StringUtils.isNotEmpty(datiUlteriori.getWithIBAN()))
+			ccDedicato.setAreaIBAN(datiUlteriori.getWithIBAN());
+		if (StringUtils.isNotEmpty(datiUlteriori.getNumeroConto()))
+			ccDedicato.setNumeroConto(datiUlteriori.getNumeroConto());
+
 		if (StringUtils.isNotBlank(datiUlteriori.getCodiceIBANCCDedicato())) {
 			ccDedicato.setEstremi(datiUlteriori.getCodiceIBANCCDedicato());
 		}
@@ -1401,9 +1428,16 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 						esito = zoneAttivita != null
 										&& zoneAttivita.indexOf('1') != -1;
 					}
-					if(esito && hasSezAltriDati && customConfigManager.isMandatory("IMPRESA-DATIULT-ALTRIDATI", "IBAN")){
-						esito = StringUtils.isNotBlank(this.datiUlterioriImpresa
-								.getCodiceIBANCCDedicato());
+					if(esito && hasSezAltriDati){
+						esito = (!customConfigManager.isMandatory("IMPRESA-DATIULT-ALTRIDATI", "CCDEDICATO")
+									&& StringUtils.isEmpty(datiUlterioriImpresa.getWithIBAN()))
+								|| (
+									StringUtils.isNotEmpty(datiUlterioriImpresa.getWithIBAN())
+									&& (
+										("1".equals(datiUlterioriImpresa.getWithIBAN()) && StringUtils.isNotEmpty(datiUlterioriImpresa.getCodiceIBANCCDedicato()))
+										|| "0".equals(datiUlterioriImpresa.getWithIBAN()) && StringUtils.isNotEmpty(datiUlterioriImpresa.getNumeroConto())
+									)
+								);
 					}
 			
 					if (esito && this.liberoProfessionista
@@ -1479,7 +1513,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 								.isNotBlank(this.datiUlterioriImpresa.getIscrittoElencoSpecialeProfessionisti());
 					}
 					
-					// Rating di legalitï¿½ (DL 1/2012)
+					// Rating di legalita' (DL 1/2012)
 					if (esito && customConfigManager.isMandatory(
 													"IMPRESA-DATIULT", "RATINGLEGALITA")) {
 						esito = StringUtils
@@ -1615,13 +1649,13 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	 *  
 	 *  @return List<FirmatarioBean>
 	 */	
-	public List<FirmatarioBean> getElencoFirmatari() {		
-		List<FirmatarioBean> listaFirmatari = null;		
+	public List<FirmatarioBean> getElencoFirmatari() {
+		List<FirmatarioBean> listaFirmatari = null;
 		try {
 			listaFirmatari = new ArrayList<FirmatarioBean>();
 			
 			if (this.isLiberoProfessionista()) {
-			    // la mandataria ï¿½ un libero professionista allora 
+			    // la mandataria e' un libero professionista allora 
 				// 1 solo possibile firmatario
 			    FirmatarioBean firmatario = new FirmatarioBean();
 			    if(this.getAltriDatiAnagraficiImpresa().getCognome() != null && this.getAltriDatiAnagraficiImpresa().getNome() != null){
@@ -1632,7 +1666,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 			    listaFirmatari.add(firmatario);
 			    
 			} else {
-			    // la mandantaria ï¿½ un'impresa/consorzio allora 
+			    // la mandantaria e' un'impresa/consorzio allora 
 				// 1..N possibili firmatari
 			    for (int i = 0; i < this.getLegaliRappresentantiImpresa().size(); i++) {
 					addSoggettoMandataria(
@@ -1745,13 +1779,17 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	 * destinazione 
 	 */	
 	public static void synchronizeSoggettoImpresa(ISoggettoImpresa from, ISoggettoImpresa to) {
+		if(from == null) {
+			return;
+		}
+		
 		boolean solaLettura = true;
 		if(!to.isEsistente()) {
 			// Nuovo soggetto aggiunto
 			solaLettura = false;
 		} else {
 			if(from.getDataFineIncarico() != to.getDataFineIncarico()) {
-				// Ho inserito o modificato la data dine per un soggetto giï¿½ presente
+				// Ho inserito o modificato la data dine per un soggetto gia' presente
 				solaLettura = false;
 			}
 		}
@@ -1847,8 +1885,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	}
 
 	/**
-	 * Restituisce la lista dei soggetti impresa in base al tipo soggetti 
-	 * richiesto
+	 * Restituisce la lista dei soggetti impresa in base al tipo soggetti richiesto
 	 */
 	public List<ISoggettoImpresa> getSoggettiImpresa(String tipoSoggetto) {
 		List<ISoggettoImpresa> soggetti = null;		
@@ -1862,13 +1899,43 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 			soggetti = this.getCollaboratoriImpresa();
 		} else {
 			// non gestito
-		}				
+		}
 		return soggetti;
 	}
 
+	/**
+	 * restituisce il soggetto impresa dato il firmatario selezionato
+	 */
+	public ISoggettoImpresa findSoggettoImpresa(String firmatarioSelezionato) {
+		ISoggettoImpresa soggettoFromLista = null;
+		if(StringUtils.isNotEmpty(firmatarioSelezionato)) {
+			// firmatarioSelezionato e' in formato "{tipo lista}-{indice lista}" 
+			int i = firmatarioSelezionato.indexOf(CommonSystemConstants.SEPARATORE_TABELLATI_CONCATENATI);
+			
+			int indice = Integer.parseInt(StringUtils.substring(firmatarioSelezionato, i + 1, firmatarioSelezionato.length()));
+			
+			// estrai e normalizza il tipo soggetto (trasforma da "lista" a "tipo soggetto")
+			String tipoSoggetto = StringUtils.substring(firmatarioSelezionato, 0, i);
+			tipoSoggetto = tipoSoggetto
+					.replace(CataloghiConstants.LISTA_LEGALI_RAPPRESENTANTI, CommonSystemConstants.TIPO_SOGGETTO_LEGALE_RAPPRESENTANTE)
+					.replace(CataloghiConstants.LISTA_DIRETTORI_TECNICI, CommonSystemConstants.TIPO_SOGGETTO_DIRETTORE_TECNICO)
+					.replace(CataloghiConstants.LISTA_ALTRE_CARICHE, CommonSystemConstants.TIPO_SOGGETTO_ALTRA_CARICA);
+			
+			List<ISoggettoImpresa> soggetti = getSoggettiImpresa(tipoSoggetto);
+			if(soggetti != null) {
+				soggettoFromLista = soggetti.get(indice);
+			}
+		}
+		return soggettoFromLista;
+	}
+	
+	/**
+	 * restiuisce i soggetti impresa di una data lista, presenti in un documento XML   
+	 */
 	private ReferenteImpresaAggiornabileType[] getReferentiImpresa(
 			DatiImpresaDocument datiImpresa, 
-			String tipoSoggetto) {
+			String tipoSoggetto) 
+	{
 		ReferenteImpresaAggiornabileType[] referenti = null;
 		if(CommonSystemConstants.TIPO_SOGGETTO_LEGALE_RAPPRESENTANTE.equalsIgnoreCase(tipoSoggetto)) {
 			referenti = datiImpresa.getDatiImpresa().getLegaleRappresentanteArray();
@@ -1900,9 +1967,9 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 	 *
 	 * @return i dati del soggetto duplicato se il soggetto esiste gi&agrave;
 	 * 		   null altrimenti
-	 * 		   Il tipo di dato restituito puï¿½ essere ISoggettoImpresa se il
-	 * 		   duplicato ï¿½ presente nell'elenco dell'impresa,
-	 * 		   ReferenteImpresaAggiornabileType se il duplicato ï¿½ presente in
+	 * 		   Il tipo di dato restituito puo' essere ISoggettoImpresa se il
+	 * 		   duplicato e' presente nell'elenco dell'impresa,
+	 * 		   ReferenteImpresaAggiornabileType se il duplicato e' presente in
 	 * 		   B.O.
 	 */
 	public Object isSoggettoDuplicato(
@@ -2222,8 +2289,7 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 		try {
 			// questo funziona solo se e' possibile raggiungere il contesto della HttpSevletRequest (non sempre possibile)
 //			ICodificheManager codificheManager = (ICodificheManager) ApsWebApplicationUtils
-//					.getBean(CommonSystemConstants.CACHE_CODIFICHE, ServletActionContext.getRequest());
-			
+//					.getBean(CommonSystemConstants.CACHE_CODIFICHE, ServletActionContext.getRequest());			
 			WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
 			ICodificheManager codificheManager = (ICodificheManager)ctx
 					.getBean(CommonSystemConstants.CACHE_CODIFICHE);
@@ -2238,4 +2304,22 @@ public class WizardDatiImpresaHelper implements HttpSessionBindingListener, Seri
 		}
 		return liberoProf;
 	}
+	
+	/**
+	 * restituisce true se l'impresa e' un libero professionista (tipo impresa = 6)  
+	 */
+	public boolean isLiberProfessionista() {
+		return "1".equals(datiPrincipaliImpresa.getTipoImpresa()); 		//Libero professionista (art.66 c.1/a DLgs 36/2023)
+	}
+	
+	/**
+	 * restituisce true se l'impresa e' uno studio associato (tipo impresa = 12, 7, 8, 11)
+	 */
+	public boolean isStudioAssociato() {
+		return "12".equals(datiPrincipaliImpresa.getTipoImpresa())		// Studio associato (art.66 c.1/a DLgs 36/2023)
+			   || "7".equals(datiPrincipaliImpresa.getTipoImpresa())	// Società di professionisti (art.66 c.1/b DLgs 36/2023)
+			   || "8".equals(datiPrincipaliImpresa.getTipoImpresa())	// Società di ingegneria (art.66 c.1/c DLgs 36/2023)
+			   || "11".equals(datiPrincipaliImpresa.getTipoImpresa());	// Consorzio stabile di società di professionisti o di ingegneria (art.66 c.1/g DLgs 36/2023)
+	}
+	
 }

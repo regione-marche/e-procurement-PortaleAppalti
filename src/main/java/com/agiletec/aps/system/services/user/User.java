@@ -19,8 +19,14 @@ package com.agiletec.aps.system.services.user;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.UserProfile;
+import com.opensymphony.xwork2.ActionContext;
+
 import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti.LoggedUserInfo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -37,6 +43,7 @@ import javax.servlet.http.HttpSessionEvent;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Rappresentazione di un'utente.
@@ -188,7 +195,6 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 		this._sessionId = id;
 	}
 	
-
 	@Override
 	public boolean isAccountNotExpired() {
 		
@@ -233,19 +239,53 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 	@Override
 	public boolean isLoginAlive() {
 		boolean alive = false;
+		
+		// se per la ditta sono definiti piu' profili di accesso (soggetti impresa autorizzati) 
+		// allora in PPCOMMON_ACCESSES sono ammessi login della stessa ditta ma con sessioni diverse
+		// il controllo di accesso duplicato viene spostato all'accesso del flusso 
+		// (presenta offerta, iscrizione elenco, etc)
 		try {
 			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
-			IAuthenticationProviderManager authenticationProvider = (IAuthenticationProviderManager) ctx
-					.getBean("AuthenticationProviderManager");
-		  
-			UserDetails u = authenticationProvider.getUser(this);
-			if(u != null)  {
-				String sessionid = (StringUtils.isNotEmpty(this._sessionId) ? this._sessionId : "");
-				alive = StringUtils.isEmpty(u.getLogoutTime()) && sessionid.equals(u.getSessionId()); 
+			IAuthenticationProviderManager authenticationProvider = (IAuthenticationProviderManager) ctx.getBean("AuthenticationProviderManager");
+			IUserManager userManager = (IUserManager) ctx.getBean(SystemConstants.USER_MANAGER);
+			String sessionid = (StringUtils.isNotEmpty(_sessionId) ? _sessionId : "");
+			boolean ssoLogin = false;
+			
+			// se per la ditta sono definiti piu' profili di accesso (soggetti impresa autorizzati) 
+			// allora in PPCOMMON_ACCESSES sono ammessi login della stessa ditta ma con sessioni diverse
+			// il controllo di accesso duplicato viene spostato all'accesso del flusso 
+			// (presenta offerta, iscrizione elenco, etc)
+			if(AccountSSO.isAccessiDistinti()) {
+				Map<String, Object> session = (Map<String, Object>)(ActionContext.getContext() != null ? ActionContext.getContext().getSession() : null);				
+				if(session != null) {
+					AccountSSO accountSSO = (AccountSSO)session.get(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
+					if(accountSSO != null) {
+						// verifica se si tratta di un login con SSO
+						_loginSSO = accountSSO.getLogin();
+						DelegateUser p = userManager.getProfiloSSO(getUsername(), _loginSSO);
+						ssoLogin = (p != null);
+						
+						if(ssoLogin) {
+							// recupera l'info sul login impresa (username, id sessione)
+							UserDetails u = authenticationProvider.getUser(this);
+							if(u != null)
+								alive = (u.getLogoutTime() == null); 
+//							alive = true;
+						}
+					}
+				}
+			}
+			
+			// accesso senza SSO oppure gli accessi distinti per OE sono disabilitati
+			if( !ssoLogin )  {
+				UserDetails u = authenticationProvider.getUser(this);
+				if(u != null)
+					alive = StringUtils.isEmpty(u.getLogoutTime()) && sessionid.equals(u.getSessionId()); 
 			}
 		} catch (Exception e) {
-			// traccia qualcosa ...
-		}	
+			ApsSystemUtils.logThrowable(e, this, "isLoginAlive");
+		}
+		
 		return alive;
 	}
 	
@@ -272,8 +312,14 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 			
 			try {
 				if (!isAdmin(getUsername())) {
+					// non posso recuperare dalla sessione l'account SSO, perche' qui e' gia' stata invalidata...
 					IAuthenticationProviderManager manager = (IAuthenticationProviderManager) ctx.getBean("AuthenticationProviderManager");
-					logoutDone = manager.logLogout(this.getUsername(), this.getIpAddress(), hsbe.getSession().getId());
+					
+					logoutDone = manager.logLogout(
+							this.getUsername(), 
+							(StringUtils.isNotEmpty(_loginSSO) ? _loginSSO : null), 
+							this.getIpAddress(), 
+							hsbe.getSession().getId());
 				}
 				// registra l'evento di LOGOUT solo se l'utente era loggato
 				// dallo stesso pc da cui viene fatta la chiamata !!!
@@ -305,8 +351,8 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 	public void sessionDidActivate(HttpSessionEvent event) {
 		ServletContext context = event.getSession().getServletContext();
 		TrackerSessioniUtenti trackerSessioni = TrackerSessioniUtenti.getInstance(context);
-		String[] datiUtente = trackerSessioni.getDatiSessioniUtentiConnessi().get(event.getSession().getId());
-		if (datiUtente == null && !SystemConstants.GUEST_USER_NAME.equals(this.getUsername())) {
+		LoggedUserInfo info = trackerSessioni.getDatiSessioniUtentiConnessi().get(event.getSession().getId());
+		if (info == null && !SystemConstants.GUEST_USER_NAME.equals(this.getUsername())) {
 			// vuol dire che non ho caricato i dati dell'utente SSO perche' questo se esiste ha priorita' massima
 			trackerSessioni.putSessioneUtente(
 					event.getSession(), 
@@ -322,6 +368,7 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 		TrackerSessioniUtenti trackerSessioni = TrackerSessioniUtenti.getInstance(context);
 		trackerSessioni.removeSessioneUtente(event.getSession().getId());
 	}
+	
 	
 	private String _delegateUser;
 	private Date _creationDate;			// CAMBIARE IN REGISTRATION DATE
@@ -343,5 +390,6 @@ public class User extends AbstractUser implements HttpSessionBindingListener, Ht
 
 	private String _logoutTime;	
 	private String _sessionId;
+	private String _loginSSO;
 	
 }

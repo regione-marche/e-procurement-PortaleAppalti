@@ -1,33 +1,23 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando;
 
+import it.eldasoft.sil.portgare.datatypes.ImpresaAusiliariaType;
+import it.eldasoft.sil.portgare.datatypes.ListaImpreseAusiliarieType;
 import it.eldasoft.sil.portgare.datatypes.ListaPartecipantiRaggruppamentoType;
 import it.eldasoft.sil.portgare.datatypes.PartecipanteRaggruppamentoType;
 import it.eldasoft.sil.portgare.datatypes.TipoPartecipazioneDocument;
 import it.eldasoft.sil.portgare.datatypes.TipoPartecipazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractWizardHelper;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiUlterioriImpresa;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IIndirizzoImpresa;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.*;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import java.io.File;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Contenitore dei dati del wizard partecipazione impresa ad una gara
@@ -35,7 +25,7 @@ import org.apache.xmlbeans.XmlObject;
  * @author Stefano.Sabbadin
  */
 public class WizardPartecipazioneHelper extends AbstractWizardHelper 
-	implements HttpSessionBindingListener, Serializable, IRaggruppamenti 
+	implements Serializable, HttpSessionBindingListener, IRaggruppamenti, IAvvalimento 
 {
 	/**
 	 * UID
@@ -45,10 +35,15 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	public static final int PROCEDURA_APERTA 		= 1;
 	public static final int PROCEDURA_RISTRETTA 	= 2;
 	public static final int PROCEDURA_NEGOZIATA 	= 3;
+	public static final int PROCEDURA_RDO 			= 10;
+	public static final int INDAGINE_MERCATO		= 7;
+	public static final int CONCORSO_I_GRADO		= 9;
+	public static final int CONCORSO_II_GRADO		= 10;
 
 	public static final String STEP_IMPRESA 		= "impresa";
 	public static final String STEP_RTI 			= "rti";
-	public static final String STEP_COMPONENTI      = "componenti";
+	public static final String STEP_COMPONENTI		= "componenti";
+	public static final String STEP_AVVALIMENTO		= "avvalimento";
 	public static final String STEP_LOTTI 			= "lotti";
 	public static final String STEP_RIEPILOGO 		= "riepilogo";
 
@@ -77,8 +72,7 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	private String descBando;
 
 	/**
-	 * tipologia di gara (1=lotto unico, 2=piu' lotti con offerte distinte, 3=piu'
-	 * lotti con offerta unica)
+	 * tipologia di gara (1=lotto unico, 2=piu' lotti con offerte distinte, 3=piu' lotti con offerta unica)
 	 */
 	private int genere;
 
@@ -89,42 +83,17 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	private boolean lottiDistinti;
 
 	/**
-	 * Helper per lo step dati impresa
-	 */
-	private WizardDatiImpresaHelper impresa;
-
-	/**
 	 * true se la pagina RTI e' editabile, false altrimenti
 	 */
 	private boolean editRTI;
 
 	/**
-	 * true se impresa RTI, false altrimenti
-	 */
-	private boolean rti;
-
-	/**
 	 * true se la descrizione RTI non e' editabile, false altrimenti
 	 */
 	private boolean denominazioneRTIReadonly;
+
+	private String codiceCNEL;
 	
-	/**
-	 * Denominazione dell'associazione temporanea d'impresa per cui il richiedente
-	 * rappresenta la mandataria
-	 */
-	private String denominazioneRTI;
-
-	/**
-	 * Quota di partecipazione dell'associazione temporanea d'impresa per cui il
-	 * richiedente rappresenta la mandataria
-	 */
-	private Double quotaRTI;
-
-	/**
-	 * Elenco delle componenti in caso di consorzio o RTI.
-	 */
-	private List<IComponente> componenti;
-
 	/**
 	 * Codici dei lotti per cui si richiede la partecipazione (nel caso di gara a
 	 * lotto unico o gara a piu' lotti con offerta unica, e' il codice della gara
@@ -170,7 +139,6 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	 * backoffice, false altrimenti (consorzio senza alcuna consorziata).
 	 */
 	private boolean consorziateEsecutriciPresenti;
-
 	
 	private boolean plicoUnicoOfferteDistinte;
 	
@@ -218,6 +186,8 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	 *   APERTA    = { 1 }        =>  iterGara = 1
 	 *   RISTRETTA = { 2, 4 }     =>  iterGara = 2
 	 *   NEGOZIATA = { 3, 5, 6 }  =>  iterGara = 3
+	 *   INDAGINE MERCATO = { 7 } =>  iterGara = 7
+	 *   RICERCA MERCATO = { 8 }  =>  iterGara = 8
 	 */
 	private int iterGara;
 
@@ -235,7 +205,29 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	 * progressivo relativo all'offerta
 	 */
 	private String progressivoOfferta;
+
+	/**
+	 * interfaccia IRaggruppamenti
+	 */
+	private boolean rti;						// true se impresa RTI, false altrimenti
 	
+	private String denominazioneRTI;			// denominazione dell'RTI
+	
+	private Double quotaRTI;					// % di partecipazione dell'associazione temporanea d'impresa per cui il richiedente rappresenta la mandataria
+	
+	private List<IComponente> componenti;		// elenco delle componenti in caso di consorzio o RTI.
+	
+	private WizardDatiImpresaHelper impresa;	// helper per lo step dati impresa
+	
+//	private String checkQuota() 				// non previsto
+	
+	/**
+	 * interfaccia IAvvalimento
+	 */
+	private boolean avvalimento;						// true se c'e' avvalimento, false altrimenti
+	
+	private List<IImpresaAusiliaria> impreseAusiliarie;	// elenco delle componenti in caso di consorzio o RTI. 
+
 	
 	/**
 	 * Inizializza il contenitore vuoto attribuendo i valori di default
@@ -249,11 +241,8 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		this.genere = 1;
 		this.impresa = null;
 		this.editRTI = false;
-		this.rti = false;
-		this.denominazioneRTI = null;
 		this.denominazioneRTIReadonly = true;
-		this.quotaRTI = null;
-		this.componenti = new ArrayList<IComponente>();
+		this.codiceCNEL = null;
 		this.lottiDistinti = false;
 		this.plicoUnicoOfferteDistinte = false;
 		this.lotti = new TreeSet<String>();
@@ -273,7 +262,19 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		this.iterGara = 0;
 		this.garaRilancio = false;
 		this.progressivoOfferta = null;
-//		this.tipoRaggruppamento = null;
+		//this.tipoRaggruppamento = null;
+		
+		// IRaggruppamenti
+		this.rti = false;
+		this.denominazioneRTI = null;
+		this.quotaRTI = null;
+		this.componenti = new ArrayList<IComponente>();
+		this.impresa = null;
+		//this.checkQuota			// <= non previsto
+		
+		// IAvvalimento
+		this.avvalimento = false;
+		this.impreseAusiliarie = new ArrayList<IImpresaAusiliaria>();
 	}
 	
 	/**
@@ -369,15 +370,6 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		this.lottiDistinti = lottiDistinti;
 	}
 	
-	@Override
-	public WizardDatiImpresaHelper getImpresa() {
-		return impresa;
-	}
-
-	public void setImpresa(WizardDatiImpresaHelper impresa) {
-		this.impresa = impresa;
-	}
-
 	public boolean isEditRTI() {
 		return editRTI;
 	}
@@ -385,14 +377,6 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	public void setEditRTI(boolean editRTI) {
 		this.editRTI = editRTI;
 		this.denominazioneRTIReadonly = !editRTI;
-	}
-
-	public boolean isRti() {
-		return rti;
-	}
-
-	public void setRti(boolean rti) {
-		this.rti = rti;
 	}
 
 	public boolean isDenominazioneRTIReadonly() {
@@ -403,20 +387,12 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		this.denominazioneRTIReadonly = denominazioneRTIReadonly;
 	}
 
-	public String getDenominazioneRTI() {
-		return denominazioneRTI;
+	public String getCodiceCNEL() {
+		return codiceCNEL;
 	}
 
-	public void setDenominazioneRTI(String denominazioneRTI) {
-		this.denominazioneRTI = denominazioneRTI;
-	}
-
-	public List<IComponente> getComponenti() {
-		return componenti;
-	}
-
-	public void setComponenti(List<IComponente> componenti) {
-		this.componenti = componenti;
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
 	}
 
 	public TreeSet<String> getLotti() {
@@ -459,10 +435,6 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		return lottiBarcodeFiles;
 	}
 
-	public IDatiPrincipaliImpresa getDatiPrincipaliImpresa() {
-		return this.impresa.getDatiPrincipaliImpresa();
-	}
-
 	public ArrayList<IIndirizzoImpresa> getIndirizziImpresa() {
 		return this.impresa.getIndirizziImpresa();
 	}
@@ -499,18 +471,6 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		this.consorziateEsecutriciPresenti = consorziateEsecutriciPresenti;
 	}
 
-	public Double getQuotaRTI() {
-		return quotaRTI;
-	}
-
-	public void setQuotaRTI(Double quotaRTI) {
-		this.quotaRTI = quotaRTI;
-	}
-
-	public boolean checkQuota() {
-		return true;
-	}
-	
 	public boolean isPlicoUnicoOfferteDistinte() {
 		return plicoUnicoOfferteDistinte;
 	}
@@ -600,6 +560,93 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	}
 
 	/**
+	 * interfaccia IRaggruppamenti
+	 */
+	@Override
+	public boolean isRti() {
+		return rti;
+	}
+
+	@Override
+	public void setRti(boolean rti) {
+		this.rti = rti;
+	}
+
+	@Override
+	public String getDenominazioneRTI() {
+		return denominazioneRTI;
+	}
+
+	@Override
+	public void setDenominazioneRTI(String denominazioneRTI) {
+		this.denominazioneRTI = denominazioneRTI;
+	}
+	
+	@Override
+	public Double getQuotaRTI() {
+		return quotaRTI;
+	}
+	
+	@Override
+	public void setQuotaRTI(Double quotaRTI) {
+		this.quotaRTI = quotaRTI;
+	}
+
+	@Override
+	public List<IComponente> getComponenti() {
+		return componenti;
+	}
+	
+	@Override
+	public WizardDatiImpresaHelper getImpresa() {
+		return impresa;
+	}
+
+	@Override
+	public IDatiPrincipaliImpresa getDatiPrincipaliImpresa() {
+		return this.impresa.getDatiPrincipaliImpresa();
+	}
+
+	@Override
+	public boolean checkQuota() {
+		return true;
+	}
+
+	// NON appartiene a IRaggruppamenti ma e' utile per il Wizard
+	public void setImpresa(WizardDatiImpresaHelper impresa) {
+		this.impresa = impresa;
+	}
+	
+	// NON appartiene a IRaggruppamenti ma e' utile per il Wizard
+	public void setComponenti(List<IComponente> componenti) {
+		this.componenti = componenti;
+	}
+
+	/**
+	 * interfaccia IAvvalimento
+	 */
+	@Override
+	public boolean isAvvalimento() {
+		return avvalimento;
+	}
+
+	@Override
+	public void setAvvalimento(boolean avvalimento) {
+		this.avvalimento = avvalimento;
+	}
+
+	@Override
+	public List<IImpresaAusiliaria> getImpreseAusiliarie() {
+		return impreseAusiliarie;
+	}
+
+	@Override
+	public void setImpreseAusiliarie(List<IImpresaAusiliaria> impreseAusiliarie) {	
+		this.impreseAusiliarie = impreseAusiliarie;
+	}
+	
+	
+	/**
 	 * Crea l'oggetto documento per la generazione della stringa XML per l'inoltro
 	 * della richiesta al backoffice del tipo partecipazione.
 	 *
@@ -648,6 +695,30 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 			}
 		}
 		
+		if(this.tipoEvento == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA) {
+			//tipoPartecipazione.setCodiceCNEL((this.codiceCNEL != null ? this.codiceCNEL.toUpperCase() : this.codiceCNEL));
+			tipoPartecipazione.setCodiceCNEL(this.codiceCNEL);
+		}
+		
+		// avvalimento e imprese ausiliarie
+		tipoPartecipazione.setAvvalimento(this.avvalimento);
+		if(this.avvalimento) {
+			if(this.impreseAusiliarie != null && this.impreseAusiliarie.size() > 0) {
+				ListaImpreseAusiliarieType listaImpresaAusiliarie = tipoPartecipazione.addNewImpreseAusiliarie();
+				for (IImpresaAusiliaria impresa : this.impreseAusiliarie) {
+					ImpresaAusiliariaType impresaAusiliaria = listaImpresaAusiliarie.addNewImpresaAusiliaria();
+					impresaAusiliaria.setTipoImpresa(impresa.getTipoImpresa());
+					impresaAusiliaria.setRagioneSociale(impresa.getRagioneSociale());
+					impresaAusiliaria.setAmbitoTerritoriale(impresa.getAmbitoTerritoriale());
+					// ??? impresaAusiliaria.setNazione(impresa.getNazione());
+					impresaAusiliaria.setCodiceFiscale(impresa.getCodiceFiscale());
+					impresaAusiliaria.setPartitaIVA(impresa.getPartitaIVA());
+					impresaAusiliaria.setIdFiscaleEstero(impresa.getIdFiscaleEstero());
+					impresaAusiliaria.setAvvalimentoPer(impresa.getAvvalimentoPer());
+				}
+			}
+		}
+		
 		document = doc;
 		document.documentProperties().setEncoding("UTF-8");
 		return document;
@@ -676,7 +747,7 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	public void fillFromXml(TipoPartecipazioneDocument document) {
 		this.setRti(document.getTipoPartecipazione().getRti());
 //		this.setTipoRaggruppamento(document.getTipoPartecipazione().getTipoRaggruppamento());
-		//this.setProgressivoOfferta(document.getTipoPartecipazione().getProgressivoOfferta());  // W_INVCOM.COMKEY3
+//		this.setProgressivoOfferta(document.getTipoPartecipazione().getProgressivoOfferta());  // W_INVCOM.COMKEY3
 		
 		if (this.isRti()) {
 			this.setDenominazioneRTI(document.getTipoPartecipazione().getDenominazioneRti());
@@ -701,7 +772,7 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		}
 		
 		// ----- Recupero lotti -----
-		if((isGaraTelematica() && isPlicoUnicoOfferteDistinte()) || isLottiDistinti()) {
+		if ((isGaraTelematica() && isPlicoUnicoOfferteDistinte()) || isLottiDistinti()) {
 			String[] listaLotti = document.getTipoPartecipazione().getCodiceLottoArray();
 			if(document.getTipoPartecipazione().getCodiceLottoArray() != null) {
 			
@@ -728,6 +799,33 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 				this.setCodiciInterniLotti(lottiInterni);
 				this.setOggettiLotti(oggetti);
 			}
+		}
+		
+		this.codiceCNEL = document.getTipoPartecipazione().getCodiceCNEL();
+		
+		// avvalimento e imprese ausiliarie
+		try { 
+			this.avvalimento = document.getTipoPartecipazione().getAvvalimento();
+		} catch (Exception ex) {
+			this.avvalimento = false;
+		}
+		if (this.avvalimento 
+			&& (document.getTipoPartecipazione().isSetImpreseAusiliarie() && document.getTipoPartecipazione().getImpreseAusiliarie() != null)) 
+		{
+			List<IImpresaAusiliaria> imprese = new ArrayList<IImpresaAusiliaria>();
+			for (ImpresaAusiliariaType ditta : document.getTipoPartecipazione().getImpreseAusiliarie().getImpresaAusiliariaList()) {
+				IImpresaAusiliaria impresaAusiliaria = new ImpresaAusiliariaHelper();
+				impresaAusiliaria.setTipoImpresa(ditta.getTipoImpresa());
+				impresaAusiliaria.setRagioneSociale(ditta.getRagioneSociale());
+				impresaAusiliaria.setAmbitoTerritoriale(ditta.getAmbitoTerritoriale());
+				// ??? impresaAusiliaria.setNazione(ditta.getNazione());
+				impresaAusiliaria.setCodiceFiscale(ditta.getCodiceFiscale());
+				impresaAusiliaria.setPartitaIVA(ditta.getPartitaIVA());
+				impresaAusiliaria.setIdFiscaleEstero(ditta.getIdFiscaleEstero());
+				impresaAusiliaria.setAvvalimentoPer(ditta.getAvvalimentoPer());
+				imprese.add(impresaAusiliaria);
+			}
+			this.impreseAusiliarie = imprese;
 		}
 	}
 	
@@ -758,11 +856,20 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		int iter = (StringUtils.isEmpty(iterGara) ? 0 : Integer.valueOf(iterGara));
 		return (decodeIterGara(iter) == PROCEDURA_NEGOZIATA); 
 	}
+
+	public static boolean isGaraRdo(String iterGara) {
+		int iter = (StringUtils.isEmpty(iterGara) ? 0 : Integer.valueOf(iterGara));
+		return (decodeIterGara(iter) == PROCEDURA_RDO);
+	}
 	
 	public static boolean isGaraAperta(String iterGara) {
 		int iter = (StringUtils.isEmpty(iterGara) ? 0 : Integer.valueOf(iterGara));
 		return (decodeIterGara(iter) == PROCEDURA_APERTA); 
 	}
+	
+    public boolean isConcorsoRiservato() {
+		return this.iterGara == 10;
+    }
 
 	/**
 	 * Genera (o rigenera) lo stack delle pagine del wizard per consentire la
@@ -771,6 +878,7 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 	public String getSTEP_IMPRESA() { return STEP_IMPRESA; }
 	public String getSTEP_RTI() { return STEP_RTI; }
 	public String getSTEP_COMPONENTI() { return STEP_COMPONENTI; }
+	public String getSTEP_AVVALIMENTO() { return STEP_AVVALIMENTO; }
 	public String getSTEP_LOTTI() { return STEP_LOTTI; }
 	public String getSTEP_RIEPILOGO() { return STEP_RIEPILOGO; }
 		
@@ -781,32 +889,95 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		// configura la mappa degli step di navigazione
 		// e i relativi target associati
 		this.clearMappaStepNavigazione();
-		this.addMappaStepNavigazione(STEP_IMPRESA, 	  null,                    null);
-		this.addMappaStepNavigazione(STEP_RTI, 		  "successSkipRTI",        "backSkipRTI");
-		this.addMappaStepNavigazione(STEP_COMPONENTI, "successSkipComponenti", "backSkipComponenti");
-		this.addMappaStepNavigazione(STEP_LOTTI, 	  "successSkipLotti",      "backSkipLotti");
-		this.addMappaStepNavigazione(STEP_RIEPILOGO,  null,      			   null);
+		this.addMappaStepNavigazione(STEP_IMPRESA, 	  	null,                   	null);
+		this.addMappaStepNavigazione(STEP_RTI, 		  	"successSkipRTI", 			"backSkipRTI");		
+		this.addMappaStepNavigazione(STEP_COMPONENTI, 	"successSkipComponenti", 	"backSkipComponenti");
+		this.addMappaStepNavigazione(STEP_AVVALIMENTO,  null,   					null);
+		this.addMappaStepNavigazione(STEP_LOTTI, 	  	"successSkipLotti",      	"backSkipLotti");		
+		this.addMappaStepNavigazione(STEP_RIEPILOGO,  	null,      			   		null);
 		
 		// prepara l'elendo degli step disponibili per il wizard
-		boolean domandaPartecipazione = (this.tipoEvento == 1); // PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA
-		boolean invioOfferta = (this.tipoEvento == 2);			// PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA
+		boolean domandaPartecipazione = (this.tipoEvento == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA);
+		boolean invioOfferta = (this.tipoEvento == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
 		boolean consorzio = (this.getImpresa().isConsorzio());
-		boolean abilitazioniRistretta = (domandaPartecipazione) ||
-				 					    (invioOfferta && !this.rtiPartecipazione);
-		boolean abilitazioniNegoziata = 
-			(!this.rtiBO && consorzio && !this.consorziateEsecutriciPresenti) ||
-			(!this.rtiBO && !consorzio) ||
-			(!this.rtiBO && consorzio && this.consorziateEsecutriciPresenti);	// <= consorzio+consorziate esecutrici in BO, può decidere di partecipare come RTI
+		//boolean abilitazioniRistretta = (domandaPartecipazione) ||
+		//			 					    (invioOfferta && (!this.rtiPartecipazione || StringUtils.isEmpty(this.codiceCNEL)));
+		//boolean abilitazioniNegoziata = 
+		//		(!this.rtiBO && consorzio && !this.consorziateEsecutriciPresenti) ||
+		//		(!this.rtiBO && !consorzio) ||
+		//		(!this.rtiBO && consorzio && this.consorziateEsecutriciPresenti);	// <= consorzio+consorziate esecutrici in BO, può decidere di partecipare come RTI
 		
 		this.setIterGara(this.iterGara);
 		boolean aperta    = (this.iterGara == PROCEDURA_APERTA);
 		boolean ristretta = (this.iterGara == PROCEDURA_RISTRETTA);
 		boolean negoziata = (this.iterGara == PROCEDURA_NEGOZIATA);
+		boolean indagineMercato = (this.iterGara == INDAGINE_MERCATO);
 		boolean garaLotti = this.plicoUnicoOfferteDistinte;
 		
 		// ----- IMPRESA -----
 		this.stepNavigazione.add(STEP_IMPRESA);
-				
+		
+		// STEP RTI, FORMA PARTECIPAZIONE
+		//
+		// RISTRETTA, PREQUALIFICA, LOTTO UNICO
+		// decido rti oppure no => posso editare
+		// (step) => domandaPartecipazione && !garaLotti
+		// (editabilita) => domandaPartecipazione && !garaLotti
+		
+		// RISTRETTA, OFFERTA, LOTTO UNICO
+		// NEGOZIATA, OFFERTA, LOTTO UNICO
+		// invito singola => posso editare in RTI
+		// invito RTI => no edit (DEVO VEDERE LO STEP PER EDITARE CNEL)
+		// (step) => invioOfferta && !garaLotti
+		// (editabilita) => invioOfferta && !garaLotti && !this.rtiBO
+		
+		// APERTA, OFFERTA, LOTTO UNICO
+		// decido rti oppure no => posso editare
+		// (step) => invioOfferta && !garaLotti
+		// (editabilita) => invioOfferta && !garaLotti
+		
+		// RISTRETTA A LOTTI, PREQUALIFICA
+		// plico singola => no edit
+		// plico rti => edit
+		// (step) => domandaPartecipazione && garaLotti
+		// (editabilita) => domandaPartecipazione && garaLotti --&& this.rti
+
+		// RISTRETTA, OFFERTA, A LOTTI
+		// NEGOZIATA A LOTTI
+		// plico singola => no edit, (DEVO VEDERE LO STEP PER EDITARE CNEL)
+		// plico rti in bo => no edit, (DEVO VEDERE LO STEP PER EDITARE CNEL)
+		// plico rti NON in bo => edit
+		// (step) => invioOfferta && garaLotti
+		// (editabilita) => invioOfferta && garaLotti && !this.rtiBO --&& this.rti
+		
+		// APERTA, OFFERTA, A LOTTI
+		// plico singola => no edit, (DEVO VEDERE LO STEP PER EDITARE CNEL)
+		// plico rti (NON in bo) => edit
+		// (step) => invioOfferta && garaLotti
+		// (editabilita) => invioOfferta && garaLotti && aperta && this.rti
+		
+		// step (metto in or le condizioni sopra, e ci aggiungo che non sia una gara a rilancio):
+		// ((domandaPartecipazione && !garaLotti) ||
+		// (domandaPartecipazione && garaLotti) ||
+		// (invioOfferta && !garaLotti) ||
+		// (invioOfferta && !garaLotti) ||
+		// (invioOfferta && garaLotti)
+		// (invioOfferta && garaLotti))
+		//  && !this.garaRilancio
+		// si semplifica così:
+		// ((domandaPartecipazione || invioOfferta) && !this.garaRilancio)
+		
+		// editabilita:
+		// ((domandaPartecipazione && !garaLotti) ||
+		// (domandaPartecipazione && garaLotti) ||
+		// (invioOfferta && !garaLotti && !this.rtiBO) ||
+		// (invioOfferta && garaLotti && !this.rtiBO)
+		// (invioOfferta && !garaLotti && aperta) ||
+		// (invioOfferta && garaLotti && aperta && this.rti))
+		// si semplifica così:
+		// (domandaPartecipazione || (invioOfferta && !this.rtiBO && !aperta) || (invioOfferta && !garaLotti && aperta) ||
+		// (invioOfferta && garaLotti && aperta && this.rti)) 
+
 		// ----- FORMA PARTECIPAZIONE -----
 		// per gare ristretta o negoziate, si abilita l'edit della 
 		// forma di partecipazione in casi particolari:
@@ -815,13 +986,18 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		//              non ci si sia presentati come RTI
 		// - negoziate: se un consorzio è stato invitato come singolo oppure 
 		//   			se un'impresa è stata invitata come singola
-		if( (ristretta && abilitazioniRistretta) || 
-		    (negoziata && abilitazioniNegoziata) ) {
+		//if( (ristretta && abilitazioniRistretta) || 
+		//    (negoziata && abilitazioniNegoziata) ) {
+		//	this.setEditRTI(true);
+		//}
+		// SI COMMMENTANO LE RIGHE PRECEDENTI E SI SEMPLIFICA SULLA BASE DELLE ANALISI DESCRITTE NEI COMMENTI PIU' SOPRA
+		if ((domandaPartecipazione || (invioOfferta && !this.rtiBO && !aperta) || (invioOfferta && !garaLotti && aperta)
+				|| (invioOfferta && garaLotti && aperta && this.rti))) {
 			this.setEditRTI(true);
 		}
 	
-		// la "forma di partecipazione" è abilitata se:
-		// - gara aperta o negoziata
+		// la "forma di partecipazione" (RT) è abilitata se:
+		// - gara aperta o negoziata o indagine di mercato
 		// - gare ristrette
 		//   - in partecipazione, sono consorzio, non posso compilare le 
 		//     consorziate perchè vanno compilati in fase di offerta,
@@ -831,17 +1007,29 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 		//   - in partecipazione e offerta, sono ditta singola, non deve comparire
 		//     lo step "STEP_COMPONENTI"
 		// - non è una gara di rilancio
-		if(	((this.editRTI && aperta) || 
-			 (negoziata && abilitazioniNegoziata) || 
-			 (ristretta && abilitazioniRistretta)) 
-			 && !this.garaRilancio ) {
+		//if(	 (
+		//	 (this.editRTI && aperta) ||
+		//	 (this.editRTI && indagineMercato) ||
+		//	 (negoziata && abilitazioniNegoziata) || 
+		//	 (ristretta && abilitazioniRistretta)) 
+		//	 && !this.garaRilancio ) 
+		//{
+		//
+		//	this.stepNavigazione.add(STEP_RTI);
+		//}
+		if ((domandaPartecipazione || invioOfferta) && !this.garaRilancio) {
 			this.stepNavigazione.add(STEP_RTI);
-		}   
+		}
 		
-		// ----- CONSORZIATE ESECUTRICI/COMPONENTI RAGGRUPPAMENTO -----
+		
+		
+		if (iterGara == CONCORSO_I_GRADO || iterGara == CONCORSO_II_GRADO)
+			abilitaStepNavigazione(STEP_RTI, true);
+		
+		// ----- CONSORZIATE ESECUTRICI / COMPONENTI RAGGRUPPAMENTO -----
 		// i componenti (consorziate esecutrici/componenti raggruppamento) sono 
 		// sono abilitati se:
-		//	 - gara aperta o negoziata
+		//	 - gara aperta o negoziata o indagine di mercato
 	    //   - gara ristretta in fase di domanda partecipazione e sono un'impresa 
 	    //   - gara ristretta in fase di domanda partecipazione e sono un consorzio ma partecipo come RTI
 		//   - gara ristretta in fase di offerta che non si è presentata come RTI
@@ -858,6 +1046,9 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 			this.abilitaStepNavigazione(STEP_COMPONENTI, this.isStepComponentiAbilitato());
 		}
 
+		// ----- AVVALIMENTO -----
+		this.stepNavigazione.add(STEP_AVVALIMENTO);
+
 		// ----- LOTTI -----
 		// i lotti sono abilitati se: 
 		//   - lotti distinti per gara non telematica
@@ -869,41 +1060,50 @@ public class WizardPartecipazioneHelper extends AbstractWizardHelper
 				(this.isLottiDistinti() && !this.isGaraTelematica()) || 
 				//(!this.isPlicoUnicoOfferteDistinte() && this.isGaraTelematica()) || ???
 			    (this.isPlicoUnicoOfferteDistinte() && this.isGaraTelematica());
-			if(	(!ristretta && lotti) ||		// questa codizione equivale a (lotti)
+			if(	(!ristretta && lotti) ||		// questa codizione equivale a => if (lotti) { ... }
 				(ristretta && lotti) ) 
 			{ 
 				this.stepNavigazione.add(STEP_LOTTI);
 			}
 		}
-				
+
 		// ----- RIEPILOGO -----
 		this.stepNavigazione.add(STEP_RIEPILOGO);
 	}
 	
 	/**
-	 * Restuisce se lo step COMPONENTI è abilitato o meno nella navigazione
+	 * Restuisce se lo step COMPONENTI e' abilitato o meno nella navigazione
 	 * del wizard
 	 */
 	public boolean isStepComponentiAbilitato() {
-		boolean domandaPartecipazione = (this.tipoEvento == 1); 
-		boolean invioOfferta = (this.tipoEvento == 2);
-		boolean consorzio = (this.getImpresa().isConsorzio());
-		this.setIterGara(this.iterGara);
-		boolean aperta    = (this.iterGara == PROCEDURA_APERTA);
-		boolean ristretta = (this.iterGara == PROCEDURA_RISTRETTA);
-		boolean negoziata = (this.iterGara == PROCEDURA_NEGOZIATA);
-	
+		boolean domandaPartecipazione = (tipoEvento == 1); 
+		boolean invioOfferta = (tipoEvento == 2);
+		boolean consorzio = (getImpresa().isConsorzio());
+		this.setIterGara(iterGara);
+		boolean aperta    = (iterGara == PROCEDURA_APERTA);
+		boolean ristretta = (iterGara == PROCEDURA_RISTRETTA);
+		boolean negoziata = (iterGara == PROCEDURA_NEGOZIATA || iterGara == 5);
+		boolean indagineMercato = (iterGara == INDAGINE_MERCATO);
+		boolean isConcorsoPrimoGrado = (iterGara == CONCORSO_I_GRADO);
+		boolean isConcorsoSecondoGrado = (iterGara == CONCORSO_II_GRADO);
+
 		return !this.garaRilancio && (
-			   (aperta && consorzio) || 
-			   (aperta && !consorzio && this.rti) ||
-			   (negoziata && !consorzio && !this.rtiBO && this.rti) ||
-			   (negoziata && consorzio && !this.rtiBO && !this.consorziateEsecutriciPresenti) ||
-		       (negoziata && consorzio && !this.rtiBO && this.consorziateEsecutriciPresenti && this.rti) ||
-		       (ristretta && consorzio && domandaPartecipazione && this.rti) ||
-		       (ristretta && consorzio && invioOfferta && !this.rtiPartecipazione) ||
-		       (ristretta && !consorzio && domandaPartecipazione && this.rti) ||
-		       (ristretta && !consorzio && invioOfferta && this.rti && !this.rtiPartecipazione)
-		       );
+			   (aperta && consorzio)
+			   || (aperta && !consorzio && rti)
+			   || (negoziata && !consorzio && !rtiBO && rti)
+			   || (negoziata && consorzio && !rtiBO && !consorziateEsecutriciPresenti)
+		       || (negoziata && consorzio && !rtiBO && consorziateEsecutriciPresenti && rti)
+		       || (negoziata && consorzio && !rtiBO)
+		       || (ristretta && consorzio && domandaPartecipazione && rti)
+		       || (ristretta && consorzio && invioOfferta && !rtiPartecipazione)
+		       || (ristretta && consorzio && invioOfferta && !rti)
+		       || (ristretta && !consorzio && domandaPartecipazione && rti)
+		       || (ristretta && !consorzio && invioOfferta && rti && !rtiPartecipazione)
+		       || (indagineMercato && consorzio)
+			   || (indagineMercato && !consorzio && rti)
+			   || ((isConcorsoPrimoGrado || isConcorsoSecondoGrado) && rti)
+			   || (isConcorsoPrimoGrado && !rti && consorzio)
+		   );
 	}
 
 }

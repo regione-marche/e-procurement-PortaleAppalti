@@ -5,6 +5,8 @@ import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -23,6 +25,10 @@ import java.util.Set;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageCategorieAction extends AbstractOpenPageAction {
 
     /**
@@ -44,9 +50,9 @@ public class OpenPageCategorieAction extends AbstractOpenPageAction {
 	@Validate(EParamValidation.GENERIC)
     private String page;
 
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
     private String filtroCategorie;
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
     private String filtroCategorieNew;
 
     // dati che, se popolati, dipendono dal fatto che si vuole ricaricare la

@@ -107,7 +107,7 @@
 												 								 value="%{model.googleLike}" aria-label="${lblFiltra}" />
 						<wp:i18n key="BUTTON_FILTRA" var="valueFiltraButton" />
 						<s:submit value="%{#attr.valueFiltraButton}" cssClass="button" />
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;model.advancedSearch=true&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;model.advancedSearch=true' 
 							 title='<wp:i18n key="LABEL_RICERCA_AVANZATA" />' >
 							 <wp:i18n key="LABEL_RICERCA_AVANZATA" />
 						</a>
@@ -211,7 +211,7 @@
 							<input type="hidden" name="model.advancedSearch" value="${true}" />
 							<input type="hidden" name="ext" value="${param.ext}" />
 						</s:submit>
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;model.advancedSearch=false&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;model.advancedSearch=false' 
 							 title='<wp:i18n key="LABEL_RICERCA_SEMPLIFICATA" />' >
 							 <wp:i18n key="LABEL_RICERCA_SEMPLIFICATA" />
 						</a>
@@ -319,14 +319,14 @@
 											<c:choose>
 												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;inCarrello=false&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;inCarrello=false' 
 															 title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />' >
 															 <wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />
 														</a>
 													</li>
 													<s:if test='%{#prodotto.dettaglioProdotto.stato.toUpperCase().contains("CATALOGO") && dettaglioComunicazione == null && !#prodotto.archiviato && !#prodotto.modificato && !variazioneOfferta && dettaglioComunicazioneVariazioneOfferta == null}'>
 														<li>
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;${tokenHrefParams}' 
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}' 
 																 title='<wp:i18n key="LABEL_ELIMINA_PRODOTTO" />' >
 																 <wp:i18n key="LABEL_ELIMINA_PRODOTTO" />
 															</a>
@@ -335,13 +335,13 @@
 												</c:when>
 												<c:otherwise>
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;inCarrello=false&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;inCarrello=false' 
 															 title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />' class="bkg detail">
 														</a>
 													</li>
 													<s:if test='%{#prodotto.dettaglioProdotto.stato.toUpperCase().contains("CATALOGO") && dettaglioComunicazione == null && !#prodotto.archiviato && !#prodotto.modificato && !variazioneOfferta && dettaglioComunicazioneVariazioneOfferta == null}'>
 														<li>
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}&amp;${tokenHrefParams}' 
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteProdotto.action" />&amp;prodottoId=${prodotto.dettaglioProdotto.id}' 
 															 	title='<wp:i18n key="LABEL_ELIMINA_PRODOTTO_DA_CATALOGO" />' class="bkg delete">
 															</a>
 														</li>
@@ -358,6 +358,8 @@
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
 			</s:if>
 			<s:else>
+				<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+				<input disabled="disabled" type="submit" style="display:none;"/>
 				<div class="list-summary">
 					<wp:i18n key="SEARCH_NOTHING_FOUND" />.
 				</div>
@@ -366,7 +368,7 @@
 	</s:else>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;catalogo=<s:property value="%{catalogo}"/>&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_GESTIONE_PRODOTTI" />
 		</a>
 	</div>

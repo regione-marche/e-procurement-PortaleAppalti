@@ -44,10 +44,11 @@ public class CohesionLoginResponseAction extends BaseAction implements
 
 	private boolean formLoginVisible;
 
-	/**
-	 * @param appParamManager
-	 *            the appParamManager to set
-	 */
+	@Override
+	public void setServletResponse(HttpServletResponse response) {
+		this.response = response;
+	}
+
 	public void setAppParamManager(IAppParamManager appParamManager) {
 		this.appParamManager = appParamManager;
 	}
@@ -60,22 +61,10 @@ public class CohesionLoginResponseAction extends BaseAction implements
 		this.pageManager = pageManager;
 	}
 
-	@Override
-	public void setServletResponse(HttpServletResponse response) {
-		this.response = response;
-	}
-
-	/**
-	 * @return the formLoginVisible
-	 */
 	public boolean isFormLoginVisible() {
 		return formLoginVisible;
 	}
 
-	/**
-	 * @param formLoginVisible
-	 *            the formLoginVisible to set
-	 */
 	public void setFormLoginVisible(boolean formLoginVisible) {
 		this.formLoginVisible = formLoginVisible;
 	}

@@ -86,12 +86,13 @@ public interface IAuthenticationProviderManager {
 	 * quell'ip.
 	 *
 	 * @param username Lo username che ha effettuato l'accesso.
+	 * @param delegate Il soggetto impresa SSO che ha effettuato l'accesso.
 	 * @param ipAddress L'ip address da cui e' stato effettuato l'accesso.
 	 * @param sessionId Il session ID da cui e' stato effettuato l'accesso.
 	 * @return 0=ok, <0 se l'utente e' gia loggato ed effettua un login da un pc (-1) o da cluster nodo (-2) diverso
 	 * @throws ApsSystemException In caso di errore.
 	 */
-	public int logLogin(String username, String ipAddress, String sessionId) throws ApsSystemException;
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException;
 
 	/**
 	 * Ad ogni disconnessione di un utente dal portale o scadenza della propria
@@ -99,12 +100,13 @@ public interface IAuthenticationProviderManager {
 	 * ppcommon_accesses, settando il logouttime.
 	 *
 	 * @param username Lo username che ha effettuato la disconnessione o per cui e' scaduta la sessione.
+	 * @param delegate Il soggetto impresa SSO che ha effettuato l'accesso.
 	 * @param ipAddress L'ip address da cui e' stato effettuato l'accesso in precedenza.
 	 * @param sessionId Il session ID da cui e' stato effettuato l'accesso in precedenza.
 	 * @return True se il login out viene effettuato, False viceversa
 	 * @throws ApsSystemException In caso di errore.
 	 */
-	public boolean logLogout(String username, String ipAddress, String sessionId) throws ApsSystemException;
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException;
 
 	/**
 	 * Ad ogni tentativo di accesso fallito, inserisce un record di log nella

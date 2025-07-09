@@ -27,6 +27,8 @@ import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 
@@ -36,6 +38,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManag
  * @author 
  * @since 
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class GenPDFAggiornamentoIscrizioneAction extends GenPDFDomandaIscrizioneAction {
 	/**
      * UID
@@ -256,11 +262,7 @@ public class GenPDFAggiornamentoIscrizioneAction extends GenPDFDomandaIscrizione
 			}
 			
 			if (listaDoc != null) {
-				List<DocumentazioneRichiestaType> documentiRichiesti = bandiManager
-						.getDocumentiRichiestiBandoIscrizione(
-								helper.getIdBando(), 
-								helper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-								helper.isRti());				
+				List<DocumentazioneRichiestaType> documentiRichiesti = helper.getDocumentiRichiestiBO();
 				decodeDocumentiRichiesti(listaDoc, documentiRichiesti);
 			}
 			

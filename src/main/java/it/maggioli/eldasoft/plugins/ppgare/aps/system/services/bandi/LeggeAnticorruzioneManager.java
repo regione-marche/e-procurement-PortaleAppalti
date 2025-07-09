@@ -1,18 +1,18 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.AbstractService;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.AdempimentoAnticorruzioneOutType;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.AdempimentoAnticorruzioneType;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.AppaltoAggiudicatoAnticorruzioneType;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ProspettoGareContrattiAnticorruzioneOutType;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.aps.system.services.AbstractService;
 
 /**
  * Servizio gestore degli esiti nel rispetto dell'articolo 1 della Legge
@@ -49,22 +49,31 @@ public class LeggeAnticorruzioneManager extends AbstractService implements
 	}
 
 	@Override
-	public List<AppaltoAggiudicatoAnticorruzioneType> getProspettoGareContrattiAnticorruzione(
+	public Pair<Integer, List<AppaltoAggiudicatoAnticorruzioneType>> getProspettoGareContrattiAnticorruzione(
 			String token, int anno, String cig, String proponente,
-			String oggetto, 
-			String partecipante, String aggiudicatario)
+			String oggetto,
+			String partecipante, String aggiudicatario, Integer indicePrimoRecord, Integer maxNumRecord)
 			throws ApsException {
-		List<AppaltoAggiudicatoAnticorruzioneType> appalti = null;
+		Pair<Integer, List<AppaltoAggiudicatoAnticorruzioneType>> appalti = null;
 		ProspettoGareContrattiAnticorruzioneOutType retWS = null;
 		try {
 			retWS = this.wsBandiEsitiAvvisi.getProxyWSBandiEsitiAvvisi()
-					.getProspettoGareContrattiAnticorruzione(token,
-							anno, cig, proponente, oggetto, partecipante, aggiudicatario);
+					.getProspettoGareContrattiAnticorruzione(
+							token
+							, anno
+							, cig
+							, proponente
+							, oggetto
+							, partecipante
+							, aggiudicatario
+							, indicePrimoRecord
+							, maxNumRecord
+					);
 			if (retWS.getErrore() == null) {
 				if (retWS.getAppalto() != null)
-					appalti = Arrays.asList(retWS.getAppalto());
+					appalti = Pair.of(retWS.getNumAppaltiAggiudicati(), Arrays.asList(retWS.getAppalto()));
 				else
-					appalti = new ArrayList<AppaltoAggiudicatoAnticorruzioneType>();
+					appalti = Pair.of(0, new ArrayList<>());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il

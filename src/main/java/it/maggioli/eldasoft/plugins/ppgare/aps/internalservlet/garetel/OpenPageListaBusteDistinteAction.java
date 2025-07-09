@@ -6,6 +6,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.DocumentoMancanteBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -25,6 +27,7 @@ import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 
 
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageListaBusteDistinteAction extends EncodedDataAction implements SessionAware{
 	/**
 	 * UID

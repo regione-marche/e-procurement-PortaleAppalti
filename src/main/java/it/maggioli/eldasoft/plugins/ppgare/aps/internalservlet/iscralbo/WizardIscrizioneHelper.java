@@ -2,6 +2,9 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.apsadmin.system.BaseAction;
+import com.opensymphony.xwork2.ActionContext;
+
 import it.eldasoft.sil.portgare.datatypes.AggIscrizioneImpresaElencoOpType;
 import it.eldasoft.sil.portgare.datatypes.AggiornamentoIscrizioneImpresaElencoOperatoriDocument;
 import it.eldasoft.sil.portgare.datatypes.CategoriaType;
@@ -15,7 +18,10 @@ import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
 import it.eldasoft.sil.portgare.datatypes.ListaPartecipantiRaggruppamentoType;
 import it.eldasoft.sil.portgare.datatypes.ListaStazioniAppaltantiType;
 import it.eldasoft.sil.portgare.datatypes.PartecipanteRaggruppamentoType;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.QuestionarioType;
+import it.eldasoft.www.sil.WSGareAppalto.TipoPartecipazioneType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.ComponentiRTIList;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
@@ -24,15 +30,20 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDati
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiUlterioriImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IIndirizzoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IRaggruppamenti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.CalendarValidator;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -598,7 +609,7 @@ public class WizardIscrizioneHelper
 	 */
 	public WizardIscrizioneHelper() {
 		this.actionPrefix = "openPageIscrAlbo"; 
-		this.stepNavigazione = new Stack<String>();		
+		this.stepNavigazione = new Stack<String>();
 		this.dataScadenza = null;
 		this.dataPresentazione = null;
 		this.idBando = null;
@@ -780,7 +791,7 @@ public class WizardIscrizioneHelper
 			}
 			
 			// imposta il flag "possesso dei requisiti coordinatore di sicurezza"
-			if(this.richiestaCoordinatoreSicurezza && this.requisitiCoordinatoreSicurezza != null) {				
+			if(this.richiestaCoordinatoreSicurezza && this.requisitiCoordinatoreSicurezza != null) {
 				iscrizImpresa.setRequisitiCoordinatoreSicurezza( this.requisitiCoordinatoreSicurezza );
 			}
 			
@@ -791,10 +802,11 @@ public class WizardIscrizioneHelper
 			
 			// QFORM
 			// gestione questionari
-			logger.info("Controllo la gestione dei questionari: {}",this.documenti.isGestioneQuestionario());
+			logger.debug("Controllo la gestione dei questionari: {}",this.documenti.isGestioneQuestionario());
 			if(this.documenti.isGestioneQuestionario()) {
-				iscrizImpresa.setQuestionarioCompletato(this.documenti.isQuestionarioCompletato());				
+				iscrizImpresa.setQuestionarioCompletato(this.documenti.isQuestionarioCompletato());
 				iscrizImpresa.setQuestionarioId(this.documenti.getQuestionarioId());
+				//iscrizImpresa.setRiepilogoPdfAutomatico(this.documenti.getQuestionarioPdfRiepilogoAutomatico() != null);
 			}
 			
 			document = doc;
@@ -844,8 +856,9 @@ public class WizardIscrizioneHelper
 			// QFORM
 			// gestione questionari
 			if(this.documenti.isGestioneQuestionario()) {
-				aggImpresa.setQuestionarioCompletato(this.documenti.isQuestionarioCompletato());				
+				aggImpresa.setQuestionarioCompletato(this.documenti.isQuestionarioCompletato());
 				aggImpresa.setQuestionarioId(this.documenti.getQuestionarioId());
+				//aggImpresa.setRiepilogoPdfAutomatico(this.documenti.getQuestionarioPdfRiepilogoAutomatico() != null);
 			}
 
 			document = doc;
@@ -1054,7 +1067,7 @@ public class WizardIscrizioneHelper
 		boolean abilitaQuestionari = false;
 		if(this.documenti.isGestioneQuestionario() && !this.isRinnovoIscrizione()) {
 			abilitaQuestionari = true;
-		}		
+		}
 		if(abilitaQuestionari) {
 			this.stepNavigazione.push(WizardIscrizioneHelper.STEP_QUESTIONARIO);
 			this.stepNavigazione.push(WizardIscrizioneHelper.STEP_RIEPILOGO_QUESTIONARIO);
@@ -1206,6 +1219,52 @@ public class WizardIscrizioneHelper
 		this.componenti = new ArrayList<IComponente>();
 		this.componentiRTI = new ComponentiRTIList();
 	}
+	
+	/**
+	 * componi la lista dei soggetti firmatari 
+	 */
+	protected  List<FirmatarioBean> composeListaFirmatariMandataria() {
+		return ComponentiRTIList.composeListaFirmatariMandataria(this.impresa);
+	}
+
+	/**
+	 * salva il firmatario della mandataria in caso di RTI 
+	 */
+	public SoggettoFirmatarioImpresaHelper saveFirmatarioMandataria(String firmatarioSelezionato) {
+		SoggettoFirmatarioImpresaHelper firmatario = new SoggettoFirmatarioImpresaHelper();
+		
+		boolean mandatariaTrovata = false;
+		for(int i = 0; i < listaFirmatariMandataria.size() && !mandatariaTrovata; i++) {
+			String[] v = firmatarioSelezionato.split("-");
+			String listaFirmatarioSelezionato = (v != null && v.length > 0 ? v[0] : "");
+			int indiceFirmatarioSelezionato = Integer.parseInt((v != null && v.length > 1 ? v[1] : ""));
+			
+			ISoggettoImpresa soggettoFromLista = null;
+			if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_ALTRE_CARICHE)) {
+				soggettoFromLista = impresa.getAltreCaricheImpresa().get(indiceFirmatarioSelezionato);
+			} else if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_DIRETTORI_TECNICI)) {
+				soggettoFromLista = impresa.getDirettoriTecniciImpresa().get(indiceFirmatarioSelezionato);
+			} else {
+				soggettoFromLista = impresa.getLegaliRappresentantiImpresa().get(indiceFirmatarioSelezionato);
+			}
+			
+			FirmatarioBean f = listaFirmatariMandataria.get(i); 
+			if(f.getNominativo().equalsIgnoreCase(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome())
+			   && listaFirmatarioSelezionato.equalsIgnoreCase(f.getLista()) ) 
+			{
+				mandatariaTrovata = true;
+			}
+			
+			firmatario.copyFrom(soggettoFromLista);
+			firmatario.setNominativo(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome());
+			
+			setIdFirmatarioSelezionatoInLista(i);
+		}
+		
+		componentiRTI.addFirmatario(impresa.getDatiPrincipaliImpresa(), firmatario);
+		
+		return firmatario;
+	}
 
 	/**
 	 * restituisce, in base allo step corrente, lo step successiva 
@@ -1256,13 +1315,58 @@ public class WizardIscrizioneHelper
 	 * restituisce una descrizione del tipo di funzione (iscrizione, aggiornamento, rinnovo...)
 	 */
 	public String getDescrizioneFunzione() {
-		if(this.isAggiornamentoIscrizione()) {
-			return "Aggiornamento dati/documenti";
-		} else if(this.isRinnovoIscrizione()) {
-			return "Richiesta rinnovo iscrizione";
+		if(isAggiornamentoIscrizione()) {
+			if(isAggiornamentoSoloDocumenti())
+				return "Aggiornamento documenti";
+			else
+				return "Aggiornamento dati/documenti";
+		} else if(isRinnovoIscrizione()) {
+			return "Richiesta rinnovo iscrizione";		//"Rinnovo iscrizione"
 		} else {
-			return "Richiesta iscrizione";
+			return "Richiesta iscrizione";				//"Iscrizione"
 		}
+	}
+		
+	/**
+	 * restituisce i documeni richiesti definiti in BO 
+	 * @throws ApsException 
+	 * @throws Throwable 
+	 */
+	public List<DocumentazioneRichiestaType> getDocumentiRichiestiBO() throws ApsException {
+		List<DocumentazioneRichiestaType> documentiRichiestiBO = null;
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			IBandiManager bandiManager = (IBandiManager) ctx.getBean(PortGareSystemConstants.BANDI_MANAGER);
+			
+			if(isRinnovoIscrizione()) {
+				// RINNOVO
+				BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+				
+				// verifico lato BO se l'impresa si e' presentata in RTI o meno
+				TipoPartecipazioneType tipoPartecipazione = bandiManager.getTipoPartecipazioneImpresa(
+						action.getCurrentUser().getUsername(),
+						idBando,
+						null
+				);
+				
+				// e recupero i documenti richiesti in base a questa info
+				documentiRichiestiBO = bandiManager.getDocumentiRichiestiRinnovoIscrizione(
+						idBando, 
+						impresa.getDatiPrincipaliImpresa().getTipoImpresa(),
+						tipoPartecipazione.isRti()
+				);
+			} else {
+				// ISCRIZIONE O AGGIORNAMENTO DATI-DOCUMENTI
+				documentiRichiestiBO = bandiManager.getDocumentiRichiestiBandoIscrizione(
+						idBando, 
+						impresa.getDatiPrincipaliImpresa().getTipoImpresa(),
+						isRti());
+			}
+		} catch (Exception ex) {
+			ApsSystemUtils.getLogger().error("getDocumentiRichiestiBO", ex);
+			throw ex;
+		}
+		return documentiRichiestiBO;
 	}
 
 	/**
@@ -1301,5 +1405,5 @@ public class WizardIscrizioneHelper
 	public boolean isQuestionarioAllegato() {
 		return this.documenti.isQuestionarioAllegato();
 	}
-
+	
 }

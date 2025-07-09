@@ -1,16 +1,9 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi;
 
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ConsulenteCollaboratoreType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ConsulentiCollaboratoriOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.DettaglioContrattoOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.DettaglioContrattoType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.DocumentiBeneficiarioOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.DocumentiConsulentiCollaboratoriOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.EsitoProspettoBeneficiariType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.FileType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ProspettoBeneficiariOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ProspettoContrattiOutType;
-import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.ProspettoContrattoType;
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.AbstractService;
+import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.*;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import java.rmi.RemoteException;
@@ -18,10 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.aps.system.services.AbstractService;
 
 /**
  * Servizio gestore degli esiti nel rispetto dell'articolo 18 della Legge
@@ -141,7 +130,7 @@ public class LeggeTrasparenzaManager extends AbstractService implements ILeggeTr
 				if(retWS.getContratto() != null) {
 					prospettoContratti = Arrays.asList(retWS.getContratto());
 				} else {
-					prospettoContratti = new ArrayList<ProspettoContrattoType>();
+					prospettoContratti = new ArrayList<>();
 				}
 			}else{
 				throw new ApsException(

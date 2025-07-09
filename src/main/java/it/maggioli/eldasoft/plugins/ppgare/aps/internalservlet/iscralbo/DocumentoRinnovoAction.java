@@ -2,30 +2,22 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
-import it.eldasoft.www.sil.WSGareAppalto.TipoPartecipazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
-import org.apache.xmlbeans.XmlException;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +30,10 @@ import java.util.Map;
  * @version 1.0
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class DocumentoRinnovoAction extends EncodedDataAction 
 	implements SessionAware {
 	/**
@@ -131,27 +127,8 @@ public class DocumentoRinnovoAction extends EncodedDataAction
 			try {
 				this.deleteDocRichiesto = true;
 				
-				/* --- CESSATI --- */
-				WizardDatiImpresaHelper datiImpresaHelper = ImpresaAction
-					.getLatestDatiImpresa(
-							this.getCurrentUser().getUsername(), 
-							this);
-
-				TipoPartecipazioneType tipoPartecipazione = this.bandiManager
-					.getTipoPartecipazioneImpresa(
-							this.getCurrentUser().getUsername(), 
-							helper.getCodice(),
-							null);
-
-				this.documentiRichiesti = this.bandiManager
-					.getDocumentiRichiestiRinnovoIscrizione(
-							helper.getCodice(),
-							datiImpresaHelper.getDatiPrincipaliImpresa().getTipoImpresa(), 
-							tipoPartecipazione.isRti());
-			} catch (XmlException ex) {
-				ApsSystemUtils.logThrowable(ex, this, "confirmDeleteDocRichiesto");
-				ExceptionUtils.manageExceptionError(ex, this);
-				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+				this.documentiRichiesti = helper.getDocumentiRichiestiBO();
+				
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "confirmDeleteDocRichiesto");
 				ExceptionUtils.manageExceptionError(t, this);
@@ -351,28 +328,12 @@ public class DocumentoRinnovoAction extends EncodedDataAction
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
-			boolean isActiveFunctionPdfA = false;
-			try {
-				ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
-						.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
-								ServletActionContext.getRequest());
-				isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-			} catch (Exception e1) {
-				throw new ApsException(e1.getMessage(), e1);
-			}
-			InputStream iccFilePath = null;
-			if(isActiveFunctionPdfA) {
-				try {
-					iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-				} catch (FileNotFoundException e) {
-					throw new ApsException(e.getMessage(),e);
-				}
-			}
 			target = RinnovoAction.saveDocumenti(
-					helper,
-					session, 
-					this,
-					new Date(), isActiveFunctionPdfA, iccFilePath);
+					helper
+					, session 
+					, this
+					, new Date()
+			);
 		}
 		
 		return (SUCCESS.equalsIgnoreCase(target));

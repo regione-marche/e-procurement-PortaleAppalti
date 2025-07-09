@@ -2,6 +2,8 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.ICataloghiManager;
@@ -14,6 +16,7 @@ import com.agiletec.aps.system.SystemConstants;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ProcessSelezioneArticoliAction extends AbstractProcessPageAction {
 	/**
 	 * UID

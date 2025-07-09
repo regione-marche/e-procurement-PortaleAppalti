@@ -19,4 +19,4 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
     </c:if>
 </c:if>
 
-<c:redirect url="${baseUrl}${currentLangCode}/homepage.wp?${tokenHrefParams}"/>
+<c:redirect url="${baseUrl}${currentLangCode}/homepage.wp"/>

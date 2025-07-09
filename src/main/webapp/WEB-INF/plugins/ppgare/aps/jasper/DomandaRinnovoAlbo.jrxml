@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56" uuid="d12b5b09-ff24-469e-92c7-02b07b5adefc">
 	<property name="ireport.zoom" value="1.3310000000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="27"/>
-	<subDataset name="dsLR">
+	<subDataset name="dsLR" uuid="d54b96c4-69bf-45dd-a265-eb46796bf834">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -20,7 +21,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsDT">
+	<subDataset name="dsDT" uuid="32fb2328-4097-4fc8-b166-a10dfbbe19f0">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -37,7 +38,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsAltreCariche">
+	<subDataset name="dsAltreCariche" uuid="2a5a8186-d9f8-4310-8542-9101dd18db23">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -57,7 +58,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCollaboratori">
+	<subDataset name="dsCollaboratori" uuid="0f52a510-34ce-4917-8052-75db812f137b">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -77,7 +78,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCategorie">
+	<subDataset name="dsCategorie" uuid="88e92564-5641-47f8-9783-884f575aa068">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
 		</queryString>
@@ -331,7 +332,7 @@
 	<detail>
 		<band height="15" splitType="Stretch">
 			<subreport runToBottom="false">
-				<reportElement x="0" y="0" width="511" height="14"/>
+				<reportElement x="0" y="0" width="511" height="14" uuid="6a58238b-2147-4791-8f32-caf6fd874a3a"/>
 				<subreportParameter name="SA_DENOMINAZIONE">
 					<subreportParameterExpression><![CDATA[$P{SA_DENOMINAZIONE}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -378,19 +379,19 @@
 					<subreportParameterExpression><![CDATA[$F{serialNumberMarcaBollo}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="35">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="81" y="17" width="430" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="81" y="17" width="430" height="16" uuid="939a5a09-60f4-4722-b9b7-1ffbdefc4e9e"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11" isItalic="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["RINNOVO ISCRIZIONE A " + $P{ELENCO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["RINNOVO ISCRIZIONE A " + $P{ELENCO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="17" width="81" height="16"/>
+				<reportElement x="0" y="17" width="81" height="16" uuid="824bea1d-7cc0-4a2f-85f7-6490a8436313"/>
 				<textElement>
 					<font fontName="Arial" size="11" isBold="false" isItalic="true"/>
 				</textElement>
@@ -400,7 +401,7 @@
 		<band height="20"/>
 		<band height="53">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="bbd0b8fa-5c89-4099-a58f-09e5b493ad2d"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
@@ -408,12 +409,12 @@
 			</staticText>
 		</band>
 		<band height="29">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="eec07cb3-c651-4ef9-9703-cd5547afcdd3"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
+				<textFieldExpression><![CDATA["Il/La sottoscritto/a "
 +
 ($P{LIBERO_PROFESSIONISTA}
     ? ($F{cognomeLiberoProfessionista} +" "+$F{nomeLiberoProfessionista})
@@ -465,15 +466,15 @@
 		<band height="30">
 			<printWhenExpression><![CDATA[$P{RTI}]]></printWhenExpression>
 			<subreport>
-				<reportElement positionType="Float" x="16" y="0" width="495" height="29"/>
+				<reportElement positionType="Float" x="16" y="0" width="495" height="29" uuid="ff9d3f3d-b876-4c73-84a9-eee3eba8cf22"/>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="23"/>
 		<band height="36">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="512" height="16"/>
+				<reportElement positionType="Float" x="0" y="0" width="512" height="16" uuid="60d6d1e9-7d52-4745-8c59-7f223da4e6af"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
@@ -482,16 +483,16 @@
 		</band>
 		<band height="53">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8266279e-ac39-45e2-9f94-af377fc14fde"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<text><![CDATA[Il <b>rinnovo</b> dell’iscrizione all’elenco, e dichiara di essere ancora in possesso dei requisiti per le categorie merceologiche per le quali è qualificato ex artt. 83 e 84 D.Lgs. 50/16.]]></text>
+				<text><![CDATA[Il <b>rinnovo</b> dell’iscrizione all’elenco, e dichiara di essere ancora in possesso dei requisiti per le categorie merceologiche per le quali è qualificato art. 50, D.Lgs. 36/2023.]]></text>
 			</staticText>
 		</band>
 		<band height="29">
 			<subreport runToBottom="false">
-				<reportElement x="-1" y="19" width="511" height="10"/>
+				<reportElement x="-1" y="19" width="511" height="10" uuid="d165abb0-b57b-40b9-b3df-bfb663efd575"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -529,7 +530,7 @@
 					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

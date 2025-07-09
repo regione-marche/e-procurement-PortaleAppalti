@@ -18,6 +18,15 @@
 			</interceptor-ref>
 		</action>
 
+        <action name="exportEsiti" class="esitiFinderAction" method="export">
+            <result name="export" type="stream">
+                <param name="contentType">text/csv</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">attachment;filename="export.csv"</param>
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
+        </action>
+
 		<action name="openSearch" class="esitiFinderAction" method="openSearch">
 			<result type="dispatcher">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/esiti/esitiFind.jsp
@@ -55,6 +64,14 @@
 			</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
+		
+		<!-- NB: riutilizzo della jsp definita nei bandi -->
+		<action name="viewBDNCP" class="esitiAction" method="viewBDNCP">
+            <result type="dispatcher">
+                /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/BDNCPView.jsp
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
+        </action>
 		
 		<action name="viewAttiDocumenti" class="esitiAction" method="viewAttiDocumenti">
 			<result type="dispatcher">

@@ -18,6 +18,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti.LoggedUserInfo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiSearchBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
@@ -73,10 +74,13 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 	private boolean showIscrizioneElenco;			// mostra il link "iscriviti a elenco operatori"
 	private boolean showIscrivitiElenco;			// mostra il link "Attenzione: non sei ancora iscritto ad alcun elenco operatori. Iscriviti"
 	private String singoloCodiceElenco;	
+	private List<BandoIscrizioneType> elenchi;
 	private boolean showMonitoraggio;
 	private boolean showSbloccaAccount;
-	private List<BandoIscrizioneType> elenchi;
 	private boolean showCataloghi;
+	private boolean showIscrizioneCatalogo;			// mostra il link "iscriviti a catalogo"
+	private boolean showIscrivitiCatalogo;			// mostra il link "Attenzione: non sei ancora iscritto ad alcun catalogo. Iscriviti"
+	private String singoloCodiceCatalogo;			
 	private List<BandoIscrizioneType> cataloghi;
 	private boolean showEOrders;
 	private boolean showBandiAcqPriv;
@@ -102,15 +106,6 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 	private Long numPagoPAFatti;
 	private Long numPagoPADaFare;
 	private boolean showVendorRating;
-
-	public VendorRatingType getVendorRating() {
-		return vendorRating;
-	}
-
-	public void setVendorRating(VendorRatingType vendorRating) {
-		this.vendorRating = vendorRating;
-	}
-
 	private  VendorRatingType vendorRating;
 	
 	@Override
@@ -250,6 +245,30 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 	public boolean isShowCataloghi() {
 		return showCataloghi;
 	}
+	
+	public boolean isShowIscrizioneCatalogo() {
+		return showIscrizioneCatalogo;
+	}
+
+	public void setShowIscrizioneCatalogo(boolean showIscrizioneCatalogo) {
+		this.showIscrizioneCatalogo = showIscrizioneCatalogo;
+	}
+
+	public boolean isShowIscrivitiCatalogo() {
+		return showIscrivitiCatalogo;
+	}
+
+	public void setShowIscrivitiCatalogo(boolean showIscrivitiCatalogo) {
+		this.showIscrivitiCatalogo = showIscrivitiCatalogo;
+	}
+
+	public String getSingoloCodiceCatalogo() {
+		return singoloCodiceCatalogo;
+	}
+
+	public void setSingoloCodiceCatalogo(String singoloCodiceCatalogo) {
+		this.singoloCodiceCatalogo = singoloCodiceCatalogo;
+	}
 
 	public List<BandoIscrizioneType> getCataloghi() {
 		return cataloghi;
@@ -327,9 +346,6 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 		this.numComunicazioniInviate = numComunicazioniInviate;
 	}
 	
-	/**
-	 * @param wsPagoPATableWrapper the wsPagoPATableWrapper to set
-	 */
 	public void setWsPagoPATableWrapper(WsPagoPATableWrapper wsPagoPATableWrapper) {
 		this.wsPagoPATableWrapper = wsPagoPATableWrapper;
 	}
@@ -354,23 +370,14 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 		this.numEOrdersConfermati = numEOrdersConfermati;
 	}
 
-	/**
-	 * @return the showPagoPA
-	 */
 	public boolean isShowPagoPA() {
 		return showPagoPA;
 	}
 
-	/**
-	 * @return the numPagoPAFatti
-	 */
 	public Long getNumPagoPAFatti() {
 		return numPagoPAFatti;
 	}
 
-	/**
-	 * @return the numPagoPADaFare
-	 */
 	public Long getNumPagoPADaFare() {
 		return numPagoPADaFare;
 	}
@@ -383,6 +390,14 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 		this.showVendorRating = showVendorRating;
 	}
 
+	public VendorRatingType getVendorRating() {
+		return vendorRating;
+	}
+
+	public void setVendorRating(VendorRatingType vendorRating) {
+		this.vendorRating = vendorRating;
+	}
+	
 	/**
 	 * visualizza le sezioni dell'area personale (Profilo, Procedure di interesse, 
 	 * Mercato elettronico, Ordini, Servizi, Elenchi operatori economici, ...) 
@@ -399,38 +414,39 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 			try {
 				boolean isUserAdmin = this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE);
 				
-				//si verifica se la pagina di richiesta assistenza e' disponibile
-				IPage pgRichiestaAssistenza = this.pageManager
-						.getPage("ppgare_doc_assistenza_tecnica");
+				// verifica quali pagine/sezioni sono visibili/disponibili in area personale...
+				
+				//********************************************************************************
+				// richiesta di assistenza
+				IPage pgRichiestaAssistenza = this.pageManager.getPage("ppgare_doc_assistenza_tecnica");
 				this.showRichiestaAssistenza = pgRichiestaAssistenza.isShowable();
 
-				// si verifica se esiste la gestione dei bandi
-				IPage pgBandiGara = this.pageManager
-						.getPage("ppgare_bandi_lista");
+				//********************************************************************************
+				// gestione dei bandi
+				IPage pgBandiGara = this.pageManager.getPage("ppgare_bandi_lista");
 				this.showBandi = pgBandiGara.isShowable();
 				
-				// gestione delle funzioni per le procedure di acq/ven di interesse
-				// ppgare_acq_reg_priv_scaduti, ppgare_vend_reg_priv_scaduti
-				IPage pgBandiGaraAcqRegPriv = this.pageManager
-						.getPage("ppgare_acq_reg_priv");
+				//********************************************************************************
+				// procedure di acq/ven di interesse (ppgare_acq_reg_priv_scaduti, ppgare_vend_reg_priv_scaduti)
+				IPage pgBandiGaraAcqRegPriv = this.pageManager.getPage("ppgare_acq_reg_priv");
 				this.showBandiAcqPriv = pgBandiGaraAcqRegPriv.isShowable();
 				
-				IPage pgBandiGaraVenRegPriv = this.pageManager
-						.getPage("ppgare_vend_reg_priv");
+				IPage pgBandiGaraVenRegPriv = this.pageManager.getPage("ppgare_vend_reg_priv");
 				this.showBandiVenPriv = pgBandiGaraVenRegPriv.isShowable();
 
-				// gestione delle funzioni per la generazione dei barcode o accesso a gare telematiche
-				IPage pgRichiesteOfferta = this.pageManager
-						.getPage("ppgare_vai_a_rich_offerta");
+				//********************************************************************************
+				// richieste d'offerta
+				IPage pgRichiesteOfferta = this.pageManager.getPage("ppgare_vai_a_rich_offerta");
 				this.showRichOfferta = pgRichiesteOfferta.isShowable();
 
-				IPage pgComprovaRequisiti = this.pageManager
-						.getPage("ppgare_vai_a_rich_documenti");
+				//********************************************************************************
+				// generazione dei barcode
+				IPage pgComprovaRequisiti = this.pageManager.getPage("ppgare_vai_a_rich_documenti");
 				this.showComprovaRequisiti = pgComprovaRequisiti.isShowable();
 				
-				// verifica se esistono aste elettroniche in corso...
-				IPage pgAsteInCorso = this.pageManager
-						.getPage("ppgare_vai_a_aste_corso");
+				//********************************************************************************
+				// aste elettroniche in corso
+				IPage pgAsteInCorso = this.pageManager.getPage("ppgare_vai_a_aste_corso");
 				this.showAsteInCorso = pgAsteInCorso.isShowable();
 				
 				int asteInCorso = 0;
@@ -444,7 +460,12 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 				}
 				this.setNumAsteInCorso(asteInCorso);
 				
+				//********************************************************************************
+				// monitoraggio
 				this.showMonitoraggio = this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE);
+
+				//********************************************************************************
+				// SSO
 				AccountSSO soggettoSSO = (AccountSSO)this.session.get(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 				List<String> autenticazioni = this.appParamManager.loadEnabledAuthentications();
 				
@@ -457,84 +478,110 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 				
 				boolean sso = soggettoSSO != null;
 				this.showSbloccaAccount = this.showMonitoraggio && this.userManager.isEnabledPrivacyModule() && !sso;
-				this.showAbilitaAccessoCon = 
-					ssoEnabled  &&
-				     StringUtils.isEmpty(this.getCurrentUser().getDelegateUser()) && !sso &&
-				     !this.showMonitoraggio;
+				this.showAbilitaAccessoCon = ssoEnabled  
+						&& StringUtils.isEmpty(this.getCurrentUser().getDelegateUser()) 
+						&& !sso 
+						&& !this.showMonitoraggio;
 				
-				this.showEliminaLinkAccountSSo = !StringUtils.isEmpty(this.getCurrentUser().getDelegateUser()) && !sso &&
-			     !this.showMonitoraggio;
+				this.showEliminaLinkAccountSSo = !StringUtils.isEmpty(this.getCurrentUser().getDelegateUser()) 
+						&& !sso 
+						&& !this.showMonitoraggio;
 				
-				IPage pgProcAggiudicazione = this.pageManager
-						.getPage("ppgare_vai_a_proc_aggiudicaz");
+				//********************************************************************************
+				// procedure di aggiudicazione
+				IPage pgProcAggiudicazione = this.pageManager.getPage("ppgare_vai_a_proc_aggiudicaz");
 				this.showProcAggiudicazione = pgProcAggiudicazione.isShowable();
 				
-				// si verifica se esiste la gestione degli elenchi
-				IPage pgElenchi = this.pageManager
-						.getPage("ppgare_oper_economici");
+				//********************************************************************************
+				// elenchi operatore
+				IPage pgElenchi = this.pageManager.getPage("ppgare_oper_economici");
 				this.showElenchi = pgElenchi.isShowable();
-				this.showIscrivitiElenco = false;
-				this.singoloCodiceElenco = null;
-
+				showIscrizioneElenco = false;
+				showIscrivitiElenco = false;
+				singoloCodiceElenco = null;
 				if (this.showElenchi) {
 					// se esiste la gestione degli elenchi, si reperiscono gli
 					// elenchi per i quali l'utente risulta iscritto
-					this.elenchi = this.bandiManager.searchBandiIscrizione(this.getCurrentUser().getUsername(), null, true);
-					int n = (this.elenchi != null ? this.elenchi.size() : 0); 
+					elenchi = bandiManager.searchBandiIscrizione(this.getCurrentUser().getUsername(), null, true);
+					int n = (elenchi != null ? elenchi.size() : 0); 
 					if (n <= 0) {
-						//this.showElenchi = false;
 						// si visualizza il link "Attenzione: non sei ancora iscritto ad alcun elenco operatori. Iscriviti"
-						List<BandoIscrizioneType> listElenchi = this.bandiManager.getElencoBandiIscrizione(true);
+						List<BandoIscrizioneType> listElenchi = bandiManager.getElencoBandiIscrizione(true);
 						if(listElenchi != null) {
-							this.showIscrivitiElenco = true;
+							showIscrivitiElenco = true;
 							if(listElenchi.size() == 1) {
 								// se esiste 1 solo elenco allora rendi disponibile il codice
-								this.singoloCodiceElenco = listElenchi.get(0).getCodice();
+								singoloCodiceElenco = listElenchi.get(0).getCodice();
 							} else {
 								// 0 o >1 elenchi, link alla lista degli elenchi
-								this.elenchi = listElenchi;
+								elenchi = listElenchi;
 							}
 						}
 					} else {
 	                    // prepara il link "iscriviti a elenco operatori"
 	                    int numIscrizioni = 0;
-	                    List<BandoIscrizioneType> listElenchi = this.bandiManager
-	                        .searchBandiIscrizione(this.getCurrentUser().getUsername(), null, true);
-	                    for(int i = 0; i < listElenchi.size(); i++) {
-	                        if(listElenchi.get(i).getFase() == 1 &&
-	                           !"1".equals(listElenchi.get(i).getStato()) && !"2".equals(listElenchi.get(i).getStato())) 
+	                    for(int i = 0; i < elenchi.size(); i++) {
+	                        if(elenchi.get(i).getFase() == 1 &&
+	                           !"1".equals(elenchi.get(i).getStato()) && !"2".equals(elenchi.get(i).getStato())) 
 	                        {
 	                            numIscrizioni++; 
 	                        }
 	                    }
-	                    this.showIscrizioneElenco = (numIscrizioni == 0);
+	                    showIscrizioneElenco = (numIscrizioni == 0);
 					}
 				}
 				
-				// si verifica se esiste la gestione dei cataloghi
-				IPage pgCataloghi = this.pageManager
-						.getPage("ppgare_cataloghi");
+				//********************************************************************************
+				// cataloghi mercato elettronico
+				IPage pgCataloghi = this.pageManager.getPage("ppgare_cataloghi");
 				this.showCataloghi = pgCataloghi.isShowable();
-
-				IPage pgContratti = this.pageManager
-					.getPage("ppcommon_contracts");
-				this.showContratti = pgContratti.isShowable();
-				
-				IPage pgContrattiLFS = this.pageManager
-					.getPage("ppgare_contratti_lfs_lista");
-				this.showContrattiLFS = pgContrattiLFS.isShowable();
-			
+				showIscrizioneCatalogo = false;
+				showIscrivitiCatalogo = false;
+				singoloCodiceCatalogo = null;
 				if (this.showCataloghi) {
 					// se esiste la gestione dei cataloghi, si reperiscono i
 					// cataloghi per i quali l'utente risulta iscritto
-					this.cataloghi = this.cataloghiManager.searchCataloghi(this
-							.getCurrentUser().getUsername(), null, true);
-					if (this.cataloghi.size() == 0) {
-						this.showCataloghi = false;
+					cataloghi = cataloghiManager.searchCataloghi(this.getCurrentUser().getUsername(), null, true);
+					int n = (cataloghi != null ? cataloghi.size() : 0); 
+					if (n <= 0) {
+						// si visualizza il link "Attenzione: non sei ancora iscritto ad alcun catalogo. Iscriviti"
+						List<BandoIscrizioneType> listCataloghi = cataloghiManager.getElencoCataloghi(true);
+						if(listCataloghi != null) {
+							showIscrivitiCatalogo = true;
+							if(listCataloghi.size() == 1) {
+								// se esiste 1 solo elenco allora rendi disponibile il codice
+								singoloCodiceCatalogo = listCataloghi.get(0).getCodice();
+							} else {
+								// 0 o >1 elenchi, link alla lista degli elenchi
+								cataloghi = listCataloghi;
+							}
+						}
+					} else {
+	                    // prepara il link "iscriviti a catalogo"
+	                    int numIscrizioni = 0;
+	                    for(int i = 0; i < cataloghi.size(); i++) {
+	                        if(cataloghi.get(i).getFase() == 1 &&
+	                           !"1".equals(cataloghi.get(i).getStato()) && !"2".equals(cataloghi.get(i).getStato())) 
+	                        {
+	                            numIscrizioni++; 
+	                        }
+	                    }
+	                    showIscrizioneCatalogo = (numIscrizioni == 0);	                    
 					}
 				}
 				
-				// si verifica se esiste la gestione eOrders (CEF EInvoicing PORTAPPALT-63)
+				//********************************************************************************
+				// contratti
+				IPage pgContratti = this.pageManager.getPage("ppcommon_contracts");
+				this.showContratti = pgContratti.isShowable();
+				
+				//********************************************************************************
+				// contratti LFS
+				IPage pgContrattiLFS = this.pageManager.getPage("ppgare_contratti_lfs_lista");
+				this.showContrattiLFS = pgContrattiLFS.isShowable();
+				
+				//********************************************************************************
+				// eOrders (CEF EInvoicing PORTAPPALT-63)
 				String codimp = (String) this.session.get(PortGareSystemConstants.SESSION_ID_IMPRESA);
 				try {
 					if(StringUtils.isEmpty(codimp)) {
@@ -546,8 +593,7 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 					codimp = null;
 				}
 				
-				IPage pgEOrders = this.pageManager
-						.getPage("ppgare_eorders");
+				IPage pgEOrders = this.pageManager.getPage("ppgare_eorders");
 				this.showEOrders = (pgEOrders != null ? pgEOrders.isShowable() : false);
 				
 				if (this.showEOrders && codimp != null && !isUserAdmin) {
@@ -558,7 +604,7 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 					SearchResult<NsoWsOrder> eorders;
 	
 					// calcola gli ordini "da valutare" come IN_ATTESA_CONFERMA(2)
-	//						filtri.setOrderStatus(OrderStatusEnum.IN_ATTESA_CONFERMA.getValue());
+//					filtri.setOrderStatus(OrderStatusEnum.IN_ATTESA_CONFERMA.getValue());
 					filtri.setOrderStatus(OrderStatusEnum.NUMBER_2);
 					eorders = this.ordiniManager.getPagedOrderListFO(codimp, 1, 1, filtri);
 					if (eorders != null) {
@@ -567,13 +613,13 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 	
 					// calcola gli ordini "confermati" come ACCETTATI(6) +
 					// ACCETTATI_AUTOMATICAMENTE(7)
-	//						filtri.setOrderStatus(OrderStatusEnum.ACCETTATO.getValue());
+//					filtri.setOrderStatus(OrderStatusEnum.ACCETTATO.getValue());
 					filtri.setOrderStatus(OrderStatusEnum.NUMBER_6);
 					eorders = this.ordiniManager.getPagedOrderListFO(codimp, 1, 1, filtri);
 					if (eorders != null) {
 						this.numEOrdersConfermati += eorders.getNumTotaleRecord();
 					}
-	//						filtri.setOrderStatus(OrderStatusEnum.ACCETTATO_AUTOMATICAMENTE.getValue());
+//					filtri.setOrderStatus(OrderStatusEnum.ACCETTATO_AUTOMATICAMENTE.getValue());
 					filtri.setOrderStatus(OrderStatusEnum.NUMBER_7);
 					eorders = this.ordiniManager.getPagedOrderListFO(codimp, 1, 1, filtri);
 					if (eorders != null) {
@@ -581,6 +627,8 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 					}
 				}
 				
+				//********************************************************************************
+				// Pago PA
 				IPage pgPagoPa = this.pageManager.getPage("ppgare_pagopa");
 				this.showPagoPA = (pgPagoPa != null ? pgPagoPa.isShowable() : false);
 				this.numPagoPAFatti = 0L;
@@ -611,6 +659,8 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 				}
 				logger.debug("showPagoPA: {}, numPagoPAFatti: {}, numPagoPADaFare: {}",showPagoPA,numPagoPAFatti,numPagoPADaFare);
 
+				//********************************************************************************
+				// comunicazioni (inviate, ricevute, archiviate)
 				StatisticheComunicazioniPersonaliType stat = this.bandiManager.getStatisticheComunicazioniPersonali(
 						this.getCurrentUser().getUsername(), 
 						null,
@@ -629,6 +679,8 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 				this.session.remove(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA);
 				this.session.remove(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO);
 
+				//********************************************************************************
+				// vendor rating
 				if(!isUserAdmin) {
 					VendorRatingType vendorRating = bandiManager.getVendorRating(getCurrentUser().getUsername(), new Date());
 					this.setShowVendorRating(vendorRating != null ? true : false);
@@ -646,16 +698,16 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 
 	/**
 	 * Controlla quanti accessi utilizzando la login dell'impresa ci sono in contemporanea nel portale.
-	 * 
 	 */
 	static void checkAltriAccessiUtente(ServletContext servletContext, BaseAction action) {
 		int contaAccessiMiaUtenza = 0;
-		Map<String, String[]> utentiConnessi = TrackerSessioniUtenti.getInstance(servletContext).getDatiSessioniUtentiConnessi();
+		Map<String, LoggedUserInfo> utentiConnessi = TrackerSessioniUtenti.getInstance(servletContext).getDatiSessioniUtentiConnessi();
 		AccountSSO mioSoggettoFisico = (AccountSSO) action.getRequest().getSession().getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 		for (String sessionId : utentiConnessi.keySet()) {
-			String[] datiUtente = utentiConnessi.get(sessionId);
+			LoggedUserInfo info = utentiConnessi.get(sessionId);
 			// controllo se l'utente estratto e' l'utente autenticatosi mediante single sign on oppure con login/password 
-			if ((mioSoggettoFisico != null && mioSoggettoFisico.getLogin().equals(datiUtente[1])) || action.getCurrentUser().getUsername().equals(datiUtente[1]))
+			if ((mioSoggettoFisico != null && mioSoggettoFisico.getLogin().equals(info.getLogin())) 
+				|| action.getCurrentUser().getUsername().equals(info.getLogin()))
 				contaAccessiMiaUtenza++;
 		}
 		if (action.getCurrentUser().getUsername().equals(SystemConstants.ADMIN_USER_NAME) && contaAccessiMiaUtenza > 1) {
@@ -664,4 +716,5 @@ public class AreaPersonaleAction extends BaseAction implements SessionAware, Ser
 								Integer.toString(contaAccessiMiaUtenza-1) }));
 		}
 	}
+	
 }

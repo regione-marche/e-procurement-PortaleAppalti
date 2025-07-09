@@ -1,14 +1,18 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.helpers;
 
+import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.apsadmin.system.BaseAction;
+import it.eldasoft.sil.portgare.datatypes.AttributoGenericoType;
 import it.eldasoft.sil.portgare.datatypes.BustaEconomicaType;
 import it.eldasoft.sil.portgare.datatypes.BustaTecnicaType;
 import it.eldasoft.sil.portgare.datatypes.DocumentazioneBustaType;
 import it.eldasoft.sil.portgare.datatypes.FirmatarioType;
 import it.eldasoft.sil.portgare.datatypes.IndirizzoType;
+import it.eldasoft.sil.portgare.datatypes.ListaCriteriValutazioneType;
 import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
 import it.eldasoft.sil.portgare.datatypes.RiepilogoBusteOffertaDocument;
+import it.eldasoft.www.sil.WSGareAppalto.CriterioValutazioneOffertaType;
 import it.eldasoft.www.sil.WSGareAppalto.GaraType;
 import it.eldasoft.www.sil.WSGareAppalto.MandanteRTIType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractWizardHelper;
@@ -45,18 +49,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Helper di memorizzazione dei dati relativi alla gestione della compilazione
@@ -75,6 +83,8 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 	// utilizzati dalla jsp ?
 	public static final Integer CHIAVE_PARTITA_IVA 		= 1;
 	public static final Integer CHIAVE_CODICE_FISCALE 	= 2;
+	
+	public static final int CRITERIO_VALUTAZIONE_TESTO_MAXLEN = 2000;
 	
 	protected static final DateFormat DATEFORMAT_DDMMYYYY = new SimpleDateFormat("dd/MM/yyyy"); 
 
@@ -96,6 +106,12 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 	protected boolean datiModificati;
 	protected Long idOfferta;
 	protected String progressivoOfferta;
+	
+	// gestione dei criteri di valutazione per OEPV
+	protected List<CriterioValutazioneOffertaType> listaCriteriValutazione;
+	protected Boolean[] criterioValutazioneEditabile;	// dati inseriti nell'interfaccia (form di inserimento dati)
+	protected String[] criterioValutazione;				// dati inseriti nell'interfaccia (form di inserimento dati)
+
 	
 	
 	public WizardDatiImpresaHelper getImpresa() {
@@ -231,6 +247,45 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 		this.progressivoOfferta = progressivoOfferta;
 	}
 
+	public Boolean[] getCriterioValutazioneEditabile() {
+		return criterioValutazioneEditabile;
+	}
+
+	public String[] getCriterioValutazione() {
+		return criterioValutazione;
+	}
+
+	public void setCriterioValutazione(String[] criterioValutazione) {
+		this.criterioValutazione = criterioValutazione;
+	}
+
+	public List<CriterioValutazioneOffertaType> getListaCriteriValutazione() {
+		return listaCriteriValutazione;
+	}
+	
+	public void setListaCriteriValutazione(List<CriterioValutazioneOffertaType> listaCriteri) {
+		listaCriteriValutazione = listaCriteri;
+		
+		// verifica ed elimina i criteri non previsti dal tipo di busta (tec/eco)...
+		if(listaCriteriValutazione != null) {
+			listaCriteriValutazione = listaCriteriValutazione.stream()
+				.filter(c -> isCriterioValutazionePrevisto(c))
+				.collect(Collectors.toList());
+		}
+
+		// inizializza le strutture per gli input della pagina
+		criterioValutazioneEditabile = null;
+		criterioValutazione = null;
+		if(listaCriteriValutazione != null) {
+			criterioValutazione = new String[listaCriteriValutazione.size()];
+			criterioValutazioneEditabile = new Boolean[listaCriteriValutazione.size()];
+			for(int i = 0; i < listaCriteriValutazione.size(); i++) {
+				criterioValutazione[i] = null; 
+				criterioValutazioneEditabile[i] = new Boolean(true);
+			}
+		}
+	}
+
 	/**
 	 * costruttore 
 	 */
@@ -257,6 +312,9 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 		//this.idFirmatarioSelezionatoInLista = -1;
 		this.idOfferta = (long) -1;
 		this.progressivoOfferta = null;
+		this.listaCriteriValutazione = null;
+		this.criterioValutazione = null;
+		this.criterioValutazioneEditabile = null;
 	}	
 	
 	@Override
@@ -763,7 +821,8 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
     			    // se e' un libero professionista e partita iva è vuota => usa il codice fiscale
     			    mandataria.setCodiceFiscale(impresa.getDatiPrincipaliImpresa().getCodiceFiscale());
     			} else {
-    			    mandataria.setPartitaIVA(impresa.getDatiPrincipaliImpresa().getPartitaIVA());
+    				mandataria.setPartitaIVA(impresa.getDatiPrincipaliImpresa().getPartitaIVA());
+    				mandataria.setCodiceFiscale(impresa.getDatiPrincipaliImpresa().getCodiceFiscale());
     			}
     			mandataria.setRagioneSociale(impresa.getDatiPrincipaliImpresa().getRagioneSociale());
     			mandataria.setTipoImpresa(impresa.getDatiPrincipaliImpresa().getTipoImpresa());
@@ -986,63 +1045,9 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
      * restituisce la lista dei firmatari per un'impresa mandataria 
      */
 	public List<FirmatarioBean> composeListaFirmatariMandataria() {
-    	List<FirmatarioBean> firmatari = new ArrayList<FirmatarioBean>();
-    	
-    	if (this.impresa.isLiberoProfessionista()) {
-    		// Se la mandataria e' un libero professionista allora 
-    		// solo un possibile firmatario
-    		FirmatarioBean firmatario = new FirmatarioBean();
-    		if(this.impresa.getAltriDatiAnagraficiImpresa().getCognome() != null && 
-    		   this.impresa.getAltriDatiAnagraficiImpresa().getNome() != null)
-    		{
-    			firmatario.setNominativo(this.impresa.getAltriDatiAnagraficiImpresa().getCognome() + " " + 
-    									 this.impresa.getAltriDatiAnagraficiImpresa().getNome());
-    		} else {
-    			firmatario.setNominativo(this.impresa.getDatiPrincipaliImpresa().getRagioneSociale());
-    		}
-    		firmatari.add(firmatario);
-    	} else {
-    		// La mandantaria non è un libero professionita 
-    		//  => possibili 1..N firmatari
-    		for (int i = 0; i < this.impresa.getLegaliRappresentantiImpresa().size(); i++) {
-    			ISoggettoImpresa soggetto = this.impresa.getLegaliRappresentantiImpresa().get(i);
-    			this.addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_LEGALI_RAPPRESENTANTI);
-    		}
-    		for (int i = 0; i < this.impresa.getDirettoriTecniciImpresa().size(); i++) {
-    			ISoggettoImpresa soggetto = this.impresa.getDirettoriTecniciImpresa().get(i);
-    			this.addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_DIRETTORI_TECNICI);
-    		}
-    		for (int i = 0; i < this.impresa.getAltreCaricheImpresa().size(); i++) {
-    			ISoggettoImpresa soggetto = this.impresa.getAltreCaricheImpresa().get(i);
-    			this.addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_ALTRE_CARICHE);
-    		}
-    	}
-    	return firmatari;
+		return ComponentiRTIList.composeListaFirmatariMandataria(impresa);
     }
 
-	/**
-	 * ... 
-	 */
-	private void addListaFirmatariMandataria(
-			List<FirmatarioBean> firmatari, 
-			ISoggettoImpresa soggetto, 
-			Integer index, 
-			String lista)
-	{
-		if (soggetto.getDataFineIncarico() == null
-			&& "1".equals(soggetto.getResponsabileDichiarazioni())) 
-		{
-		    FirmatarioBean firmatario = new FirmatarioBean();
-		    StringBuilder sb = new StringBuilder()
-		    	.append( StringUtils.capitalize(soggetto.getCognome()) )
-		    	.append(" ")
-		    	.append( StringUtils.capitalize(soggetto.getNome()) );
-		    firmatario.setNominativo(sb.toString());
-		    firmatario.setIndex(index);
-		    firmatario.setLista(lista);
-		    firmatari.add(firmatario);
-		}
-	}
 
 	/**
 	 * restituisce l'oggetto per decifrare i dati cifrati 
@@ -1103,10 +1108,10 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 			}
 		}
 		if(firmatari <= 0) {
-			if(bustaRiepilogativa != null && bustaRiepilogativa.getUltimiFirmatariInseriti() != null) {					
+			if(bustaRiepilogativa != null && bustaRiepilogativa.getUltimiFirmatariInseriti() != null) {
 				for(int i = 0; i < bustaRiepilogativa.getUltimiFirmatariInseriti().size(); i++) {
 					SoggettoFirmatarioImpresaHelper firmatarioProposto = bustaRiepilogativa.getUltimiFirmatariInseriti().get(i);
-					IComponente componenteRTI = this.getComponentiRTI().getComponenteRTI(firmatarioProposto);						
+					IComponente componenteRTI = this.getComponentiRTI().getComponenteRTI(firmatarioProposto);
 					if(componenteRTI != null) {
 						this.getComponentiRTI().addFirmatario(componenteRTI, firmatarioProposto);
 					}
@@ -1175,5 +1180,490 @@ public abstract class WizardOffertaHelper extends AbstractWizardHelper
 		}
 		return lista;
 	}
+
+
+	/**
+	 * salva il firmatario della mandataria in caso di RTI 
+	 */
+	public SoggettoFirmatarioImpresaHelper saveFirmatarioMandataria(String firmatarioSelezionato) {
+		SoggettoFirmatarioImpresaHelper firmatario = new SoggettoFirmatarioImpresaHelper();
+		
+		String[] v = (StringUtils.isNotEmpty(firmatarioSelezionato) ? firmatarioSelezionato.split("-") : null);
+		String lista = (v != null && v.length > 0 ? v[0] : "");
+		
+		ISoggettoImpresa soggettoFromLista = impresa.findSoggettoImpresa(firmatarioSelezionato);
+		
+		// NB: il firmatario va cercato nella lista dei firmatari per (ccognome nome e tipo soggetto!!!) 
+		for(int i = 0; i < listaFirmatariMandataria.size(); i++) {
+			FirmatarioBean f = listaFirmatariMandataria.get(i);
+			if(f.getNominativo().equalsIgnoreCase(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome())
+			   && lista.equals(f.getLista())) 
+			{
+				// trovato il firmatario della mandataria
+				firmatario.copyFrom(soggettoFromLista);
+				firmatario.setNominativo(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome());
+				idFirmatarioSelezionatoInLista = i;
+				break;
+			}
+		}
 	
+		// CF, PIVA impresa 
+		firmatario.setCodiceFiscaleImpresa(impresa.getDatiPrincipaliImpresa().getCodiceFiscale());
+		firmatario.setPartitaIvaImpresa(impresa.getDatiPrincipaliImpresa().getPartitaIVA());
+	
+		// aggiungi il firmatario all'helper...
+		componentiRTI.addFirmatario(impresa.getDatiPrincipaliImpresa(), firmatario);
+		
+		return firmatario;
+	}
+		
+	/**
+	 * restrituisce il tipo di criterio in base al tipo di busta 
+	 */
+    protected static int getTipoCriterio(int tipoBusta) {
+    	return (tipoBusta == PortGareSystemConstants.BUSTA_ECONOMICA ? PortGareSystemConstants.CRITERIO_ECONOMICO
+    			: tipoBusta == PortGareSystemConstants.BUSTA_TECNICA ? PortGareSystemConstants.CRITERIO_TECNICO
+    			: 0);
+    }
+    
+	/**
+	 * verifica se un criterio di valudatione e' previsto o meno per il tipo di busta 
+	 */
+	private static boolean isCriterioValutazionePrevisto(int formatoCriterio, int tipoCriterio, String descrizione) {
+		boolean previsto = false;
+		if(tipoCriterio != 0) {
+			switch (formatoCriterio) {
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DATA:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DECIMALE:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_LISTA_VALORI:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_TESTO:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_INTERO:
+				previsto = true;
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_IMPORTO:
+				previsto = (tipoCriterio == PortGareSystemConstants.CRITERIO_ECONOMICO);
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_PREZZIUNITARI:
+				previsto = (tipoCriterio == PortGareSystemConstants.CRITERIO_ECONOMICO);
+				break;
+				
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_RIBASSO:
+				previsto = (tipoCriterio == PortGareSystemConstants.CRITERIO_ECONOMICO);
+				break;
+			}
+			
+			// traccia evetnuali anomalie del criterio 
+			if(!previsto) {
+				ApsSystemUtils.getLogger().warn("Criterio di valutazione non previsto (descrizione={} formato={})", descrizione, formatoCriterio);	
+			}
+		}
+		return previsto;
+	}
+
+	protected static boolean isCriterioValutazionePrevisto(CriterioValutazioneOffertaType criterio) {
+		return (criterio != null 
+				? isCriterioValutazionePrevisto(criterio.getFormato(), criterio.getTipo(), criterio.getDescrizione())
+				: null);
+	}	
+	
+	/**
+	 * Restituisce il valore di un criterio di valutazione estratto da un 
+	 * documento xml   
+	 */	
+	public String getValoreCriterioValutazioneXml(
+			AttributoGenericoType attr,
+			CriterioValutazioneOffertaType criterio,
+			Cipher cipher) 
+	{
+		String value = null;
+		if(isCriterioValutazionePrevisto(criterio)) {
+			try {
+				if (cipher != null) {
+					// in caso di cifratura, decifra il valore...
+					if(attr.isSetValoreCifrato()) {
+						value = new String(SymmetricEncryptionUtils.translate(
+								cipher, 
+								attr.getValoreCifrato()));
+					}
+				} else {
+					// il valore e' in chiaro e non cifrato...
+					int numDecimali = (criterio.getNumeroDecimali() != null ? criterio.getNumeroDecimali() : 0);
+					numDecimali = Math.min(5, Math.max(1, numDecimali));
+					
+					switch (attr.getTipo()) {
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DATA:
+						value = (attr.isSetValoreData() 
+							? DATEFORMAT_DDMMYYYY.format(attr.getValoreData().getTime())
+							: null
+						);
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO:
+						if(attr.isSetValoreNumerico()) {
+							value = BigDecimal.valueOf(Double.valueOf(attr.getValoreNumerico()))
+												.setScale(2, BigDecimal.ROUND_HALF_UP)
+												.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+												.toPlainString();
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DECIMALE:
+						if(attr.isSetValoreNumerico()) {
+							value = BigDecimal.valueOf(Double.valueOf(attr.getValoreNumerico()))
+												.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+												.toPlainString();
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_LISTA_VALORI:
+						value = (attr.isSetValoreStringa() ? attr.getValoreStringa() : null);
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_TESTO:
+						value = (attr.isSetValoreStringa() ? attr.getValoreStringa() : null);
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_INTERO:
+						if(attr.isSetValoreNumerico()) {
+							Double v = new Double(attr.getValoreNumerico());
+							value = Long.toString(v.longValue());
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_IMPORTO:
+						if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							if(attr.isSetValoreNumerico()) {
+								value = BigDecimal.valueOf(Double.valueOf(attr.getValoreNumerico()))
+													.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+													.toPlainString();
+							}
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_PREZZIUNITARI:
+						if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							if(attr.isSetValoreNumerico()) {
+								value = BigDecimal.valueOf(Double.valueOf(attr.getValoreNumerico()))
+													.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+													.toPlainString();
+							}
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_RIBASSO:
+						if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							if(attr.isSetValoreNumerico()) {
+								value = BigDecimal.valueOf(Double.valueOf(attr.getValoreNumerico()))
+													.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+													.toPlainString();
+							}
+						}
+						break;
+					}		
+				}
+			} catch (Throwable e) {
+				value = null;
+			}
+		}
+		return value;
+	}
+
+	/**
+	 * Imposta il valore di un criterio di valutazione per un documento xml 
+	 * (es: busta economica o tecnica). 
+	 * In caso di cifratura i valori vengono cifrati.
+	 */	
+	public void setValoreCriterioValutazioneXml(
+			AttributoGenericoType criterio,
+			CriterioValutazioneOffertaType valore,
+			Cipher cipher) 
+	{
+		String value;
+		if(isCriterioValutazionePrevisto(valore)) {
+			try {
+				// cipher e' null se... 
+				// non ho cifratura oppure non ho cifratura perche' sto 
+				// preparando un documento xml per generare un report, 
+				// in entrambi i casi i dati devono essere in chiaro...	
+				
+				// valida ed imposta il valore...  
+				setValoreCriterioValutazione(valore, valore.getValore(), true);
+				value = valore.getValore();
+				
+				if (cipher == null) {
+					switch (valore.getFormato()) {
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DATA:
+						Calendar c = Calendar.getInstance();
+						c.setTime(DATEFORMAT_DDMMYYYY.parse(valore.getValore()));
+						criterio.setValoreData(c);
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO:
+						criterio.setValoreNumerico(Double.valueOf(valore.getValore()));
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DECIMALE:
+						criterio.setValoreNumerico(Double.valueOf(valore.getValore()));
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_LISTA_VALORI:
+						criterio.setValoreStringa(valore.getValore());
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_TESTO:
+						criterio.setValoreStringa(valore.getValore());
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_INTERO:
+						criterio.setValoreNumerico(Long.valueOf(valore.getValore()));
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_IMPORTO:
+						if(valore.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							criterio.setValoreNumerico(Double.valueOf(valore.getValore()));
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_PREZZIUNITARI:
+						if(valore.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							criterio.setValoreNumerico(Double.valueOf(valore.getValore()));
+						}
+						break;
+					case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_RIBASSO:
+						if(valore.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+							criterio.setValoreNumerico(Double.valueOf(valore.getValore()));
+						}
+						break;
+					}	
+				} else {
+					// nel caso di cifratura i valori vanno criptati...
+					// in questo caso si sta preparando il documento xml da 
+					// allegare alla comunicazione
+					criterio.setValoreCifrato(SymmetricEncryptionUtils.translate(cipher, value.toString().getBytes()));
+				}
+			} catch (Throwable e) {
+				value = null;
+			}
+		}
+	}
+
+	/**
+	 * Valida ed imposta il valore di un criterio di valutazione
+	 * 
+	 * @throws Exception 
+	 */
+	public static void setValoreCriterioValutazione(
+			CriterioValutazioneOffertaType criterio,
+			String valore,
+			boolean validateAndSet) throws Exception
+	{
+		if(criterio != null && isCriterioValutazionePrevisto(criterio)) {
+			int n = (criterio.getNumeroDecimali() != null ? criterio.getNumeroDecimali() : 0);
+			int numDecimali = Math.min(5, Math.max(1, n));
+	
+			// valida i decimali dei campi numerici...
+			switch (criterio.getFormato()) {
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_TESTO:
+				// il tipo testo non può eccedere i 2000 char
+				//String val = valore.replaceAll("[\\t\\n\\r]+", " ");
+				String val = valore.replaceAll("[\\n\\r]+", "  ");		//cr+lf
+				if(val.length() > CRITERIO_VALUTAZIONE_TESTO_MAXLEN) {
+					throw new ParseException("Errors.tooManyChars", 0);
+				}
+				break;
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO:
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DECIMALE:
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_IMPORTO:
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_PREZZIUNITARI:
+			case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_RIBASSO:
+//				if(criterio.getFormato() == PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO) {
+//					numDecimali = 2;
+//				}
+				String[] aumentoArray = valore.split("\\.");
+				String decimalPartString = "";
+				Integer decimalPart = 0;
+				try {
+					if (aumentoArray.length > 1) {
+						decimalPartString = aumentoArray[1];
+						decimalPart = new Integer(decimalPartString);
+					}
+				} catch(Exception e) {
+					// errore da gestire nella sezione di validazione ed impostazione 
+					// del campo!!!
+					decimalPartString = null;
+				}
+				if(decimalPartString != null) {
+					if (numDecimali == 0 && decimalPart > 0) {
+						throw new Exception("Errors.noDecimalsNeeded");
+					} else if (numDecimali > 0 && decimalPartString.length() > numDecimali) {
+						throw new NumberFormatException("Errors.tooManyDecimals"); 
+					}
+				}
+				break;
+			}
+			
+			// valida ed imposta il valore del campo...
+			try {
+				String newValue = null;
+				
+				switch (criterio.getFormato()) {
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DATA:
+					Calendar c = Calendar.getInstance();
+					c.setTime(DATEFORMAT_DDMMYYYY.parse(valore));
+					newValue = DATEFORMAT_DDMMYYYY.format(c.getTime());
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_IMPORTO:
+					newValue = BigDecimal.valueOf(Double.valueOf(valore))
+										.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+										.toPlainString();
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_DECIMALE:
+					newValue = BigDecimal.valueOf(Double.valueOf(valore))
+										.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+										.toPlainString();
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_LISTA_VALORI:
+					newValue = valore;
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_TESTO:
+					newValue = valore;
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_INTERO:
+					newValue =  BigDecimal.valueOf(Double.valueOf(valore))
+										.setScale(0, BigDecimal.ROUND_HALF_UP)
+										.toPlainString();
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_IMPORTO:
+					if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+						newValue = BigDecimal.valueOf(Double.valueOf(valore))
+											.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+											.toPlainString();
+					}
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_PREZZIUNITARI:
+					if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+						newValue = BigDecimal.valueOf(Double.valueOf(valore))
+											.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+											.toPlainString();
+					}
+					break;
+				case PortGareSystemConstants.CRITERIO_VALUTAZIONE_OFFERTA_MEDIANTE_RIBASSO:
+					if(criterio.getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
+						newValue = BigDecimal.valueOf(Double.valueOf(valore))
+											.setScale(numDecimali, BigDecimal.ROUND_HALF_UP)
+											.toPlainString();
+					}
+					break;
+				}
+			
+				// aggiorna il nuovo valore del criterio...
+				if(validateAndSet) {
+					criterio.setValore(newValue);
+				}
+			} catch (Throwable e) {
+				throw new Exception("Errors.wrongField"); 
+			}
+		}
+	}
+	
+	/**
+	 * popola la lista dei criteri di valutazione da un documento XML
+	 */
+	public List<CriterioValutazioneOffertaType> popolaCriteriValutazioneFromXml(ListaCriteriValutazioneType criteriXml) throws Throwable {		
+		int tipoCriteri = getTipoCriterio(tipoBusta); 
+		List<CriterioValutazioneOffertaType> criteriValutazione = this.getListaCriteriValutazione();
+		
+		if(criteriXml != null && tipoCriteri != 0) {
+			if(criteriValutazione == null) {
+				criteriValutazione = new ArrayList<CriterioValutazioneOffertaType>();
+			} else {
+				criteriValutazione = new ArrayList<CriterioValutazioneOffertaType>(criteriValutazione);
+			}
+			
+			for(int i = 0; i < criteriXml.getCriterioValutazioneArray().length; i++) {
+				AttributoGenericoType attr = criteriXml.getCriterioValutazioneArray()[i];
+				
+				// cerca il criterio di valutazione tra quelli presenti...
+				CriterioValutazioneOffertaType criterio = null;
+				for(int j = 0; j < criteriValutazione.size(); j++) {
+					if(criteriValutazione.get(j).getCodice().equals(attr.getCodice())) {
+						criterio = criteriValutazione.get(j);
+						break;
+					}
+				}
+				if(criterio == null) {
+					// aggiungi un nuovo criterio...
+					criterio = new CriterioValutazioneOffertaType();
+					criterio.setCodice(attr.getCodice());
+					criterio.setDescrizione(attr.getCodice());
+					criterio.setFormato(attr.getTipo());
+					criterio.setNumeroDecimali(0);
+					criteriValutazione.add(criterio);
+				}
+				
+				// imposta i dati del criterio (tipo, formato e valore)... 
+				criterio.setTipo(tipoCriteri);
+				//criterio.setFormato(attr.getTipo());
+				if(criterio.getFormato() != attr.getTipo()) {
+					criterio.setValore(null);
+				} else {
+					criterio.setValore(getValoreCriterioValutazioneXml(attr, criterio, getDecoder()));
+				}
+			}
+		}
+		
+		// verifica ed elimina i criteri non previsti dal tipo di busta (tec/eco)...
+		if(criteriValutazione != null) {
+			criteriValutazione.removeIf(c -> !isCriterioValutazionePrevisto(c));
+		}
+
+		return criteriValutazione;
+	}
+
+	/**
+	 * Verifica se per un data busta (tecnica o economica) di una gara esistono 
+	 * dei criteri di valutazione.
+	 * 
+	 * @param tipoCriterio
+	 * 			tipo di criteri da verificare (PortGareSystemConstants.CRITERIO_TECNICO, PortGareSystemConstants.CRITERIO_ECONOMICO)
+	 * @param gara
+	 * 			dati della gara 
+	 * @param listaCriteriValutazione
+	 * 			lista dei criteri di valutazione associati alla gara 
+	 */
+	public static boolean isCriteriValutazioneVisibili(
+			int tipoCriterio, 
+			GaraType gara, 
+			List<CriterioValutazioneOffertaType> listaCriteriValutazione) 
+	{
+		int countCriteri = 0;
+		if(listaCriteriValutazione != null) { 
+			for(CriterioValutazioneOffertaType criterio : listaCriteriValutazione) {
+				if(criterio.getTipo() == tipoCriterio) {
+					countCriteri++;
+					break;
+				}
+			}
+		}
+		return (gara != null &&
+				gara.isProceduraTelematica() &&
+				gara.isOffertaTelematica() && 
+				(gara.getModalitaAggiudicazione() == 6) &&  // 6 = ...
+				(countCriteri > 0));
+	}
+	
+	public boolean isCriteriValutazioneVisibili() {
+		return isCriteriValutazioneVisibili(getTipoCriterio(tipoBusta), gara, listaCriteriValutazione);
+	}
+	
+	/**
+	 * indica se i criteri di valutazione sono editabili 
+	 */
+	public boolean isCriteriValutazioneEditabili() {
+		return true;
+	}
+
 }

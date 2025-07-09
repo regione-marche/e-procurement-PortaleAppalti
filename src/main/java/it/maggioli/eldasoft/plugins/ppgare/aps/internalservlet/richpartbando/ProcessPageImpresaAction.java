@@ -5,6 +5,9 @@ import com.agiletec.aps.system.SystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -13,6 +16,11 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageImpresaAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -50,8 +58,9 @@ public class ProcessPageImpresaAction extends AbstractProcessPageAction {
 				// mentre in "ProcessPageRTIAction" viene deciso se lo step componenti
 				// è abilitato nella navigazione del wizard
 				partecipazioneHelper.abilitaStepNavigazione(
-						WizardPartecipazioneHelper.STEP_COMPONENTI,
-						partecipazioneHelper.isStepComponentiAbilitato());
+					WizardPartecipazioneHelper.STEP_COMPONENTI,
+					partecipazioneHelper.isStepComponentiAbilitato()
+				);
 
 				String newTarget = partecipazioneHelper.getNextStepTarget(WizardPartecipazioneHelper.STEP_IMPRESA);
 				target = (newTarget != null ? newTarget : target);

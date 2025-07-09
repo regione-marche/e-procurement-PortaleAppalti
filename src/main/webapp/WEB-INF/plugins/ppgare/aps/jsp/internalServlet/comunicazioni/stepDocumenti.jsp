@@ -5,15 +5,26 @@
 <c:set var="descrizioneHint"><wp:i18n key="LABEL_INSERIRE_DESCRIZIONE_PER_ALLEGARE_DOC" /></c:set>
 <s:set var="helper" value="%{#session['nuovaComunicazione']}"/>
 <s:set var="helperDocumenti" value="%{#session['nuovaComunicazione'].documenti}"/>
-<s:set var="soccorsoIstruttorio" value="%{#helper.modello > 0}"/>
 
-<s:if test="%{#soccorsoIstruttorio}" >	
+<s:set var="rettifica" value="%{#helper.modelloRettifica}"/>
+<s:set var="isRichiestaRettifica" value="%{#helper.modello == 10 || #helper.modello == 15}" />
+<s:set var="isInvioRettifica" value="%{#rettifica && !#isRichiestaRettifica}"/>
+
+<s:set var="soccorsoIstruttorio" value="%{#helper.modello > 0 && !#rettifica}"/>
+
+<s:if test="%{#rettifica}" >
+	<c:set var="title"><wp:i18n key="TITLE_RETTIFICA_OFFERTA" /></c:set>
+	<c:set var="balloon" value="BALLOON_WIZ_RETTIFICA_DOCUMENTI" />
+	<s:set var="questionElimina" value="%{deleteAllegato || deleteAllegatoRichiesto}"/>
+	<c:set var="hrefAzioni" value="/ExtStr2/do/FrontEnd/Comunicazioni/processPageDocumentiNuovaRettifica.action" />	
+</s:if>
+<s:elseif test="%{#helper.modello > 0}" >
 	<c:set var="title"><wp:i18n key="TITLE_SOCCORSO_ISTRUTTORIO_NUOVO" /></c:set>
 	<!-- <c:set var="balloon" value="BALLOON_WIZ_SOCCORSO_DOCUMENTI" /> -->
 	<c:set var="balloon" value="BALLOON_WIZ_COMUNICAZIONE_DOCUMENTI" />
 	<s:set var="questionElimina" value="%{deleteAllegato || deleteAllegatoRichiesto}"/>
 	<c:set var="hrefAzioni" value="/ExtStr2/do/FrontEnd/Comunicazioni/processPageDocumentiNuovoSoccorso.action" />	
-</s:if>
+</s:elseif>
 <s:else>
 	<c:set var="title"><wp:i18n key="TITLE_COMUNICAZIONI_NUOVA" /></c:set>
 	<c:set var="balloon" value="BALLOON_WIZ_COMUNICAZIONE_DOCUMENTI" />
@@ -48,10 +59,17 @@
 
 
 	<s:if test="%{#soccorsoIstruttorio}" >
+		<%-- SOCCORSO ISTRUTTORIO --%>
 		<jsp:include page="inc/documentiSoccorso.jsp"/>
 	</s:if>
 	<s:else>
-		<jsp:include page="inc/documentiComunicazione.jsp"/>
+		<%-- RICHIESTA RETTIFICA/RETTIFICA --%>
+		<s:if test="%{! #rettifica}" >
+			<jsp:include page="inc/documentiComunicazione.jsp"/>
+		</s:if>
+		<s:elseif test="%{#isInvioRettifica}" >
+			<jsp:include page="inc/documentiComunicazione.jsp"/>
+		</s:elseif>
 	</s:else>
 	
 	

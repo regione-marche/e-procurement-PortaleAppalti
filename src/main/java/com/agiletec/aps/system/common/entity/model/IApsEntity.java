@@ -17,6 +17,7 @@
 */
 package com.agiletec.aps.system.common.entity.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,7 @@ import com.agiletec.aps.system.services.category.Category;
  * defined in the configuration.
  * @author E. Santoboni
  */
-public interface IApsEntity {
+public interface IApsEntity extends Serializable {
 	
 	/**
 	 * Add an attribute to the list of the attributes of the entity.

@@ -241,6 +241,32 @@ public class EsitiManager extends AbstractService implements IEsitiManager {
 	}
 
 	@Override
+	public DettaglioEsitoType getDettaglioEsitoByCig(String cig)
+			throws ApsException {
+		DettaglioEsitoType dettaglio = null;
+		DettaglioEsitoOutType retWS = null;
+		try {
+			retWS = wsGareAppalto.getProxyWSGare().getDettaglioEsitoByCig(cig);
+			if (retWS.getErrore() == null)
+				dettaglio = retWS.getEsito();
+			else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura del dettaglio esito di gara: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura del dettaglio esito di gara",
+					t);
+		}
+
+		return dettaglio;
+	}
+
+	@Override
 	public LottoEsitoType[] getLottiEsito(String codiceGara)
 			throws ApsException {
 		LottoEsitoType[] dettaglio = null;

@@ -27,8 +27,17 @@
 	<p><wp:i18n key='LABEL_BOZZA_ISCRIZIONE_ISCRALBO_3'/> <c:out value="${dettaglio}"/>.</p>
 
 	<div class="back-link">
-		<a href="<s:if test="%{#session.dettIscrAlbo.tipologia == 2}"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" /></s:if>
-		         <s:else><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" /></s:else>&amp;codice=<s:property value="codice" />&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<c:set var="urlBackto">
+			<s:if test="%{#session.dettIscrAlbo.tipologia == 2}">
+				<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />
+			</s:if>
+		    <s:else>
+		    	<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />
+		   	</s:else>
+		   	&amp;codice=<s:property value="codice"/>&amp;ext=${param.ext}
+		</c:set>
+		
+		<a href="${urlBackto}">
 			<wp:i18n key='LINK_BACK_TO'/> <c:out value="${dettaglio}" />
 		</a>
 	</div>

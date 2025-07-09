@@ -19,6 +19,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -36,6 +38,10 @@ import java.util.List;
  * @author stefano.sabbadin
  * @since 1.8.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class GenPDFDomandaIscrizioneAction extends GenPDFAction {
 	/**
      * UID
@@ -213,6 +219,7 @@ public class GenPDFDomandaIscrizioneAction extends GenPDFAction {
 			.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 		if (helper != null) {
 			params.put("ISCRIZIONE", !helper.isAggiornamentoIscrizione() ? 1 : 0);
+			params.put("VIS_BOLLO", customConfigManager.isVisible("ISCRALBO-DOCUM", "NUMSERIEBOLLODOMANDA") ? 1 : 0);
 			params.put("VISUALIZZA_SA", (!helper.isUnicaStazioneAppaltante() && !helper.isAggiornamentoSoloDocumenti()) ? 1 : 0);
 			params.put("VISUALIZZA_CAT", (!helper.isCategorieAssenti() && !helper.isAggiornamentoSoloDocumenti()) ? 1 : 0);
 			params.put("EMAILRECAPITO", this.customConfigManager.isVisible("IMPRESA-DATIPRINC-RECAPITI", "MAIL") ? 1 : 0);
@@ -327,11 +334,7 @@ public class GenPDFDomandaIscrizioneAction extends GenPDFAction {
 				this.decodeCategorieBandoIscrizione(listaCat, categorie);
 				
 				if (listaDoc != null) {
-					List<DocumentazioneRichiestaType> documentiRichiesti = this.bandiManager
-							.getDocumentiRichiestiBandoIscrizione(
-									helper.getIdBando(), 
-									helper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-									helper.isRti());				
+					List<DocumentazioneRichiestaType> documentiRichiesti = helper.getDocumentiRichiestiBO(); 
 					this.decodeDocumentiRichiesti(listaDoc, documentiRichiesti);
 				}
 							

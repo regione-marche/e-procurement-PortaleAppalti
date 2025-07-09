@@ -10,7 +10,7 @@ import java.util.function.Function;
  * NB: Per ora sono supportate solo la validazione di stringhe in quanto
  * è l'unico oggetto che può causare problemi di cross site scripting.
  *
- * La variabile: Function<String, Boolean> validator; corrisponde al validatore da richiamare per validare
+ * La variabile: Function<String, String> validator; corrisponde al validatore da richiamare per validare
  * l'enum corrispondente
  *
  * L'enum NONE è stato creato per rappresentare gli oggetti non primitivi o wrapper, quindi,
@@ -40,7 +40,7 @@ public enum EParamValidation {
     CODICE_CATEGORIA(ParamValidator::isCodiceCategoriaValid),
     CODICE_STIPULA(ParamValidator::isCodiceStipulaValid),
     CODICE_IMPRESA(ParamValidator::isCodiceImpresaValid),
-    COGNOME(ParamValidator::isEmptyOrLowerOrEqualTo80),
+    COGNOME(ParamValidator::isCognomeNomeValid),
     COMUNE(ParamValidator::isComuneValid),
     DATE_DDMMYYYY(ParamValidator::isDateInDDMMYYYYValid),
     DATE_YYYYMMDD(ParamValidator::isDateYYYYMMDDValid),
@@ -48,7 +48,8 @@ public enum EParamValidation {
     DAT_CASSA_RITENUTA(ParamValidator::isDatCassaRitenutaValid),
     DAT_CASSA_TIPO_CASSA(ParamValidator::isDatCassaTipoCassa),
     DIGIT(ParamValidator::isDigit),
-    EMAIL(ParamValidator::isEmptyOrLowerOrEqualTo60),
+    EMAIL(ParamValidator::isEmailValid),
+    DOMAIN_USER(ParamValidator::isDomainUserValid),
     ESITO_GARA(ParamValidator::isEsitoGaraValid),
     FAX(ParamValidator::isFaxValid),
     FILE_NAME(ParamValidator::isFileNameValid),
@@ -58,7 +59,7 @@ public enum EParamValidation {
     ID_COMUNICAZIONE(ParamValidator::isIdComunicazioneValid),
     IMPONIBILE(ParamValidator::isFloatValid),
     IMPORTO(ParamValidator::isFloatValid),
-    INDIRIZZO(ParamValidator::isEmptyOrLowerOrEqualTo100),
+    INDIRIZZO(ParamValidator::isIndirizzoValid),
     ISTITUTO_FINANZIARIO(ParamValidator::isEmptyOrLowerOrEqualTo80),
     IUV(ParamValidator::isEmptyOrLowerOrEqualTo50),
     LOCALITA(ParamValidator::isLocalitaValid),
@@ -66,7 +67,7 @@ public enum EParamValidation {
     MOTIVO_RIFIUTO(ParamValidator::isMotivoRifiutoValid),
     NATURA_GIURIDICA(ParamValidator::isNaturaGiuridicaValid),
     NAZIONE(ParamValidator::isNazioneValid),
-    NOME(ParamValidator::isEmptyOrLowerOrEqualTo80),
+    NOME(ParamValidator::isCognomeNomeValid),
     NOTE(ParamValidator::isUnlimitedTextValid),
     NUMERO_DIPENDENTI(ParamValidator::isNumeroDipendentiValid),
     NUMERO_ISCR_ALBO(ParamValidator::isEmptyOrLowerOrEqualTo50),
@@ -87,7 +88,7 @@ public enum EParamValidation {
     POSIZ_CONTRIB_INPS(ParamValidator::isPosizContribInpsValid),
     PROGRESSIVO_INVIO(ParamValidator::isProgressivoInvioValid),
     PROVINCIA(ParamValidator::isProvinciaValid),
-    QUALIFICA(ParamValidator::isQualificaValid),
+    QUALIFICA(ParamValidator::isDigit),
     RAGIONE_SOCIALE(ParamValidator::isRagioneSocialeValid),
     RATING_LEGALITA(ParamValidator::isRatingLegalitaValid),
     REFERENTE(ParamValidator::isEmptyOrLowerOrEqualTo50),
@@ -143,25 +144,47 @@ public enum EParamValidation {
     SHA(ParamValidator::isAlphaNumeric),
     DESCRIZIONE(ParamValidator::isUnlimitedTextValid),
     TIPO_AVVISO(ParamValidator::isTipoAvvisoValid),
+    TIPO_AVVISO_GENERALI(ParamValidator::isTipoAvvisoGeneraliValid),
     TIPO_PROCEDURA(ParamValidator::isTipoProceduraValid),
     PASSWORD(ParamValidator::isPasswordValid),
     TIPO_SOCIETA_COOPERATIVA(ParamValidator::isTipoSocietaCooperativaValid),
     CODICE_FISCALE_O_IDENTIFICATIVO(ParamValidator::isCodFiscOIdentificativo),
     CRITERI_DI_ORDINAMENTO(ParamValidator::isValidOrderCriteria),
+    NUMERO_CONTO(ParamValidator::isValidNumeroConto),
+    CODICE_CNEL(ParamValidator::isCNELValid),
+    ACTION_PATH(ParamValidator::isActionPathValid),
+    /**
+     * Represents an orderable identifier.<br/>
+     * <br/>
+     * An orderable identifier is a value that can be used for ordering or sorting.<br/>
+     * This identifier can be used to determine the column that we need to sort.<br/>
+     * <br/>
+     * This variable is defined using a validation function that determines
+     * whether a given value is a valid orderable identifier.<br/>
+     *
+     * @see ParamValidator#isOrderableIdentifierValid(String)
+     */
+    ORDERABLE_IDENTIFIER(ParamValidator::isOrderableIdentifierValid),
     NONE(null);
+	
+	/**
+	 * validatore associato all'enum (Function<"function param type", "return type">)
+	 */
+    private final Function<String, ParamValidationResult> validator;
 
-    private final Function<String, Boolean> validator;
-
-    EParamValidation(Function<String, Boolean> validator) {
+    /**
+     * contruttore di enum
+     */
+    EParamValidation(Function<String, ParamValidationResult> validator) {
         this.validator = validator;
     }
 
     /**
      *
      * @param toValidate la stringa da validare
-     * @return true = valido, false = non valido
+     * @return Porzione della strina in input non valida.
      */
-    public boolean validate(Object toValidate) {
+    public ParamValidationResult validate(Object toValidate) {
         return validator.apply(toValidate != null ? toValidate.toString() : null);
     }
 

@@ -11,6 +11,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CarrelloProdottiSessione;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardDocumentiProdottoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -29,6 +31,7 @@ import java.util.Map;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class AllegatoProdottoAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID

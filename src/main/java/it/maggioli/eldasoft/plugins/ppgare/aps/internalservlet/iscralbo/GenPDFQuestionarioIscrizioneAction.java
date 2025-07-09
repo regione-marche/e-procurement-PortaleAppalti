@@ -2,16 +2,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
-import it.eldasoft.sil.portgare.datatypes.AggIscrizioneImpresaElencoOpType;
-import it.eldasoft.sil.portgare.datatypes.AggiornamentoIscrizioneImpresaElencoOperatoriDocument;
-import it.eldasoft.sil.portgare.datatypes.ImpresaType;
-import it.eldasoft.sil.portgare.datatypes.IscrizioneImpresaElencoOpType;
-import it.eldasoft.sil.portgare.datatypes.IscrizioneImpresaElencoOperatoriDocument;
-import it.eldasoft.sil.portgare.datatypes.ListaCategorieIscrizioneType;
-import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
-import it.eldasoft.sil.portgare.datatypes.OffertaEconomicaType;
-import it.eldasoft.sil.portgare.datatypes.ReportOffertaEconomicaDocument;
-import it.eldasoft.sil.portgare.datatypes.ReportOffertaEconomicaType;
+import it.eldasoft.sil.portgare.datatypes.*;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.utils.utility.UtilityNumeri;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
@@ -26,6 +17,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.Ap
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.GenPDFQuestionarioAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -48,6 +41,10 @@ import java.util.Map;
  * 	   completando le informazioni comuni (SA, impresa) con i dati dell'iscrizione 
  *     ed integrando l'xml generato con i dati specifici degli elenchi (categorie selezionate)
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class GenPDFQuestionarioIscrizioneAction extends GenPDFQuestionarioAction {
 	/**
 	 * UID
@@ -181,12 +178,14 @@ public class GenPDFQuestionarioIscrizioneAction extends GenPDFQuestionarioAction
 			WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session
 					.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 			WizardDocumentiHelper documenti = helper.getDocumenti();
+
+			removeOldSummaries(documenti);
 			
 			// recupera le info sul bando d'iscrizione...
 			this.bandoIscrizione = this.bandiManager.getDettaglioBandoIscrizione(helper.getIdBando());
 
 			// recupera il json del questionario...
-			this.questionario = documenti.getQuestionarioAllegato(DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME);
+			this.questionario = documenti.getQuestionarioElenchi();
 			
 			if (this.questionario == null) {
 				// la sessione e' scaduta, occorre riconnettersi
@@ -224,7 +223,7 @@ public class GenPDFQuestionarioIscrizioneAction extends GenPDFQuestionarioAction
 		
 		return continua;
 	}
-	
+
 	@Override
 	protected void reportParametersInit(HashMap<String, Object> params) throws Exception {
 		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session

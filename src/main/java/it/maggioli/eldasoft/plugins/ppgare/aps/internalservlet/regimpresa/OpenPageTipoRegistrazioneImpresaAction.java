@@ -5,6 +5,8 @@ import java.util.Map;
 import org.apache.struts2.interceptor.SessionAware;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 
 /**
  * Action di gestione del tipo di registrazione dei dati impresa
@@ -12,6 +14,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
  * @author 
  * @since 2.0
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class OpenPageTipoRegistrazioneImpresaAction extends EncodedDataAction
 	implements SessionAware {
 	/**

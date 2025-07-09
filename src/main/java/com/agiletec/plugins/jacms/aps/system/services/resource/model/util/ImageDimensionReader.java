@@ -17,13 +17,20 @@
 */
 package com.agiletec.plugins.jacms.aps.system.services.resource.model.util;
 
+import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResourceDimension;
 import com.agiletec.plugins.jacms.aps.system.services.resource.parse.ImageDimensionDOM;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 
 /**
  * Classe delegata al caricamento 
@@ -32,6 +39,18 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.parse.ImageDimens
  */
 public class ImageDimensionReader implements IImageDimensionReader {
 	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */	
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			_configManager = (ConfigInterface) ctx.getBean(SystemConstants.BASE_CONFIG_MANAGER);
+		} catch (Exception e) {
+		}
+	}
+
 	/**
 	 * Inizializzazione della classe.
 	 * Effettua il caricamento delle dimensioni di resize delle immagini.
@@ -74,6 +93,6 @@ public class ImageDimensionReader implements IImageDimensionReader {
      */
     private Map<Integer, ImageResourceDimension> _imageDimensions;
     
-    private ConfigInterface _configManager;
+    private transient ConfigInterface _configManager;
 	
 }

@@ -2,6 +2,9 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
+<c:set var="isInvioOfferta" value="${operazione == inviaOfferta}"/>
+<c:set var="isPartecipazione" value="${operazione == presentaPartecipazione}"/>
+
 <c:set var="titolo"><wp:i18n key='TITLE_PAGE_GARETEL_RIEPILOGO_OFFERTE_DISTINTE'/></c:set>
 <c:set var="codiceBalloon" value="BALLOON_RIEPILOGO_OFFERTA"/>
 
@@ -13,7 +16,7 @@
 
 <div class="portgare-view">
 
-	<h2>${titolo}</h2>
+	<h2>${titolo} [<s:property value="%{dettGara.datiGeneraliGara.codice}" />]</h2>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
@@ -92,7 +95,7 @@
 			</div>
 		</div>
 
-		<div class="fieldset-row last-row">
+		<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_PARTECIPA_COME_MANDATARIA_RTI" /> : </label>
 			</div>
@@ -101,6 +104,18 @@
 				<s:else><wp:i18n key="LABEL_NO" /></s:else>
 			</div>
 		</div>		
+		
+		<c:if test="${isInvioOfferta}">
+			<div class="fieldset-row last-row">
+				<div class="label">
+					<label><wp:i18n key="LABEL_CODICE_CNEL" /> : </label>
+				</div>
+				<div class="element">
+					<s:property value="%{codiceCNEL}" />
+				</div>
+			</div>
+		</c:if>
+			
 	</fieldset>
 
 	<fieldset>
@@ -136,7 +151,7 @@
 			</div>
 		</s:if>
 		
-		<!-- BUSTA AMMINISTRATIVA : LIVELLO DI GARA -->
+		<%-- BUSTA AMMINISTRATIVA : LIVELLO DI GARA --%>
 		
 		<div class="fieldset-row first-row">
 			<div class="label">
@@ -219,10 +234,13 @@
 						<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 					</s:else>
 				</s:else>
+
+				<!-- RETTIFICA NON PREVISTA -->
 			</div>
 		</div>
 		
-		<!-- BUSTA TECNICA E BUSTA ECONOMICA -->
+		<%-- BUSTA TECNICA E BUSTA ECONOMICA --%>
+		
 		<s:set var="idxListaBusteTec" value="0"/>
 		<s:set var="idxListaBusteEco" value="0"/>
 		<s:iterator value="%{bustaRiepilogativa.listaCompletaLotti}" var="lotto" status="stat">
@@ -240,15 +258,24 @@
 			
 			<s:if test="%{#lottoTecPresente || #lottoEcoPresente}">
 			<fieldset>	
-				<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span>Lotto <s:property value="%{bustaRiepilogativa.listaCodiciInterniLotti.get(#lotto)}" /></legend>
+				<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_LOTTO" /> <s:property value="%{bustaRiepilogativa.listaCodiciInterniLotti.get(#lotto)}" /></legend>
 				 <div class="fieldset-row first-row">
 					<div class="label">
 						<label><wp:i18n key="LABEL_GARETEL_OGGETTO" /> : </label>
 					</div>
 					<div class="element">
-						<label><s:property value="%{bustaRiepilogativa.busteEconomicheLotti.get(#lotto).oggetto}"/></label>
+						<label>
+							<s:if test="%{#lottoEcoPresente}">
+								<s:property value="%{bustaRiepilogativa.busteEconomicheLotti.get(#lotto).oggetto}"/>
+							</s:if>
+							<s:elseif test="%{#lottoTecPresente}">
+								<s:property value="%{bustaRiepilogativa.busteTecnicheLotti.get(#lotto).oggetto}"/>
+							</s:elseif>
+						</label>
 					</div>
 				</div>
+				
+				<%-- LOTTO BUSTA TECNICA --%>
 					
 				<s:if test="%{#lottoTecPresente}">
 					<div class="fieldset-row">
@@ -332,10 +359,18 @@
 									<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 								</s:else>
 							</s:else>
+							
+							<s:if test="%{!abilitaRettifica && lottoTecnicaRettifica.get(#lotto) != null}">
+								<s:set var="richiestaRettifica" value="lottoTecnicaRettifica.get(#lotto)"/>
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/infoRichiestaRettifica.jsp"/>
+							</s:if>
+							
 						</div>
 					</div>
-				</s:if>		
+				</s:if>
 
+				<%-- LOTTO BUSTA ECONOMICA --%>
+				
 				<s:if test="%{#lottoEcoPresente && #costoFisso != 1}" >
 					<div class="fieldset-row">
 						<div class="label">
@@ -418,6 +453,12 @@
 									<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 								</s:else>
 							</s:else>
+							
+							<s:if test="%{!abilitaRettifica && lottoEconomicaRettifica.get(#lotto) != null}">
+								<s:set var="richiestaRettifica" value="lottoEconomicaRettifica.get(#lotto)"/>
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/infoRichiestaRettifica.jsp"/>
+							</s:if>
+							
 						</div>
 					</div>
 				</s:if>
@@ -429,18 +470,17 @@
 	</fieldset>
 
 	<div class="azioni">
-	
 		<s:if test="%{abilitaRettifica}">
 			<form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmRettificaOfferteDistinte.action" />" method="post" class="azione">
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 				
 				<div>
-					<wp:i18n key="LABEL_ANNULLA_RIPRESENTA_OFFERTA" var="valueButtonAnnullaRipresenta" />
 					<input type="hidden" name="ext" value="${param.ext}" />
 					<s:hidden name="codice" value="%{codice}" />
 					<s:hidden name="operazione" value="%{operazione}" />
 					<s:hidden name="progressivoOfferta" value="%{progressivoOfferta}" />
 					<s:hidden name="fromListaOfferte" value="%{fromListaOfferte}" />
+					<wp:i18n key="LABEL_ANNULLA_RIPRESENTA_OFFERTA" var="valueButtonAnnullaRipresenta" />
 					<s:submit value="%{#attr.valueButtonAnnullaRipresenta}" title="%{#attr.valueButtonAnnullaRipresenta}" cssClass="button"></s:submit>
 				</div>
 			</form>
@@ -449,7 +489,7 @@
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}">
 		<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 	</a>
 </div>

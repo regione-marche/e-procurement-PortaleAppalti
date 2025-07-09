@@ -8,7 +8,9 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -17,23 +19,22 @@ import java.util.List;
  *
  * @author Marco Perazzetta
  */
-public abstract class BaseSearchBean implements Serializable {
+public class BaseSearchBean implements Serializable {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 8784999520523677962L;
 
-	public static final int DEFAULT_ROWS_FOR_PAGE = 10;
-	public static final int DEFAULT_START_ROW_INDEX = 0;
-	public static final int DEFAULT_PAGES_TO_SHOW = 5;
+	public static final int DEFAULT_ROWS_FOR_PAGE 		= 10;
+	public static final int DEFAULT_START_ROW_INDEX 	= 0;
+	public static final int DEFAULT_PAGES_TO_SHOW 		= 5;
 
 	/**
-	 * Indice della pagina correntemente estratta (la prima pagina corrisponde
-	 * all'indice 0).
+	 * Indice della pagina correntemente estratta (la prima pagina corrisponde all'indice 0)
 	 */
 	private int currentPage;
 	/**
-	 * Numero totale di pagine estratte dalla query.
+	 * Numero totale di pagine estratte dalla query
 	 */
 	private int totalPages;
 	/**
@@ -45,8 +46,7 @@ public abstract class BaseSearchBean implements Serializable {
 	 */
 	private int iTotalRecords;
 	/**
-	 * Indice dell'ultimo record della pagina selezionata rispetto al numero
-	 * totale di record estratti.
+	 * Indice dell'ultimo record della pagina selezionata rispetto al numero totale di record estratti.
 	 */
 	private int endIndex;
 	private int pagesToShow;
@@ -55,12 +55,19 @@ public abstract class BaseSearchBean implements Serializable {
 	private int startPage;
 	private int endPage;
 	private List<Integer> pageList;
-
+	private long searchCount;
+	protected String initStatus;		// contiene lo stato iniziale del bean al momento della creazione dell'oggetto
+	
+	/**
+	 * costruttore 
+	 */
 	public BaseSearchBean() {
 		this.pageList = new ArrayList<Integer>();
 		this.setiDisplayLength(DEFAULT_ROWS_FOR_PAGE);
 		this.setiDisplayStart(DEFAULT_START_ROW_INDEX);
 		this.setPagesToShow(DEFAULT_PAGES_TO_SHOW);
+		this.searchCount = 0;
+		initStatus = evalStatus(this);
 	}
 
 	public int getCurrentPage() {
@@ -189,7 +196,15 @@ public abstract class BaseSearchBean implements Serializable {
 	public void setiTotalRecords(int iTotalRecords) {
 		this.iTotalRecords = iTotalRecords;
 	}
+	
+	public long getSearchCount() {
+		return searchCount;
+	}
 
+	public void setSearchCount(long searchCount) {
+		this.searchCount = searchCount;
+	}
+	
 //	/**
 //	 * Numero di colonne della tabella
 //	 */
@@ -308,34 +323,54 @@ public abstract class BaseSearchBean implements Serializable {
 	}
 	
 	/**
-	 * copia dalla sessione solo le proprietà necessarie
+	 * recupera l'elenco di tutte gli attributi dell'oggetto 
+	 */
+	private static List<Field> getAllFields(Class<?> cls) {
+		List<Field> fields = new ArrayList<Field>();
+		for (Class<?> c = cls; c != null; c = c.getSuperclass())
+			fields.addAll(Arrays.asList(c.getDeclaredFields()));
+		return fields;
+	}
+
+	/**
+	 * copia lo stato do un altro bean
+	 */
+	public void copyFrom(Object source) {
+		List<Field> fields = getAllFields(source.getClass());
+		for (Field field : fields)
+			try {
+				if( !Modifier.isFinal(field.getModifiers()) ) {
+					field.setAccessible(true);
+					Object value = field.get(source);
+					field.set(this, value);
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+	}
+
+	/**
+	 * form di ricerca: copia solo le proprietà necessarie
 	 * a mantenere lo stato della navigazione
 	 * Salva alcune proprietà dalla vecchia istanza 
 	 * e copiale nella nuova
 	 */
 	public void restoreFrom(Object source) {
 		int currentPage = this.getCurrentPage();
+		Integer displayLength = this.getiDisplayLength();
+		long searchCount = this.getSearchCount();
 		
-		// gestisci i valori delle proprietà della classe figlia 
+		// copia tutte il valore di tutte le proprieta' da source all'oggetto corrente 
 		// (Bandi, Esiti, Avvisi)...
-		Field[] fields = source.getClass().getDeclaredFields();
-		for (int i=0; i < fields.length; i++) {
-			try {
-				//String element = fields[i].getName();
-				fields[i].setAccessible(true);
-				Object value = fields[i].get(source);
-				fields[i].set(this, value);  
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-		}
+		copyFrom(source);
 		
-		// gestisci le proprietà della classe base...
+		// copia le proprieta' della classe base...
 		BaseSearchBean src = (BaseSearchBean) source; 
-		this.setiDisplayLength(src.getiDisplayLength());
-		this.setCurrentPage(currentPage);
+		this.iDisplayLength = src.getiDisplayLength();
+		this.currentPage = currentPage;
+		this.searchCount = src.getSearchCount();
 	}
-
+	
 	protected boolean checkConversiosionError(BaseAction action, String fromPage, String message, int dateType, String date) {
 		boolean isValid = true;
 
@@ -359,6 +394,35 @@ public abstract class BaseSearchBean implements Serializable {
 
 	public Integer getIndicePrimoRecord() {
 		return getCurrentPage() > 0 ? getiDisplayLength() * (getCurrentPage() - 1) : 0;
+	}
+	
+	public boolean isFirstSearch() {
+		return (searchCount <= 1);
+	}
+
+	/**
+	 * calcola lo stato dell'oggetto
+	 */
+	protected String evalStatus(Object obj) {
+		StringBuilder sb = new StringBuilder(); 
+		List<Field> fields = getAllFields(obj.getClass());
+		for (Field field : fields)
+			if( !Modifier.isFinal(field.getModifiers()) && !"initStatus".equalsIgnoreCase(field.getName()) ) {
+				Object value;
+				try {
+					field.setAccessible(true);
+					value = field.get(obj);
+				} catch (Exception ex) {
+					value = "";
+				}
+				sb.append((value != null ? value : "")).append("|");
+			}
+		return sb.toString();
+	}
+
+	public boolean isInitialState() {
+		String status = evalStatus(this);
+		return status.equals(initStatus);
 	}
 
 }

@@ -75,8 +75,6 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 	private Double[] prezzoUnitario;
 	private Double[] importoUnitario;
 	private String[] importoUnitarioStringaNotazioneStandard;
-	private String[] criterioValutazione;
-	private Boolean[] criterioValutazioneEditabile;
 	private String[] dataConsegnaOfferta;
 	private String[] tipo;
 	private String[] note;
@@ -99,24 +97,8 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 
 //	private Long idOffertaEconomica;
 
-	/**
-	 * gestione dei criteri di valutazione per OEPV
-	 */
-	private List<CriterioValutazioneOffertaType> listaCriteriValutazione;
 	
 	private String passoe;
-
-	public String[] getCriterioValutazione() {
-		return criterioValutazione;
-	}
-
-	public void setCriterioValutazione(String[] criterioValutazione) {
-		this.criterioValutazione = criterioValutazione;
-	}
-
-	public Boolean[] getCriterioValutazioneEditabile() {
-		return criterioValutazioneEditabile;
-	}
 
 	public Long getNumDecimaliRibasso() {
 		return numDecimaliRibasso;
@@ -302,10 +284,6 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 		this.attributiAggiuntivi = attributiAggiuntivi;
 	}
 
-	public List<CriterioValutazioneOffertaType> getListaCriteriValutazione() {
-		return listaCriteriValutazione;
-	}	
-	
 	public String getPassoe() {
 		return passoe;
 	}
@@ -357,31 +335,9 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 		this.importoOffertoCanoneAssistenza = null;
 		this.importoOffertoPerPermuta = null;
 		this.valoreAttributiAgg = null;
-		this.listaCriteriValutazione = null;
-		this.criterioValutazione = null;
-		this.criterioValutazioneEditabile = null;
 		this.dataConsegnaOfferta = null;
 		this.tipo = null;
 		this.note = null;
-	}
-
-	/**
-	 * @param listaCriteriValutazione the listaCriteriValutazione to set
-	 */
-	public void setListaCriteriValutazione(List<CriterioValutazioneOffertaType> listaCriteriValutazione) {
-		this.listaCriteriValutazione = listaCriteriValutazione;
-		
-		// riallinea alla nuova lista le strutture aggiuntive per l'edit dalla form
-		this.criterioValutazioneEditabile = null;
-		this.criterioValutazione = null;
-		if(listaCriteriValutazione != null) {
-			this.criterioValutazione = new String[listaCriteriValutazione.size()];
-			this.criterioValutazioneEditabile = new Boolean[listaCriteriValutazione.size()];
-			for(int i = 0; i < this.listaCriteriValutazione.size(); i++) {
-				this.criterioValutazione[i] = null;  
-				this.criterioValutazioneEditabile[i] = new Boolean(true);
-			}
-		}
 	}
 
 	/**
@@ -707,7 +663,7 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 						criterio.setCodice( this.listaCriteriValutazione.get(i).getCodice() );
 					}
 					criterio.setTipo( this.listaCriteriValutazione.get(i).getFormato().intValue() );
-					WizardOffertaTecnicaHelper.setValoreCriterioValutazioneXml(
+					setValoreCriterioValutazioneXml(
 							criterio, this.listaCriteriValutazione.get(i), (report ? null : cipher));
 				}
 			}
@@ -827,14 +783,8 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 	public boolean isImportoOffertoPerCanoneAssistenzaVisible(){
 		return this.gara.isOffertaPerCanoneAssistenza();
 	}
-	
-	public boolean isCriteriValutazioneVisibili() {
-		return WizardOffertaTecnicaHelper.isCriteriValutazioneVisibili(
-				PortGareSystemConstants.CRITERIO_ECONOMICO, 
-				this.gara, 
-				this.listaCriteriValutazione);
-	}
 
+	@Override
 	public boolean isCriteriValutazioneEditabili() {
 		return true;
 	}
@@ -872,6 +822,11 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 					documentiHelper.removeDocRichiesto(i);
 					documentiHelper.setDocOffertaPresente(false);
 					offertaEconomicaRimossa = true;
+					
+					// resetta le info relative al pdf
+					datiModificati = true;
+					rigenPdf = true;
+					pdfUUID = null;
 				}
 			}
 		}
@@ -1212,42 +1167,7 @@ public class WizardOffertaEconomicaHelper extends WizardOffertaHelper {
 		// -- Criteri di valutazione --
 		List<CriterioValutazioneOffertaType> criteriValutazione = this.getListaCriteriValutazione();
 		if(offerta.isSetListaCriteriValutazione()) {
-			if(criteriValutazione == null) {
-				criteriValutazione = new ArrayList<CriterioValutazioneOffertaType>();
-			} else {
-				criteriValutazione = new ArrayList<CriterioValutazioneOffertaType>(criteriValutazione);
-			}
-			for(int i = 0; i < offerta.getListaCriteriValutazione().getCriterioValutazioneArray().length; i++) {
-				AttributoGenericoType attr = offerta.getListaCriteriValutazione().getCriterioValutazioneArray()[i];
-				
-				// cerca il criterio di valutazione tra quelli presenti...
-				CriterioValutazioneOffertaType criterio = null;
-				for(int j = 0; j < criteriValutazione.size(); j++) {
-					if(criteriValutazione.get(j).getCodice().equals(attr.getCodice())) {
-						criterio = criteriValutazione.get(j);
-						break;
-					}
-				}
-				if(criterio == null) {
-					// aggiungi un nuovo criterio...
-					criterio = new CriterioValutazioneOffertaType();
-					criteriValutazione.add(criterio);
-					criterio.setCodice(attr.getCodice());
-					criterio.setDescrizione(attr.getCodice());
-					criterio.setFormato(attr.getTipo());
-					criterio.setNumeroDecimali(0);
-				}
-
-				// imposta i dati del criterio (tipo, formato e valore)... 
-				criterio.setTipo(PortGareSystemConstants.CRITERIO_ECONOMICO);
-				//criterio.setFormato(attr.getTipo());
-				if(criterio.getFormato() != attr.getTipo()) {
-					criterio.setValore(null);
-				} else {
-					criterio.setValore(WizardOffertaTecnicaHelper
-							.getValoreCriterioValutazioneXml(attr, criterio, cipher));
-				}
-			}
+			criteriValutazione = popolaCriteriValutazioneFromXml(offerta.getListaCriteriValutazione());
 		}
 		this.setListaCriteriValutazione(criteriValutazione);
 

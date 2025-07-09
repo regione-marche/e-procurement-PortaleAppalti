@@ -17,6 +17,12 @@
 			<result name="input" type="redirect">${urlErrori}</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
+		
+		<action name="ShibbolethLogoutResponse" class="loginShibbolethAction" method="login">
+			<result name="success" type="chain">loginSSO</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
 
 		<action name="SpidLogin" class="loginSpidAction" method="prepareLogin">
 			<result name="success" type="redirect">${urlLogin}</result>
@@ -140,6 +146,12 @@
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
 		
+		<action name="EidasLogin" class="loginEidasAction" method="prepareLogin">
+			<result name="success" type="redirect">${urlLogin}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
 		<action name="loginAs" class="loginSSOAction" method="loginAs">
 			<result name="success" type="redirect">${urlRedirect}</result>
 			<result name="input" type="redirect">${urlErrori}</result>
@@ -152,7 +164,7 @@
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
 		
-		<action name="LogoutSSO" class="logoutSSOAction" method="logout">
+		<action name="logoutSSO" class="logoutSSOAction" method="logout">
 			<result name="success" type="redirect">${urlHome}</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>

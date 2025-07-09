@@ -1,15 +1,12 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
+import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
 import it.eldasoft.sil.portgare.datatypes.ImpresaAggiornabileType;
 import it.eldasoft.sil.portgare.datatypes.ImpresaType;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
-import com.agiletec.aps.system.common.entity.model.EntitySearchFilter;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Bean di memorizzazione in sessione dei dati inputati nello step di
@@ -37,6 +34,7 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 	private String dataIscrizioneINPS;
 	private String localitaIscrizioneINPS;
 	private String posizContributivaIndividualeINPS;
+	private String codiceCNEL;
 	private String numIscrizioneINAIL;
 	private String dataIscrizioneINAIL;
 	private String localitaIscrizioneINAIL;
@@ -88,6 +86,8 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 	private String classeDimensioneDipendenti;
 	private String ulterioriDichiarazioni;
     private String oggettoSociale;
+	private String withIBAN;
+	private String numeroConto;
 
 	public WizardDatiUlterioriImpresaHelper() {
 		this.iscrittoCCIAA = null;
@@ -103,6 +103,7 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 		this.dataIscrizioneINPS = null;
 		this.localitaIscrizioneINPS = null;
 		this.posizContributivaIndividualeINPS = null;
+		this.codiceCNEL = null;
 		this.numIscrizioneINAIL = null;
 		this.dataIscrizioneINAIL = null;
 		this.localitaIscrizioneINAIL = null;
@@ -198,6 +199,9 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 			this.posizContributivaIndividualeINPS = impresa.getInps()
 							.getPosizContributivaIndividuale();
 		}
+		
+		this.codiceCNEL = impresa.getCodiceCNEL();
+		
 		if (impresa.isSetInail()) {
 			this.numIscrizioneINAIL = impresa.getInail().getNumIscrizione();
 			if (impresa.getInail().getDataIscrizione() != null) {
@@ -209,6 +213,7 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 							.getLocalitaIscrizione();
 			this.posizAssicurativaINAIL = impresa.getInail().getPosizAssicurativa();
 		}
+		
 		if (impresa.isSetCassaEdile()) {
 			this.numIscrizioneCassaEdile = impresa.getCassaEdile().getNumIscrizione();
 			if (impresa.getCassaEdile().getDataIscrizione() != null) {
@@ -329,6 +334,8 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 
 		if (impresa.isSetContoCorrente()) {
 			this.codiceIBANCCDedicato = impresa.getContoCorrente().getEstremi();
+			withIBAN = impresa.getContoCorrente().getAreaIBAN();
+			numeroConto = impresa.getContoCorrente().getNumeroConto();
 			this.codiceBICCCDedicato = impresa.getContoCorrente().getBic();
 			this.soggettiAbilitatiCCDedicato = impresa.getContoCorrente().getSoggettiAbilitati();
 		}
@@ -413,6 +420,9 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 			this.posizContributivaIndividualeINPS = impresa.getInps()
 							.getPosizContributivaIndividuale();
 		}
+		
+		this.codiceCNEL = impresa.getCodiceCNEL();
+		
 		if (impresa.isSetInail()) {
 			this.numIscrizioneINAIL = impresa.getInail().getNumIscrizione();
 			if (impresa.getInail().getDataIscrizione() != null) {
@@ -560,6 +570,8 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 		if (impresa.isSetContoCorrente()) {
 //			this.estremiCCDedicato = impresa.getContoCorrente().getEstremi();
 			this.codiceIBANCCDedicato = impresa.getContoCorrente().getEstremi();
+			this.numeroConto = impresa.getContoCorrente().getNumeroConto();
+			this.withIBAN = impresa.getContoCorrente().getAreaIBAN();
 			this.codiceBICCCDedicato = impresa.getContoCorrente().getBic();
 			this.soggettiAbilitatiCCDedicato = impresa.getContoCorrente().getSoggettiAbilitati();
 		}
@@ -770,6 +782,16 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 	@Override
 	public void setPosizContributivaIndividualeINPS(String posizContributivaIndividualeINPS) {
 		this.posizContributivaIndividualeINPS = posizContributivaIndividualeINPS;
+	}
+	
+	@Override
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+	
+	@Override
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
 	}
 
 	@Override
@@ -1159,8 +1181,28 @@ public class WizardDatiUlterioriImpresaHelper implements IDatiUlterioriImpresa {
 	}
 
 	@Override
+	public String getWithIBAN() {
+		return withIBAN;
+	}
+
+	@Override
+	public String getNumeroConto() {
+		return numeroConto;
+	}
+
+	@Override
 	public void setCodiceIBANCCDedicato(String codiceIBANCCDedicato) {
 		this.codiceIBANCCDedicato = (codiceIBANCCDedicato != null ? codiceIBANCCDedicato.toUpperCase() : codiceIBANCCDedicato);
+	}
+
+	@Override
+	public void setWithIBAN(String withIBAN) {
+		this.withIBAN = withIBAN;
+	}
+
+	@Override
+	public void setNumeroConto(String numeroConto) {
+		this.numeroConto = numeroConto;
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 import org.apache.xmlbeans.XmlException;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
@@ -13,6 +11,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
@@ -22,6 +22,11 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA,  
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO	
+	})
 public class OpenPageImpresaAction extends AbstractOpenPageAction {
 	/**
      * UID

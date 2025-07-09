@@ -4,6 +4,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcess
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigFeatures;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -20,6 +22,11 @@ import java.util.List;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageIndirizziImpresaAction extends
 				AbstractProcessPageAction implements IIndirizzoImpresa {
 
@@ -207,7 +214,10 @@ public class ProcessPageIndirizziImpresaAction extends
 	 */
 	@Override
 	public void setTelefono(String telefono) {
-		this.telefono = telefono;
+		this.telefono =
+				StringUtils.isNotEmpty(telefono)
+						? telefono.trim()
+						: telefono;
 	}
 
 	/**
@@ -223,7 +233,10 @@ public class ProcessPageIndirizziImpresaAction extends
 	 */
 	@Override
 	public void setFax(String fax) {
-		this.fax = fax;
+		this.fax =
+				StringUtils.isNotEmpty(fax)
+					? fax.trim()
+					: fax;
 	}
 
 	public boolean isDelete() {

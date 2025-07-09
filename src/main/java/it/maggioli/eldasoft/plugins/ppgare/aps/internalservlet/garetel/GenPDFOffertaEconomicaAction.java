@@ -28,6 +28,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.NtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -41,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class GenPDFOffertaEconomicaAction extends GenPDFAction {
 	/**
 	 * UID
@@ -115,8 +118,9 @@ public class GenPDFOffertaEconomicaAction extends GenPDFAction {
 	protected boolean reportInit() {
 		boolean continua = true;
 		
-		WizardOffertaEconomicaHelper helper = GestioneBuste.getBustaEconomicaFromSession().getHelper();
-		RiepilogoBusteHelper bustaRiepilogativa = GestioneBuste.getBustaRiepilogoFromSession().getHelper();
+		GestioneBuste buste = GestioneBuste.getFromSession();
+		WizardOffertaEconomicaHelper helper = buste.getBustaEconomica().getHelper();
+		RiepilogoBusteHelper bustaRiepilogativa = buste.getBustaRiepilogo().getHelper();
 				
 		try {
 			if (helper == null) {
@@ -131,6 +135,11 @@ public class GenPDFOffertaEconomicaAction extends GenPDFAction {
 			} else if (this.customConfigManager.isVisible("GARE-DOCUMOFFERTA", "PASSOE") && StringUtils.isEmpty(this.passoe)) {
 				// il PASSOE deve essere inserito e composto al massimo da 30 caratteri
 				session.put(ERROR_DOWNLOAD, this.getText("Errors.requiredstring", new String[] { this.getTextFromDB("passoe") }));
+				this.setTarget(INPUT);
+				continua = false;
+			} if(buste.isConcorsoProgettazionePubblico() || buste.isConcorsoProgettazioneRiservato()) {
+				// per i concorsi di progettazione il PDF della busta economica non e' previsto
+				session.put(ERROR_DOWNLOAD, this.getText("Errors.sessionExpired"));
 				this.setTarget(INPUT);
 				continua = false;
 			} else {
@@ -203,7 +212,7 @@ public class GenPDFOffertaEconomicaAction extends GenPDFAction {
 			params.put("TIMESTAMP", UtilityDate.convertiData(this.ntpManager.getNtpDate(), 
 														     UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS));
 			params.put("IS_RTI", isRTI);
-			params.put("DENOMINAZIONE_RTI",partecipazioneHelper.getDenominazioneRTI());
+			params.put("DENOMINAZIONE_RTI", partecipazioneHelper.getDenominazioneRTI());
 			params.put("IMPNORIBASSO", helper.getGara().getImportoNonSoggettoRibasso());
 			params.put("IMPSICUREZZA", helper.getGara().getImportoSicurezza());
 			params.put("SICINC", helper.getGara().isOffertaComprensivaSicurezza());
@@ -235,6 +244,7 @@ public class GenPDFOffertaEconomicaAction extends GenPDFAction {
 			params.put("RIBASSOEQUIVALENTELETTERE", UtilityNumeri.getDecimaleInLinguaItaliana(ribassoEquivalente, 1, 
 													helper.getNumDecimaliRibasso().intValue()));
 			params.put("ACCORDOQUADRO", helper.getGara().isAccordoQuadro());
+			params.put("CODICECNEL", partecipazioneHelper.getCodiceCNEL());
 		}
 	}
 

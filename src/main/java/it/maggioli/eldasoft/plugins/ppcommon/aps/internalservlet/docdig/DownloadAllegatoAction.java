@@ -11,8 +11,10 @@ import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
 import it.eldasoft.www.WSOperazioniGenerali.FileType;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
@@ -21,14 +23,25 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IDocument
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -46,13 +59,19 @@ public class DownloadAllegatoAction extends BaseAction
 	 */
 	private static final long serialVersionUID = 6362151029936624402L;
 	
+	private static final String SUCCESS_DOC_FIRMATO_RISERVATO			= "successFirmaDigitaleRiservato"; 
+	private static final String SUCCESS_DOC_FIRMATO_PUBBLICO			= "successFirmaDigitalePubblico";
+	private static final String SUCCESS_DOC_LARGEFILE					= "successLargefile";
+	
+	private static final String TIPO_DOCUMENTO_FIRMATO 					= ".P7M";
+	private static final String TIPO_DOCUMENTO_MARCATO_TEMPORALMENTE 	= ".TSD";
+	
 	private Map<String, Object> session;
 	private HttpServletResponse response;
 	private IDocumentiDigitaliManager documentiDigitaliManager;
 	private IEventManager eventManager;
 	private IURLManager urlManager;
 	private IPageManager pageManager;
-	private ICustomConfigManager customConfigManager;
 	
 	private long id;
 	@Validate(EParamValidation.GENERIC)
@@ -62,9 +81,10 @@ public class DownloadAllegatoAction extends BaseAction
 	private String filename;
 	@Validate(EParamValidation.CONTENT_TYPE)
 	private String contentType;
-	
-	private static final String TIPO_DOCUMENTO_FIRMATO = ".P7M";
-	private static final String TIPO_DOCUMENTO_MARCATO_TEMPORALMENTE = ".TSD";
+	@Validate(EParamValidation.CODICE)
+	private String codice;
+	@Validate(EParamValidation.GENERIC)
+	private String url;
 	
 	@Override
 	public void setSession(Map<String, Object> session) {
@@ -82,17 +102,11 @@ public class DownloadAllegatoAction extends BaseAction
 	@Override
 	public void setCurrentFrame(String currentFrame) {}
 
-	/**
-	 * @param documentiDigitaliManager the documentiDigitaliManager to set
-	 */
 	public void setDocumentiDigitaliManager(
 			IDocumentiDigitaliManager documentiDigitaliManager) {
 		this.documentiDigitaliManager = documentiDigitaliManager;
 	}
 	
-	/**
-	 * @param eventManager the eventManager to set
-	 */
 	public void setEventManager(IEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
@@ -109,62 +123,50 @@ public class DownloadAllegatoAction extends BaseAction
 		return this.pageManager;
 	}
 	
-	/**
-	 * @param customConfigManager the customConfigManager to set
-	 */
-	public void setCustomConfigManager(ICustomConfigManager customConfigManager) {
-		this.customConfigManager = customConfigManager;
-	}
-
-	/**
-	 * @return the id
-	 */
 	public long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the idprg
-	 */
 	public String getIdprg() {
 		return idprg;
 	}
 
-	/**
-	 * @param idprg the idprg to set
-	 */
 	public void setIdprg(String idprg) {
 		this.idprg = idprg;
 	}
 
-	/**
-	 * @return the inputStream
-	 */
 	public InputStream getInputStream() {
 		return inputStream;
 	}
 	
-	/**
-	 * @return the filename
-	 */
 	public String getFilename() {
 		return filename;
 	}
 	
-	/**
-	 * @return the contentType
-	 */
 	public String getContentType() {
 		return contentType;
 	}
 	
+	public String getCodice() {
+		return codice;
+	}
+
+	public void setCodice(String codice) {
+		this.codice = codice;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	/**
 	 * Restituisce lo stream contenente un documento digitale pubblico.
 	 */
@@ -172,17 +174,17 @@ public class DownloadAllegatoAction extends BaseAction
 		String target = SUCCESS;
 		
 		try {
-			FileType file = this.documentiDigitaliManager.getDocumentoPubblico(
-					this.idprg, this.getId());
+			//FileType file = this.documentiDigitaliManager.getDocumentoPubblico(this.idprg, this.getId());
+			FileType file = getDownloadDocumentoPubblico(idprg, id, this);
 			
 			target = this.download(file, false);
-			if( ERROR.equals(target) ){
-				/* --- problemi nel recuperare il file per documento pubblico --- */
+			if( ERROR.equals(target) ) {
+				// problemi nel recuperare il file per documento pubblico
 				this.addActionError(this.getText("Errors.fileDownload.noFile"));
 				this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
 				target = INPUT;
 			}
-		} catch (ApsException t) {
+		} catch (Exception t) {
 			ApsSystemUtils.logThrowable(t, this, "downloadDocumentoPubblico");
 			ExceptionUtils.manageExceptionError(t, this);
 			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
@@ -221,31 +223,30 @@ public class DownloadAllegatoAction extends BaseAction
 	 */
 	public String downloadDocumentoInvito() {
 		String target = INPUT;
-		
+
+		// recupera l'utente loggato
+		String username = this.getCurrentUser().getUsername();
+		boolean isAdmin = SystemConstants.ADMIN_USER_NAME.equalsIgnoreCase(username)
+				  		  || SystemConstants.SERVICE_USER_NAME.equalsIgnoreCase(username);
+		if(isAdmin) {
+			this.addActionError(this.getText("Errors.fileDownload.noRights"));
+			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
+			return INPUT;
+		}
+
 		try {
-		// verifica se l'opzione DOCINVITOPUBBLICA e' attiva...
-			if( !this.customConfigManager.isVisible("GARE", "DOCINVITOPUBBLICA") ) {
-				this.addActionError(this.getText("Errors.function.notEnabled"));
+			if(StringUtils.isNotEmpty(codice)) {
+				// se NON e' un utente di sistema (admin, service, guest, etc) allora scarica il documento di invito
+				boolean isRiservato = isDownloadInvitoRiservato(idprg, id, username, codice);
+				target = (isRiservato
+						? downloadRiservatoAction(username, "downloadDocumentoInvito")
+						: downloadDocumentoPubblico()
+				);
+			} else {
+				this.addActionError(this.getText("Errors.fileDownload.noRights"));
 				this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
 				target = INPUT;
-			} else {
-				// NB: 
-				// prima di scaricare il documento, in caso i oggetto di tipo "GARA", 
-				// e' necessario verificare lo stato della gara
-				// se la gara e' in corso allora il documento puo' essere scaricato solo dall'utente loggato
-				// se la gara e scaduta chiunque puo' scaricare il documento (quindi il codice seguente si puo' utilizzare)
-				
-				String username = this.documentiDigitaliManager.getUsernameDocumentoRiservato(
-						this.idprg, this.id);
-				if(!StringUtils.isEmpty(username)) {
-					target = this.downloadRiservatoAction(username, "downloadDocumentoInvito");
-				}
 			}
-		} catch (ApsException e) {
-			ApsSystemUtils.logThrowable(e, this, "downloadDocumentoInvito");
-			this.addActionError(this.getText("Errors.sessionExpired"));
-			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
-			target = INPUT;
 		} catch (Exception e) {
 			ApsSystemUtils.logThrowable(e, this, "downloadDocumentoInvito");
 			ExceptionUtils.manageExceptionError(e, this);
@@ -255,29 +256,165 @@ public class DownloadAllegatoAction extends BaseAction
 		
 	    return target;
 	}
+	
+	/**
+	 * restituisce il file di un documento riservato/pubblico
+	 * @throws ApsException 
+	 */
+	private static FileType getDownloadDocumento(
+			String idprg,
+			long iddoc,
+			String username,
+			BaseAction action) throws ApsException
+	{
+		FileType file = null;
 		
+		// in caso di usente "admin" non si permette il donwload
+		boolean isAdmin = SystemConstants.ADMIN_USER_NAME.equalsIgnoreCase(username)
+				  		  || SystemConstants.SERVICE_USER_NAME.equalsIgnoreCase(username);
+		if(isAdmin) 
+			return file;
+		
+		// se lo user e' GUEST allora il download deve sempre essere pubblico
+		if(SystemConstants.GUEST_USER_NAME.equalsIgnoreCase(username)) {
+			username = null;
+		}
+
+		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+		IDocumentiDigitaliManager documentiDigitaliManager = (IDocumentiDigitaliManager) ctx
+				.getBean(PortGareSystemConstants.DOCUMENTI_DIGITALI_MANAGER);
+		
+		idprg = (StringUtils.isEmpty(idprg) ? CommonSystemConstants.ID_APPLICATIVO_GARE : idprg);
+		
+		if( !StringUtils.isEmpty(username) ) {
+			file = documentiDigitaliManager.getDocumentoRiservato(idprg, iddoc, username);
+		} else {
+			file = documentiDigitaliManager.getDocumentoPubblico(idprg, iddoc);
+		}
+		
+		return file;
+	}
+
+	/**
+	 * restituisce il file di un documento pubblico
+	 * @throws ApsException 
+	 */
+	public static FileType getDownloadDocumentoPubblico(
+			String idprg,
+			long iddoc,
+			BaseAction action) throws ApsException
+	{
+		return getDownloadDocumento(idprg, iddoc, null, action); 
+	}
+	
+	/**
+	 * restituisce il file di un documento riservato
+	 * @throws ApsException 
+	 */
+	public static FileType getDownloadDocumentoRiservato(
+			String idprg,
+			long iddoc,
+			String username,
+			BaseAction action) throws ApsException
+	{
+		return getDownloadDocumento(idprg, iddoc, username, action); 
+	}
+
+	/**
+	 * esegue il download di un documento di invito
+	 * @throws ApsException 
+	 */
+	public static FileType getDownloadDocumentoInvito(
+			String idprg,
+			long iddoc,
+			String username,
+			String codice,
+			BaseAction action) throws ApsException
+	{
+		boolean isRiservato = isDownloadInvitoRiservato(idprg, iddoc, username, codice);
+		return (isRiservato 
+				? getDownloadDocumentoRiservato(idprg, iddoc, username, action)
+				: getDownloadDocumentoPubblico(idprg, iddoc, action)
+		);
+	}
+	
+	/**
+	 * verifica se il documento di invito da scaricare e' pubblico o riservato
+	 */
+	private static boolean isDownloadInvitoRiservato(
+			String idprg,
+			long iddoc,
+			String username,
+			String codice)
+	{
+		boolean riservato = false;
+		
+		// in caso di usente "admin" non si permette il donwload
+		boolean isAdmin = SystemConstants.ADMIN_USER_NAME.equalsIgnoreCase(username)
+				  		  || SystemConstants.SERVICE_USER_NAME.equalsIgnoreCase(username);
+		if(isAdmin) 
+			return riservato;
+		
+		try {
+			// recupera i manager necessari
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			ICustomConfigManager customConfigManager = (ICustomConfigManager) ctx
+				.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER);
+			IBandiManager bandiManager = (IBandiManager) ctx
+				.getBean(PortGareSystemConstants.BANDI_MANAGER);
+			
+			// verifica se l'opzione DOCINVITOPUBBLICA e' attiva...
+			if( !customConfigManager.isVisible("GARE", "DOCINVITOPUBBLICA") ) {
+				riservato = true;
+			} else {
+				if(SystemConstants.GUEST_USER_NAME.equalsIgnoreCase(username)) {
+					username = null;
+				}
+				
+				if(StringUtils.isEmpty(username)) {
+					// nessuno user indica sempre un download pubblico
+					riservato = false;
+				} else {
+					// prima di scaricare il documento, in caso i oggetto di tipo "GARA", 
+					// e' necessario verificare lo stato della gara
+					// se la gara e' in corso allora il documento puo' essere scaricato solo dall'utente loggato
+					// se la gara e scaduta chiunque puo' scaricare il documento (quindi il codice seguente si puo' utilizzare)
+					DettaglioGaraType gara = (StringUtils.isNotEmpty(codice)
+							? bandiManager.getDettaglioGara(codice)
+							: null
+					);
+					Date now = new Date();
+					boolean inCorso = (gara != null) && now.before(gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta());
+					boolean scaduta = (gara != null) && now.after(gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta());
+					
+					if(inCorso)
+						riservato = true;
+					if(scaduta) 
+						riservato = false;
+				}
+			}
+		} catch (Exception e) {
+			ApsSystemUtils.logThrowable(e, null, "isDownloadInvitoRiservato");
+		}
+		return riservato;
+	}
+	
 	/**
 	 * download generalizzata di un documento per documenti riservati
 	 */
 	private String downloadRiservatoAction(String username, String sender) {
 		String target = SUCCESS;
 		
-		// recupera il nome del file relativo alla richiesta di download...
+		// recupera il file relativo alla richiesta di download...
 		FileType file = null;
-		try {	
-			if(StringUtils.isEmpty(this.idprg)){
-				this.idprg = CommonSystemConstants.ID_APPLICATIVO_GARE;
+		try {
+			file = getDownloadDocumentoRiservato(idprg, id, username, this);
+			if(file == null) {
+				this.addActionError(this.getText("Errors.fileDownload.noRights"));
+				this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
+				target = INPUT;
 			}
-			if( !StringUtils.isEmpty(username) ) {
-				file = this.documentiDigitaliManager.getDocumentoRiservato(
-						this.idprg, this.id, username);
-				if(file == null) {
-					this.addActionError(this.getText("Errors.fileDownload.noRights"));
-					this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
-					target = INPUT;
-				}
-			}
-		} catch (Exception e) { //(ApsException e) {
+		} catch (Exception e) {
 			ApsSystemUtils.logThrowable(e, this, sender);
 			ExceptionUtils.manageExceptionError(e, this);
 			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
@@ -336,6 +473,51 @@ public class DownloadAllegatoAction extends BaseAction
 	    return target;
 	}
 	
+	/**
+	 * download dello stream i un allegato, pubblico o riserva, con o senza firma  
+	 */
+	private String download(FileType file, boolean documentoRiservato) {
+		String target = SUCCESS;
+		if(file == null) {
+			target = ERROR;
+		} else {
+			if(isDocumentoFirmato(file)) {
+				// documento firmato o marcato temporalmente (.P7M, .TSD)
+				target = (documentoRiservato 
+						  ? SUCCESS_DOC_FIRMATO_RISERVATO 
+					  	  : SUCCESS_DOC_FIRMATO_PUBBLICO
+				);
+			} else {
+				// documento NON firmato
+				if(StringUtils.isNotEmpty(file.getUrl())) {
+					// scarica un LARGEFILE dal servizio https://apache-dev.maggioli.it/M-LargeFile
+					// NB: per LARGEFILE si permette solo il download su tab del browser separato (<a ... target=_blank/>)
+					this.url = file.getUrl();
+					target = SUCCESS_DOC_LARGEFILE;
+				} else {
+					this.filename = file.getNome();
+					this.contentType = "application/octet-stream";
+					this.inputStream = new ByteArrayInputStream(file.getFile());
+					target = SUCCESS;
+				}
+			}
+		}
+		return target;
+	}
+
+	/**
+	 * ... 
+	 */
+	private boolean isDocumentoFirmato(FileType file) {
+		if(file != null) {
+			String filename = file.getNome().toUpperCase();
+			return filename.endsWith(TIPO_DOCUMENTO_FIRMATO) || 
+			   	   filename.endsWith(TIPO_DOCUMENTO_MARCATO_TEMPORALMENTE);
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public String getUrlErrori() {
 		HttpServletRequest request = this.getRequest(); 
@@ -355,36 +537,5 @@ public class DownloadAllegatoAction extends BaseAction
 		url.addParam(RequestContext.PAR_REDIRECT_FLAG, "1");
 		return url.getURL();
 	}
-
 	
-	private String download(FileType file, boolean documentoRiservato){
-		if(file != null){
-			if(isDocumentoFirmato(file)){
-				// documento firmato o marcato temporalmente (.P7M, .TSD)
-				return (documentoRiservato 
-						? "successFirmaDigitaleRiservato" 
-						: "successFirmaDigitalePubblico");
-			}else{
-				// documento NON firmato 
-				this.filename = file.getNome();
-				this.contentType = "application/octet-stream";
-				this.inputStream = new ByteArrayInputStream(file.getFile());
-				return SUCCESS;
-			}
-		}else{
-			return ERROR;
-		}
-	}
-
-	
-	private boolean isDocumentoFirmato(FileType file) {
-		if(file != null) {
-			String filename = file.getNome().toUpperCase();
-			return filename.endsWith(TIPO_DOCUMENTO_FIRMATO) || 
-			   	   filename.endsWith(TIPO_DOCUMENTO_MARCATO_TEMPORALMENTE);
-		} else {
-			return false;
-		}
-	}
-
 }

@@ -37,10 +37,6 @@ SPID - SISTEMA PUBBLICO PER L'IDENTITA' DIGITALE
             <a href="${param.url}?idp=https://identity.infocert.it">
             <span class="spid-sr-only">Infocert ID</span><img src="${imgPath}/spid-idp-infocertid.svg" onerror="this.src='${imgPath}/spid-idp-infocertid.png'; this.onerror=null;" alt="Infocert ID" /></a>
         </li>
-        <li class="spid-idp-button-link" data-idp="intesaid">
-            <a href="${param.url}?idp=https://spid.intesa.it">
-            <span class="spid-sr-only">Intesa ID</span><img src="${imgPath}/spid-idp-intesaid.svg" onerror="this.src='${imgPath}/spid-idp-intesaid.png'; this.onerror=null;" alt="Intesa ID" /></a>
-        </li>
         <li class="spid-idp-button-link" data-idp="lepidaid">
             <a href="${param.url}?idp=https://id.lepida.it/idp/shibboleth">
             <span class="spid-sr-only">Lepida ID</span><img src="${imgPath}/spid-idp-lepidaid.svg" onerror="this.src='${imgPath}/spid-idp-lepidaid.png'; this.onerror=null;" alt="Lepida ID" /></a>
@@ -63,12 +59,23 @@ SPID - SISTEMA PUBBLICO PER L'IDENTITA' DIGITALE
         </li>
         <li class="spid-idp-button-link" data-idp="teamsystemid">
             <a href="${param.url}?idp=https://spid.teamsystem.com/idp">
-            <span class="spid-sr-only">TeamSystem ID</span><img src="${imgPath}/spid-idp-teamsystemid.svg" onerror="this.src='${imgPath}spid-idp-teamsystemid.png'; this.onerror=null;" alt="TeamSystem ID" /></a>
-        </li>
+            <span class="spid-sr-only">TeamSystem ID</span><img src="${imgPath}/spid-idp-teamsystemid.svg" onerror="this.src='${imgPath}/spid-idp-teamsystemid.png'; this.onerror=null;" alt="TeamSystem ID" /></a>
         </li>
         <li class="spid-idp-button-link" data-idp="timid">
             <a href="${param.url}?idp=https://login.id.tim.it/affwebservices/public/saml2sso">
             <span class="spid-sr-only">Tim ID</span><img src="${imgPath}/spid-idp-timid.svg" onerror="this.src='${imgPath}/spid-idp-timid.png'; this.onerror=null;" alt="Tim ID" /></a>
+        </li>
+        <li class="spid-idp-button-link" data-idp="etnaid">
+            <a href="${param.url}?idp=https://id.eht.eu">
+            <span class="spid-sr-only">Etna ID</span><img src="${imgPath}/spid-idp-etnaid.svg" onerror="this.src='${imgPath}/spid-idp-etnaid.png'; this.onerror=null;" alt="Etna ID" /></a>
+        </li>
+        <li class="spid-idp-button-link" data-idp="infocamereid">
+            <a href="${param.url}?idp=https://loginspid.infocamere.it">
+            <span class="spid-sr-only">ID Infocamere</span><img src="${imgPath}/spid-idp-infocamereid.svg" onerror="this.src='${imgPath}/spid-idp-infocamereid.png'; this.onerror=null;" alt="ID Infocamere" /></a>
+        </li>
+        <li class="spid-idp-button-link" data-idp="intesigroupspid">
+            <a href="${param.url}?idp=https://idp.intesigroup.com">
+            <span class="spid-sr-only">Intesi Group SPID</span><img src="${imgPath}/spid-idp-intesigroupspid.svg" onerror="this.src='${imgPath}/spid-idp-intesigroupspid.png'; this.onerror=null;" alt="Intesi Group SPID" /></a>
         </li>
         <c:if test="${spidValidatorVisible == 1}">
 	        <li class="spid-idp-support-link" data-idp="validatorid">
@@ -224,13 +231,13 @@ NB: il seguente codice rimane quindi disabilitato fino a che lo spid-smart-butto
 --%>
 
 <%-- 
-<div id="spid-button">									
+<div id="spid-button">
     <noscript>
         Il login tramite SPID richiede che JavaScript sia abilitato nel browser.
     </noscript>
 </div>
 
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery.jsp" />
 <script type="text/javascript" src="<wp:resourceURL/>static/js/spid-button.js"></script>
 <script type="text/javascript">
 /*

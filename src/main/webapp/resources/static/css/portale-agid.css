@@ -223,7 +223,21 @@ table.wizard-table, .fieldset-row .element table.light-table{
 }
 
 .fieldset-row .element{
-	width: 70%
+	width: 70%;
+	flex-direction: column;
+	align-items: start;
+}
+
+.fieldset-row .element-orizontal {
+	flex-direction: row !important;
+}
+
+.advanced .fieldset-row .element{
+	flex-direction: row !important;
+}
+
+.form-ricerca .fieldset-row .element{
+	flex-direction: row !important;
 }
 
 /*
@@ -747,6 +761,7 @@ table ul {
 	margin: 0;
 	padding: 0;
 	width: 100%;
+	display: flex;
 }
 
 .wrong {
@@ -791,10 +806,12 @@ table ul {
 
 .align-left {
 	text-align: left;
+	justify-items: flex-start;
 }
 
 .align-right {
 	text-align: right;
+	justify-items: flex-end;
 }
 
 .float-right {
@@ -932,4 +949,60 @@ div.dataTables_wrapper {
 
 div#spidbusiness-idp-button-small-get {
     position: inherit!important;
+}
+
+/* fix accessibilita' criterio 1.4.10 */
+form{
+	display: flex;
+	flex-direction: column;
+}
+
+form div {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	column-gap: 3px;
+	row-gap: 3px;
+}
+
+div.filter-divider-color {
+	display: flow !important;
+}
+
+div.azioni {
+	display: flow !important;
+}
+
+div.last-update-list {
+	justify-content: flex-end;
+}
+
+div.list-summary {
+	flex-direction: column !important;
+	justify-content: center;
+}
+
+div.list-item {
+	flex-direction: column !important;
+}
+
+div.list-action {
+	flex-direction: column !important;
+	width: 100%;
+	align-items: flex-end;
+}
+
+div.form-ricerca {
+	flex-direction: column !important;
+}
+
+div.categorie-list {
+	flex-direction: column !important;
+	align-items: flex-start;
+}
+/* fix accessibilita' criterio 1.4.10 */
+
+a.linkHere {
+  	font-weight: bold !important;
+	text-decoration: underline !important;
 }

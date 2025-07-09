@@ -10,9 +10,12 @@ public class PortGareEventsConstants {
 	/** Operazione di salvataggio comunicazione pre invio. */
 	public static final String SALVATAGGIO_COMUNICAZIONE = "SAVECOM";
 
+	/** Operazione di cancellazione comunicazione da processare. */
+	public static final String ELIMINAZIONE_COMUNICAZIONE = "DELETECOM";
+
 	/** Operazione di inserimento comunicazione da processare. */
 	public static final String INVIO_COMUNICAZIONE_DA_PROCESSARE = "INVCOM";
-
+	
 	/**
 	 * Operazione di inserimento comunicazione con richiesta di protocollazione.
 	 */
@@ -125,4 +128,12 @@ public class PortGareEventsConstants {
 	/** Verifica firma digitale tramite servizio esterno */
 	public static final String CHECKFIRMA = "CHECKFIRMA";
 	
+	/** Lock per l'accesso ad una funzione di un soggetto impresa. */
+	public static final String LOCK = "LOCK";
+	
+	/** Unlock per l'accesso ad una funzione di un soggetto impresa. */
+	public static final String UNLOCK = "UNLOCK";
+
+	public static final String CSRF = "ACCESSOFUNZ";
+
 }

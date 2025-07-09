@@ -238,6 +238,7 @@
 	<parameter name="RIBASSOEQUIVALENTE" class="java.lang.Double"/>
 	<parameter name="RIBASSOEQUIVALENTELETTERE" class="java.lang.String"/>
 	<parameter name="ACCORDOQUADRO" class="java.lang.Boolean"/>
+	<parameter name="CODICECNEL" class="java.lang.String"/>
 	<queryString language="xPath">
 		<![CDATA[/ReportOffertaEconomica]]>
 	</queryString>
@@ -418,7 +419,6 @@
 	<field name="percentualeManodopera" class="java.lang.String">
 		<fieldDescription><![CDATA[offerta/percentualeManodopera]]></fieldDescription>
 	</field>
-	<field name="field1" class="java.lang.String"/>
 	<variable name="testDatiAggiuntivi" class="java.lang.Integer">
 		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
 	</variable>
@@ -3497,6 +3497,38 @@
 						<font fontName="Arial"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{importoOffertoPerCanoneAssistenza} != null ? new java.text.DecimalFormat("#,##0.00 €",  new java.text.DecimalFormatSymbols(java.util.Locale.ITALIAN)).format(Double.valueOf($F{importoOffertoPerCanoneAssistenza})) : null]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA[$P{CODICECNEL} != null]]></printWhenExpression>
+			<frame>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="20" isRemoveLineWhenBlank="true" uuid="f3865563-4666-4060-80e2-c2c5a2e2dab2"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="217" height="20" uuid="412e6c30-72fc-4671-9ee9-11fdef942124"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Codice CNEL]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="217" y="0" width="266" height="20" isPrintWhenDetailOverflows="true" uuid="b6a56681-2119-46c2-a66c-0ca49f8f20bc"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODICECNEL}]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>

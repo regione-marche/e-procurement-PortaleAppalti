@@ -9,7 +9,10 @@ import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.ActionContext;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParam;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import org.apache.struts2.interceptor.ServletResponseAware;
 
@@ -20,25 +23,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class AuthAction  extends BaseAction   implements ServletResponseAware {
+/**
+ * ...
+ *  
+ */
+public class AuthAction extends EncodedDataAction implements ServletResponseAware {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -1403260265973778908L;
 
-	private List<String> sistemiAutenticazione;
-	
-	private String urlLoginCohesion;
-	
-	private String urlLoginShibboleth;
-	
 	private IAppParamManager appParamManager;
-	
 	private IURLManager urlManager;
-	
 	private IPageManager pageManager;
-	
 	private HttpServletResponse response;
+	
+	private List<String> sistemiAutenticazione;	
+	private String urlLoginCohesion;
+	private String urlLoginShibboleth;
+	private Integer loginMultiutente;
+	private String stazioneAppaltante;
 	
 	public void setAppParamManager(IAppParamManager appParamManager) {
 		this.appParamManager = appParamManager;
@@ -80,7 +84,26 @@ public class AuthAction  extends BaseAction   implements ServletResponseAware {
 	public void setUrlLoginShibboleth(String urlLoginShibboleth) {
 		this.urlLoginShibboleth = urlLoginShibboleth;
 	}
+	
+	public Integer getLoginMultiutente() {
+		return loginMultiutente;
+	}
 
+	public void setLoginMultiutente(Integer loginMultiutente) {
+		this.loginMultiutente = loginMultiutente;
+	}
+	
+	public String getStazioneAppaltante() {
+		return stazioneAppaltante;
+	}
+
+	public void setStazioneAppaltante(String stazioneAppaltante) {
+		this.stazioneAppaltante = stazioneAppaltante;
+	}
+
+	/**
+	 * ... 
+	 */
 	public String view() {
 		String target = SUCCESS;
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
@@ -105,8 +128,11 @@ public class AuthAction  extends BaseAction   implements ServletResponseAware {
 			this.urlLoginCohesion = (String) appParamManager.getConfigurationValue("auth.sso.cohesion.login.url");
 			
 			// Prendo la lista di autenticazioni abilitate ordinate per posizione
-			this.sistemiAutenticazione =  new ArrayList<String>(ordineAutenticazioni.values()); ;
-		}catch (Exception e) {
+			this.sistemiAutenticazione =  new ArrayList<String>(ordineAutenticazioni.values());
+			
+			this.loginMultiutente = appParamManager.getConfigurationValueIntDef(AppParamManager.SPID_LOGIN_MULTIUTENTE, 0).intValue();
+			
+		} catch (Exception e) {
 			action.addActionError(action.getText("Errors.auth.generic", new String[] { "Maggioli Auth" }));
 			action.getRequest().getSession().setAttribute("ACTION_OBJECT", action);
 			ApsSystemUtils.logThrowable(e, null, "Auth.jsp");
@@ -116,6 +142,21 @@ public class AuthAction  extends BaseAction   implements ServletResponseAware {
 		return target;
 	}
 	
+	/**
+	 * mette in sessione la stazione appaltante selezionata nella pagina di autenticazione di SPID e SPID BUSINESS
+	 */
+	public String initSpidSA() {
+		String target = SUCCESS;
+		
+		// aggiorna il filtro applicativo relativo alla stazione appaltante
+		setCodiceStazioneAppaltante(stazioneAppaltante);
+	
+		return target;
+	}
+
+	/**
+	 * ... 
+	 */
 	public String getUrlErrori() {
 		HttpServletRequest request = this.getRequest();
 		RequestContext reqCtx = new RequestContext();

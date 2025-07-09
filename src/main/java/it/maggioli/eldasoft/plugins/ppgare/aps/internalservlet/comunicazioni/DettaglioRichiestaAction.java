@@ -57,7 +57,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 	private DettaglioRichiestaBean dettaglio = new DettaglioRichiestaBean();
 	
 	/** id della richiesta selezionata */
-	private String id;		
+	private String id;
 	
 	/** file presente nella work con identificato dal valore in sessione SESSION_ID_DOWNLOAD_WORK_FILE_FIRMA_DIGITALE */
 	private Boolean isfile;
@@ -69,7 +69,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 	/** ... */
 	@Validate(EParamValidation.GENERIC)
 	private String multipartSaveDir;
-			
+	
 	/** parametri di gestione del download degli allegati (IDownloadAction) */
 	@Validate(EParamValidation.CONTENT_TYPE)
 	private String contentType;
@@ -81,6 +81,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 	private String currentFrame;
 	private InputStream inputStream;
 	private boolean hasFileRiepilogoAllegati;
+	private boolean riepilogoAllegatiFirmato;
 	private Long idBustaRiepilogo;
 	
 	public void setSession(Map<String, Object> session) {
@@ -221,6 +222,15 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 	public void setIdBustaRiepilogo(Long idBustaRiepilogo) {
 		this.idBustaRiepilogo = idBustaRiepilogo;
 	}
+	
+	public Boolean getRiepilogoAllegatiFirmato() {
+		return riepilogoAllegatiFirmato;
+	}
+
+	public void setRiepilogoAllegatiFirmato(Boolean riepilogoAllegatiFirmato) {
+		this.riepilogoAllegatiFirmato = riepilogoAllegatiFirmato;
+	}
+
 	/**
 	 * Estrae da una comunicazione l'allegato xml contentente i dati 
 	 * della comunicazione. 
@@ -271,11 +281,11 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 					continue;
 				}
 				
-				DocumentoType[] allegati = new DocumentoType[0];				
+				DocumentoType[] allegati = new DocumentoType[0];
 				Calendar dataPresentazione = null;
 				
 				if (PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO.equals(tipoComunizione)) {
-					IscrizioneImpresaElencoOperatoriDocument doc;					
+					IscrizioneImpresaElencoOperatoriDocument doc;
 					doc = IscrizioneImpresaElencoOperatoriDocument.Factory.parse(new String(item.getFile()));
 //				doc.getIscrizioneImpresaElencoOperatori().getQuestionarioId();
 					dataPresentazione = doc
@@ -305,7 +315,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 						allegati = doc.getAggiornamentoIscrizioneImpresaElencoOperatori()
 							.getDocumenti().getDocumentoArray();
 					}
-				}							
+				}
 			    else if (PortGareSystemConstants.RICHIESTA_VARIAZIONE_PRODOTTI_CATALOGO.equals(tipoComunizione)) {
 			    	GestioneProdottiDocument doc = GestioneProdottiDocument
 						.Factory.parse(new String(item.getFile()));
@@ -315,7 +325,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 					// 20/05/2016 per ora non estrarre gli allegati
 					//allegati = doc.getRinnovoIscrizioneImpresaElencoOperatori()
 					//	.getDocumenti().getDocumentoArray();
-				}			
+				}
 				else if (PortGareSystemConstants.RICHIESTA_VARIAZIONE_PREZZI_E_SCADENZE_CATALOGO.equals(tipoComunizione)) {
 					GestioneProdottiDocument doc = GestioneProdottiDocument
 						.Factory.parse(new String(item.getFile()));		    	
@@ -339,7 +349,7 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 				this.dettaglio.setStato( comunicazione.getDettaglioComunicazione().getStato() );
 				this.dettaglio.setTipoInvio(tipoComunizione);
 				
-				if(allegati.length > 0) {						 
+				if(allegati.length > 0) {
 					this.dettaglio.addAllegati(
 							allegati, 
 							workPath, 
@@ -360,6 +370,25 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 	}
 
 	/**
+	 * verifica se esiste il "riepilogo allegati" tra gli allegati della comunicazione 
+	 * ed imposta le info relative al riepilogo 
+	 */
+	private void initInfoRiepilogoAllegati(ComunicazioneType comunicazione) {
+		this.setHasFileRiepilogoAllegati(false);
+		this.setRiepilogoAllegatiFirmato(false);
+		this.setIdBustaRiepilogo(null);
+		for(AllegatoComunicazioneType allegato : comunicazione.getAllegato()) {
+			if(allegato.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO) || 
+			   allegato.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE)) 
+			{
+				this.setHasFileRiepilogoAllegati(true);
+				this.setRiepilogoAllegatiFirmato( allegato.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE) );
+				this.setIdBustaRiepilogo(comunicazione.getDettaglioComunicazione().getId());
+			}
+		}
+	}
+
+	/**
 	 * Visualizza tutte le richieste inviate  da un operatore
 	 *  
 	 * @return action result (SUCCESS, ERROR, ...)
@@ -371,33 +400,25 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 			UserDetails userDetails = this.getCurrentUser();
 			
 			if( (this.id != null && !this.id.isEmpty()) &&
-				(userDetails != null && userDetails.getUsername() != null) ) {
-
-				// se in sessione sono gi� presenti i dettagli della 
+				(userDetails != null && userDetails.getUsername() != null) ) 
+			{
+				// se in sessione sono gia' presenti i dettagli della 
 				// comunicazione con i relativi allegati  
 				// rileggi dalla sessione dettaglio ed allegati della 
 				// comunicazione
 				this.dettaglio = (DettaglioRichiestaBean)this.session.get(ComunicazioniConstants.SESSION_ID_DETTAGLIO_COMUNICAZIONE);
 				
-//if(false) // DEBUG: salta la verifica del dettaglio gi� esistente in sessione, ma inserisce il file di riepilogo allegati
 				if( this.dettaglio != null && 
-					this.id.equals(this.dettaglio.getId()) ) {
-					
+					this.id.equals(this.dettaglio.getId()) ) 
+				{
 					it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType comunicazione = 
 						this.comunicazioniManager.
 							getComunicazione(CommonSystemConstants.ID_APPLICATIVO, Long.parseLong(id));	
-					this.setHasFileRiepilogoAllegati(false);
-					AllegatoComunicazioneType[] allegatiComunicazioneOfferta = comunicazione.getAllegato();
-					for(AllegatoComunicazioneType all : allegatiComunicazioneOfferta){
-						if(all.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO) || 
-								all.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE)){
-							this.setHasFileRiepilogoAllegati(true);
-							this.setIdBustaRiepilogo(comunicazione.getDettaglioComunicazione().getId());
-						}
-					}
 					
-					// in sessione sono gi� presenti i dettagli
-					// non � necessario rileggerli dal servizio 
+					this.initInfoRiepilogoAllegati(comunicazione);
+					
+					// in sessione sono gia' presenti i dettagli
+					// non e' necessario rileggerli dal servizio 
 					return this.getTarget();
 				}
 				
@@ -411,49 +432,42 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 				
 				// cerca i dettagli comunicazione per l'applicativo "PA"
 				// relative all'utente corrente... 
-				DettaglioComunicazioneType dettComunicazione = new DettaglioComunicazioneType();				
+				DettaglioComunicazioneType dettComunicazione = new DettaglioComunicazioneType();
 				dettComunicazione.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
 				dettComunicazione.setId(Long.parseLong(id));
 				dettComunicazione.setChiave1(userDetails.getUsername());
-								
+				
 				List<DettaglioComunicazioneType> lista = this.comunicazioniManager.
 					getElencoComunicazioni(dettComunicazione);
 				
 				// verifica quanti dettagli comunicazioni sono stati
-				// trovati... 1 dettaglio � il risultato atteso
+				// trovati... 1 dettaglio e' il risultato atteso
 				if(lista.size() <= 0) {
-					this.addActionError("Impossibile visualizzare un dettaglio inesistente oppure di cui non si possiede la visibilit�");
-					this.setTarget(PORTAL_ELENCO_RICHIESTE);		
+					this.addActionError("Impossibile visualizzare un dettaglio inesistente oppure di cui non si possiede la visibilita'");
+					this.setTarget(PORTAL_ELENCO_RICHIESTE);
 				}
 				else if(lista.size() == 1) {
 					it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType comunicazione = 
 						this.comunicazioniManager.
-							getComunicazione(CommonSystemConstants.ID_APPLICATIVO, Long.parseLong(id));					
+							getComunicazione(CommonSystemConstants.ID_APPLICATIVO, Long.parseLong(id));
 
-					AllegatoComunicazioneType allegato = getAllegatoComunicazione(comunicazione);							
+					AllegatoComunicazioneType allegato = getAllegatoComunicazione(comunicazione);
 					if(allegato == null) {
 						// non dovrebbe succedere mai... 
 						// si inserisce questo controllo per blindare 
-						// il codice da eventuali comportamenti anomali										
+						// il codice da eventuali comportamenti anomali
 						this.addActionError(this.getText("Errors.dettaglioInvio.xmlNotFound"));	
-						this.setTarget(CommonSystemConstants.PORTAL_ERROR);							
+						this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 					} else {
 						// recupera i dettagli della richiesta...
 						this.initDettaglio(comunicazione);
-										
+						
 						// salva nella sessione il dettaglio della comunicazione 
 						// e degli allegati...
 						this.session.put(ComunicazioniConstants.SESSION_ID_DETTAGLIO_COMUNICAZIONE, this.dettaglio);
-					}	
-					this.setHasFileRiepilogoAllegati(false);
-					AllegatoComunicazioneType[] allegatiComunicazioneOfferta = comunicazione.getAllegato();
-					for(AllegatoComunicazioneType all : allegatiComunicazioneOfferta){
-						if(all.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO) || 
-								all.getNomeFile().equals(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE)){
-							this.setHasFileRiepilogoAllegati(true);
-							this.setIdBustaRiepilogo(comunicazione.getDettaglioComunicazione().getId());
-						}
 					}
+					
+					this.initInfoRiepilogoAllegati(comunicazione);
 				}	
 			} else {
 				this.addActionError(this.getText("Errors.sessionExpired"));
@@ -553,5 +567,6 @@ public class DettaglioRichiestaAction extends AbstractOpenPageAction
 		}	
 		return target;
 	}
+
 	
 }

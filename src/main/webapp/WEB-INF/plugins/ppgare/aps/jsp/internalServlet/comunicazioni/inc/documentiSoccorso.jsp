@@ -156,7 +156,7 @@
 														<span>(<s:property value="%{#helperDocumenti.docRichiestiSize.get(#statusCaricato.index)}"/> KB)</span>
 													</li>
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorsoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;codice=<s:property value="%{codice}"/>&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorsoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;codice=<s:property value="%{codice}"/>' 
 														   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class='bkg delete'>
 															<wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 														</a>
@@ -171,7 +171,7 @@
 														<span>(<s:property value="%{#helperDocumenti.docRichiestiSize.get(#statusCaricato.index)}"/> KB)</span>
 													</li>
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorsoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;codice=<s:property value="%{codice}"/>&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorsoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;codice=<s:property value="%{codice}"/>' 
 														   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 														</a>
 													</li>
@@ -236,14 +236,14 @@
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 											<li>
-												<s:a href="%{#urlDownload}?id=%{#status.index}&amp;codice=%{codice}&amp;%{#attr.tokenHrefParams}" 
+												<s:a href="%{#urlDownload}?id=%{#status.index}&amp;codice=%{codice}" 
 													 title="%{#attr.titleScaricaAllegato}">
 														<wp:i18n key="LABEL_SCARICA_ALLEGATO"/>
 												</s:a> 
 													<span>(<s:property value="%{#helperDocumenti.docUlterioriSize.get(#status.index)}" /> KB)</span> 
 											</li>
 											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorso.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+												<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorso.action"/>&amp;id=${status.index}&amp;ext=${param.ext}' 
 												   title="${attr.titleEliminaAllegato}"> 
 													 <wp:i18n key="LABEL_ELIMINA_ALLEGATO"/>
 												</a>
@@ -251,14 +251,14 @@
 										</c:when>
 										<c:otherwise>
 											<li <s:if test="%{#firmaWarning}">class="not-signed-alert"</s:if>>
-												<s:a href="%{#urlDownload}?id=%{#status.index}&amp;codice=%{codice}&amp;%{#attr.tokenHrefParams}" 
+												<s:a href="%{#urlDownload}?id=%{#status.index}&amp;codice=%{codice}" 
 													 title="%{#attr.titleScaricaAllegato}" cssClass="bkg download">
 														<s:property value="%{#helperDocumenti.docUlterioriFileName.get(#status.index)}"/> 
 												</s:a>  
 												<span>(<s:property value="%{#helperDocumenti.docUlterioriSize.get(#status.index)}" /> KB)</span>  
 											</li>
 											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorso.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+												<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/confirmDeleteAllegatoSoccorso.action"/>&amp;id=${status.index}&amp;ext=${param.ext}' 
 												   title="${attr.titleEliminaAllegato}" class="bkg delete">
 												</a>
 											</li>
@@ -290,12 +290,10 @@
 				</tbody>
 			</table>
 		</div>
-		<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-		<s:set var="kbDisponibili" value="%{limiteTotaleUpload - dimensioneAttualeFileCaricati}"></s:set>
 		<p>
-			<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
-			<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <strong><s:property value="%{#kbCaricati}" /></strong> KB, <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" /> 
-			<strong><s:property value="%{#kbDisponibili}" /></strong> KB.
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+				<jsp:param name="dimensioneAttualeFileCaricati" value="<s:property value='%{dimensioneAttualeFileCaricati}'/>"/>
+			</jsp:include>
 		</p>
 	</fieldset>
 </s:else>

@@ -9,10 +9,10 @@
 
 <div class="portgare-view">
 
-	<h2><wp:i18n key="LABEL_ATTI_DOC_ART29" /></h2>
+	<h2><wp:i18n key="LABEL_ALTRI_ATTI_DOCUMENTI" /></h2>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
-			<jsp:param name="keyMsg" value="BALLOON_ATTI_DOCUMENTI"/>
+			<jsp:param name="keyMsg" value="BALLOON_ALTRI_ATTI_DOCUMENTI"/>
 	</jsp:include>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
@@ -41,7 +41,7 @@
 	</s:else>
 		
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

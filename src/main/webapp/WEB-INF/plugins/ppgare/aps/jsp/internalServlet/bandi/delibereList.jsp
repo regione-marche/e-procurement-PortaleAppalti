@@ -21,8 +21,9 @@
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 	
 	<%-- FORM DI RICERCA CON FILTRI DI RICERCA --%>
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listDelibere.action" />" method="post"> 	
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listDelibere.action" />" method="post" > 	
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+		
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_SEARCH_CRITERIA" /></legend>
 		
@@ -47,7 +48,7 @@
 									cssStyle="width: 100%;" >
 							</s:select>
 						</c:otherwise>
-					</c:choose>				
+					</c:choose>
 				</div>
 			</div>
 		
@@ -83,7 +84,19 @@
 					</s:select>
 				</div>
 			</div>
-		
+
+            <div class="fieldset-row">
+                <div class="label">
+                    <label for="model.codice"><wp:i18n key="LABEL_RIFERIMENTO_PROCEDURA" /> : </label>
+                </div>
+                <div class="element">
+                    <s:textfield name="model.codice" id="model.codice" cssClass="text"
+                                value="%{#model.codice}"
+                                size="20" maxlength="20"/>
+                </div>
+            </div>
+
+
 			<div class="fieldset-row">
 				<div class="label">
 					<label><wp:i18n key="LABEL_DATA_PUBBLICAZIONE_BANDO" /> : </label>
@@ -131,14 +144,13 @@
 					</select>
 				</div>
 			</div>
-					
+			
 			<div class="azioni">
 				<wp:i18n key="BUTTON_SEARCH" var="valueSearchButton" />
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui"/>
 			</div>
 		</fieldset>
-
-
+		
 	<%-- LISTA --%>
 	<c:if test="${listaDelibere ne null}">
 		<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/listaDelibere.jsp" />

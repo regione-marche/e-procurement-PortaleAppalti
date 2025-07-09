@@ -33,7 +33,7 @@ public interface IEventDAO {
 //	List<Event> loadEvents(String condition);
 //	
 	
-	int countEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message);
+	int countEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, String delegate);
 	
 	/**
 	 * Ricerca paginata degli eventi presenti a db.
@@ -52,6 +52,8 @@ public interface IEventDAO {
 	 * 			livello per cui filtrare la ricerca
 	 * @param message
 	 * 			messaggio per cui filtrare la ricerca
+	 * @param delegate
+	 * 			in caso di SSO e' il soggetto impresa per cui filtrare la ricerca
 	 * @param startRow
 	 * 			riga iniziale
 	 * @param pageSize
@@ -59,7 +61,7 @@ public interface IEventDAO {
 	 * 
 	 * @return List<Event> lista degli eventi per la pagina selezionata.
 	 */
-	List<Event> searchEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, final int startRow, final int pageSize);
+	List<Event> searchEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, String delegate, final int startRow, final int pageSize);
 	
 	Event getEvent(Long eventId);
 

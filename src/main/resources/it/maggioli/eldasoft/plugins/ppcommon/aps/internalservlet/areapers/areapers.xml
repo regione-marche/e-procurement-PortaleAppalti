@@ -35,6 +35,71 @@
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
 		
+		<!-- SESSIONI DI LOCK DEI DELEGATI IMPRESA SSO -->
+ 		<action name="sessionsDelegatiSSO" class="delegatiImpresaSSOAction" method="viewSessions">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areasso/delegatiImpresaSSOSessions.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="unlockDelegatoSSO" class="delegatiImpresaSSOAction" method="unlock">
+			<result name="success" type="chain">sessionsDelegatiSSO</result>
+			<result name="error" type="chain">sessionsDelegatiSSO</result>
+			<result name="input" type="chain">sessionsDelegatiSSO</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
+		<action name="*nlockDelegatoSSO" class="delegatiImpresaSSOAction" method="{1}nlock">
+			<result name="success" type="chain">sessionsDelegatiSSO</result>
+			<result type="chain" name="error">sessionsDelegatiSSO</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+ 		<!-- PROFILI DEI DELEGATI IMPRESA SSO -->
+ 		<action name="viewDelegatiSSO" class="delegatiImpresaSSOAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areasso/delegatiImpresaSSO.jsp
+			</result>
+			<result name="error" type="dispatcher"> 
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areasso/delegatiImpresaSSO.jsp
+			</result>
+			<result name="input" type="dispatcher"> 
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areasso/delegatiImpresaSSO.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="clearDelegatoSSO" class="delegatiImpresaSSOAction" method="clearSoggetto">
+			<result name="success" type="chain">viewDelegatiSSO</result>
+		</action>
+
+		<action name="*eleteDelegatoSSO" class="delegatiImpresaSSOAction" method="{1}eleteSoggetto">
+			<result name="success" type="chain">viewDelegatiSSO</result>
+			<result type="chain" name="error">viewDelegatiSSO</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- deleteSoggetto, modifySoggetto -->
+		<action name="*DelegatoSSO" class="delegatiImpresaSSOAction" method="{1}Soggetto">
+			<result name="success" type="chain">viewDelegatiSSO</result>
+			<result name="input" type="chain">viewDelegatiSSO</result>
+			<result name="error" type="chain">viewDelegatiSSO</result>
+			<result name="modify" type="dispatcher" >
+				/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areasso/delegatiImpresaSSO.jsp
+			</result>
+		</action>
+
+		<!-- addSoggetto, saveSoggetto, clearSoggetto -->
+		<action name="delegatiImpresaSSO" class="delegatiImpresaSSOAction">
+			<result name="success" type="chain">viewDelegatiSSO</result>
+			<result name="clear" type="chain">clearDelegatoSSO</result>
+			<result name="error" type="chain">viewDelegatiSSO</result>
+			<result name="input" type="chain">viewDelegatiSSO</result>
+			<result name="refresh" type="chain">clearDelegatoSSO</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+		
 		<!-- REGISTRAZIONE MANUALE OPERATORI ECONOMICI -->
 		<action name="openRegistrazioneOperatoreManuale" class="registrazioneManualeOperatoriEconomiciAction" method="open">
 			<result type="dispatcher">/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areapers/registrazioneManualeOperatori.jsp</result>
@@ -131,10 +196,9 @@
 
 		<!-- download di file non viene utilizzato TokenInterceptor -->
 		<action name="createPdf" class="downloadDatiImpresaAction">
-			<result name="successCreate" type="redirect">${urlPdf}</result>
+			<result type="redirect">${urlPdf}</result>
 			<result name="input" type="chain">openSearchOE</result>
 			<result name="error" type="chain">openSearchOE</result>
-			<result type="dispatcher">/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areapers/searchOE.jsp</result>
 			<interceptor-ref name="japsFreeStack" />
 			<interceptor-ref name="encodedData">
 				<param name="types">tipiNaturaGiuridica,checkGruppoIVA,tipiImpresaIscrAlbo,province,tipiIndirizzo,tipiSoggetto,tipiAltraCarica,tipiCollaborazione,sesso,titoliSoggetto,albiProfessionali,cassePrevidenza,certificatoriSOA,certificatoriISO,sino,tipiRegimeFiscale,settoriProduttivi,sezioniWhitelist,ratingLegale,classiDimensione,settoreAttivitaEconomica,tipiSocietaCooperative,tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
@@ -157,6 +221,14 @@
 			<result type="dispatcher" name="redirect">/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areapers/disabilitaAccessoSSO.jsp</result> 
 			<result type="dispatcher" name="input">/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/areapers/abilitaAccessoSSO.jsp</result>			
 			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="initSpidSA" class="abilitaAccessoSSOAction" method="initSpidSA">
+			<result name="success" type="chain">openAbilitaAccessoSSO</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 		</action>
 		
 		<action name="spidLogin" class="abilitaAccessoSSOAction" method="prepareLoginSpid">
@@ -202,6 +274,12 @@
 		</action>
 		
 		<action name="myidLogin" class="abilitaAccessoSSOAction" method="prepareLoginMyId">
+			<result name="success" type="redirect">${urlRedirect}</result>
+			<result name="input" type="redirect">${urlErrori}</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="eidasLogin" class="abilitaAccessoSSOAction" method="prepareLoginEidas">
 			<result name="success" type="redirect">${urlRedirect}</result>
 			<result name="input" type="redirect">${urlErrori}</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>

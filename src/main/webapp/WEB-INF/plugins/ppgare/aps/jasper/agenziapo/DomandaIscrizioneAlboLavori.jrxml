@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="56" bottomMargin="56" uuid="3b7f9c95-1576-4b3f-9912-d6ca86330724">
 	<property name="ireport.zoom" value="1.1000000000000005"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<subDataset name="dsLR">
+	<subDataset name="dsLR" uuid="50d4d2d6-42c3-4287-b4b2-f165cfef6b80">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -20,7 +21,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsDT">
+	<subDataset name="dsDT" uuid="8dda56a2-487c-4e57-b5f4-aba46a2d489c">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -37,7 +38,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsAltreCariche">
+	<subDataset name="dsAltreCariche" uuid="60d1edef-9f9c-4168-9675-b3918d50ffbe">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -57,7 +58,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCollaboratori">
+	<subDataset name="dsCollaboratori" uuid="01a1a53a-a9fd-4418-8ee4-cc55d48f401f">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -77,7 +78,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCategorie">
+	<subDataset name="dsCategorie" uuid="9b69c48c-a8a0-4992-bafc-5222e72935f4">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
 		</queryString>
@@ -184,6 +185,10 @@
 	<parameter name="MEPACONSIP" class="java.lang.Boolean">
 		<parameterDescription><![CDATA[1 se la customizzazione MEPACONSIP=1, 0 altrimenti]]></parameterDescription>
 		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VIS_BOLLO" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString language="xPath">
 		<![CDATA[/IscrizioneImpresaElencoOperatori]]>
@@ -335,10 +340,13 @@
 	<field name="cognomeLiberoProfessionista" class="java.lang.String">
 		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/altriDatiAnagrafici/cognome]]></fieldDescription>
 	</field>
+	<field name="grandezzaImpresa" class="java.lang.String">
+		<fieldDescription><![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/impresa/classeDimensione]]></fieldDescription>
+	</field>
 	<detail>
 		<band height="15" splitType="Stretch">
 			<subreport runToBottom="false">
-				<reportElement x="0" y="0" width="511" height="14"/>
+				<reportElement x="0" y="0" width="511" height="14" uuid="4862c1be-9d1d-47c6-8894-a797adfe8edf"/>
 				<subreportParameter name="SA_DENOMINAZIONE">
 					<subreportParameterExpression><![CDATA[$P{SA_DENOMINAZIONE}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -385,7 +393,7 @@
 					<subreportParameterExpression><![CDATA[$F{serialNumberMarcaBollo}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{REPORT_HEADER}]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="47">
@@ -407,7 +415,7 @@
 		<band height="20"/>
 		<band height="53">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ee91d4f0-e4aa-4cb2-a628-f5fe753c3c35"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
@@ -415,12 +423,12 @@
 			</staticText>
 		</band>
 		<band height="29">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="511" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="c6d10e1d-1ac4-4a36-89ae-bd2280aee7a7"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
+				<textFieldExpression><![CDATA["Il/La sottoscritto/a "
 +
 ($P{LIBERO_PROFESSIONISTA}
      ? ($F{cognomeLiberoProfessionista} + " " + $F{nomeLiberoProfessionista})
@@ -472,371 +480,435 @@
 		<band height="30">
 			<printWhenExpression><![CDATA[$P{RTI}]]></printWhenExpression>
 			<subreport>
-				<reportElement positionType="Float" x="16" y="0" width="495" height="29"/>
+				<reportElement positionType="Float" x="16" y="0" width="495" height="29" uuid="35b13c13-8ede-4b32-9184-55e4a7f496a2"/>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="14">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+		<band height="40">
+			<printWhenExpression><![CDATA[$P{MEPACONSIP}]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="512" height="40" uuid="d055ea47-30e8-49d4-96f1-b78d4bd7fdf3"/>
+				<elementGroup/>
+				<staticText>
+					<reportElement positionType="Float" x="-1" y="-1" width="511" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="fdda2d49-ee41-435c-835c-26127415f5a9"/>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[consapevole che l'elenco in oggetto non deroga l'obbligatorietà dell'utilizzo dei mercati elettronici da parte delle Amministrazioni Pubbliche ex art. 1 c. 450 L. 296/06,<sup>1</sup> ]]></text>
+				</staticText>
+			</frame>
 		</band>
 		<band height="12"/>
 		<band height="38">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="512" height="16"/>
+				<reportElement positionType="Float" x="0" y="0" width="512" height="16" uuid="09b634a0-e9a7-46c8-b8ad-de02b01285a1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DICHIARA]]></text>
 			</staticText>
 		</band>
-		<band height="77">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="77" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textElement textAlignment="Justified">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<text><![CDATA[1) per quanto a conoscenza del dichiarante, per le persone aventi cariche rilevanti (ex art. 80 comma 3 D.Lgs. 50/2016 e ss.mm.ii.) e per i soggetti sottoposti alla verifica antimafia (ex art. 85 D.Lgs. 159/2011) che non sussistono cause di esclusione ex art. 80 comma 1 D.Lgs. 50/2016 e ss.mm.ii. e non sussistono cause di esclusione ex art. 80 comma 2 D.Lgs. 50/2016 e ss.mm.ii. in merito a decadenza, sospensione o divieto ex art. 67 D.Lgs. 159/2011 o tentativi di infiltrazione mafiosa ex art. 84, comma 4, del medesimo decreto;]]></text>
-			</staticText>
-		</band>
-		<band height="30">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textElement textAlignment="Justified">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<text><![CDATA[2) in merito alle cause di esclusione dalle gare d’appalto ex art. 80 D.Lgs. 50/2016 e ss.mm.ii.:]]></text>
-			</staticText>
-		</band>
 		<band height="39">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="39"/>
+				<reportElement x="0" y="0" width="511" height="39" uuid="d9d64f2d-3a57-4481-bb42-c6ee9bd50e2f"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="45d62c26-c053-4838-8bc4-3c70b41d8d4d"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.4), di non avere commesso violazioni gravi definitivamente accertate rispetto agli obblighi relativi al pagamento delle imposte e tasse, secondo la legislazione italiana;]]></text>
+					<text><![CDATA[che nei propri confronti e nei confronti della propria Società non ricorrono le cause di esclusione di cui agli articoli dal 94 al 98 del D.Lgs. 36/2023;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="875c45ec-e204-4794-ba0f-ed25e8b78e83"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[I.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="38">
+		<band height="28">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="37"/>
+				<reportElement x="0" y="0" width="511" height="28" uuid="bb0b4158-edb7-48c0-8100-1b6a9aee4f6d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="37" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8bf84e6a-2cff-4d36-b76a-265f1e5a1481">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.4), di non aver commesso violazioni gravi definitivamente accertate alle norme in  materia di contributi previdenziali e assistenziali, secondo la legislazione italiana; ]]></text>
+					<text><![CDATA[di non aver reso false comunicazioni sociali di cui agli articoli 2621 e 2622 del Codice Civile;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ac737d87-637b-4f94-9f7e-058e3b80770d"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[II.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
 		<band height="36">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="36"/>
+				<reportElement x="0" y="0" width="511" height="36" uuid="836f2691-8ea5-4450-8433-f4f26e6150b8"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="36" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="36" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1ff2f67d-a734-48e9-9eb8-1d52b70e2b3c"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif.c.5 lett. a), di non avere commesso gravi infrazioni debitamente accertate alle norme in materia di salute e sicurezza sul lavoro nonché agli obblighi ex art. 30, c.3;]]></text>
+					<text><![CDATA[di non aver presentato nella procedura di iscrizione in corso e negli affidamenti di subappalti documentazione o dichiarazioni non veritiere;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="bb19bcb3-b2d8-45d3-b8bc-35fd53e55285"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[III.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="63">
+		<band height="53">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="63"/>
+				<reportElement x="0" y="0" width="511" height="53" uuid="0c236334-e6a3-4e5a-be62-c3cf3715f198">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="63" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="b4feb231-fc53-4b8d-9aec-cf076f67c2a2">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. b),di non essere stato sottoposto a fallimento o di non trovarsi in stato di liquidazione coatta o di concordato preventivo o non sia in corso nei suoi confronti un procedimento per la dichiarazione di una di tali situazioni, fermo restando quanto previsto dagli articoli 110 del presente Codice e 186-bis del regio decreto 16 marzo 1942, n. 267;]]></text>
+					<text><![CDATA[di non essere iscritto nel casellario informatico tenuto dall’Osservatorio dell’ANAC per aver presentato false dichiarazioni o falsa documentazione nelle procedure di gara e negli affidamenti di subappalti;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ffdbecee-593b-4f07-a5b5-9368a89a396f"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[IV.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="41">
+		<band height="55">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$F{grandezzaImpresa} != null]]></printWhenExpression>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="40"/>
+				<reportElement x="0" y="0" width="511" height="55" uuid="d7a1d852-cf92-4f26-9145-07d18c5db43d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[(rif. c.5 lett. c), di non essersi reso colpevole di gravi illeciti professionali, tali da rendere dubbia la propria integrità o affidabilità;]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="3ed30bce-cd81-4da1-845f-d5c5f58bffb3"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[V.]]></text>
+					<text><![CDATA[-]]></text>
+				</staticText>
+				<textField>
+					<reportElement positionType="Float" x="50" y="0" width="460" height="55" isRemoveLineWhenBlank="true" uuid="30f7171e-695f-4afc-9074-82d2614f72b1">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[("Grande impresa".equals($F{grandezzaImpresa}) ? "di non essere" : "di essere") + " una micro, piccola o media impresa, come definita dall’articolo 2 dell’allegato alla raccomandazione della Commissione Europea 2003/361/CE del 6 maggio 2003 (G.U.U.E. n. L124 del 20 maggio 2003);"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="39">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="39" uuid="c3e1f26e-5cd0-403a-9a6e-37fc01bdcea0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="c034009e-b33f-4a15-b74d-3db52c62498f">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[di non essersi reso colpevole di gravi illeciti professionali, tali da rendere dubbia la sua integrità o affidabilità;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8390a71e-e3d2-431c-897d-c87db5356b17"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="76">
+		<band height="39">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="66"/>
+				<reportElement x="0" y="0" width="511" height="30" uuid="309309ec-b80b-476d-80b1-8d460a94a2df">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="66" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="16106e7b-7f11-402b-8998-5dd358db6c57">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. c-bis), di non aver tentato di influenzare indebitamente il processo decisionale della stazione appaltante o di ottenere informazioni riservate a fini di proprio vantaggio e di non aver fornito, anche per negligenza, informazioni false o fuorvianti suscettibili di influenzare le decisioni sull'esclusione, la selezione o l'aggiudicazione, ovvero omesso le informazioni dovute ai fini del corretto svolgimento della procedura di selezione;]]></text>
+					<text><![CDATA[di non aver tentato di influenzare indebitamente il processo decisionale della stazione appaltante o di ottenere informazioni riservate a fini di proprio vantaggio;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="ca63501f-3c75-44ed-880f-131dd349052e"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[VI.]]></text>
-				</staticText>
-			</frame>
-		</band>
-		<band height="75">
-			<frame>
-				<reportElement x="0" y="0" width="511" height="66"/>
-				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="66" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[(rif. c.5 lett. c-ter), di non aver dimostrato significative o persistenti carenze nell'esecuzione di un precedente contratto di appalto o di concessione che ne hanno causato la risoluzione per inadempimento ovvero la condanna al risarcimento del danno o altre sanzioni comparabili fermo restando che su tali circostanze la stazione appaltante motiva anche con riferimento al tempo trascorso dalla violazione e alla gravità della stessa;
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[VII.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
 		<band height="38">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="38"/>
+				<reportElement x="0" y="0" width="511" height="38" uuid="1628b788-e488-4cd7-a9c3-0d2ab7e2ae2a"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="d8da52e2-33a3-4b18-9f0d-0fbd08dcd74c"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c. 5 lett. c-quater), di non aver commesso grave inadempimento nei confronti di uno o più subappaltatori, riconosciuto o accertato con sentenza passata in giudicato;]]></text>
+					<text><![CDATA[di non aver fornito, anche per negligenza, informazioni false o fuorvianti suscettibili di influenzare le decisioni sull’esclusione, la selezione o l’aggiudicazione;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="52634112-8e32-4301-912d-11d1b90f013f"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[VIII.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
 		<band height="39">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="38"/>
+				<reportElement x="0" y="0" width="511" height="38" uuid="bbf0e141-7dfe-4cf2-874b-4f65a3997e98"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a1fd983c-2ec3-42ff-98d9-cd69db0e7f6e"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. d, e) che non sussistono le cause di esclusione cui all’art. 80 comma 5 lettera d) , e) del D.Lgs. n. 50/2016 e ss.mm.ii.;
-]]></text>
+					<text><![CDATA[di non aver omesso le informazioni dovute ai fini del corretto svolgimento della procedura di selezione;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="47fc07c8-7309-46d1-8b08-c32236a40e6d"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[IX.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
 		<band height="53">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="53"/>
+				<reportElement x="0" y="0" width="511" height="53" uuid="869b0e57-cfa8-4926-9d3b-46aa54eb7143"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="2d5c2e80-0849-40fd-8096-f3f0e00b9ac9"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. f), di non essere stato soggetto alla sanzione interdittiva ex art. 9, c 2, lett c) D.Lgs. 231/2001 o ad altra sanzione che comporta il divieto di contrarre con la pubblica amministrazione, compresi i provvedimenti interdittivi ex art. 14 D.Lgs. 81/08;]]></text>
+					<text><![CDATA[di non aver commesso significative o persistenti carenze nell’esecuzione di un precedente contratto di appalto che ne hanno causato la risoluzione per inadempimento ovvero la condanna al risarcimento del danno o altre sanzioni comparabili;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="192dcc38-0335-47ac-a47e-89045f867aba"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[X.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="38">
+		<band height="47">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="38"/>
+				<reportElement x="0" y="0" width="511" height="38" uuid="1a9dff7f-da7c-4e33-8a30-29f55af5acdb"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="004eb577-2c28-47fa-829f-334b5f7ecee9"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[XI.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="38" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="47" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="2421889f-79a8-4ab4-9fc0-e891869b3e09">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. f-bis), di non avere presentato documentazione o dichiarazioni non veritiere in procedure di gara o negli affidamenti di subappalti;]]></text>
+					<text><![CDATA[di non essere sottoposto a fallimento o di trovarsi in stato di liquidazione coatta o di concordato preventivo, né è in corso nei propri confronti un procedimento per la dichiarazione di una di tali situazioni;]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="53">
+		<band height="39">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<frame>
-				<reportElement x="0" y="0" width="511" height="53"/>
+				<reportElement x="0" y="0" width="511" height="39" uuid="99162159-92e3-4235-8d63-94c4e39b94b0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="6daf4cbc-edde-4bdc-b132-210fe1748ae2">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. f-ter), di non essere iscritto nel casellario informatico tenuto dall’Osservatorio dell’ANAC per aver presentato false dichiarazioni o falsa documentazione nelle procedure di gara e negli affidamenti di subappalti;]]></text>
+					<text><![CDATA[di non aver commesso grave inadempimento nei confronti di uno o più subappaltatori, riconosciuto o accertato con sentenza passata in giudicato;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a39e3b24-c707-4703-9b8f-63dfd3bbd578"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[XII.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
 		<band height="50">
 			<frame>
-				<reportElement x="0" y="0" width="511" height="50"/>
+				<reportElement x="0" y="0" width="511" height="50" uuid="c28d776f-0b00-4478-a72f-4c6a002f9967"/>
 				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="50" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="50" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="58a5b7fe-3473-4ce5-99d4-6949430cca3f"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[(rif. c.5 lett. g), che nel casellario informatico tenuto dall'Osservatorio dell'ANAC non sono presenti iscrizioni per aver presentato false dichiarazioni o falsa documentazione ai fini del rilascio dell'attestazione di qualificazione;]]></text>
+					<text><![CDATA[di non essersi reso inottemperante agli obblighi relativi al pagamento delle imposte e tasse o dei contributi previdenziali, ancorché non definitivamente accertati, costituenti una grave violazione a norma di legge.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="2e9af083-adb8-4e30-85bd-02088edf5110"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<text><![CDATA[XIII.]]></text>
+					<text><![CDATA[-]]></text>
 				</staticText>
 			</frame>
 		</band>
-		<band height="42">
-			<frame>
-				<reportElement x="0" y="0" width="511" height="42"/>
-				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="42" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[(rif. c.5 lett. h), di non aver violato il divieto di intestazione fiduciaria posto all’art. 17 della  L. 55/1990;]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[XIV.]]></text>
-				</staticText>
-			</frame>
-		</band>
-		<band height="44">
-			<frame>
-				<reportElement x="0" y="0" width="511" height="43"/>
-				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="43" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[(rif. c.5 lett. i), di essere in regola con le norme che disciplinano il diritto al lavoro dei disabili ex L. 68/99;]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[XV.]]></text>
-				</staticText>
-			</frame>
-		</band>
-		<band height="53">
-			<frame>
-				<reportElement x="0" y="0" width="511" height="53"/>
-				<staticText>
-					<reportElement positionType="Float" x="50" y="0" width="461" height="53" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[(rif. c.5 lett. l), di non essersi reso responsabile di omessa denuncia dei fatti all'autorità giudiziaria per essere stato vittima dei reati previsti e puniti ex artt. 317 e 629 del codice penale aggravati ex art. 7 DL 152/1991, conv. con modificazioni dalla L. 203/1991.]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Right">
-						<font fontName="Arial" size="11"/>
-					</textElement>
-					<text><![CDATA[XVI.]]></text>
-				</staticText>
-			</frame>
-		</band>
-		<band height="40">
+		<band height="38">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="39" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textElement textAlignment="Justified">
-					<font fontName="Arial" size="11"/>
+				<reportElement positionType="Float" x="-30" y="0" width="512" height="16" uuid="af2af51b-e2e4-48e5-9b39-5b7545d0d11d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<text><![CDATA[3) che non sussistono cause di esclusione ex art.80 c. 1 e 2 del D.Lgs. 50/2016 ss.mm.ii. con riferimento ai soggetti ex art. 80 c.3 del D.Lgs. 50/2016 ss.mm.ii.;]]></text>
+				<text><![CDATA[Inoltre,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="20" y="0" width="512" height="16" uuid="c4eda79b-79a1-46a5-bb58-6fde439a031b">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DICHIARA:]]></text>
 			</staticText>
 		</band>
-		<band height="41">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textElement textAlignment="Justified">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<text><![CDATA[4) di non trovarsi nella condizione prevista dall'art. 53, comma 16-ter, del D.Lgs. n. 165/2001 (pantouflage o revolving door);]]></text>
-			</staticText>
+		<band height="30">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="30" uuid="a720b5f8-4f07-44c1-8433-4c8d9f1884b3"/>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="47554440-e960-4de7-ab0d-f5f18d102872"/>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[di aver letto e di accettare le regole di utilizzo della piattaforma telematica scaricabili dal portale stesso;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="e7a0dbcc-c23d-4c58-b5e2-01ef0fa0c212"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
+				</staticText>
+			</frame>
 		</band>
-		<band height="41">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textElement textAlignment="Justified">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<text><![CDATA[5) di possedere i requisiti di cui all’art. 4 – REQUISITI di ISCRIZIONE- del Regolamento per Formazione e Gestione dell’Albo degli Operatori Economici di AIPo, prescritti per l’affidamento dei lavori rientranti nelle categorie e nelle classifiche le quali si chiede l’iscrizione.]]></text>
-			</staticText>
+		<band height="30">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="30" uuid="e76f7f6f-dfb5-4e4f-8601-b9ebd120153f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="30" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="970793ff-1656-4692-82c5-401faaf8e426">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[di aver preso visione della informativa relativa alla privacy scaricabile dalla piattaforma telematica;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="7cf3dbcb-5d8f-4181-96f6-7ab937757c0c"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="45">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="45" uuid="e76f7f6f-dfb5-4e4f-8601-b9ebd120153f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="50" y="0" width="461" height="45" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="970793ff-1656-4692-82c5-401faaf8e426">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[di possedere i requisiti di cui all'art. 4 - REQUISITI di ISCRIZIONE - del Regolamento per Formazione e Gestione dell'Albo degli Operatori Economici di AIPo, prescritti per l'affidamento dei lavori rientranti nelle categorie e nelle classifiche le quali si chiede l'iscrizione;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="7cf3dbcb-5d8f-4181-96f6-7ab937757c0c"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="55">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$P{VIS_BOLLO} == 1]]></printWhenExpression>
+			<frame>
+				<reportElement x="0" y="0" width="511" height="55" uuid="12f42b31-5652-47a8-bfc6-dd44378eb2ca">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="35" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="508871ce-5dcf-40c0-93c6-1fe2ea5babfd"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[-]]></text>
+				</staticText>
+				<textField>
+					<reportElement positionType="Float" x="50" y="0" width="460" height="55" isRemoveLineWhenBlank="true" uuid="019091c2-70f3-4175-9aac-60a19b24b350">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["di aver assolto all'obbligo dell'imposta di bollo avendo applicato e annullato sulla copia cartacea della presente istanza, conservata a fini fiscali presso la propria sede legale, la marca da bollo con n° identificativo<sup>2</sup> " +
+($F{serialNumberMarcaBollo} == null ? "________________" : $F{serialNumberMarcaBollo})]]></textFieldExpression>
+				</textField>
+			</frame>
 		</band>
 		<band height="14">
 			<printWhenExpression><![CDATA[$F{serialNumberMarcaBollo} != null]]></printWhenExpression>
@@ -844,24 +916,24 @@
 		<band height="48">
 			<printWhenExpression><![CDATA[$F{categorieIscrizione} != null]]></printWhenExpression>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="16" width="511" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="16" width="511" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="e77c0ed4-48d6-4340-b59a-0b6b7fe6875b"/>
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[l'iscrizione nelle seguenti categorie:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="512" height="16"/>
+				<reportElement positionType="Float" x="0" y="0" width="512" height="16" uuid="320a6d33-c675-4050-bd6f-77902492e5e0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[e pertanto CHIEDE]]></text>
 			</staticText>
 		</band>
-		<band height="16">
+		<band height="20">
 			<printWhenExpression><![CDATA[$F{categorieIscrizione} != null]]></printWhenExpression>
 			<subreport runToBottom="false">
-				<reportElement x="0" y="0" width="511" height="15"/>
+				<reportElement x="0" y="0" width="511" height="15" uuid="39868abc-c4a7-4a24-858f-c12d38752c2b"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -899,12 +971,147 @@
 					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlbo.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CategorieDomandaIscrizioneAlbo.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="30">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="512" height="30" uuid="c01e2be3-9af4-40e8-8e1d-b2afd6d9221f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Infine,]]></text>
+			</staticText>
+		</band>
+		<band height="30">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="512" height="30" uuid="5fb85d4d-f9f5-4e7b-8b61-fa8383beb1ad"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[AI SENSI DELLA LEGGE 13 AGOSTO 2010, N. 136]]></text>
+			</staticText>
+		</band>
+		<band height="35">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="512" height="35" uuid="b5c00493-db09-4f87-bd57-53efdef48a1d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[si impegna a dare attuazione alle disposizioni di cui alla legge 13 agosto 2010, n. 136 in materia di tracciabilità dei flussi finanziari.]]></text>
+			</staticText>
+		</band>
+		<band height="20">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="510" height="20" uuid="d75690bf-9df2-494f-894f-a16467adde7d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Nello specifico si impegna a:]]></text>
+			</staticText>
+		</band>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="35" height="20" uuid="92e1cb57-148e-472b-9333-c5cdc02d8244">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[a)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="0" width="460" height="50" uuid="2fc8c695-77cd-45d2-8f63-d122db319e82">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[utilizzare per tutta la durata del presente appalto uno o più conti correnti accesi presso banche o presso la società Poste Italiane S.p.A. dedicati, anche non in via esclusiva, alla commessa, dandone comunicazione alla stazione appaltante;]]></text>
+			</staticText>
+		</band>
+		<band height="63">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="35" height="20" uuid="0a55ac56-c7d8-44e6-bb08-fed0323276a4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[b)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="0" width="460" height="63" uuid="0489da4b-3d7f-46b3-adde-d675c7d647bf">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[eseguire tutti i movimenti finanziari inerenti e conseguenti all’esecuzione del presente appalto garantendone la registrazione sul conto corrente dedicato, utilizzando esclusivamente lo strumento del bonifico bancario o postale ovvero mezzi di pagamento idonei ad assicurare la tracciabilità delle transazioni;]]></text>
+			</staticText>
+		</band>
+		<band height="23">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="35" height="20" uuid="296605e9-a568-4d62-a141-3f3069a8596e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[c)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="0" width="460" height="23" uuid="3201f662-ab5c-467c-ba88-24b90d7b0d1c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[assicurare che ciascuna transazione riporti il codice identificativo della gara (CIG);]]></text>
+			</staticText>
+		</band>
+		<band height="53">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="35" height="20" uuid="fab8ff51-59d9-49b7-bf8c-5b68347c7d64">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[d)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="0" width="460" height="53" uuid="55261ab4-fbfd-4608-8f83-59a8a437f825">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[comunicare alla stazione appaltante, entro sette giorni dall’accensione dei conti correnti dedicati gli estremi identificativi degli stessi, le generalità e il codice fiscale delle persone delegate ad operare su di essi.]]></text>
+			</staticText>
 		</band>
 		<band height="29">
 			<subreport runToBottom="false">
-				<reportElement x="-1" y="19" width="511" height="10"/>
+				<reportElement x="-1" y="19" width="511" height="10" uuid="0f323e54-f94c-40cb-b3d2-0c9233f4c87a"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -942,8 +1149,38 @@
 					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{REPORT_FOOTER}]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
+	<pageFooter>
+		<band height="61">
+			<printWhenExpression><![CDATA[($V{PAGE_NUMBER}==1 && $P{MEPACONSIP}) || ($V{PAGE_NUMBER} == 2 && $F{serialNumberMarcaBollo} != null)]]></printWhenExpression>
+			<line>
+				<reportElement x="2" y="3" width="155" height="1" uuid="e8fde928-ca40-479a-a95b-024a4d16b7cc">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1 || ( $V{PAGE_NUMBER} == 2 && $F{serialNumberMarcaBollo} != null && $P{VIS_BOLLO} == 1)]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="7" width="510" height="49" uuid="7a5dd5a3-a06b-43a3-b337-cb60d4b02527">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="3" leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<text><![CDATA[1. Quando la stazione appaltante è una Pubblica Amministrazione, quindi utilizza i mercati elettronici messi a disposizione dai Soggetti Aggregatori istituzionali, seleziona i soggetti a cui inoltrare invito tra gli iscritti all'elenco solo in quanto iscritti anche al mercato elettronico utilizzato; la scelta del mercato elettronico tra le diverse piattaforme messe a disposizione dai Soggetti Aggregatori istituzionali è a discrezione dell’Amministrazione. ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="5" y="12" width="510" height="49" uuid="f61e7c34-6750-4130-8261-30868bacc815">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 2 && $F{serialNumberMarcaBollo} != null && $P{VIS_BOLLO} == 1]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="3" leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<text><![CDATA[2. L'assolvimento dell'imposta di bollo avviene conservando presso la propria sede legale copia cartacea dell'istanza ove deve essere apposta la marca da bollo il cui numero è indicato sulla presente.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
 </jasperReport>

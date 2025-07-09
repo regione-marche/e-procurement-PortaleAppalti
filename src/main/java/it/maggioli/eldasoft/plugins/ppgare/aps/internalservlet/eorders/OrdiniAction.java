@@ -207,7 +207,7 @@ public class OrdiniAction extends EncodedDataAction implements SessionAware {
 	 */
 	public String view() {
 		this.setTarget(SUCCESS);
-		logger.info("Called view with id: {}",this.id);
+		logger.debug("Called view with id: {}",this.id);
 		try {
 			// nel caso di utente loggato si estraggono le comunicazioni
 			// personali dell'utente

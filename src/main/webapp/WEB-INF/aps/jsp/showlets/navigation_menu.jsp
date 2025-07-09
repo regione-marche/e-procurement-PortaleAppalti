@@ -29,7 +29,7 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 				<c:when test="${!currentTarget['voidTarget'] && prev >= 0}">
 				<li>
 					<span <c:if test="${currentCode == currentViewCode}">class="current"</c:if>>
-						<a href="<c:out value="${currentTarget.url}" />?${tokenHrefParams}" title="<wp:i18n key="VAI_PAGINA" />: <c:out value="${currentTarget.title}" />">
+						<a href="<c:out value="${currentTarget.url}" />" title="<wp:i18n key="VAI_PAGINA" />: <c:out value="${currentTarget.title}" />">
 							<c:out value="${currentTarget.title}" />
 						</a>
 					</span>

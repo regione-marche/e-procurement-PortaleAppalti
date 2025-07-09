@@ -36,7 +36,6 @@ public class CnsLoginResponseAction extends BaseResponseAction implements Servle
 		return target;
 	}
 
-
 	/**
 	 * ...
 	 * @param configManager 
@@ -82,8 +81,7 @@ public class CnsLoginResponseAction extends BaseResponseAction implements Servle
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");

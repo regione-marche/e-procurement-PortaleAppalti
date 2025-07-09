@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 public class SearchEventsAction extends EncodedDataAction implements SessionAware, ModelDriven<SearchEventsBean> {
-
 	/**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -5034984605091777924L;
+	
 	//private final int rowsPerPage = 20;
 	private Map<String, Object> session;
 	@Validate
@@ -50,101 +50,58 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 	private IEventManager eventManager;
 
 
-	/**
-	 * @return the showResult
-	 */
 	public boolean isShowResult() {
 		return showResult;
 	}
 
-	/**
-	 * @param showResult the showResult to set
-	 */
 	public void setShowResult(boolean showResult) {
 		this.showResult = showResult;
 	}
 
-
-	/**
-	 * @return the risultati
-	 */
 	public List<Event> getRisultati() {
 		return risultati;
 	}
 
-	/**
-	 * @param list the risultati to set
-	 */
 	public void setRisultati(List<Event> list) {
 		this.risultati = list;
 	}
 
-	/**
-	 * @return the pageNum
-	 */
 	public int getPageNum() {
 		return pageNum;
 	}
 
-	/**
-	 * @param pageNum the pageNum to set
-	 */
 	public void setPageNum(int pageNum) {
 		this.pageNum = pageNum;
 	}
 
-	/**
-	 * @return the totEvents
-	 */
 	public int getTotEvents() {
 		return totEvents;
 	}
 
-	/**
-	 * @param totEvents the totEvents to set
-	 */
 	public void setTotEvents(int totEvents) {
 		this.totEvents = totEvents;
 	}
 
-	/**
-	 * @return the events
-	 */
 	public List<Event> getEvents() {
 		return events;
 	}
 
-	/**
-	 * @param events the events to set
-	 */
 	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
 
-	/**
-	 * @return the eventId
-	 */
 	public Long getEventId() {
 		return eventId;
 	}
 
-	/**
-	 * @param eventId the eventId to set
-	 */
 	public void setEventId(Long eventId) {
 		this.eventId = eventId;
 	}
 
-	/**
-	 * @return the selectedEvent
-	 */
 	public Event getSelectedEvent() {
 		return selectedEvent;
 	}
 
-	/**
-	 * @param selectedEvent the selectedEvent to set
-	 */
 	public void setSelectedEvent(Event selectedEvent) {
 		this.selectedEvent = selectedEvent;
 	}
@@ -157,16 +114,10 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 		this.rowsPerPage = rowsPerPage;
 	}
 
-	/**
-	 * @return the eventManager
-	 */
 	public IEventManager getEventManager() {
 		return eventManager;
 	}
 
-	/**
-	 * @param eventManager the eventManager to set
-	 */
 	public void setEventManager(IEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
@@ -181,7 +132,9 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 		this.session = session;
 	}
 
-
+	/**
+	 * validazione  
+	 */
 	public void validate() {
 		super.validate();
 
@@ -209,8 +162,7 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 	 * Metodo che effettua la ricerca nella tabella degli eventi 
 	 * in base ai criteri inseriti da maschera di input.
 	 * @throws SQLException
-	 * */
-
+	 */
 	public String search() {
 
 		this.setTarget(SUCCESS);
@@ -252,7 +204,8 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 					this.model.getDestination(),
 					this.model.getType(),
 					this.model.getLevel(),
-					this.model.getMessage()
+					this.model.getMessage(),
+					this.model.getDelegate()
 					));
 
 			setRisultatiPaginati(dateFrom,
@@ -261,7 +214,9 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 					this.model.getDestination(),
 					this.model.getType(),
 					this.model.getLevel(), 
-					this.model.getMessage(), this.model.getCurrentPage());
+					this.model.getMessage(), 
+					this.model.getDelegate(),
+					this.model.getCurrentPage());
 
 			this.session.put(PortGareSystemConstants.SESSION_ID_LOADED_EVENTS_RESULT, this.getRisultati());
 			this.model.processResult(this.getTotEvents(), this.getTotEvents());
@@ -290,7 +245,7 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 			evento.setDetailMessage(evento.getDetailMessage().replace(">", "&gt;"));
 			evento.setDetailMessage(evento.getDetailMessage().replace("\n", "<br />"));
 		}
-		this.setSelectedEvent(evento);		
+		this.setSelectedEvent(evento);
 		return SUCCESS;
 	}
 
@@ -299,14 +254,23 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 
 	 * @param int numero della pagina selezionata
 	 **/
-	private void setRisultatiPaginati(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, int pageNum){
-
+	private void setRisultatiPaginati(
+			Date dateFrom, 
+			Date dateTo, 
+			String username, 
+			String destination, 
+			String type, 
+			String level, 
+			String message, 
+			String delegate,
+			int pageNum)
+	{
 		List<Event> lista = null;
 
 		this.setShowResult(true);
 
 		int start = pageNum > 0 ? (pageNum-1)*rowsPerPage : 0;
-		lista = this.eventManager.searchEvents(dateFrom, dateTo, username, destination, type, level, message, start, rowsPerPage);
+		lista = this.eventManager.searchEvents(dateFrom, dateTo, username, destination, type, level, message, delegate, start, rowsPerPage);
 
 		this.setRisultati(lista);
 	}
@@ -366,6 +330,7 @@ public class SearchEventsAction extends EncodedDataAction implements SessionAwar
 			almenoUnCriterio = addFiltro(msg, "type", this.model.getType(), almenoUnCriterio);
 			almenoUnCriterio = addFiltro(msg, "level", this.model.getLevel(), almenoUnCriterio);
 			almenoUnCriterio = addFiltro(msg, "message", this.model.getMessage(), almenoUnCriterio);
+			almenoUnCriterio = addFiltro(msg, "delegate", this.model.getDelegate(), almenoUnCriterio);
 			msg.append(".");
 			
 			if(this.getRisultati() != null && this.getRisultati().size() > 0) {

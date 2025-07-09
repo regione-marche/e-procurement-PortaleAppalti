@@ -10,6 +10,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardNuovaComunicazioneHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -21,6 +23,7 @@ import java.util.LinkedHashMap;
  * ... 
  * 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.COMUNICAZIONE, EFlussiAccessiDistinti.COMUNICAZIONE_STIPULA })
 public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComunicazioneAction {
 	/**
 	 * UID
@@ -74,6 +77,18 @@ public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComu
 		return nextResultAction;
 	}
 	
+
+	/**
+	 * costruttore 
+	 */
+	public ProcessPageNuovaComunicazioneAction() {
+		this(new WizardNuovaComunicazioneHelper());
+	}
+	
+	public ProcessPageNuovaComunicazioneAction(WizardNuovaComunicazioneHelper helper) {
+		super(helper, PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+	}
+
 	/**
 	 * ...
 	 */
@@ -81,8 +96,7 @@ public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComu
 	public String next() {
 		String target = SUCCESS;
 		
-		WizardNuovaComunicazioneHelper helper = (WizardNuovaComunicazioneHelper) this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		helper = (WizardNuovaComunicazioneHelper) getWizardFromSession();
 		
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
@@ -90,14 +104,15 @@ public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComu
 			helper.setTipoRichiesta(this.getTipoRichiesta());
 			helper.setOggetto(this.getOggetto());
 			helper.setTesto(this.getTesto());
-
+		
 			this.nextResultAction = InitNuovaComunicazioneAction.setNextResultAction(
-					helper.getNextStepNavigazione(WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE));
+					helper.getNextStepNavigazione(helper.STEP_TESTO_COMUNICAZIONE));
 
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}
+		
 		return target;
 	}
 	
@@ -109,11 +124,13 @@ public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComu
 		super.validate();
 
 		try {
-			WizardNuovaComunicazioneHelper helper = (WizardNuovaComunicazioneHelper) this.session
-				.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
-
+			helper = (WizardNuovaComunicazioneHelper) getWizardFromSession();
+			
+			boolean stipula = PortGareSystemConstants.ENTITA_STIPULA.equalsIgnoreCase(helper.getEntita());
+			boolean contrattoLFS = PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equalsIgnoreCase(helper.getEntita());
+			
 			// se "tipo richiesta" e' visibile allora e' obbligatorio (solo per contratti LFS)...
-			if(PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equalsIgnoreCase(helper.getEntita())) { 
+			if(contrattoLFS) { 
 				LinkedHashMap<String, String> listaTipiRichiesta =  InterceptorEncodedData.get(InterceptorEncodedData.LISTA_TIPOLOGIE_COMUNICAZIONI);
 				if(listaTipiRichiesta != null && listaTipiRichiesta.size() > 0) {
 					if(StringUtils.isEmpty(this.getTipoRichiesta())) {
@@ -124,9 +141,7 @@ public class ProcessPageNuovaComunicazioneAction extends AbstractProcessPageComu
 				}
 			}
 
-			if(PortGareSystemConstants.ENTITA_STIPULA.equalsIgnoreCase(helper.getEntita()) ||
-			   PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equalsIgnoreCase(helper.getEntita())) 
-			{
+			if(stipula || contrattoLFS) {
 				// SE CONTRATTO LFS O STIPULA PER ORA NON SI PROTOCOLLA !!!
 				return;
 			}

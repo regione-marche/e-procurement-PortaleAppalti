@@ -72,7 +72,7 @@ public class FatturaArchivioAction extends EncodedDataAction implements SessionA
 	}
 	public String openPage() {
 		this.setTarget(SUCCESS);
-		logger.info("openPage called");
+		logger.debug("openPage called");
 		int page = 0;
 		int pageSize = 10;
 		try {
@@ -86,12 +86,12 @@ public class FatturaArchivioAction extends EncodedDataAction implements SessionA
 			this.model = new PageOfNsoWsInvSdi();
 			this.model.setTotalElements(0l);
 		}
-		logger.info("openPage finished");
+		logger.debug("openPage finished");
 		return this.getTarget();
 	}
 	
 	public String cancel() {
-		logger.info("Called FatturaArchivioAction.cancel");
+		logger.debug("Called FatturaArchivioAction.cancel");
 		return "cancelToOrder";
 	}
 	

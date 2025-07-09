@@ -129,10 +129,10 @@ helper.datiPrincipaliImpresa.ragioneSociale=<s:property value="%{#helper.datiPri
    	<wp:i18n key="LABEL_REGISTRA_OE_SOGGETTO_RICHIEDENTE_DICHIARA_2" />
    	<c:choose>
 		<c:when test="${showDefaultTermOfUse}">	
-			<a id="linkUtilizzoPiattaforma" href="<wp:action path="/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action" />" target="_blank">[<wp:i18n key="HERE" />]</a>
-		</c:when>			
+			<a class="linkHere" id="linkUtilizzoPiattaforma" href="<wp:action path="/ExtStr2/do/FrontEnd/RegistrImpr/openTermOfUse.action" />" target="_blank">[<wp:i18n key="HERE" />]</a>
+		</c:when>
 		<c:otherwise>
-	   		<a id="linkUtilizzoPiattaforma" href="<wp:resourceURL/>cms/documents/Regole_utilizzo_piattaforma_telematica.pdf" target="_blank">[<wp:i18n key="HERE" />]</a>
+	   		<a class="linkHere" id="linkUtilizzoPiattaforma" href="<wp:resourceURL/>cms/documents/Regole_utilizzo_piattaforma_telematica.pdf" target="_blank">[<wp:i18n key="HERE" />]</a>
 		</c:otherwise>
 	</c:choose>
    
@@ -140,8 +140,9 @@ helper.datiPrincipaliImpresa.ragioneSociale=<s:property value="%{#helper.datiPri
 		<div class="label">
 			<label><wp:i18n key="LABEL_UTILIZZO_PIATTAFORMA" /> <span class="required-field">*</span></label>
 		</div>
-		<div class="element">
+		<div class="element-orizontal">
 			<input type="radio" name="utilizzoPiattaforma" id="utilizzoPiattaforma_yes" value="1" <s:if test="%{utilizzoPiattaforma.intValue() == 1}">checked="checked"</s:if> /><label for="utilizzoPiattaforma_yes"><wp:i18n key="LABEL_REGISTRA_OE_ACCETTO" /></label>
+			&nbsp;&nbsp;
 			<input type="radio" name="utilizzoPiattaforma" id="utilizzoPiattaforma_no" value="0" <s:if test="%{utilizzoPiattaforma.intValue() == 0}">checked="checked"</s:if> /><label for="utilizzoPiattaforma_no"><wp:i18n key="LABEL_REGISTRA_OE_NON_ACCETTO" /></label>
 		</div>
 	</div>
@@ -158,8 +159,9 @@ helper.datiPrincipaliImpresa.ragioneSociale=<s:property value="%{#helper.datiPri
 			<div class="label">
 				<label><wp:i18n key="LABEL_CONSENSO_EXTRA" /> : <span class="required-field">*</span></label>
 			</div>
-			<div class="element">
+			<div class="element-orizontal">
 				<input type="radio" name="consensoExtra" id="consensoExtra_yes" value="1" <s:if test="%{consensoExtra.intValue() == 1}">checked="checked"</s:if> /><label for="consensoExtra_yes"><wp:i18n key="LABEL_REGISTRA_OE_ACCETTO" /></label>
+				&nbsp;&nbsp;
 				<input type="radio" name="consensoExtra" id="consensoExtra_no" value="0" <s:if test="%{consensoExtra.intValue() == 0}">checked="checked"</s:if> /><label for="consensoExtra_no"><wp:i18n key="LABEL_REGISTRA_OE_NON_ACCETTO" /></label>
 			</div>
 		</div>
@@ -176,7 +178,7 @@ helper.datiPrincipaliImpresa.ragioneSociale=<s:property value="%{#helper.datiPri
 				<wp:i18n key="LABEL_REGISTRA_OE_PRIVACY_NOTA" />
 			   	<c:if test="${showDefaultTermOfUse}">
 					<wp:i18n key="LABEL_REGISTRA_OE_PRIVACY_LINK" />
-					<a id="linkPrivacy" href="<wp:action path="/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action" />" target="_blank">[<wp:i18n key="HERE" />]</a>
+					<a class="linkHere" id="linkPrivacy" href="<wp:action path="/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action" />" target="_blank">[<wp:i18n key="HERE" />]</a>
 				</c:if>
 			</p>
 			<wp:i18n key="LABEL_REGISTRA_OE_PRIVACY_EXTRA" />
@@ -184,16 +186,16 @@ helper.datiPrincipaliImpresa.ragioneSociale=<s:property value="%{#helper.datiPri
 				<div class="label">
 					<label><wp:i18n key="LABEL_PRIVACY" /> <span class="required-field">*</span></label>
 				</div>
-				<div class="element">
+				<div class="element-orizontal">
 					<c:choose>
 						<c:when test="${!showDefaultTermOfUse}">
 							<input type="radio" name="privacy" id="privacy_yes" value="1" <s:if test="%{privacy.intValue() == 1}">checked="checked"</s:if> /><label for="privacy_yes"><wp:i18n key="LABEL_REGISTRA_OE_ACCETTO" /></label>
+							&nbsp;&nbsp;
 							<input type="radio" name="privacy" id="privacy_no" value="0" <s:if test="%{privacy.intValue() == 0}">checked="checked"</s:if> /><label for="privacy_no"><wp:i18n key="LABEL_REGISTRA_OE_NON_ACCETTO" /></label>
 						</c:when>
 						<c:otherwise>
 							<s:checkbox name="privacy" fieldValue="1" id="privacy_checkbox" />
                             <label for="privacy_checkbox"><wp:i18n key="LABEL_PRESA_VISIONE" /></label>
-
 						</c:otherwise>
 					</c:choose>
 				</div>

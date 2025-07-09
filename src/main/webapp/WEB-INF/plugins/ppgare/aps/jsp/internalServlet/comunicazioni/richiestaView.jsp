@@ -45,12 +45,29 @@ genere == 20 	CATALOGO
 					<label><wp:i18n key="LABEL_FILE_RIEPILOGO_ALLEGATI" /> : </label>
 				</div>
 				<div class="element">
+					<wp:i18n key="LABEL_SCARICA_ALLEGATO" var="lblScarica"/>
 					<b>
-					<s:url id="urlDownloadFileRiepilogo" namespace="/do/FrontEnd/GareTel" action="downloadFileRiepilogoAllegatiAction" />
-					<s:a href="%{#urlDownloadFileRiepilogo}?id=%{idBustaRiepilogo}" 
-						title="%{#attr.urlDownloadFileRiepilogo}">
-						<wp:i18n key="LABEL_SCARICA_ALLEGATO" />
-					</s:a>
+					<s:if test="%{ !riepilogoAllegatiFirmato }">
+						<s:url id="urlDownloadFileRiepilogo" namespace="/do/FrontEnd/GareTel" action="downloadFileRiepilogoAllegatiAction" />
+						<s:a href="%{#urlDownloadFileRiepilogo}?id=%{idBustaRiepilogo}" 
+							title="%{#attr.lblScarica}">
+							<wp:i18n key="LABEL_SCARICA_ALLEGATO" />
+						</s:a>
+					</s:if>
+					<s:else>
+						<%-- DOCUMENTO CON FIRMA DIGITALE --%>
+						<c:set var="urlDownloadFileRiepilogo">
+							<s:set var="urlDownload">/ExtStr2/do/FrontEnd/GareTel/downloadFileRiepilogoAllegatiAction.action</s:set>
+							<wp:action path="${urlDownload}"/>&amp;id=${idBustaRiepilogo}
+						</c:set>
+						<form action='${urlDownloadFileRiepilogo}' method="post">
+	   						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+							<a href="javascript:;" onclick="parentNode.submit();" 
+								title="<s:property value='%{#attr.lblScarica}'/>" >
+	    						<wp:i18n key="LABEL_SCARICA_ALLEGATO" />
+	    					</a>
+						</form>
+					</s:else>
 					</b>
 				</div>
 			</div>
@@ -70,11 +87,11 @@ genere == 20 	CATALOGO
 			<div class="label">
 				<label><wp:i18n key="LABEL_COMUNICAZIONI_DATI_PROTOCOLLO" /> : </label>
 			</div>
-			<div class="element">				
+			<div class="element">
 				<span>
 				<wp:i18n key="LABEL_COMUNICAZIONI_PROTOCOLLO_N" /> <s:property value="%{dettaglio.numeroProtocollo}" />
 				<wp:i18n key="LABEL_COMUNICAZIONI_PROTOCOLLO_DEL" /> <s:date name="%{dettaglio.dataProtocollo}" format="dd/MM/yyyy" />				
-				</span>						
+				</span>
 			</div>
 		</div>
 		</c:if> 
@@ -87,24 +104,24 @@ genere == 20 	CATALOGO
 				<div class="element">
 					<span><s:date name="%{dettaglio.dataAcquisizione}" format="dd/MM/yyyy HH:mm:ss" /></span>
 				</div>	
-			</s:if>			
+			</s:if>
 		</div>
 
 		<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_COMUNICAZIONI_TIPO_INVIO" /> : </label>
 			</div>
-			<div class="element">			
+			<div class="element">
 				<span>
 					<%-- 
 					<s:property value="%{dettaglio.tipoInvio}" />  
 					--%>
-					<s:iterator value="maps['tipiComunicazione']" var="m">								
+					<s:iterator value="maps['tipiComunicazione']" var="m">
 						<s:if test="%{#m.key == dettaglio.tipoInvio}" >
 							<s:property value="%{#m.value}" />
 						</s:if>
 					</s:iterator>
-				</span>				
+				</span>
 			</div>
 		</div>
 
@@ -151,7 +168,7 @@ genere == 20 	CATALOGO
 	</fieldset>
 
 	<div class="back-link">
-		<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/elencoRichieste.action"/>&amp;codiceElenco=<s:property value="%{codiceElenco}"/>&amp;${tokenHrefParams}' 
+		<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/elencoRichieste.action"/>&amp;codiceElenco=<s:property value="%{codiceElenco}"/>' 
 			title="Torna alla lista delle richieste inviate" >
 			<wp:i18n key="LINK_BACK_TO_LIST" />
 		</a>

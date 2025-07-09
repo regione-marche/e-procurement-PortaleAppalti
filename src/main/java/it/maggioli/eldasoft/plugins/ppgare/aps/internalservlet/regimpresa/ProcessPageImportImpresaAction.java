@@ -5,11 +5,15 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc.ImpresaImportExport.WrongCRCException;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.File;
@@ -20,7 +24,8 @@ import java.util.Map;
  * 
  * @author Cristiano.Crescenti
  * @since 2.3.0
- */			 
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class ProcessPageImportImpresaAction extends EncodedDataAction
 	implements SessionAware {
 
@@ -38,10 +43,12 @@ public class ProcessPageImportImpresaAction extends EncodedDataAction
     private File xmlImport;					// file XML da importare
 	@Validate(EParamValidation.FILE_NAME)
     private String xmlImportFileName;		// nomefile del file XML da importare
+	@Validate(EParamValidation.CODICE_FISCALE)
+    private String codiceFiscale;			// servizio Michelangelo di SACE
 
     @Override
 	public void setSession(Map<String, Object> session) {
-		this.session = session;		
+		this.session = session;
 	}
     	
 	public void setEventManager(IEventManager eventManager) {
@@ -70,6 +77,14 @@ public class ProcessPageImportImpresaAction extends EncodedDataAction
 
 	public void setXmlImportFileName(String xmlImportFileName) {
 		this.xmlImportFileName = xmlImportFileName;
+	}
+	
+	public String getCodiceFiscale() {
+		return codiceFiscale;
+	}
+
+	public void setCodiceFiscale(String codiceFiscale) {
+		this.codiceFiscale = codiceFiscale;
 	}
 
 	/**
@@ -146,7 +161,7 @@ public class ProcessPageImportImpresaAction extends EncodedDataAction
 		    		evento.setMessage("Importazione dati impresa in formato DGUE da file " + xmlImportFileName +
 		    						  " per la ditta " + helper.getDatiPrincipaliImpresa().getRagioneSociale());	
 		    		this.setTarget(SUCCESS);
-		    	} else {
+	    		} else {
 		    		// importazione non definita...
 		    		this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 					evento.setLevel(Event.Level.ERROR);
@@ -159,6 +174,71 @@ public class ProcessPageImportImpresaAction extends EncodedDataAction
 //				evento.setDetailMessage(ex.getMessage());
     			evento.setError(ex);
     			this.addActionError( ex.getMessage() );
+	    	} finally {	    		
+				// registra l'evento di importazione...
+	    		if(evento != null)
+	    			this.eventManager.insertEvent(evento);
+	    	}
+	    	
+	    	// memorizza i dati dell'helper in sessione...
+	    	if(SUCCESS.equals(this.getTarget())) {
+	    		helper.setXmlImported(true);
+	    		this.session.put(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA, helper);
+	    	}
+    	}	    
+    	return this.getTarget();
+    }
+
+    /**
+     * importa i dati da servizio Michelangelo (SACE)
+     */
+    public String importMichelangelo() {
+    	this.setTarget(SUCCESS);
+
+    	WizardRegistrazioneImpresaHelper helper = (WizardRegistrazioneImpresaHelper) this.session
+			.get(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA);
+    	
+    	if(helper == null) {
+    		// la sessione e' scaduta, occorre riconnettersi
+			this.addActionError(this.getText("Errors.sessionExpired"));
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+    	} else {
+    		helper.setXmlImported(false);
+    		
+    		Event evento = null;
+    		try {
+    			// traccia l'evento di esportazione dei dati impresa...
+    			evento = new Event();
+    			evento.setUsername(this.getCurrentUser().getUsername());
+    			//evento.setDestination("");
+    			evento.setLevel(Event.Level.INFO);
+    			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
+    			evento.setIpAddress(this.getCurrentUser().getIpAddress());
+    			evento.setSessionId(this.getRequest().getSession().getId());
+    			evento.setMessage("Importazione dati impresa da Michelangelo");
+    			
+    			// importa da servizio Michelangelo
+				helper.importFromMichelangelo(codiceFiscale);
+				
+				if(helper.getImportExport().getErrorCode() == 0) {
+		    		evento.setMessage("Importazione dati impresa da servizio Michelangelo per la ditta " + codiceFiscale);	
+		    		this.setTarget(SUCCESS);
+		    	} else {
+	    		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+					evento.setLevel(Event.Level.ERROR);
+					evento.setDetailMessage(helper.getImportExport().getErrorDescription());
+					addActionError(helper.getImportExport().getErrorDescription());
+		    	}				
+	    	} catch (Exception ex) {
+	    		String msg = "Piattaforma Michelangelo non raggiungibile, riprovare più tardi";
+	    		if(helper.getImportExport() != null) {
+	    			msg = helper.getImportExport().getErrorDescription();
+	    		}
+	    		this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+	    		evento.setError(ex);
+	    		evento.setLevel(Event.Level.ERROR);
+				evento.setDetailMessage(msg);
+				addActionError(msg);				
 	    	} finally {	    		
 				// registra l'evento di importazione...
 	    		if(evento != null)

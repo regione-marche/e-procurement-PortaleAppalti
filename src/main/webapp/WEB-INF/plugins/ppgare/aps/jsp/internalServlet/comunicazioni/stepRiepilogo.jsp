@@ -4,8 +4,19 @@
 
 <s:set var="helper" value="%{#session['nuovaComunicazione']}" />
 
+<s:set var="rettifica" value="%{#helper.modelloRettifica}" />
+<s:set var="isRichiestaRettifica" value="%{#helper.modello == 10 || #helper.modello == 15}" />
+<s:set var="isInvioRettifica" value="%{#rettifica && !#isRichiestaRettifica}"/>
 
-<s:if test="%{#helper.modello > 0}" >
+<s:if test="%{#rettifica}" >
+	<c:set var="title"><wp:i18n key="TITLE_RETTIFICA_OFFERTA" /></c:set>
+	<c:set var="balloon" value="BALLOON_WIZ_RETTIFICA_RIEPILOGO" />
+	<c:set var="hrefAzioni"><wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/processPageRiepilogoNuovaRettifica.action" /></c:set>
+	<s:url id="urlDownloadDocUlteriore" namespace="/do/FrontEnd/Comunicazioni" action="downloadAllegatoRettifica" />
+	<s:url id="urlDownloadDocRichiesto" namespace="/do/FrontEnd/Comunicazioni" action="downloadAllegatoRettificaRichiesto" />
+	<%-- <s:set var="documentiRichiesti" value="%{#helper.documentiRichiesti}" /> --%>
+</s:if>
+<s:elseif test="%{#helper.modello > 0}" >
 	<c:set var="title"><wp:i18n key="TITLE_SOCCORSO_ISTRUTTORIO_NUOVO" /></c:set>
 	<%-- <c:set var="balloon" value="BALLOON_WIZ_SOCCORSO_RIEPILOGO" /> --%>
 	<c:set var="balloon" value="BALLOON_WIZ_COMUNICAZIONE_RIEPILOGO" />
@@ -13,7 +24,7 @@
 	<s:url id="urlDownloadDocUlteriore" namespace="/do/FrontEnd/Comunicazioni" action="downloadAllegatoSoccorso" />
 	<s:url id="urlDownloadDocRichiesto" namespace="/do/FrontEnd/Comunicazioni" action="downloadAllegatoSoccorsoRichiesto" />
 	<s:set var="documentiRichiesti" value="%{#helper.documentiRichiesti}" />
-</s:if>
+</s:elseif>
 <s:else>
 	<c:set var="title"><wp:i18n key="TITLE_COMUNICAZIONI_NUOVA" /></c:set>
 	<c:set var="balloon" value="BALLOON_WIZ_COMUNICAZIONE_RIEPILOGO" />
@@ -167,22 +178,22 @@ id=<s:property value="%{id}" /><br/>
 									class='<s:if test="%{#stat.first && #countRich le 0}">first</s:if> <s:if test="%{#stat.last}">last</s:if>'>
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadDocUlteriore}?id=%{#stat.index}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaAllegato}">
+											<s:a href="%{#urlDownloadDocUlteriore}?id=%{#stat.index}" title="%{#attr.titleScaricaAllegato}">
 												<s:property value="%{#documento}" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadDocUlteriore}?id=%{#stat.index}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaAllegato}" cssClass="bkg download">
+											<s:a href="%{#urlDownloadDocUlteriore}?id=%{#stat.index}" title="%{#attr.titleScaricaAllegato}" cssClass="bkg download">
 												<s:property value="%{#documento}" />
 											</s:a>
 										</c:otherwise>
 									</c:choose>
 								</li>
 							</s:iterator>
-						</s:if>		
+						</s:if>
 						
 					</ul>
-				</s:if>				
+				</s:if>
 				<s:else>
 					<wp:i18n key="LABEL_NO_DOCUMENT" />.
 				</s:else>
@@ -190,18 +201,17 @@ id=<s:property value="%{id}" /><br/>
 		</div>
 	</fieldset>
 	
-	<div class="azioni">
-		<form action="${hrefAzioni}" method="post">
+	<form action="${hrefAzioni}" method="post">
+		<div class="azioni">
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
-			<div>
-				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_previous.jsp" />
-				<s:if test="!sendBlocked">
-					<wp:i18n key="LABEL_COMUNICAZIONI_INVIA_COMUNICAZIONE" var="valueInviaComuniczione" />
-					<wp:i18n key="TITLE_COMUNICAZIONI_INVIA_COMUNICAZIONE" var="titleInviaComuniczione" />
-					<s:submit value="%{#attr.valueInviaComuniczione}" title="%{#attr.titleInviaComuniczione}" cssClass="button block-ui" method="send"></s:submit>
-				</s:if>
-				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_cancel.jsp" />
-			</div>
-		</form>
-	</div>
+		
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_previous.jsp" />
+			<s:if test="!sendBlocked">
+				<wp:i18n key="LABEL_COMUNICAZIONI_INVIA_COMUNICAZIONE" var="valueInviaComuniczione" />
+				<wp:i18n key="TITLE_COMUNICAZIONI_INVIA_COMUNICAZIONE" var="titleInviaComuniczione" />
+				<s:submit value="%{#attr.valueInviaComuniczione}" title="%{#attr.titleInviaComuniczione}" cssClass="button block-ui" method="send"></s:submit>
+			</s:if>
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_cancel.jsp" />
+		</div>
+	</form>	
 </div>

@@ -6,9 +6,8 @@
 <c:set var="backLink" value="ordiniTutti"/>
 <es:checkCustomization var="withAdvancedUI" objectId="UI-ADVANCED" attribute="DATATABLE" feature="ACT" />
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
 <link href="<wp:resourceURL/>static/css/parsley.css" rel="stylesheet"></link>
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.dataTables.min.js"></script>
 
 <%-- ******************************************************************************** --%>

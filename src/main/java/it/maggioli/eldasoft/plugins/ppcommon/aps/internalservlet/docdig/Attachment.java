@@ -16,30 +16,28 @@ import java.util.stream.Collectors;
  * Contiene alcuni metodi comuni utilizzati comunemente per gli oggetti di questo tipo.
  */
 public class Attachment implements Serializable {
-
-    protected Long                       id;
-    protected File                       file;
-    protected File                       fileCifrati;
-    protected String  contentType;
-    protected String  fileName;
-    protected Integer size;
-    protected String                     sha1;
-    protected String                     uuid;
-    protected Integer                    stato;
-    protected Boolean                    isVisible;
+    /**
+	 * UID
+     */
+	private static final long serialVersionUID = 7168332919790967007L;
+	
+	protected Long    id;								// solo richiesto
+    protected File    file;								// richiesto e ulteriore
+    protected File    fileCifrati;						// richiesto e ulteriore
+    protected String  contentType;						// richiesto e ulteriore
+    protected String  fileName;							// richiesto e ulteriore
+    protected Integer size;								// richiesto e ulteriore
+    protected String  sha1;								// richiesto e ulteriore
+    protected String  uuid;								// richiesto e ulteriore
+    protected Integer stato;							// richiesto e ulteriore
+    protected Boolean isVisible;    					// richiesto e ulteriore
+    protected String  desc;								// solo ulteriore
+    protected String  nascosto;							// solo ulteriore
     /**
      * Informazioni sulle firme dell'allegato
      */
-    protected DocumentiAllegatiFirmaBean firmaBean;
-    //Presente solo nei ulteriori
-    /**
-     * Descrizione dell'allegato
-     */
-    protected String                     desc;
-    /**
-     * ???
-     */
-    protected String nascosto;
+    protected DocumentiAllegatiFirmaBean firmaBean;		// richiesto e ulteriore
+    
 
     /**
      * Ritorna il valore l'indice della prima occorrenza trovata che passa la condizione indicata.<br/>
@@ -58,7 +56,7 @@ public class Attachment implements Serializable {
         return indexOf(
                 attachments
                 , attachment -> {   //FunctionalInterface di tipo Predicate (serve per testare una condizione)
-                    //Questo è il controllo che verrà effettuato ad ogni iterazione del loop per controllare se ha trovato l'oggetto
+                    //Questo e' il controllo che verra' effettuato ad ogni iterazione del loop per controllare se ha trovato l'oggetto
                     if (ob instanceof String)   //Con le stringhe non posso utilizzare il ==, o utilizzo .equals, o le StringUtils
                         return StringUtils.equals((String) fun.apply(attachment), (String) ob) ;
                     else
@@ -77,9 +75,9 @@ public class Attachment implements Serializable {
                 ? 0
                 : attachments
                        .parallelStream()
-                            .filter(Objects::nonNull)   //Mi faccio ritornare tutti gli allegati non nulli
-                            .map(Attachment::getSize)   //Converto la stream di allegati in stream di dimensioni
-                       .reduce(0, Integer::sum);    //Sommo tutte le dimensioni contenute nella stream
+                            .filter(Objects::nonNull)   	//Mi faccio ritornare tutti gli allegati non nulli
+                            .map(Attachment::getSize)   	//Converto la stream di allegati in stream di dimensioni
+                       .reduce(0, Integer::sum);    		//Sommo tutte le dimensioni contenute nella stream
     }
 
     /**
@@ -90,9 +88,9 @@ public class Attachment implements Serializable {
                 ? ""
                 : attachments
                        .stream()
-                            .filter(Objects::nonNull)   //Rimuovo dalla stream gli attachment nulli
+                            .filter(Objects::nonNull)   		//Rimuovo dalla stream gli attachment nulli
                             .map(Attachment::toPdfRiepilogo)    //Converto gli attachmenti in linee di riepilogo
-                       .collect(Collectors.joining("\n"));  //Concateno le varie linee
+                       .collect(Collectors.joining("\n"));  	//Concateno le varie linee
     }
 
     private static String toPdfRiepilogo(Attachment attachment) {
@@ -119,15 +117,11 @@ public class Attachment implements Serializable {
     }
 
     public void deleteAndNullifyFiles() {
-        deleteFile(file);
-        deleteFile(fileCifrati);
-
+        if (file != null && file.exists()) file.delete();
+        if (fileCifrati != null && fileCifrati.exists()) fileCifrati.delete();
+        
         file = null;
         fileCifrati = null;
-    }
-
-    private void deleteFile(File file) {
-        if (file != null && file.exists()) file.delete();
     }
 
     public Long getId() {

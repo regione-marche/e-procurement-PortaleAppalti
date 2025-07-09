@@ -14,6 +14,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.F
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardOffertaEconomicaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
@@ -32,6 +34,7 @@ import java.util.List;
  *
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class OpenPageFirmatariAction extends AbstractOpenPageAction {
     /**
 	 * UID

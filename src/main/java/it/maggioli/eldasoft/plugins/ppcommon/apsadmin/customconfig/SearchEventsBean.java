@@ -36,108 +36,77 @@ public class SearchEventsBean extends BaseSearchBean implements Serializable {
 	/** Campo corrispondente a messaggio */
 	@Validate(EParamValidation.GENERIC)
 	private String message;
+	/** Campo corrispondente a soggetto impresa/delegato */
+	@Validate(EParamValidation.GENERIC)
+	private String delegate;
 	
 	public static final int DEFAULT_ROWS_FOR_PAGE = 20;
 	public static final int DEFAULT_START_ROW_INDEX = 0;
 	public static final int DEFAULT_PAGES_TO_SHOW = 5;
 	
 	
-	/**
-	 * @return the dateFrom
-	 */
 	public String getDateFrom() {
 		return dateFrom;
 	}
 
-	/**
-	 * @param dateFrom the dateFrom to set
-	 */
 	public void setDateFrom(String dateFrom) {
 		this.dateFrom = dateFrom;
 	}
 
-	/**
-	 * @return the dateTo
-	 */
 	public String getDateTo() {
 		return dateTo;
 	}
 
-	/**
-	 * @param dateTo the dateTo to set
-	 */
 	public void setDateTo(String dateTo) {
 		this.dateTo = dateTo;
 	}
 
-	/**
-	 * @return the user
-	 */
 	public String getUser() {
 		return user;
 	}
 
-	/**
-	 * @param user the user to set
-	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
 
-	/**
-	 * @return the destination
-	 */
 	public String getDestination() {
 		return destination;
 	}
 
-	/**
-	 * @param destination the destination to set
-	 */
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
 
-	/**
-	 * @return the type
-	 */
 	public String getType() {
 		return type;
 	}
 
-	/**
-	 * @param type the type to set
-	 */
 	public void setType(String type) {
 		this.type = type;
 	}
 
-	/**
-	 * @return the level
-	 */
 	public String getLevel() {
 		return level;
 	}
 
-	/**
-	 * @param level the level to set
-	 */
 	public void setLevel(String level) {
 		this.level = level;
 	}
 	
-	/**
-	 * @return the message
-	 */
 	public String getMessage() {
 		return message;
 	}
 
-	/**
-	 * @param message the message to set
-	 */
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(String delegate) {
+		this.delegate = delegate;
 	}
 
 	public SearchEventsBean() {
@@ -157,6 +126,7 @@ public class SearchEventsBean extends BaseSearchBean implements Serializable {
 		result = result && StringUtils.isEmpty(this.type);
 		result = result && StringUtils.isEmpty(this.level);
 		result = result && StringUtils.isEmpty(this.message);
+		result = result && StringUtils.isEmpty(this.delegate);
 		
 		return result;
 	}
@@ -197,7 +167,6 @@ public class SearchEventsBean extends BaseSearchBean implements Serializable {
 	
 
 	private void setStarEndPage() {
-
 		Double ne_half = (Math.ceil((double) this.getPagesToShow() / 2));
 		Double start = null;
 		Double end = null;

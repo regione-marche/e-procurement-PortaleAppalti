@@ -1,7 +1,10 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
-import java.util.HashMap;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+
+import java.util.HashMap;
 
 /**
  * Consente la generazione del PDF per l'aggiornamento dell'iscrizione.
@@ -9,6 +12,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  * @author 
  * @since 
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+})
 public class GenPDFQuestionarioAggiornamentoIscrizioneAction extends GenPDFQuestionarioIscrizioneAction {
 	/**
 	 * UID

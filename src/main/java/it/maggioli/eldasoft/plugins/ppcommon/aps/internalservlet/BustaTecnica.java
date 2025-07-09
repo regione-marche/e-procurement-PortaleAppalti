@@ -16,6 +16,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManag
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpSessionBindingEvent;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -23,6 +25,9 @@ import org.apache.xmlbeans.XmlObject;
 import com.agiletec.aps.system.ApsSystemUtils;
 
 
+/**
+ * busta tecnica per l'offerta di gara
+ */
 public class BustaTecnica extends BustaDocumenti {
 	/**
 	 * UID
@@ -70,10 +75,22 @@ public class BustaTecnica extends BustaDocumenti {
 		
 		this.soloUploadDocumenti = !this.getOEPV();
 		
+		this.helperDocumenti = null;
 		this.helper = null;
-		//this.initHelper();
 	}
 	
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		super.valueUnbound(event);
+		if(helper != null) {
+			helper.valueUnbound(event);
+		}
+	}
+
 	/**
 	 * invia la busta al servizio 
 	 */
@@ -84,15 +101,13 @@ public class BustaTecnica extends BustaDocumenti {
 		
 		if(this.helper == null) {
 			// busta solo documenti
-			//XmlObject doc = this.getBustaDocument();
-			
 			continua = super.send(stato);
-			
 		} else {
 			// busta tecnica
 			// copia i firmatari della busta nella busta di riepilogo...
 			//this.helper.copiaUltimiFirmatariInseriti2Busta(this.gestioneBuste.getBustaRiepilogo().getHelper());
 			this.gestioneBuste.getBustaRiepilogo().getHelper().memorizzaUltimiFirmatariInseriti(this.helper.getComponentiRTI());
+			this.helper.getDocumenti().correggiDocumentiRichiestiConBO(documentiRichiestiDB);
 			
 			continua = super.send(
 					this.helper.getXmlDocument(BustaTecnicaDocument.Factory.newInstance(), true, false),
@@ -122,17 +137,30 @@ public class BustaTecnica extends BustaDocumenti {
 		this.helper = null;
 		
 		XmlObject doc = this.getBustaDocument();
+
+		// per i concorsi di progettazione l'offerta e' "solo upload documenti"
+		boolean concorsoProgettazione = gestioneBuste.isConcorsoProgettazionePubblico() || gestioneBuste.isConcorsoProgettazioneRiservato(); 
+		if(concorsoProgettazione) {
+			this.soloUploadDocumenti = true;
+		}
+
+		// utilizza l'helper solo documenti se la gara e' 
+		// - solo upload documenti
+		// - concorso di progettazione (pubblico/riservato)
 		boolean soloDoc = this.soloUploadDocumenti || (doc instanceof DocumentazioneBustaDocument);
 		
-		if(this.getOEPV()) {
-			soloDoc = false;
+		if(!concorsoProgettazione) {
+			// per le offerte OEPV NON si utilizza l'helper solo documenti
+			if(this.getOEPV()) {
+				soloDoc = false;
+			}
 		}
 		
 		if(soloDoc) {
 			// utilizza l'helper predefinito...
 			super.initHelper();
 		} else {
-			// utilizza l'helper per l'offerta economica
+			// utilizza l'helper per l'offerta tecnica
 			this.helper = new WizardOffertaTecnicaHelper();
 			this.initHelperOfferta();
 			//this.helperDocumenti = this.helper.getDocumenti();

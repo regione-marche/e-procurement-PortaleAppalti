@@ -8,6 +8,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.helper.WizardOffertaAstaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardDocumentiBustaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -19,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
  *
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class OpenPageUploadPdfAction extends AbstractOpenPageAction {
 	/**
 	 * UID
@@ -56,13 +59,13 @@ public class OpenPageUploadPdfAction extends AbstractOpenPageAction {
 		this.dimensioneAttualeFileCaricati = dimensioneAttualeFileCaricati;
 	}
 
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-	
-	public Integer getLimiteTotaleUpload() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
+//	public Integer getLimiteUploadFile() {
+//		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+//	}
+//	
+//	public Integer getLimiteTotaleUpload() {
+//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+//	}
 
 	/**
 	 * ... 
@@ -78,12 +81,14 @@ public class OpenPageUploadPdfAction extends AbstractOpenPageAction {
 				this.addActionError(this.getText("Errors.sessionExpired"));
 				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {
-				// la sessione è attiva...
+				// la sessione e' attiva...
+				getUploadValidator().setHelper(helper);
 				
 				// si aggiorna il totale dei file finora caricati
 				WizardDocumentiBustaHelper documenti = helper.getDocumenti();
-				if (CollectionUtils.isNotEmpty(documenti.getAdditionalDocs()))
-					dimensioneAttualeFileCaricati += Attachment.sumSize(documenti.getAdditionalDocs());
+//				if (CollectionUtils.isNotEmpty(documenti.getAdditionalDocs()))
+//					dimensioneAttualeFileCaricati += Attachment.sumSize(documenti.getAdditionalDocs());				
+				dimensioneAttualeFileCaricati = documenti.getTotalSize();
 
 				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
 						 		 WizardOffertaAstaHelper.STEP_UPLOAD_PDF);

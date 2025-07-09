@@ -1,6 +1,15 @@
 <%@ taglib prefix="wp" uri="aps-core.tld" %>
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
+
+<%-- forza il refresh delle librerie js ogni giorno --%>
+<%
+	String file = application.getRealPath("/") + "WEB-INF/PA_VER.TXT";
+	String webappVersion = org.apache.commons.io.FileUtils.readFileToString(new java.io.File(file), "ISO-8859-1");
+%>
+<c:set var="versione"><%=webappVersion%></c:set>
+
+
 <s:set var="buste" value="%{#session.dettaglioOffertaGara}"/>
 <s:set var="partecipazione" value="%{#buste.bustaPartecipazione.helper}"/>
 <!-- OBSOLETO <s:set var="riepilogoBuste" value="%{#session.riepilogoBuste}" /> -->
@@ -40,6 +49,7 @@
 	<jsp:param name="skin" value="${param.skin}" />
 	<jsp:param name="cssName" value="application" />
 </jsp:include>
+
 <h2>${titolo} [${codice}]</h2>
 <div class="portgare-view">
 
@@ -120,9 +130,9 @@
 	
 	<wp:headInfo type="CSS" info="../js/qcompiler/styles.css" />
 	<app-root></app-root>
-	<script src="<wp:resourceURL/>static/js/qcompiler/runtime.js" defer></script>
-	<script src="<wp:resourceURL/>static/js/qcompiler/polyfills.js" defer></script>
-	<script src="<wp:resourceURL/>static/js/qcompiler/main.js" defer></script></body>
+	<script src="<wp:resourceURL/>static/js/qcompiler/runtime.js?v=${versione}" defer></script>
+	<script src="<wp:resourceURL/>static/js/qcompiler/polyfills.js?v=${versione}" defer></script>
+	<script src="<wp:resourceURL/>static/js/qcompiler/main.js?v=${versione}" defer></script></body>
  	
  	<br/>
  	<br/>

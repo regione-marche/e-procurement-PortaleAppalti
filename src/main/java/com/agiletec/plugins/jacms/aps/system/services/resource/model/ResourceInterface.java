@@ -17,6 +17,7 @@
 */
 package com.agiletec.plugins.jacms.aps.system.services.resource.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.agiletec.aps.system.exception.ApsSystemException;
@@ -26,7 +27,7 @@ import com.agiletec.aps.system.services.category.Category;
  * Interfaccia per gli oggetti risorsa.
  * @author W.Ambu - E.Santoboni
  */
-public interface ResourceInterface {
+public interface ResourceInterface extends Serializable {
 	
 	/**
      * Specifica se la risorsa è composta da più istanze.

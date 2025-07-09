@@ -4,23 +4,31 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSAste.DettaglioAstaType;
 import it.eldasoft.www.sil.WSGareAppalto.AbilitazioniGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentoAllegatoType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletamentoElencoOperatoriSearch;
 import it.eldasoft.www.sil.WSGareAppalto.LottoGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.StatisticheComunicazioniPersonaliType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.OpenLottiDistintiAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewAccessoDocumentiLottiAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -28,8 +36,12 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Valida
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.aste.IAsteManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,11 +66,12 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 
 	private Map<String, Object> session;
 
-	private IBandiManager _bandiManager;
+	private IBandiManager bandiManager;
 	private IComunicazioniManager comunicazioniManager;
-	private INtpManager _ntpManager;
+	private INtpManager ntpManager;
 	private IAsteManager asteManager;
 	private ICustomConfigManager customConfigManager;
+	private IAppParamManager appParamManager;
 
 	@Validate(EParamValidation.CODICE)
 	private String codice;
@@ -68,7 +81,10 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	private boolean invitoPresentato;
 	private boolean abilitaRiepilogoOfferta;
 	private boolean abilitaRiepilogoRichiesta;
+	private boolean garaLotti;
 	private LottoGaraType[] lotti;
+	@Validate(EParamValidation.GENERIC)
+	private String BDNCPUrl;
 	private DocumentoAllegatoType[] attiDocumenti;
 	@Validate(EParamValidation.DIGIT)
 	private String numeroOrdineInvito;
@@ -87,6 +103,7 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	private boolean abilitaPartecipaAsta;
 	private boolean abilitaRinunciaOfferta;
 	private boolean abilitaRiepilogoRinunciaOfferta;
+	private boolean abilitaAccessoDocumenti;
 
 	@Validate(EParamValidation.CODICE)
 	private String codiceFromLotto;
@@ -101,15 +118,15 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	}
 
 	public void setNtpManager(INtpManager ntpManager) {
-		_ntpManager = ntpManager;
+		this.ntpManager = ntpManager;
 	}
 
 	protected IBandiManager getBandiManager() {
-		return _bandiManager;
+		return bandiManager;
 	}
 
 	public void setBandiManager(IBandiManager bandiManager) {
-		this._bandiManager = bandiManager;
+		this.bandiManager = bandiManager;
 	}
 
 	public void setComunicazioniManager(IComunicazioniManager comunicazioniManager) {
@@ -130,6 +147,14 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 
 	public void setCustomConfigManager(ICustomConfigManager customConfigManager) {
 		this.customConfigManager = customConfigManager;
+	}
+
+	public IAppParamManager getAppParamManager() {
+		return appParamManager;
+	}
+
+	public void setAppParamManager(IAppParamManager appParamManager) {
+		this.appParamManager = appParamManager;
 	}
 
 	public void setCodice(String codice) {
@@ -155,15 +180,31 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	public void setAbilitazioniGara(AbilitazioniGaraType abilitazioniGara) {
 		this.abilitazioniGara = abilitazioniGara;
 	}
+	
+	public boolean isGaraLotti() {
+		return garaLotti;
+	}
+
+	public void setGaraLotti(boolean garaLotti) {
+		this.garaLotti = garaLotti;
+	}
 
 	public LottoGaraType[] getLotti() {
 		return lotti;
 	}
 
-	public void setLotti(LottoGaraType[] datiLotto) {
-		this.lotti = datiLotto;
+	public void setLotti(LottoGaraType[] lotti) {
+		this.lotti = lotti;
 	}
-	
+
+	public String getBDNCPUrl() {
+		return BDNCPUrl;
+	}
+
+	public void setBDNCPUrl(String bDNCPUrl) {
+		BDNCPUrl = bDNCPUrl;
+	}
+
 	public DocumentoAllegatoType[] getAttiDocumenti() {
 		return attiDocumenti;
 	}
@@ -328,6 +369,13 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 		this.abilitaRiepilogoRinunciaOfferta = abilitaRiepilogoRinunciaOfferta;
 	}
 	
+	public boolean isAbilitaAccessoDocumenti() {
+		return abilitaAccessoDocumenti;
+	}
+
+	public void setAbilitaAccessoDocumenti(boolean abilitaAccessoDocumenti) {
+		this.abilitaAccessoDocumenti = abilitaAccessoDocumenti;
+	}
 
 	public int getPresentaPartecipazione() {
 		return PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA;
@@ -344,11 +392,12 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	 * @return Il codice del risultato dell'azione.
 	 */
 	public String view() {
-		// se si proviene dall'EncodedDataAction di InitIscrizione con un
-		// errore, devo resettare il target tanto va riaperta la pagina stessa
-		if ("block".equals(this.getTarget())) {
-			this.setTarget(SUCCESS);
-		}
+		// NB: 
+		// se si proviene dall'EncodedDataAction di InitIscrizione o dell'OpenGestioneBuste con un errore, 
+		// devo resettare il target tanto va riaperta la pagina del bando
+		resetTargetAfterActionChain();
+		
+		// apri il dettaglio del bando
 		try {
 			if(!StringUtils.isEmpty(this.codiceFromLotto)) {
 				this.codice = this.codiceFromLotto;
@@ -356,23 +405,30 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 			
 			DettaglioGaraType gara = this.getBandiManager().getDettaglioGara(this.codice);
 			
-			if (isAccessoNonConsentitoDatiProcedura(gara)) {
+			if(StringUtils.isNotEmpty(this.codice) && gara == null) {
+				// se non si trova esito, gara, delibera o avviso si segnala un errore
+				addActionMessage(this.getText("appalto.inDefinizione"));
+				setTarget(CommonSystemConstants.PORTAL_ERROR);
+				return this.getTarget();
+			}
+			
+			if (isAccessoNonConsentitoDatiProcedura(gara, this.getCurrentUser())) {
 				// blocco l'accesso ai dati quando si forza la url di accesso senza avere l'autorizzazione a consultare il dato
 				this.addActionError(this.getText("Errors.notAllowed"));
 				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 			} else {
-
 //				boolean invitata = this.isInvitataAsta(gara);
 //				gara.getDatiGeneraliGara().setInvitataAsta(invitata);
 				gara.getDatiGeneraliGara().setInvitataAsta(false);
 				
 				boolean ristretta = WizardPartecipazioneHelper.isGaraRistretta(gara.getDatiGeneraliGara().getIterGara());
 				boolean negoziata = WizardPartecipazioneHelper.isGaraNegoziata(gara.getDatiGeneraliGara().getIterGara());
+				boolean rdo = WizardPartecipazioneHelper.isGaraRdo(gara.getDatiGeneraliGara().getIterGara());
 				boolean sospesa = STATO_GARA_SOSPESA.equals(gara.getDatiGeneraliGara().getStato());
 				
 				this.setDettaglioGara(gara);
 				
-				boolean garaLotti = false;
+				garaLotti = false;
 				if(gara != null && gara.getDatiGeneraliGara() != null) {
 					garaLotti = 
 						gara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_OFFERTE_DISTINTE
@@ -394,8 +450,8 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 						busteDistinte = gara.getDatiGeneraliGara().getBusteDistinte();
 					}
 
-					boolean presentaPartecipazioneScaduta = false;
-					boolean presentaOffertaScaduta = false;
+//					boolean presentaPartecipazioneScaduta = false;
+//					boolean presentaOffertaScaduta = false;
 
 					// imposta le abilitazioni di gara
 					AbilitazioniGaraType abilitazioni = this.getBandiManager()
@@ -412,7 +468,7 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 						// NB: se la data non viene rilevata, l'abilitazione dei
 						// comandi dipende dal test sulla data effettuato nel
 						// dbms server con la sua data di sistema
-						dataAttuale = this._ntpManager.getNtpDate();
+						dataAttuale = this.ntpManager.getNtpDate();
 					} catch (Exception e) {
 						// non si fa niente, si usano i dati ricevuti dal
 						// servizio e quindi i test effettuati nel dbms server
@@ -561,7 +617,7 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 					if (ristretta && 
 						this.customConfigManager.isVisible("GARE", "NUMORDINEINVITO")) 
 					{
-						Long n = this._bandiManager.getNumeroOrdineInvito(
+						Long n = this.bandiManager.getNumeroOrdineInvito(
 								this.getCurrentUser().getUsername(),
 								this.codice);
 						this.numeroOrdineInvito = (n != null && n >= 0 ? n.toString() : null);
@@ -573,7 +629,7 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 					this.abilitaRiepilogoRinunciaOfferta = false;
 					if(this.getAbilitazioniGara().isRichInvioOfferta() && !this.abilitaRiepilogoOfferta) {
 						if(this.customConfigManager.isActiveFunction("GARE", "RINUNCIA")
-						   && ((ristretta || negoziata) && !sospesa)) 
+						   && ((ristretta || negoziata || rdo) && !sospesa))
 						{
 							DettaglioComunicazioneType dettCom = ComunicazioniUtilities.retrieveComunicazione(
 									this.comunicazioniManager,
@@ -607,8 +663,21 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 								this.abilitazioniGara.setRichInvioOfferta(false);
 								//this.abilitazioniGara.setRichComprovaRequisiti(false);	???
 								//this.abilitazioniGara.setRichPartecipazione(false);		???
-							}	
+							}
 						}
+					}
+					
+					// abilita il link per l'accesso alla documentazione ART.36
+					abilitaAccessoDocumenti = false;
+					List<EspletGaraOperatoreType> ammessePubblicazione = getAmmessePubblicazioneGara(
+							codice, 
+							garaLotti, 
+							getCurrentUser().getUsername()
+					);
+					if(ammessePubblicazione != null && ammessePubblicazione.size() > 0) {
+						// abilita l'accesso alla pubblicazione solo se l'utente e' tra le classificate
+						// NB: dovrebbe restituire solo l'impresa relativa all'utente corrente
+						abilitaAccessoDocumenti = true;
 					}
 					
 					// nel caso il bando venga aperto da una comunicazione (inviata/ricevuta)
@@ -643,12 +712,14 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 		return this.getTarget();
 	}
 
+	/**
+	 * ... 
+	 */
 	public String viewLotti() {
 		try {
-			DettaglioGaraType gara = this.getBandiManager().getDettaglioGara(
-							this.codice);
+			DettaglioGaraType gara = this.getBandiManager().getDettaglioGara(this.codice);
 
-			if (isAccessoNonConsentitoDatiProcedura(gara)) {
+			if (isAccessoNonConsentitoDatiProcedura(gara, getCurrentUser())) {
 				// blocco l'accesso ai dati quando si forza la url di accesso senza avere l'autorizzazione a consultare il dato
 				this.addActionError(this.getText("Errors.notAllowed"));
 				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -685,11 +756,13 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	 * 
 	 * @param gara
 	 *            procedura di gara
+	 * @param username
+	 *            procedura di gara
 	 * @return true se l'accesso non &egrave; consentito, false altrimenti
 	 * @throws ApsException
 	 */
-	private boolean isAccessoNonConsentitoDatiProcedura(DettaglioGaraType gara)
-			throws ApsException 
+	public static boolean isAccessoNonConsentitoDatiProcedura(DettaglioGaraType gara, UserDetails user)
+		throws ApsException 
 	{
 		// 14/03/2018: sicurezza accesso al dettaglio. Si puo' accedere al
 		// dettaglio solo se autorizzati, pertanto si recuperano e si
@@ -699,53 +772,62 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 		// il set di inizializzazioni qui sotto riportate servono a far
 		// fallire i controlli finali e a non aprire il dettaglio se non
 		// vengono variati i valori nella logica intermedia del metodo
-		boolean isNegoziata = WizardPartecipazioneHelper.isGaraNegoziata(gara.getDatiGeneraliGara().getIterGara());
-		boolean isInCorso = STATO_GARA_IN_CORSO.equals(gara.getDatiGeneraliGara().getStato());
-		boolean isSospesa = STATO_GARA_SOSPESA.equals(gara.getDatiGeneraliGara().getStato());
+		boolean isNegoziata = false;
+		boolean isInCorso = false;
+		boolean isSospesa = false;
 		boolean isAccessoAnonimo = true;
 		boolean isInvitata = false;
+		if(gara != null &&  gara.getDatiGeneraliGara() != null) {
+			isNegoziata = WizardPartecipazioneHelper.isGaraNegoziata(gara.getDatiGeneraliGara().getIterGara());
+			isInCorso = STATO_GARA_IN_CORSO.equals(gara.getDatiGeneraliGara().getStato());
+			isSospesa = STATO_GARA_SOSPESA.equals(gara.getDatiGeneraliGara().getStato());
+			String codice = gara.getDatiGeneraliGara().getCodice();
 		
-		UserDetails userDetails = this.getCurrentUser();
-		if (null != userDetails
-			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
-		{
-			// imposto il flag
-			isAccessoAnonimo = false;
-
-			// verifica le abilitazioni di gara per l'utenza
-			AbilitazioniGaraType abilitazioni = this.getBandiManager()
-							.getAbilitazioniGara(userDetails.getUsername(), codice);
-			isInvitata = abilitazioni.isRichInvioOfferta();
-			
-			Date dataAttuale = null;
-			try {
-				// va rilevata l'ora ufficiale NTP per confrontarla con
-				// la data termine in modo da abilitare eventuali
-				// comandi dipendenti dal non superamento di tale data.
-				// NB: se la data non viene rilevata, l'abilitazione dei
-				// comandi dipende dal test sulla data effettuato nel
-				// dbms server con la sua data di sistema
-				dataAttuale = this._ntpManager.getNtpDate();
-			} catch (Exception e) {
-				// non si fa niente, si usano i dati ricevuti dal
-				// servizio e quindi i test effettuati nel dbms server
-			}
-
-			if (dataAttuale != null && 
-				gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta() != null) 
+			if (StringUtils.isNotEmpty(codice)
+				&& user != null 
+				&& !user.getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
 			{
+				// imposto il flag
+				isAccessoAnonimo = false;
+				
+				ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+				IBandiManager bandiManager = (IBandiManager) ctx.getBean(PortGareSystemConstants.BANDI_MANAGER);
+				INtpManager ntpManager = (INtpManager) ctx.getBean(CommonSystemConstants.NTP_MANAGER);
+	
+				// verifica le abilitazioni di gara per l'utenza
+				AbilitazioniGaraType abilitazioni = bandiManager.getAbilitazioniGara(user.getUsername(), codice);
+				isInvitata = abilitazioni.isRichInvioOfferta();
+				
+				Date dataAttuale = null;
 				try {
-					if (dataAttuale.compareTo(
-							InitIscrizioneAction.calcolaDataOra(
-								gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta(),
-								gara.getDatiGeneraliGara().getOraTerminePresentazioneOfferta(),	true)) > 0) {
-						isInCorso = false;
-					} else {
-						isInCorso = true;
-					}
+					// va rilevata l'ora ufficiale NTP per confrontarla con
+					// la data termine in modo da abilitare eventuali
+					// comandi dipendenti dal non superamento di tale data.
+					// NB: se la data non viene rilevata, l'abilitazione dei
+					// comandi dipende dal test sulla data effettuato nel
+					// dbms server con la sua data di sistema
+					dataAttuale = ntpManager.getNtpDate();
 				} catch (Exception e) {
 					// non si fa niente, si usano i dati ricevuti dal
 					// servizio e quindi i test effettuati nel dbms server
+				}
+	
+				if (dataAttuale != null && 
+					gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta() != null) 
+				{
+					try {
+						if (dataAttuale.compareTo(
+								InitIscrizioneAction.calcolaDataOra(
+									gara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta(),
+									gara.getDatiGeneraliGara().getOraTerminePresentazioneOfferta(),	true)) > 0) {
+							isInCorso = false;
+						} else {
+							isInCorso = true;
+						}
+					} catch (Exception e) {
+						// non si fa niente, si usano i dati ricevuti dal
+						// servizio e quindi i test effettuati nel dbms server
+					}
 				}
 			}
 		}
@@ -753,6 +835,9 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 		return isNegoziata && isInCorso && (isAccessoAnonimo || !isInvitata);
 	}
 		
+	/**
+	 * ... 
+	 */
 	public String viewFromLotto() {
 		try {
 			// prima recupera il codice della gara dal dettaglio estratto dal
@@ -778,12 +863,37 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 	}
 
 	/**
+	 * visualizza schefa ANAC 
+	 */
+	public String viewBDNCP() {
+		try {
+			DettaglioGaraType gara = this.getBandiManager().getDettaglioGara(this.codice);
+			if (isAccessoNonConsentitoDatiProcedura(gara, getCurrentUser())) {
+				// blocco l'accesso ai dati quando si forza la url di accesso senza avere l'autorizzazione a consultare il dato
+				this.addActionError(this.getText("Errors.notAllowed"));
+				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			} else {
+				// popolo i dati da visualizzare
+				this.setDettaglioGara(gara);
+				this.setLotti(this.getBandiManager().getLottiGara(this.codice));
+				this.setBDNCPUrl( (String)appParamManager.getConfigurationValue(AppParamManager.BDNCP_TEMPLATE_URL) );				
+			}
+
+		} catch (ApsException t) {
+			ApsSystemUtils.logThrowable(t, this, "viewDatiApertiBDNCP");
+			ExceptionUtils.manageExceptionError(t, this);
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+		}
+		return this.getTarget();
+	}
+
+	/**
 	 * visualizza atti e documenti di un bando 
 	 */
 	public String viewAttiDocumenti() {
 		try {
 			DettaglioGaraType gara = this.getBandiManager().getDettaglioGara(this.codice);
-			if (isAccessoNonConsentitoDatiProcedura(gara)) {
+			if (isAccessoNonConsentitoDatiProcedura(gara, getCurrentUser())) {
 				// blocco l'accesso ai dati quando si forza la url di accesso senza avere l'autorizzazione a consultare il dato
 				this.addActionError(this.getText("Errors.notAllowed"));
 				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -851,7 +961,7 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 		boolean invitata = false;
 		try {
 			List<DettaglioAstaType> listaAste =  OpenLottiDistintiAction.getLottiInvitatiAsta(
-					this._bandiManager, 
+					this.bandiManager, 
 					this.asteManager, 
 					gara, 
 					this.getCurrentUser().getUsername());
@@ -868,6 +978,47 @@ public class BandiAction extends EncodedDataAction implements SessionAware {
 			ExceptionUtils.manageExceptionError(t, this);
 		}
 		return invitata;
+	}	
+	
+	/**
+	 * restituisce l'elenco delle ammesse alla pubblicazione atti (art 36)  
+	 */
+	private List<EspletGaraOperatoreType> getAmmessePubblicazioneGara(String codiceGara, boolean garaLotti, String username) {
+		List<EspletGaraOperatoreType> ammesse = null;
+		try {
+			if( !garaLotti ) {
+				// gara NO lotti
+				// recupera le classificate della la gara
+				if(dettaglioGara.getDatiGeneraliGara().getDataPubblicazioneAtti() != null) {
+					EspletamentoElencoOperatoriSearch search = new EspletamentoElencoOperatoriSearch();
+					search.setCodice(codice);
+					search.setUsername(username);
+					List<EspletGaraOperatoreType> imprese = bandiManager.getEspletamentoGaraAccessoDocumentiElencoOperatori(search);							
+					if(imprese != null)	{
+						ammesse = new ArrayList<EspletGaraOperatoreType>();
+						ammesse = imprese;
+					}
+				}
+			} else {
+				// gare a lotti
+				ammesse = EspletGaraViewAccessoDocumentiLottiAction
+						.getAmmessePubblicazioneAtti(getCurrentUser().getUsername(), codiceGara);
+			}			
+		} catch (Exception ex) {
+			ApsSystemUtils.logThrowable(ex, this, "getAmmessePubblicazioneGara");
+		}
+		return ammesse;
+	}
+	
+	/**
+	 * se si proviene dall'EncodedDataAction di InitIscrizione o dell'OpenGestioneBuste con un errore, 
+	 * devo resettare il target tanto va riaperta la pagina del bando
+	 */
+	private void resetTargetAfterActionChain() {
+		if ("block".equals(getTarget()) 
+			|| "successBando".equalsIgnoreCase(getTarget())
+			|| "backBando".equalsIgnoreCase(getTarget()))
+			setTarget(SUCCESS);
 	}
 	
 }

@@ -8,6 +8,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StrutsUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
@@ -28,6 +30,7 @@ import com.opensymphony.xwork2.inject.Inject;
  * 
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class InitOffertaTecnicaAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID

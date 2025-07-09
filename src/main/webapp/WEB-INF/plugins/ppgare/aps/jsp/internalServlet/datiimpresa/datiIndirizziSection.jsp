@@ -54,13 +54,13 @@
 								<c:choose>
 									<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 										<li>
-											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyIndirizzoImpresa.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyIndirizzoImpresa.action"/>&amp;id=${status.index}&amp;ext=${param.ext}' 
 												 title="<wp:i18n key="TITLE_AZIONE_MODIFICA_INDIRIZZO" />">
 												<wp:i18n key="LABEL_AZIONE_MODIFICA_INDIRIZZO" />
 											</a>
 										</li>
 										<li>
-											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteIndirizzoImpresa.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteIndirizzoImpresa.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}' 
 												 title="<wp:i18n key="TITLE_AZIONE_ELIMINA_INDIRIZZO" />">
 												<wp:i18n key="LABEL_AZIONE_ELIMINA_INDIRIZZO" />
 											</a>
@@ -68,12 +68,12 @@
 									</c:when>
 									<c:otherwise>
 										<li>
-											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyIndirizzoImpresa.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyIndirizzoImpresa.action"/>&amp;id=${status.index}&amp;ext=${param.ext}' 
 												 title="<wp:i18n key="TITLE_AZIONE_MODIFICA_INDIRIZZO" />" class="bkg modify">
 											</a>
 										</li>
 										<li>
-											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteIndirizzoImpresa.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+											<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteIndirizzoImpresa.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}' 
 												 title="<wp:i18n key="TITLE_AZIONE_ELIMINA_INDIRIZZO" />" class="bkg delete">
 											</a>
 										</li>
@@ -149,7 +149,9 @@
 					<s:select list="maps['province']" name="provincia" id="provincia" value="%{provincia}" cssClass="provincia"
 										headerKey="" headerValue="%{#attr.headerValueProvincia}" aria-required="true" >
 					</s:select>
-					<div class="note"><wp:i18n key="LABEL_NOTA_PROVINCIA_SOLO_PER_ITALIA" /></div>
+				</div>
+				<div class="note">
+					<wp:i18n key="LABEL_NOTA_PROVINCIA_SOLO_PER_ITALIA" />
 				</div>
 			</div>
 		</div>
@@ -159,17 +161,20 @@
 				<label><wp:i18n key="LABEL_RECAPITI" /> : </label>
 			</div>
 			<div class="element">
-				<label for="telefono"><wp:i18n key="LABEL_TELEFONO" /> :</label>
-				<s:textfield name="telefono" id="telefono" value="%{telefono}" 
-										 size="20" maxlength="50" />
-				<label for="fax"><wp:i18n key="LABEL_FAX" /> :</label>
-				<s:textfield name="fax" id="fax" value="%{fax}" 
-										 size="20" maxlength="20" />
-				<c:if test="${needPrefisso}">
-					<div class="note">
-						<wp:i18n key="DATI_IMPRESA_INFO_TELEFONO" />
-					</div>
-				</c:if>
+				<div class="contents-group">
+					<label for="telefono"><wp:i18n key="LABEL_TELEFONO" /> :</label>
+					<s:textfield name="telefono" id="telefono" value="%{telefono}" 
+											 size="20" maxlength="50" />
+					<label for="fax"><wp:i18n key="LABEL_FAX" /> :</label>
+					<s:textfield name="fax" id="fax" value="%{fax}" 
+											 size="20" maxlength="20" />
+				</div>
+				<div class="note">
+					<c:choose>
+						<c:when test="${needPrefisso}"><wp:i18n key="DATI_IMPRESA_INFO_TELEFONO" /></c:when>
+						<c:otherwise><wp:i18n key="DATI_IMPRESA_INFO_TELEFONO_NO_RECAP" /></c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 		</div>
 

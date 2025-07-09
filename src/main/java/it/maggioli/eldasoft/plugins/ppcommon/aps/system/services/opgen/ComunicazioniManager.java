@@ -1,30 +1,15 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen;
 
-import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
-import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
-import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
-import it.eldasoft.www.WSOperazioniGenerali.ErroreOutType;
-import it.eldasoft.www.WSOperazioniGenerali.GetComunicazioneOutType;
-import it.eldasoft.www.WSOperazioniGenerali.GetElencoComunicazioniOutType;
-import it.eldasoft.www.WSOperazioniGenerali.IsComunicazioneProcessataOutType;
-import it.eldasoft.www.WSOperazioniGenerali.ProtocollaComunicazioneOutType;
-import it.eldasoft.www.WSOperazioniGenerali.SendComunicazioneOutType;
-import it.eldasoft.www.WSOperazioniGenerali.WSAllegatoType;
-import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoType;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.AbstractService;
+import it.eldasoft.www.WSOperazioniGenerali.*;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * Servizio gestore delle comunicazioni con il backoffice
@@ -68,18 +53,45 @@ public class ComunicazioniManager extends AbstractService implements
 		else
 		    risultato = new ArrayList<DettaglioComunicazioneType>();
 	    } else {
-		// se si verifica un errore durante l'estrazione dei dati con il
-		// servizio, allora si ritorna un'eccezione che contiene il
-		// messaggio di errore
-		throw new ApsException(
-			"Errore durante la ricerca di comunicazioni: "
-				+ retWS.getErrore());
-	    }
-	} catch (RemoteException e) {
-	    throw new ApsException(
-		    "Errore inaspettato durante la ricerca di comunicazioni", e);
-	}
-	return risultato;
+			// se si verifica un errore durante l'estrazione dei dati con il
+			// servizio, allora si ritorna un'eccezione che contiene il
+			// messaggio di errore
+			throw new ApsException(
+				"Errore durante la ricerca di comunicazioni: "
+					+ retWS.getErrore());
+		    }
+		} catch (RemoteException e) {
+		    throw new ApsException(
+			    "Errore inaspettato durante la ricerca di comunicazioni", e);
+		}
+		return risultato;
+    }
+
+    @Override
+    public List<DettaglioComunicazioneType> searchElencoComunicazioni(
+	    DettaglioComunicazioneType criteriRicerca) throws ApsException {
+	List<DettaglioComunicazioneType> risultato = null;
+	try {
+	    GetElencoComunicazioniOutType retWS = this.wsOpGenerali.getProxyWSOPGenerali()
+		    .searchElencoComunicazioni(criteriRicerca);
+	    if (retWS.getErrore() == null) {
+		if (retWS.getComunicazione() != null)
+		    risultato = Arrays.asList(retWS.getComunicazione());
+		else
+		    risultato = new ArrayList<DettaglioComunicazioneType>();
+	    } else {
+			// se si verifica un errore durante l'estrazione dei dati con il
+			// servizio, allora si ritorna un'eccezione che contiene il
+			// messaggio di errore
+			throw new ApsException(
+				"Errore durante la ricerca di comunicazioni: "
+					+ retWS.getErrore());
+		    }
+		} catch (RemoteException e) {
+		    throw new ApsException(
+			    "Errore inaspettato durante la ricerca di comunicazioni", e);
+		}
+		return risultato;
     }
 
     @Override
@@ -174,14 +186,20 @@ public class ComunicazioniManager extends AbstractService implements
 							// coerente la lista degli allegati, ma non si spedisce 
 							// il contenuto :D !!!
 							AllegatoComunicazioneType doc = new AllegatoComunicazioneType(
-									comunicazione.getAllegato(i).getId(),
-									comunicazione.getAllegato(i).getTipo(),
-									comunicazione.getAllegato(i).getNomeFile(),
-									comunicazione.getAllegato(i).getDescrizione(),
-									new byte[0],	// <= il servizio non accetta null !!!
-									comunicazione.getAllegato(i).getUuid(),
-									comunicazione.getAllegato(i).getModificato(),
-									comunicazione.getAllegato(i).getDimensione(),comunicazione.getAllegato(i).getFirmacheck(),comunicazione.getAllegato(i).getFirmacheckts()); 
+									comunicazione.getAllegato(i).getId()
+									, comunicazione.getAllegato(i).getTipo()
+									, comunicazione.getAllegato(i).getNomeFile()
+									, comunicazione.getAllegato(i).getDescrizione()
+									, new byte[0]	// <= il servizio non accetta null !!!
+									, comunicazione.getAllegato(i).getUuid()
+									, comunicazione.getAllegato(i).getModificato()
+									, comunicazione.getAllegato(i).getDimensione()
+									, comunicazione.getAllegato(i).getFirmacheck()
+									, comunicazione.getAllegato(i).getFirmacheckts()
+									, comunicazione.getAllegato(i).getCifrato()
+									, comunicazione.getAllegato(i).getBucket_uuid()
+									, comunicazione.getAllegato(i).getBucket_ref()
+							);
 							allegatiDaInviare.add(doc);
 						}
 					} else {

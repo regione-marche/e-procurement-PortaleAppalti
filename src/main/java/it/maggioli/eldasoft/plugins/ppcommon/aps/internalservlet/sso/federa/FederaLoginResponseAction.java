@@ -50,10 +50,10 @@ public class FederaLoginResponseAction extends BaseResponseAction {
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
 		try {
 			String url = (String) appParamManager
-			.getConfigurationValue(AppParamManager.FEDERA_WS_AUTHSERVICEFEDERA_URL);
+					.getConfigurationValue(AppParamManager.FEDERA_WS_AUTHSERVICEFEDERA_URL);
 			String authSystem = FEDERA_AUTHSYSTEM_DEFAULT;
 			String serviceProvider = (String) appParamManager
-			.getConfigurationValue(AppParamManager.FEDERA_SERVICEPROVIDER);
+					.getConfigurationValue(AppParamManager.FEDERA_SERVICEPROVIDER);
 			
 			if (SUCCESS.equals(target)) {
 				// imposta dinamicamente l'endpoint del proxy prima di
@@ -65,8 +65,7 @@ public class FederaLoginResponseAction extends BaseResponseAction {
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");
@@ -82,7 +81,7 @@ public class FederaLoginResponseAction extends BaseResponseAction {
 				target = SUCCESS;
 			}
 		} catch (ApsException e) {
-			action.addActionError(action.getText("Errors.sso.configuration", new String[] { "Maggioli MYID" }));
+			action.addActionError(action.getText("Errors.sso.configuration", new String[] { "Maggioli FEDERA" }));
 			action.getRequest().getSession().setAttribute("ACTION_OBJECT", action);
 			ApsSystemUtils.logThrowable(e, null, "prepareLogin");
 			target = INPUT;

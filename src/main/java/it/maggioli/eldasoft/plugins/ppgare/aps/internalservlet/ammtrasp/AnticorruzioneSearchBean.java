@@ -1,10 +1,9 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp;
 
+import it.maggioli.eldasoft.plugins.ppcommon.aps.BaseSearchBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import org.apache.commons.lang.StringUtils;
-
-import java.io.Serializable;
 
 /**
  * Bean per la memorizzazione dei criteri di ricerca per i dati sull'anticorruzione.
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * @author Stefano.Sabbadin
  * @since 1.8.2
  */
-public class AnticorruzioneSearchBean implements Serializable {
+public class AnticorruzioneSearchBean extends BaseSearchBean {
 	/**
 	 * UID
 	 */

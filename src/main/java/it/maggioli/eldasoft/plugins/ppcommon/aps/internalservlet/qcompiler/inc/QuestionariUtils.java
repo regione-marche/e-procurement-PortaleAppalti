@@ -38,45 +38,46 @@ public class QuestionariUtils {
 		String warning = (String) (params.length > 6 ? params[6] : null);
 		boolean returnCode = com.opensymphony.xwork2.Action.SUCCESS.equals(target);
 		try {
-			JSONObject json = new JSONObject();
+			JSONObject response = new JSONObject();
 			
-			json.put("returnCode", Boolean.toString(returnCode));
+			response.put("returnCode", Boolean.toString(returnCode));
 			
-			// "logLevel" W per warnings, I per info, E per errori			
+			// "logLevel" W per warnings, I per info, E per errori
 			String msg = message;
 			if(!returnCode) {
-				json.put("logLevel", "E");
+				response.put("logLevel", "E");
 				msg = message;
 			} else if(StringUtils.isNotEmpty(warning)) {
-				json.put("logLevel", "W");
+				response.put("logLevel", "W");
 				msg = warning;
 			} else {
-				json.put("logLevel", "I");
+				response.put("logLevel", "I");
 				msg = "";	//message;	// DA RIVEDERE !!!
 			}
-			//json.put("message", target.toUpperCase() + (StringUtils.isNotEmpty(msg) ? ", " + msg : ""));
-			json.put("message", (StringUtils.isNotEmpty(msg) ? msg : ""));
+			response.put("message", (StringUtils.isNotEmpty(msg) ? msg : ""));
 			
 			if(filename != null && data != null) {
-				json.put("filename", (filename != null ? filename : "")); 
-				json.put("filedata", (data != null ? data : ""));
+				response.put("filename", (filename != null ? filename : "")); 
+				response.put("filedata", (data != null ? data : ""));
 			}
 			
 			if(uuid != null) {
-				json.put("uuid", (uuid != null ? uuid : ""));
+				response.put("uuid", (uuid != null ? uuid : ""));
 			}
-			
+
 			if(form != null) {
-				json.put("form", (form != null ? form : ""));
+				response.put("form", (form != null ? form : ""));
 			}
 			
 			// invia allo stream di risposta della action...
+			// NB: angular riceve il json in formato UTF-8 e quando invia delle richieste al portale 
+			// se invia il parametro "form" lo invia in UTF8 e lo impacchetta in base64 (quindi base64(utf8)) !!!   
 			action.setFilename("response.json");
 			action.setContentType("application/json"); 
-			action.setInputStream( new ByteArrayInputStream(json.toString().getBytes("UTF-8")) );
-			
-			json.clear();
-			json = null;
+			action.setInputStream( new ByteArrayInputStream(response.toString().getBytes("UTF-8")) );
+
+			response.clear();
+			response = null;
 			
 			target = com.opensymphony.xwork2.Action.SUCCESS;
 		} catch (Exception e) {

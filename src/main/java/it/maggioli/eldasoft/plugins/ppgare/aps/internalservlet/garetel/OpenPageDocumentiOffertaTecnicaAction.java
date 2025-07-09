@@ -13,6 +13,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageAction {
 	/**
 	 * UID
@@ -113,14 +116,6 @@ public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageActio
 		this.documentiMancanti = documentiMancanti;
 	}
 
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-
-	public Integer getLimiteTotaleUploadDocBusta() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
-
 	public boolean isDocOffertaPresente(){
 		return docOffertaPresente;
 	}
@@ -149,17 +144,11 @@ public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageActio
 	 * Espone le costanti alle pagine JSP  
 	 */
 	public String getSTEP_OFFERTA() { return WizardOffertaTecnicaHelper.STEP_OFFERTA; }
-
 	public String getSTEP_SCARICA_OFFERTA() { return WizardOffertaTecnicaHelper.STEP_SCARICA_OFFERTA; }
-
-	public String getSTEP_DOCUMENTI() {	return WizardOffertaTecnicaHelper.STEP_DOCUMENTI; }
-	
+	public String getSTEP_DOCUMENTI() {	return WizardOffertaTecnicaHelper.STEP_DOCUMENTI; }	
 	public int getDOCUMENTO_FORMATO_FIRMATO() {	return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO; }
-
 	public int getDOCUMENTO_FORMATO_PDF() { return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF; }
-
-	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }
-	
+	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }	
 	public String getDESCRIZIONE_DOCUMENTO_OFFERTA_TECNICA() { return PortGareSystemConstants.DESCRIZIONE_DOCUMENTO_OFFERTA_TECNICA; }
 
 	/**
@@ -174,6 +163,7 @@ public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageActio
 		WizardDocumentiBustaHelper documentiBustaHelper = helper.getDocumenti();
 		WizardPartecipazioneHelper wizardPartecipazione = buste.getBustaPartecipazione().getHelper();
 		RiepilogoBusteHelper riepilogo = bustaRiepilogo.getHelper();
+		getUploadValidator().setHelper(bustaTec);
 		
 		try {
 			// nella gara a lotto unico i documenti stanno nel lotto, 
@@ -255,8 +245,8 @@ public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageActio
 //				this.dimensioneAttualeFileCaricati += s;
 //			}
 			
+			dimensioneAttualeFileCaricati += documentiBustaHelper.getTotalSize();
 			if (CollectionUtils.isNotEmpty(documentiBustaHelper.getRequiredDocs())) {
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getRequiredDocs());
 				esisteFileConFirmaNonVerificata =
 						documentiBustaHelper.getRequiredDocs()
 								.stream()
@@ -264,7 +254,6 @@ public class OpenPageDocumentiOffertaTecnicaAction extends AbstractOpenPageActio
 				logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 			}
 			if (CollectionUtils.isNotEmpty(documentiBustaHelper.getAdditionalDocs())) {
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getAdditionalDocs());
 				esisteFileConFirmaNonVerificata =
 						documentiBustaHelper.getAdditionalDocs()
 								.stream()

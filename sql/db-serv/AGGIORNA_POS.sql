@@ -1275,3 +1275,413 @@ LANGUAGE 'plpgsql' ;
 select * from aggiornamento();
 drop function aggiornamento();
 
+-- 3.24.0_to_3.25.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.24.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+<profile id="15301551006" typecode="PFI" typedescr="Profilo impresa"><descr /><groups /><categories /><attributes><attribute name="Nome" attributetype="Monotext"><monotext>Service Appalti</monotext></attribute><attribute name="email" attributetype="Monotext"><monotext>helpdesk.adadvice@gmail.com</monotext></attribute></attributes></profile>', 0);
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.24.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.25.0_to_3.26.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.25.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.26.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.26.0_to_3.27.0-M1
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.26.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+-- GESTIONE DEI PROFILI UTENTE SSO
+ALTER TABLE ppcommon_events ADD delegate character varying(40) NULL;
+
+CREATE TABLE authusers_delegates (
+  username character varying(40) NOT NULL,
+  delegate character varying(40) NOT NULL,
+  rolename character varying(20),
+  description character varying(40),
+  email character varying(40)
+);
+
+ALTER TABLE ONLY authusers_delegates
+    ADD CONSTRAINT authusers_delegates_pk PRIMARY KEY (username, delegate);
+
+CREATE TABLE ppcommon_delegate_accesses (
+  username character varying(40) NOT NULL,
+  delegate character varying(40) NOT NULL,
+  functionid character varying(50),
+  logintime timestamp without time zone NOT NULL DEFAULT now(),
+  logouttime timestamp without time zone
+);
+
+ALTER TABLE ONLY ppcommon_delegate_accesses
+    ADD CONSTRAINT ppcommon_delegate_accesses_pk PRIMARY KEY (username, delegate);
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.27.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.26.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.27.0-M1_to_3.27.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.27.0-M1') THEN
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.27.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.27.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.27.0_to_3.28.0
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.27.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.28.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.27.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.28.0_to_3.29.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.28.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	if (SELECT count(1) = 0 FROM information_schema.columns WHERE table_name = 'ppcommon_events' AND column_name = 'exporttime') THEN
+		ALTER TABLE ppcommon_events ADD exporttime timestamp NULL;
+	END IF;
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.29.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.28.0';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.29.0-M1_to_3.29.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.29.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	UPDATE ppcommon_events SET exporttime = TO_DATE('31/12/2023','DD/MM/YYYY') WHERE exporttime is null AND date_part('Year',eventtime) < 2024;
+	
+	ALTER TABLE ONLY ppcommon_delegate_accesses DROP CONSTRAINT ppcommon_delegate_accesses_pk;
+	ALTER TABLE ONLY ppcommon_delegate_accesses ADD CONSTRAINT ppcommon_delegate_accesses_pk PRIMARY KEY (username, delegate, functionid);
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.29.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.29.0-M1';
+
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.29.0-M2_to_4.0.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '3.29.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.0.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.29.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.0.0-M3_to_4.0.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.0.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.0.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.0.0-M3';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.0.0_to_4.1.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.0.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.1.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.0.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.1.0_to_4.2.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.1.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.2.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.1.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.2.0_to_4.3.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.2.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.3.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.2.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.3.0_to_4.4.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.3.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.4.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0_to_4.5.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.4.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	ALTER TABLE authusers ALTER COLUMN delegateuser TYPE character varying(320);
+	ALTER TABLE authusers_delegates ALTER COLUMN delegate TYPE character varying(320);
+	ALTER TABLE authusers_delegates ALTER COLUMN email TYPE character varying(320);
+	ALTER TABLE ppcommon_delegate_accesses ALTER COLUMN delegate TYPE character varying(320);
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.5.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.5.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+	ALTER TABLE ppcommon_events ALTER COLUMN username TYPE character varying(320);
+	ALTER TABLE ppcommon_events ALTER COLUMN delegate TYPE character varying(320);
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.5.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.5.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.5.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0_to_4.6.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.5.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.6.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0_to_4.7.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.6.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.7.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.7.0_to_4.8.0
+CREATE OR REPLACE FUNCTION aggiornamento() 
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppcommon' and version = '4.7.0') THEN
+	-- INIZIO AGGIORNAMENTI
+	-- FINE AGGIORNAMENTI
+	UPDATE ppcommon_ver SET version = '4.8.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+
+select * from aggiornamento();
+drop function aggiornamento();
+

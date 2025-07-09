@@ -63,18 +63,18 @@ public class PagoPaActionLista extends EncodedDataAction implements SessionAware
 	}
 
 	public PagoPaActionLista() {
-		logger.info("PagoPaAction()");
+		logger.debug("PagoPaAction()");
 	}
 
 	@Override
 	public void setSession(Map<String, Object> session) {
 		this.session = session;
-		logger.info("setSession()");
+		logger.debug("setSession()");
 	}
 	
 	
 	public String listaEffettuati() {
-		logger.info("listaEffettuati");
+		logger.debug("listaEffettuati");
 		try {
 			Integer stato = Integer.valueOf(3);
 			loadPagamenti(stato);
@@ -88,10 +88,9 @@ public class PagoPaActionLista extends EncodedDataAction implements SessionAware
 		}
 		return SUCCESS;
 	}
-
 	
 	public String listaDaEffettuare() {
-		logger.info("listaDaEffettuare");
+		logger.debug("listaDaEffettuare");
 		try {
 			Integer stato = Integer.valueOf(2);
 			loadPagamenti(stato);
@@ -135,7 +134,7 @@ public class PagoPaActionLista extends EncodedDataAction implements SessionAware
 	}
 	
 	public String reload() {
-		logger.info("reload");
+		logger.debug("reload");
 		try {
 			this.tipiCausalePagamento = this.pagoPaManager.getElencoTipiCausalePagamento();
 		} catch (Exception e) {
@@ -204,7 +203,7 @@ public class PagoPaActionLista extends EncodedDataAction implements SessionAware
 		}
 		filtro.setPagesize(model.getiDisplayLength());
 		
-		logger.info("model: {}",model);
+		logger.debug("model: {}",model);
 		
 	}
 

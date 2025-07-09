@@ -1,12 +1,16 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.apsadmin.system.BaseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CarrelloProdottiSessione;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ProdottiCatalogoSessione;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -24,6 +28,7 @@ import java.util.Map;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class RiepilogoModificheAction extends BaseAction implements SessionAware {
 	/**
 	 * UID
@@ -155,6 +160,7 @@ public class RiepilogoModificheAction extends BaseAction implements SessionAware
 				target = ERROR;
 			}
 		}
+		
 		return target;
 	}
 
@@ -166,6 +172,12 @@ public class RiepilogoModificheAction extends BaseAction implements SessionAware
 	public String confirmDeleteRiepilogo() {
 		String target = SUCCESS;
 		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			target = CommonSystemConstants.PORTAL_ERROR;
+			return target;
+		}
+
 		if (null == this.session.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI)) {
 			// la sessione e' scaduta, occorre riconnettersi
 			this.addActionError(this.getText("Errors.sessionExpired"));
@@ -178,6 +190,7 @@ public class RiepilogoModificheAction extends BaseAction implements SessionAware
 			this.deleteRiepilogo = true;
 			this.riepilogo = prodottiDaInviare.getRiepilogo();
 		}
+		
 		return target;
 	}
 
@@ -187,9 +200,16 @@ public class RiepilogoModificheAction extends BaseAction implements SessionAware
 	 * @return il target a cui andare
 	 */
 	public String deleteRiepilogo() {
+		String target = SUCCESS;
+				
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			target = CommonSystemConstants.PORTAL_ERROR;
+			return target;
+		}
+
 		Event evento = null;
 		
-		String target = SUCCESS;
 		if (null == this.session.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI)) {
 			// la sessione e' scaduta, occorre riconnettersi
 			this.addActionError(this.getText("Errors.sessionExpired"));
@@ -199,8 +219,8 @@ public class RiepilogoModificheAction extends BaseAction implements SessionAware
 			CarrelloProdottiSessione carrelloProdotti = (CarrelloProdottiSessione) this.session
 				.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI);
 			ProdottiCatalogoSessione prodottiDaInviare = carrelloProdotti.getListaProdottiPerCatalogo().get(carrelloProdotti.getCurrentCatalogo());
-						
-			// traccia l'evento di eliminazione di un file...	 
+			
+			// traccia l'evento di eliminazione di un file...
 			evento = new Event();
 			evento.setUsername(this.getCurrentUser().getUsername());
 			evento.setDestination(carrelloProdotti.getCurrentCatalogo());

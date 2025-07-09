@@ -43,9 +43,8 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchSoggettiBeneficiari.action" />" method="post">
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchSoggettiBeneficiari.action" />" method="post">
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
-		
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_SEARCH_CRITERIA" /></legend>
 
@@ -68,7 +67,7 @@
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui" />
 			</div>
 		</fieldset>
-
+		
 		<c:if test="${listaEsiti ne null}">
 
 			<s:if test="%{listaEsiti.size() > 0}">
@@ -144,7 +143,7 @@
 					<s:param name="last" value="1"></s:param>
 				</s:url>
 				<p>
-					<a href='<s:property value="%{#urlExport}" />&amp;${tokenHrefParams}' class="important">
+					<a href='<s:property value="%{#urlExport}" />' class="important">
 						<wp:i18n key="LINK_EXPORT_CSV" />
 					</a>
 				</p>

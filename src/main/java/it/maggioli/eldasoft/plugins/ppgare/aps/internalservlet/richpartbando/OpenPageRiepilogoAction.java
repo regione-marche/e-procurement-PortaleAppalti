@@ -6,6 +6,8 @@ import it.eldasoft.www.sil.WSGareAppalto.LottoGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.struts2.interceptor.SessionAware;
@@ -20,6 +22,11 @@ import java.util.Map;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageRiepilogoAction extends BaseAction implements SessionAware {
 	/**
 	 * UID

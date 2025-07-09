@@ -17,13 +17,19 @@
 */
 package com.agiletec.aps.system.services;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.agiletec.aps.system.services.notify.ApsEvent;
 import com.agiletec.aps.system.services.notify.INotifyManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 
 /**
  * E' alla base dell'implementazione dei Servizi.<br>
@@ -31,9 +37,22 @@ import com.agiletec.aps.system.services.notify.INotifyManager;
  * viene richiesto il ri-caricamento di tutto il sistema.
  * @author 
  */
-public abstract class AbstractService 
-		implements IManager, BeanNameAware, BeanFactoryAware {
+public abstract class AbstractService
+		implements Serializable, IManager, BeanNameAware, BeanFactoryAware {
 	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {	
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			_notifyManager = (INotifyManager) ctx.getBean("notifyManager");
+			//_beanFactory = (BeanFactory)???;
+		} catch (Exception e) {
+		}
+	}
+
 	/**
 	 * Metodo da richiamare nel caso i 
 	 * debba fare un refresh del servizio.

@@ -39,7 +39,7 @@
 	</s:else>
 	
 	<div class="back-link">
-		<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;${tokenHrefParams}'>
+		<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;catalogo=${catalogo}&amp;ext=${param.ext}'>
 			<wp:i18n key="LINK_BACK_TO_GESTIONE_PRODOTTI" />
 		</a>
 	</div>

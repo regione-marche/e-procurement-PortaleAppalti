@@ -29,8 +29,6 @@ lottiDistinti=${lottiDistinti} <br/>
 
 	<h2><wp:i18n key="TITLE_PAGE_GARETEL_APERTURA_DOC_AMMINISTRATIVA" /></h2>
 
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
-
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_APERTURA_DOC_AMM_OP"/>
 	</jsp:include>
@@ -47,7 +45,7 @@ lottiDistinti=${lottiDistinti} <br/>
 		</div>
  	</div> 	
  	
- 	<s:if test="%{!operatoreEconomico.rti}">
+ 	<s:if test="%{!operatoreEconomico.rti && !hideFiscalCode}">
 	 	<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_CODICE_FISCALE" />: </label>
@@ -61,7 +59,7 @@ lottiDistinti=${lottiDistinti} <br/>
  	<div class="fieldset-row">
 		<div class="label">
 			<label>
-				<s:if test="%{!operatoreEconomico.rti}"><wp:i18n key="LABEL_RAGIONE_SOCIALE" />:</s:if>
+				<s:if test="%{!operatoreEconomico.rti || hideFiscalCode}"><wp:i18n key="LABEL_RAGIONE_SOCIALE" />:</s:if>
 				<s:else><wp:i18n key="LABEL_DENOMINAZIONE_RTI" /></s:else>
 			</label>
 		</div>
@@ -71,7 +69,7 @@ lottiDistinti=${lottiDistinti} <br/>
  	</div>
  	
  	<%-- solo se l'operatore partecipa in RTI --%>
- 	<s:if test="%{operatoreEconomico.rti}">
+ 	<s:if test="%{operatoreEconomico.rti && !hideFiscalCode}">
 	 	<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_RAGGRUPPAMENTO_COMPOSTO_DA" /> : </label>
@@ -82,7 +80,9 @@ lottiDistinti=${lottiDistinti} <br/>
 					<table id="tableOperatori" summary="Tabella operatori" class="info-table">
 						<thead>
 							<tr>
-								<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+								<s:if test="%{!hideFiscalCode}">
+									<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+								</s:if>
 								<th scope="col"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></th>
 								<th scope="col"><wp:i18n key="LABEL_MANDATARIA" /></th>
 							</tr>
@@ -90,14 +90,16 @@ lottiDistinti=${lottiDistinti} <br/>
 						<tbody>
 							<s:iterator var="item" value="operatoreEconomico.componentiRTI" status="stat">
 								<tr>
-									<td>
-										<s:if test="%{#item.partitaIva != null}" >					
-											<s:property value="#item.partitaIva" />
-										</s:if>
-										<s:else>
-											<s:property value="#item.codiceFiscale" />
-										</s:else>
-									</td>
+									<s:if test="%{!hideFiscalCode}">
+										<td>
+											<s:if test="%{#item.partitaIva != null}" >					
+												<s:property value="#item.partitaIva" />
+											</s:if>
+											<s:else>
+												<s:property value="#item.codiceFiscale" />
+											</s:else>
+										</td>
+									</s:if>
 									<td>
 										<s:property value="#item.ragioneSociale" />
 									</td>
@@ -196,7 +198,7 @@ lottiDistinti=${lottiDistinti} <br/>
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewDocAmm.action" />&amp;codice=${codice}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewDocAmm.action" />&amp;codice=${codice}">
 		<wp:i18n key="LINK_BACK" />
 	</a>
 </div>

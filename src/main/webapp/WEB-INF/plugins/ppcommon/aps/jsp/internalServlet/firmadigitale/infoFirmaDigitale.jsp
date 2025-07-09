@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="x"  uri="http://java.sun.com/jsp/jstl/xml" %>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
 
 <script type="text/javascript">	
 <!--//--><![CDATA[//><!--
@@ -33,7 +33,6 @@ $(document).ready(function() {
 });	
 //--><!]]></script>
 
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
 
 <!-- prepare il path per i pulsanti "Chiudi tutto" "Espandi tutto" -->
 <c:set var="imgPath"><wp:resourceURL/>static/css/jquery/treeview/images/</c:set> 
@@ -106,13 +105,16 @@ $(document).ready(function() {
 						<c:when test="${riservato == DOWNLOAD_RISERVATO}">
 							<s:url id="urldoc" namespace="/do/FrontEnd/FirmaDigitale" action="downloadDocumentoRiservato" />
 						</c:when>
-						<c:otherwise>
+						<c:when test="${riservato == DOWNLOAD_PUBBLICO}">
 							<s:url id="urldoc" namespace="/do/FrontEnd/FirmaDigitale" action="downloadDocumentoPubblico" />
+						</c:when>
+						<c:otherwise>
+							<s:url id="urldoc" namespace="/do/FrontEnd/FirmaDigitale" action="downloadDocumentoAllegato" />
 						</c:otherwise>
 					</c:choose>
 					
 					<li <s:if test="%{#stat.index == 0}">class='first'</s:if> >  <!-- class='last'> -->
-						<c:set var="url">${urldoc}?id=${id}&amp;idprg=${idprg}&amp;pos=<s:property value='%{#stat.index}'/></c:set>
+						<c:set var="url">${urldoc}?id=${id}&amp;idprg=${idprg}&amp;pos=<s:property value='%{#stat.index}'/>&amp;uuid=<s:property value="%{uuid}"/></c:set>
 						<c:if test="${riservato == DOWNLOAD_FILE}">
 							<c:set var="url">${url}&amp;isfile=${isfile}</c:set>
 						</c:if>

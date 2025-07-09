@@ -2,7 +2,8 @@
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
+
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
 $(document).ready(function(){
@@ -28,8 +29,6 @@ $(document).ready(function(){
 	});
 });
 //--><!]]></script>
-
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
 
 
 <s:if test="%{#session.dettIscrAlbo.tipologia == 2}">

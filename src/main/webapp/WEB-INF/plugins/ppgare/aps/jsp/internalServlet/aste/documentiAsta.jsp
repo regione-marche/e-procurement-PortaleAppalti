@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
  
 <jsp:include page="/WEB-INF/aps/jsp/models/inc/skin.jsp">
 	<jsp:param name="skin" value="${param.skin}" />
@@ -34,7 +34,7 @@
 			
 			<div class="detail-row">
 				<s:set var="elencoDocumentiAllegati" value="%{allegatiAsta[codice]}" />
-				<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/iteratorDocAllegati.jsp">					
+				<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/iteratorDocAllegati.jsp">
 					<jsp:param name="path" value="downloadDocumentoRiservato"/>
 				</jsp:include>
 			</div>
@@ -55,8 +55,8 @@
 		<!-- ASTA A LOTTI DISTINTI -->
 		<s:iterator var="item" value="lotti" status="stat">
 			<s:set var="lotto" value="#item.key" />
-			<s:set var="asta" value="#item.value" />						
-			<s:if test="%{#lotto.codiceInterno != null && #lotto.codiceInterno != ''}" >								
+			<s:set var="asta" value="#item.value" />
+			<s:if test="%{#lotto.codiceInterno != null && #lotto.codiceInterno != ''}" >
 				<div class="detail-section">
 					<h3 class="detail-section-title">
 						<span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span> <wp:i18n key="LABEL_LOTTO" /> <s:property value="%{#lotto.codiceInterno}" />
@@ -87,8 +87,14 @@
 	</s:else>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}">
-			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
-		</a>
+		<form action='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value="${codice}" />
+			<input type="hidden" name="ext" value="" />
+
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
+			</a>
+		</form>
 	</div>
 </div>

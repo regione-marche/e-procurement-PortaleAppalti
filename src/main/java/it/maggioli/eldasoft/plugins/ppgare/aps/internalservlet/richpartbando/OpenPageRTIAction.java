@@ -8,9 +8,13 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPag
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlException;
 
 import java.util.List;
@@ -20,6 +24,11 @@ import java.util.List;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageRTIAction extends AbstractOpenPageAction {
 	/**
 	 * UID
@@ -27,11 +36,16 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 	private static final long serialVersionUID = -7527283479159496491L;
 
 	private IComunicazioniManager comunicazioniManager;
-	
+	private IBandiManager bandiManager;
+
 	public void setComunicazioniManager(IComunicazioniManager comunicazioniManager) {
 		this.comunicazioniManager = comunicazioniManager;
 	}
 	
+	public void setBandiManager(IBandiManager bandiManager) {
+		this.bandiManager = bandiManager;
+	}
+
 	/**
 	 * Sentinella che, se valorizzata con l'identificativo della pagina stessa,
 	 * indica che si proviene dalla pagina stessa e ci si vuole ritornare in
@@ -46,15 +60,23 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 		return page;
 	}
 
+	private boolean readOnly;
 	/**
 	 * true se impresa si presenta come mandataria in una RTI, false altrimenti
 	 */
 	private Integer rti;
+	
 	@Validate(EParamValidation.DENOMINAZIONE_RTI)
 	private String denominazioneRTI;
 	
 	private Boolean	plicoImpresaSingolaPresente;
 
+	private boolean concProgNegoziata = false;
+
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
+
+	private boolean invioOfferta;
 	
 	public Integer getRti() {
 		return rti;
@@ -79,6 +101,30 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 	public void setPlicoImpresaSingolaPresente(Boolean plicoImpresaSingolaPresente) {
 		this.plicoImpresaSingolaPresente = plicoImpresaSingolaPresente;
 	}
+	
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public boolean isConcProgNegoziata() {
+		return concProgNegoziata;
+	}
+	
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+	
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
+	}
+	
+	public boolean isInvioOfferta() {
+		return invioOfferta;
+	}
+
+	public void setInvioOfferta(boolean invioOfferta) {
+		this.invioOfferta = invioOfferta;
+	}
 
 	/**
 	 * ...
@@ -86,7 +132,8 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 	public String openPage() {
 		String target = SUCCESS;
 		
-		IRaggruppamenti helper = this.getSessionHelper();
+		GestioneBuste buste = GestioneBuste.getFromSession();
+		IRaggruppamenti helper = (buste != null ? buste.getBustaPartecipazione().getHelper() : null);
 		WizardPartecipazioneHelper partecipazioneHelper = (WizardPartecipazioneHelper) helper;
 		
 		if (helper == null) {
@@ -99,9 +146,20 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
 								 PortGareSystemConstants.WIZARD_PAGINA_RTI);
 
+				this.invioOfferta = buste.isInvioOfferta();
 				this.plicoImpresaSingolaPresente = false;
 				boolean forzaRti = false;
-				
+
+				if (partecipazioneHelper.isConcorsoRiservato()) {
+					concProgNegoziata = true;
+					denominazioneRTI = getDenominazioneRTI(partecipazioneHelper.getIdBando());
+					if (StringUtils.isNotEmpty(denominazioneRTI)) {
+						GestioneBuste.getPartecipazioneFromSession().getHelper().setRti(true);
+						GestioneBuste.getPartecipazioneFromSession().getHelper().setDenominazioneRTI(denominazioneRTI);
+						readOnly = true;
+					}
+				}
+
 				// per le gare a lotti verifica la configurazione dell'RTI
 				if(partecipazioneHelper.isPlicoUnicoOfferteDistinte()) {
 					this.verificaFormaPartecipazione(partecipazioneHelper);
@@ -122,13 +180,18 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 					this.denominazioneRTI = helper.getDenominazioneRTI();
 				}
 				
+				this.codiceCNEL = partecipazioneHelper.getCodiceCNEL();
+				
 				// lo step STEP_COMPONENTI dipende dinamicamente dalla pagina JSP
 				// abilita sempre lo step dei componenti in "OpenPageRTIAction"  
 				// mentre in "ProcessPageRTIAction" viene deciso se lo step componenti
 				// è abilitato nella navigazione del wizard 
 				partecipazioneHelper.abilitaStepNavigazione(
 						WizardPartecipazioneHelper.STEP_COMPONENTI, true);
-				
+				if (!partecipazioneHelper.isEditRTI()) {
+					partecipazioneHelper.abilitaStepNavigazione(
+							WizardPartecipazioneHelper.STEP_COMPONENTI, false);
+				}
 			} catch (Throwable ex) {
 				ApsSystemUtils.logThrowable(ex, this, "openPage");
 				this.addActionError(this.getText("Errors.unexpected"));
@@ -136,6 +199,10 @@ public class OpenPageRTIAction extends AbstractOpenPageAction {
 			}
 		}
 		return target;
+	}
+
+	private String getDenominazioneRTI(String ngara) throws ApsException {
+		return bandiManager.isConcorsoAttachedToRTI(getCurrentUser().getUsername(), ngara);
 	}
 
 	/**

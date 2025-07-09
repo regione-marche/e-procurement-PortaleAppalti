@@ -21,7 +21,7 @@ statoVisibile: ${statoVisibile}<br/>
 esitoVisibile: ${esitoVisibile}<br/>
 --%>
  
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action" />" method="post" >
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action" />" method="post" >
  		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
  		
  		<!-- FILTRI DI RICERCA -->
@@ -213,19 +213,18 @@ esitoVisibile: ${esitoVisibile}<br/>
 					</s:select>
 				</div>
 			</div>
-			                <div class="fieldset-row">
-                                <div class="label">
-                                    <label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
-                                </div>
-                                <div class="element">
-                                    <s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
-                                            value="%{#searchForm.orderCriteria}"
-                                            headerKey="" headerValue="" >
+            <div class="fieldset-row">
+				<div class="label">
+                	<label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
+				</div>
+                <div class="element">
+                	<s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
+                    			value="%{#searchForm.orderCriteria}"
+                                headerKey="" headerValue="" >
 
-                                    </s:select>
-                                </div>
-                             </div>
-			
+					</s:select>
+       			</div>
+            </div>
 			<div class="fieldset-row last-row">
 				<div class="label">
 					<label for="model.iDisplayLength"><s:property value="%{getText('label.rowsPerPage')}" /> : </label>

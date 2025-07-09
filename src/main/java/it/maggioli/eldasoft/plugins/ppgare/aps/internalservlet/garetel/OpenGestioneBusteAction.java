@@ -14,6 +14,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -27,6 +29,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.user.IUserManager;
 import com.opensymphony.xwork2.inject.Inject;
 
 /**
@@ -36,15 +39,21 @@ import com.opensymphony.xwork2.inject.Inject;
  * @author Marco.Perazzetta
  *
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenGestioneBusteAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -1693287506907078618L;
+	
+	protected static final String BACK_TO_OFFERTA			= "backBando";		// target per il ritono al dettaglio offerta
+	
+	protected static final String SESSION_ID_WIZARD_OFFERTA = "wizardOfferta";		// id sessione per i dati dell'helper offerta
 
 	protected IComunicazioniManager comunicazioniManager;
 	protected IBandiManager bandiManager;
 	protected IAppParamManager appParamManager;
+	protected IUserManager userManager;
 
 	protected Map<String, Object> session;
 
@@ -104,6 +113,10 @@ public class OpenGestioneBusteAction extends EncodedDataAction implements Sessio
 
 	public void setBandiManager(IBandiManager bandiManager) {
 		this.bandiManager = bandiManager;
+	}
+
+	public void setUserManager(IUserManager userManager) {
+		this.userManager = userManager;
 	}
 
 	@Override
@@ -290,29 +303,17 @@ public class OpenGestioneBusteAction extends EncodedDataAction implements Sessio
 	/**
 	 * costanti esposte da utilizzare nella jsp 
 	 */
-	public int getPresentaPartecipazione() {
-		return PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA;
-	}
+	public int getPresentaPartecipazione() { return PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA; }
 
-	public int getInviaOfferta() {
-		return PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA;
-	}
+	public int getInviaOfferta() { return PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA; }
 
-	public int getBUSTA_AMMINISTRATIVA() {
-		return PortGareSystemConstants.BUSTA_AMMINISTRATIVA;
-	}
+	public int getBUSTA_AMMINISTRATIVA() { return PortGareSystemConstants.BUSTA_AMMINISTRATIVA; }
 
-	public int getBUSTA_TECNICA() {
-		return PortGareSystemConstants.BUSTA_TECNICA;
-	}
+	public int getBUSTA_TECNICA() { return PortGareSystemConstants.BUSTA_TECNICA; }
 
-	public int getBUSTA_ECONOMICA() {
-		return PortGareSystemConstants.BUSTA_ECONOMICA;
-	}
+	public int getBUSTA_ECONOMICA() { return PortGareSystemConstants.BUSTA_ECONOMICA; }
 
-	public int getBUSTA_PRE_QUALIFICA() {
-		return PortGareSystemConstants.BUSTA_PRE_QUALIFICA;
-	}
+	public int getBUSTA_PRE_QUALIFICA() { return PortGareSystemConstants.BUSTA_PRE_QUALIFICA; }
 
 
 	/**
@@ -322,7 +323,16 @@ public class OpenGestioneBusteAction extends EncodedDataAction implements Sessio
 	 */
 	public String open() {
 		this.setTarget(SUCCESS);
-		
+
+		String codGara = (StringUtils.isNotEmpty(this.codiceGara) ? this.codiceGara : this.codice);
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, codGara) ) {
+			setCodice(codGara);
+			setTarget(BACK_TO_OFFERTA);
+			return getTarget();
+		}
+
 		if(StringUtils.isEmpty(this.progressivoOfferta)) {
 			this.progressivoOfferta = "1";
 		}
@@ -331,10 +341,6 @@ public class OpenGestioneBusteAction extends EncodedDataAction implements Sessio
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
 		{
 			try {
-				String codGara = (StringUtils.isNotEmpty(this.codiceGara) 
-							   	  ? this.codiceGara 
-							  	  : this.codice);
-				
 				// inizializza la gestione delle buste 
 				// NB: save e restore in sessione e' gestito dalla classe  
 				GestioneBuste gestioneBuste = new GestioneBuste(

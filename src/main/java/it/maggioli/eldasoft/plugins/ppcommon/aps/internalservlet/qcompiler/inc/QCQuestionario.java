@@ -17,14 +17,20 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.xml.XMLSerializer;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * ...
@@ -43,7 +49,7 @@ public class QCQuestionario implements Serializable {
 //	iscrittoCCIAA                Operatore iscritto CCIAA (1) o non iscritto(0)
 //	classeDimensioneImpresa      Classe di dimensione operatore (tab.G_062)
 //	numPartecipanti              N.componenti RT (mandante + mandatarie) (1 se non RT)
-//	elencoLottiPartecipazione    Elenco dei lotti per cui l''operatore presenta domanda di partecipazione o offerta'
+//	elencoLottiPartecipazione    Elenco dei lotti per cui l''operatore presenta domanda di partecipazione o offerta'	
 	
 	private static final String CONTENT 									= "content";
 	private static final String REPORT_VARIABLES 							= "reportVariables";
@@ -65,11 +71,35 @@ public class QCQuestionario implements Serializable {
 	private static final String SYS_VARIABLES_ID_QFORM						= "idQForm";
 	private static final String SYS_VARIABLES_DGUEREQUEST					= "dgueRequest";
 	private static final String OFFERTA_MOSTRA_IMPORTO						= "showAmount";
+	
+	private static final SimpleDateFormat DDMMYYYY = new SimpleDateFormat("dd/MM/yyyy");
 		
+	/**
+	 * info per la funzione di validazione "validateAllegati(...)" 
+	 */
+	public class AnomalieQuestionarioInfo {
+		private String uuid;
+		private String filename;
+		private String source;
+		
+		public AnomalieQuestionarioInfo(String uuid, String filename, String source) {
+			this.uuid = uuid;
+			this.filename = filename;
+			this.source = source;
+		}
+
+		public String getUuid() { return uuid; }
+		public String getFilename() { return filename; }
+		public String getSource() { return source; }
+	}	
+	
+	
 	private String questionario;			// questionario in formato json
 	private int tipoBusta;					// in caso questionario per gara, tipo busta (1=amm, 2=tec, 3=eco, 4=preq)
 	private String result;					// codice risultato
 	private String message;					// eventuale messaggio di errore 
+	private boolean riepilogoPdfAuto;
+	private List<AnomalieQuestionarioInfo> validateInfo;
 	
 	public String getQuestionario() {
 		return questionario;
@@ -95,11 +125,19 @@ public class QCQuestionario implements Serializable {
 		this.message = message;
 	}
 
+	public boolean isRiepilogoPdfAuto() {
+		return riepilogoPdfAuto;
+	}
+	
+	public List<AnomalieQuestionarioInfo> getValidateInfo() {
+		return validateInfo;
+	}
+
 	/**
 	 * costruttore
 	 */
-	public QCQuestionario(int tipoBusta, String json) {
-		this.questionario = json;
+	public QCQuestionario(int tipoBusta, String questionarioJson) {
+		this.questionario = questionarioJson;
 		this.tipoBusta = tipoBusta;
 		this.result = null;
 		this.message = null;
@@ -108,17 +146,14 @@ public class QCQuestionario implements Serializable {
 	/**
 	 * costruttore
 	 */
-	public QCQuestionario(String json) {
-		this.questionario = json;
-		this.tipoBusta = -1;
-		this.result = null;
-		this.message = null;
+	public QCQuestionario(String questionarioJson) {
+		this(-1, questionarioJson);
 	}
 
 	/**
-	 * restituisce l'oggetto del json relativo al path ("report.validationStatus") 
+	 * restituisce il nodo json relativo al path ("report.validationStatus") 
 	 */
-	private JSONObject getJsonObject(String path) {
+	private JSONObject getJsonNode(String path) {
 		JSONObject obj = null;
 		try {
 			JSONObject json = (JSONObject) JSONSerializer.toJSON(this.questionario);
@@ -132,10 +167,74 @@ public class QCQuestionario implements Serializable {
 			}
 		} catch(Exception ex) {
 			obj = null;
-			ApsSystemUtils.getLogger().error("getJsonObject", ex);
+			ApsSystemUtils.getLogger().error("getJsonNode", ex);
 		}
 		return obj;
 	}
+
+	/**
+	 * trova un nodo "key=value" all'interno della struttura JSON in un dato nodo "root" 
+	 */
+	private JSONObject findJsonNode(Object root, String key, String value) {
+		if(root == null) {
+			return null;
+		} 
+
+		JSONObject attrib = null;
+		JSONObject n = (JSONObject) root;
+		Iterator<?> keys = n.keys();
+		while(keys.hasNext()) {
+			String k = (String) keys.next();
+			String v = null;
+			
+			Object item = n.get(k);
+			if(item instanceof JSONObject) {
+				v = n.getString(k);
+			} else if(item instanceof JSONArray) {
+				JSONArray a = (JSONArray) item;
+				for(int i = 0; i < a.size(); i++) {
+					attrib = this.findJsonNode(a.get(i), key, value);
+					if(attrib != null) {
+						break; 
+					}
+				}
+			} else {
+				v = (item != null ? item.toString() : null);
+			}
+			
+			// verifica se e' stato trovato il nodo
+			if(attrib != null) {
+				break; 
+			} else if(k.equals(key) && value.equals(v)) {
+				attrib = (JSONObject) root;
+				break;
+			}
+		}
+		return attrib;
+	}
+		
+//	private String getJsonValue(JSONObject node, String name) {
+//		String value = node.getString(name);
+//		return (StringUtils.isNotEmpty(value) && value.equalsIgnoreCase("null") ? null : value);
+//	}
+//
+//    private JSONObject addJsonArrayIfNull(JSONObject node, String name) {
+//	    if(node.containsKey(name)) {
+//	    	try {
+//	    		node.getJSONArray(name);
+//	    		ApsSystemUtils.getLogger().trace(name + "-> array exists");
+//	    	} catch(JSONException ex) {
+//	    		ApsSystemUtils.getLogger().debug(name + "-> array not present");
+//	    		String e = node.getString(name);
+//	    		if(StringUtils.isNotBlank(e)) {
+//	    			JSONArray arr = new JSONArray();
+//	    			arr.add(e);
+//	    			node.put("puntoOrdinante", arr);
+//	    		}
+//	    	}
+//	    }
+//	    return node;
+//    }
 
 	/**
 	 * modifica nel json un attributo della sezione "sysVariables"
@@ -376,7 +475,8 @@ public class QCQuestionario implements Serializable {
 		String json = "";
 		try {
 			// XML -> JSON	
-			xmlOfferta = xmlOfferta.replaceAll(" xsi:nil=\"true\"", "");	// pulisci i nil nell'xml
+			xmlOfferta = xmlOfferta.replaceAll(" xsi:nil=\"true\"", "")		// pulisci i nil nell'xml
+								   .replaceAll("&", "&amp;");				// escape & -> &amp;
 			
 			XMLSerializer xmlSerializer = new XMLSerializer();
 	        JSON jsonObj = xmlSerializer.read(xmlOfferta);
@@ -471,52 +571,11 @@ public class QCQuestionario implements Serializable {
 	}
 
 	/**
-	 * ... 
-	 */
-	private JSONObject findJsonNode(Object node, String key, String value) {
-		if(node == null) {
-			return null;
-		} 
-
-		JSONObject attrib = null;
-		JSONObject n = (JSONObject) node;
-		Iterator<?> keys = n.keys();
-		while(keys.hasNext()) {
-			String k = (String) keys.next();
-			String v = null;
-			
-			Object item = n.get(k);
-			if(item instanceof JSONObject) {
-				v = n.getString(k);
-			} else if(item instanceof JSONArray) {
-				JSONArray a = (JSONArray) item;
-				for(int i = 0; i < a.size(); i++) {
-					attrib = this.findJsonNode(a.get(i), key, value);
-					if(attrib != null) {
-						break; 
-					}
-				}
-			} else {
-				v = (item != null ? item.toString() : null);
-			}
-			
-			// verifica se e' stato trovato il nodo
-			if(attrib != null) {
-				break; 
-			} else if(k.equals(key) && value.equals(v)) {
-				attrib = (JSONObject) node;
-				break;
-			}
-		}
-		return attrib;
-	}
-
-	/**
 	 * indica se un questionario e' stato completato (json "report.validationStatus") 
 	 */
 	public boolean getValidationStatus() {
 		boolean validationStatus = false;
-		JSONObject result = this.getJsonObject(SURVEY + "." + RESULT);
+		JSONObject result = this.getJsonNode(SURVEY + "." + RESULT);
 		if(result != null) {
 			validationStatus = result.getBoolean("validationStatus");
 		}
@@ -528,8 +587,10 @@ public class QCQuestionario implements Serializable {
 	 */
 	public boolean getSummaryGenerated() {
 		boolean summaryGenerated = false;
+		this.riepilogoPdfAuto = true;
 		
-		JSONObject result = this.getJsonObject(SURVEY + "." + RESULT);
+		JSONObject survey = this.getJsonNode(SURVEY);
+		JSONObject result = survey.getJSONObject(RESULT);
 		if(result != null) {
 			//String filename = result.getString("summaryFileName");
 			String uuid = result.getString("summaryUUID");
@@ -542,22 +603,56 @@ public class QCQuestionario implements Serializable {
 				generato = (StringUtils.isNotEmpty(generato) && generato.equalsIgnoreCase("null") ? null : generato);
 			} else {
 				// pdf riepilogo firmato con quesito...
-				// trova il questionCode relativo al pdf di riepilogo (controlType=printpdf => questionCode)
-				JSONObject question = null;
-				JSONObject survey = this.getJsonObject(SURVEY);
-				if(survey != null) {
-					JSONObject pdfprint = this.findJsonNode(survey, "controlType", "printpdf");
-					if(pdfprint != null) {
-						String qc = pdfprint.getString("questionCode");
-						if(StringUtils.isNotEmpty(qc)) {
-							question = this.findJsonNode(result, "questionCode", qc);
-						}
+				// trova il "questionCode" relativo al pdf di riepilogo "controlType=printpdf"
+				String qc = null;
+				JSONObject pdfprint = this.findJsonNode(survey, "controlType", "printpdf");
+				if(pdfprint != null) {
+					/*
+					{
+						"valuesPlaceholder":"",
+						"hidden":false,
+						"sysVariableName":null,
+						"visibilityRules":[],
+						"questionCode":"8",
+						"description":"",
+						"cardinalityMax":-1,
+						"title":"Pdf riepilogo firmato",
+						"cardinalityAllowed":false,
+						"decimalPrecision":2,
+						"required":false,
+						"controlType":"printpdf",
+						"cardinalitySysVariableName":null,
+						"options":"","value":""
 					}
+					*/
+					this.riepilogoPdfAuto = false;
+					qc = pdfprint.getString("questionCode");
 				}
+				
+				// trova il questito associato al "questionCode" relativo al pdf di riepilogo 
+				JSONObject question = (StringUtils.isNotEmpty(qc)
+									   ? this.findJsonNode(result, "questionCode", qc)
+									   : null);
+				
+				// estrai dal quesito l'attributo "summaryGenerated" corrispondente al "summaryUUID"
 				if(question != null) {
 					JSONArray values = question.getJSONArray("values");
 					if(values != null) {
 						for(int i = 0; i < values.size(); i++) {
+							/*
+							{
+								"questionCode":"8",
+								"values":[{
+									"fileDescription":"",
+									"displayValue":null,
+									"fileName":"",
+									"summaryGenerated":true,
+									"valueSequence":0,"value":""
+								}],
+								"description":"",
+								"title":"Pdf riepilogo firmato"
+							}
+							*/
 							JSONObject item = values.getJSONObject(i);
 							uuid = item.getString("value");
 							uuid = (StringUtils.isNotEmpty(uuid) && uuid.equalsIgnoreCase("null") ? null : uuid);
@@ -586,7 +681,7 @@ public class QCQuestionario implements Serializable {
 		
 		JSONArray serverFiles = null;
 		if (json.get(SERVERFILESUUID) != null)
-			serverFiles = json.getJSONArray(SERVERFILESUUID);			
+			serverFiles = json.getJSONArray(SERVERFILESUUID);
 		else
 			serverFiles = new JSONArray();
 
@@ -597,7 +692,7 @@ public class QCQuestionario implements Serializable {
 		}
 		json.put(SERVERFILESUUID, serverFiles);
 		
-		this.questionario = json.toString();		
+		this.questionario = json.toString();
 	}
 
 	private void addUuidToServerFiles(List<Attachment> attachments, JSONArray serverFiles) {
@@ -605,4 +700,313 @@ public class QCQuestionario implements Serializable {
 			attachments.stream().map(Attachment::getUuid).forEach(serverFiles::add);
 	}
 
+	/**
+	 * decodifica il parametro "form" inviato da angular 
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static String decodeFormParameter(String value) {
+		try {
+			return new String(Base64.decodeBase64(value), "UTF-8");
+		} catch(Exception ex) {
+			return null;
+		}
+	}
+	
+	/**
+	 * general method for json tree navigation
+	 */
+	@SuppressWarnings("unchecked")
+	private void browseJsonTree(JSONObject node, String path, Function<JSONObject, Object> leafFun) {
+		if(node != null) {
+			try {
+				int i = (path != null ? path.indexOf(".") : -1);
+				String first = (i >= 0 ? path.substring(0, i) : path); 
+				if(first == null) {
+					// add new leaf...
+					leafFun.apply(node);
+				} else {
+					// navigate tree...
+					String last = (i >= 0 ? path.substring(i + 1) : null);
+					JSONArray nodes = node.getJSONArray(first);
+					if(nodes != null)
+						nodes.stream()
+							.forEach(n -> browseJsonTree((JSONObject)n, last, leafFun));
+				}
+			} catch (Exception ex) {
+				ApsSystemUtils.getLogger().error("validateNode", ex);
+			}
+		}
+	}
+	
+	/**
+	 * recupera la lista degli allegati presenti nel documento json per la sezione 
+	 * "survey.result.structures.sections.groups.questions.values"
+	 */
+	private HashMap<String, String> getAllegatiJson() {
+		HashMap<String, String> allegati = new HashMap<String, String>();
+		try {
+			// recupera la sezione json "survey.result"
+			JSONObject survey = getJsonNode(SURVEY);
+			JSONObject result = (survey != null ? survey.getJSONObject(RESULT) : null);
+			//			"values":[{
+			//				"fileDescription":"Relazione Tecnica Lotto 2",
+			//				"displayValue":"BUSTA B.zip.p7m",
+			//				"fileName":"BUSTA B.zip.p7m",
+			//				"summaryGenerated":"",
+			//				"valueSequence":0,
+			//				"value":"000000000000002406121656271798"
+			//			}],
+			Function<JSONObject, Object> listaAllegatiAdd = leaf -> {
+				if(StringUtils.isNotEmpty(leaf.getString("value"))
+				   && StringUtils.isNotEmpty(leaf.getString("fileName"))
+				  ) {
+					allegati.put(leaf.getString("value"), leaf.getString("fileName"));  // <uuid, filename>  
+				}
+				return leaf;
+			};
+
+			browseJsonTree(result, "structures.sections.groups.questions.values", listaAllegatiAdd);
+			
+		} catch (Exception ex) {
+			ApsSystemUtils.getLogger().error("getAllegatiJson", ex);
+		}
+		return allegati;
+	}
+
+	/**
+	 * verifica e valida la sincronizzazione dei dati tra il questionario.json e l'helper dei documenti  
+	 * @throws UnsupportedEncodingException 
+	 */
+	public boolean validateAllegati(DocumentiAllegatiHelper documenti) {
+		boolean continua = true;
+		validateInfo = null;
+		try {
+			HashMap<String, String> allegatiJson = getAllegatiJson();
+			
+			// in caso ci siano solo gli upload del json i documenti disallineati sono sutti quelli nel json!!!
+			if(documenti != null) {
+				List<AnomalieQuestionarioInfo> anomalie = new ArrayList<AnomalieQuestionarioInfo>();
+				
+				// verifica se gli allegati json e i documenti allegati sono sincronizzati
+				// conta gli allegati json che NON sono presenti nell'helper dei documenti...
+				allegatiJson.entrySet().stream()
+						.filter(j -> documenti.getAdditionalDocs().stream()
+											.noneMatch(d -> d.getUuid().equals(j.getKey()))
+									 && documenti.getRequiredDocs().stream()
+							 				.noneMatch(d -> d.getUuid().equals(j.getKey())) )
+						.forEach(j -> anomalie.add( new AnomalieQuestionarioInfo(j.getKey(), j.getValue(), "json") ));
+				
+				// conta i documenti ulteriori dell'helper che NON sono presenti tra gli allegati json...
+				documenti.getAdditionalDocs().stream()
+						.filter(d -> !(d.getFileName().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_GARE_FILENAME)
+									   || d.getFileName().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_GARE_FILENAME)) )
+						.filter(d -> !d.getDesc().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_PDFRIEPILOGO))
+						.filter(d -> allegatiJson.entrySet().stream()
+										.noneMatch(j -> d.getUuid().equalsIgnoreCase(j.getKey())) )
+						.forEach(d -> anomalie.add( new AnomalieQuestionarioInfo(d.getUuid(), d.getFileName(), "helper U") ));
+				
+				// conta i documenti richiesti dell'helper che NON sono presenti tra gli allegati json...
+				documenti.getRequiredDocs().stream()
+						.filter(d -> !(d.getFileName().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_GARE_FILENAME)
+									   || d.getFileName().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_GARE_FILENAME)) )
+						.filter(d -> !d.getDesc().equalsIgnoreCase(DocumentiAllegatiHelper.QUESTIONARIO_PDFRIEPILOGO))
+						.filter(d -> allegatiJson.entrySet().stream()
+										.noneMatch(j -> j.getKey().equalsIgnoreCase(d.getUuid())) )
+						.forEach(d -> anomalie.add( new AnomalieQuestionarioInfo(d.getUuid(), d.getFileName(), "helper R") ));
+				
+				validateInfo = (anomalie.size() > 0 ? anomalie : null);
+			}
+			
+			// verifica se ci sono documenti mancanti e quindi se json ed helper NON sono sincronizzati...
+			continua = (validateInfo == null);
+			
+//			if(validateInfo != null && validateInfo.size() > 0) {
+//				for(ValidateInfo doc : validateInfo) {
+//					writelog("Allegato mancante : " + d.source + ", " + d.uuid + ", " + d.filename);
+//				}
+//			}
+		} catch (Exception ex) {
+			ApsSystemUtils.getLogger().error("validateAllegati", ex);
+		}
+		return continua;
+	}
+	
+	
+//	//******************************************************************************************************************************
+//	// SOLO TEST/DEBUG	
+//	private static void writelog(String txt) {
+//		try {
+//			File f = new File("c:\\temp\\verifica_gare_OE.txt");
+//			FileWriter fr = new FileWriter(f, true);
+//			BufferedWriter br = new BufferedWriter(fr);
+//			br.write(txt + "\n");
+//			br.close();
+//			fr.close();
+//		} catch (Exception ex) {
+//			System.out.println("An error occurred. " + ex.getMessage());
+//		}
+//		ApsSystemUtils.getLogger().info(txt);
+//		System.out.println(txt);
+//	}
+//
+//	private static Date toDate(String value) {
+//		try {
+//			return DDMMYYYY.parse(value);
+//		} catch (Exception e) {
+//			return null;
+//		}
+//	}
+//	
+//	private static void verificaBusta(BustaDocumenti busta, String lotto, List<String> stati) throws Throwable {
+//		try {
+//			if(busta.getComunicazioneFlusso().getId() <= 0) {
+//				if(StringUtils.isNotEmpty(lotto))
+//					busta.get(stati, lotto);
+//				else 
+//					busta.get(stati);
+//			}
+//			
+//			if(busta.getComunicazioneFlusso().getId() > 0) {
+//				writelog("verifica " + busta.getDescrizioneBusta() + " #" + busta.getProgressivoOfferta() 
+//						 + " " + (lotto != null ? lotto : ""));
+//				
+//				DocumentiAllegatiHelper documentiHelper = busta.getHelperDocumenti();
+//				QCQuestionario questionarioJson = documentiHelper.getQuestionarioGare(busta.getTipoBusta());
+//				if( !questionarioJson.validateAllegati(documentiHelper) ) {
+//					writelog("\tERR: questionario e documenti non allineati");
+//				} else {
+//					writelog("\tOK: allegati allineati");
+//				}
+//			}
+//		} catch (Exception ex) {
+//			writelog("ERR: " + ex.getMessage());
+//		}
+//	}
+//	
+//	private static void verificaOfferta(GestioneBuste buste, List<String> stati) throws Throwable {
+//		writelog("-----------------------------------------------------------------------");
+//		writelog("Verifica username " + buste.getUsername() + " gara " + buste.getCodiceGara() + " #" + buste.getProgressivoOfferta());
+//		
+//		verificaBusta(buste.getBustaAmministrativa(), null, stati);
+//		
+//		List<String> lotti = buste.getBustaPartecipazione().getLottiAttivi();
+//		if(lotti != null && lotti.size() > 0) {
+//			for(String lotto : lotti) {
+//				verificaBusta(buste.getBustaTecnica(), lotto, stati);
+//				verificaBusta(buste.getBustaEconomica(), lotto, stati);
+//			}
+//		} else {
+//			verificaBusta(buste.getBustaTecnica(), null, stati);
+//			verificaBusta(buste.getBustaEconomica(), null, stati);
+//		}	
+//		
+//		writelog("");
+//	}
+//	
+//	public static void verificaGareOE(String username, String codiceGara, String dal, String al) {
+//		writelog("INIZIO VERIFICA GARE OE ");
+//		writelog("FILTRI");
+//		writelog("username:    " + username);
+//		writelog("codice gara: " + codiceGara);
+//		writelog("dal:         " + dal);
+//		writelog("al:          " + al);
+//		try {
+//			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+//			IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ctx.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER);
+//			
+//			List<String> stati = new ArrayList<String>();
+//			stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
+//			stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_INVIATA);
+//			stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE);
+//			stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA);
+//			//stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA_CON_ERRORE);
+//			//stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_SCARTATA);
+//			//stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROTOCOLLARE);
+//			
+//			Date from = toDate(dal);
+//			Date to = toDate(al);
+//			
+//			// trova le offerte corrispondenti ai filtri
+//			DettaglioComunicazioneType criteri = new DettaglioComunicazioneType();
+//			criteri.setApplicativo("PA");
+//			criteri.setTipoComunicazione("FS11");
+//			if(StringUtils.isNotEmpty(username)) criteri.setChiave1(username);
+//			if(StringUtils.isNotEmpty(codiceGara)) criteri.setChiave2(codiceGara);
+//			//if(StringUtils.isNotEmpty(daData)) criteri.setDataInserimento(null);
+//			//if(StringUtils.isNotEmpty(aData)) criteri.setDataInserimento(null);
+//			
+//			List<DettaglioComunicazioneType> offerte = comunicazioniManager.getElencoComunicazioni(criteri);
+//			
+//			offerte = offerte.stream()
+//				.filter(o -> stati.contains(o.getStato()))
+//				.filter(o -> o.getDataInserimento() != null 
+//							 && (from == null || (from != null && from.compareTo(o.getDataInserimento().getTime()) <= 0))
+//							 && (to == null || (to != null && o.getDataInserimento().getTime().compareTo(to) <= 0)) )
+//				.collect(Collectors.toList());
+//			
+//			for(DettaglioComunicazioneType offerta : offerte) {
+//				try {
+//					GestioneBuste gestioneBuste = new GestioneBuste(
+//							offerta.getChiave1(),
+//							offerta.getChiave2(), 
+//							offerta.getChiave3(),
+//							PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
+//					
+//					gestioneBuste.get(stati);
+//					
+//					verificaOfferta(gestioneBuste, stati);
+//				} catch (Exception ex) {
+//					writelog("ERR: " + ex.getMessage());
+//				}
+//			}
+//			
+//		} catch (Throwable ex) {
+//			writelog("ERR: " + ex.getMessage());
+//		}
+//		writelog("FINE VERIFICA GARE OE");
+//	}
+//		
+//	public static void verificaGareSha1(String username, String codiceGara, String dal, String al) {
+//		writelog("INIZIO SHA1 ");
+//		writelog("FILTRI");
+//		writelog("username:    " + username);
+//		writelog("codice gara: " + codiceGara);
+//		writelog("dal:         " + dal);
+//		writelog("al:          " + al);
+//		try {
+//			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+//			IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ctx.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER);
+//			
+//			// trova tutti i documenti in W_DOCDIG
+//		    ComunicazioneType comunicazione = comunicazioniManager.getComunicazione("ALL", -1);
+//		    
+//		    writelog("documeni trovati: " + comunicazione.getAllegato().length);
+//		    
+//		    // calcola gli sha1 di tutti i file in W_DOCDIG
+//			for(AllegatoComunicazioneType allegato : comunicazione.getAllegato()) {
+//				try {
+//					ComunicazioneType info = comunicazioniManager.getComunicazione("ALL", -1, allegato.getId().toString());
+//					
+//					byte[] contenuto = (info != null && info.getAllegato() != null ? info.getAllegato()[0].getFile() : null);
+//					
+//					String sha1 = null;
+//					try {
+//						sha1 = (contenuto != null ? DigestUtils.shaHex(contenuto) : null);
+//					} catch (IOException e) {
+//						//throw e;
+//					}
+//					
+//					writelog("iddocdig=" + allegato.getId() + " uuid=" + allegato.getUuid() + " filename=" + allegato.getNomeFile() + ", SHA1=" + sha1);					
+//
+//				} catch (Exception ex) {
+//					writelog("ERR: " + ex.getMessage());
+//				}
+//			}
+//			
+//		} catch (Throwable ex) {
+//			writelog("ERR: " + ex.getMessage());
+//		}
+//		writelog("FINE SHA1 ");
+//	}
+	
 }

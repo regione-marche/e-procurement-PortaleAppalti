@@ -56,7 +56,7 @@ public class CataloghiAction extends EncodedDataAction implements SessionAware{
 	private INtpManager ntpManager;
 	@Validate(EParamValidation.CODICE)
 	private String codice;
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
 	private String filtroCategorie;
 	private DettaglioBandoIscrizioneType dettaglio;
 	private Integer stato;

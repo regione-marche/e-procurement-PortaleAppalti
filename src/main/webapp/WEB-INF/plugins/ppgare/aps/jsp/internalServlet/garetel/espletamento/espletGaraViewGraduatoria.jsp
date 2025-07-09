@@ -10,9 +10,12 @@
 
 <div class="portgare-view">
 
-	<h2><wp:i18n key="LABEL_GRADUATORIA" /></h2>
-
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
+    <s:if test="%{isSecondoGrado()}">
+        <h2><wp:i18n key="LABEL_GRADUATORIA_SECONDO_GRADO" /></h2>
+    </s:if>
+    <s:else>
+	    <h2><wp:i18n key="LABEL_GRADUATORIA" /></h2>
+    </s:else>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_GRADUATORIA"/>
@@ -22,6 +25,8 @@
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_messages.jsp" />
 
 	<div class="detail-row">
+		<%-- imposta una variabile fasgar da utilizzare all'interno del ciclo perche' item.faseGara e' sempre nullo --%>
+		<s:set var="fasgar">${faseGara}</s:set>
 		<c:set var="showImportoOfferto" value="false" />
 		<c:set var="showRibassoOfferto" value="false" />
 		<c:set var="showRialzoOfferto" value="false" />
@@ -38,7 +43,7 @@
 			<s:elseif test="%{#item.codiceModAgg != 6 && #item.tipoRibasso == 1}">
 				<c:set var="showRibassoOfferto" value="true" />
 			</s:elseif>
-			<s:elseif test="%{faseGara > 6 && #item.codiceModAgg == 6}">
+			<s:elseif test="%{#fasgar > 6 && #item.codiceModAgg == 6}">
 				<c:set var="showPunteggio" value="true" />
 			</s:elseif>
 		</s:iterator>
@@ -62,7 +67,9 @@
 				<thead>
 					<tr>
 						<th scope="col"><wp:i18n key="LABEL_NUMERO_PLICO" /></th>
-						<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						<s:if test="%{!hideFiscalCode}">
+							<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						</s:if>
 						<th scope="col"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></th>
 						<c:if test="${showImportoOfferto}" >
 							<th scope="col"><wp:i18n key="LABEL_IMPORTO_OFFERTO" /></th>
@@ -88,9 +95,11 @@
 							<td>
 								<s:property value="#item.numeroPlico" />
 							</td>
-							<td>
-								<s:property value="#item.codiceFiscale" />
-							</td>
+							<s:if test="%{!hideFiscalCode}">
+								<td>
+									<s:property value="#item.codiceFiscale" />
+								</td>
+							</s:if>
 							<td>
 								<s:property value="#item.ragioneSociale" />
 							</td>
@@ -145,7 +154,15 @@
 	
 	<s:if test="%{faseGara < 8}" >
 		<div class="azioni">
-			<form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoria.action"/>" method="post" class="azione">
+
+		    <s:if test="%{isSecondoGrado()}">
+		        <c:set var="action_path"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoriaSecondoGrado.action"/></c:set>
+		    </s:if>
+		    <s:else>
+                <c:set var="action_path"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoria.action"/></c:set>
+		    </s:else>
+
+			<form action="${action_path}" method="post" class="azione">
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 				
 				<div>
@@ -163,13 +180,13 @@
 <div class="back-link">
 	<s:if test="%{lottiDistinti}" >
 		<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoriaLotti.action" />
-		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}">
 			<wp:i18n key="LINK_BACK" />
 		</a>
 	</s:if>
 	<s:else>
 		<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />
-		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK" />
 		</a>
 	</s:else>

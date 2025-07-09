@@ -2,28 +2,27 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.he
 
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Stack;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+
+import org.apache.poi.ss.formula.functions.ImReal;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListener, Serializable {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 7046861513120551063L;
-
-	public static final String STEP_TESTO_COMUNICAZIONE = "testoComunicazione";
-	public static final String STEP_DOCUMENTI 			= "documenti";
-	public static final String STEP_INVIO_COMUNICAZIONE = "inviaComunicazione";
-
+		
+	// step del wizard 
+	public String STEP_TESTO_COMUNICAZIONE		= "testoComunicazione";
+	public String STEP_DOCUMENTI				= "documenti";
+	public String STEP_INVIO_COMUNICAZIONE		= "inviaComunicazione";
+	
 	/** Stack delle pagine navigate. */
 	Stack<String> stepNavigazione;
 
@@ -34,7 +33,7 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 	private String testo;
 	private DocumentiComunicazioneHelper documenti;
 	private List<DocumentazioneRichiestaType> documentiRichiesti;
-	private WizardDatiImpresaHelper datiImpresaHelper; 
+	private WizardDatiImpresaHelper impresa; 
 	private Date dataInvio;
     private String comunicazioneApplicativo;
 	private Long comunicazioneId;
@@ -44,8 +43,14 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 	private String mittente;
 	private Long modello;
 	private Long tipoBusta;
+	private int operazione;
 	private Date dataScadenza;
 	private String entita;
+	private boolean isConcorsoDiProgettazione;
+	private boolean isConcorsoDiProgettazioneCrypted;
+	private boolean isConcEnded;
+	private String progressivoOfferta;
+	private String from;
 	
 
 	public String getCodice() {
@@ -108,12 +113,12 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
     	return stepNavigazione;
     }
 
-	public WizardDatiImpresaHelper getDatiImpresaHelper() {
-		return datiImpresaHelper;
+	public WizardDatiImpresaHelper getImpresa() {
+		return impresa;
 	}
 
-	public void setDatiImpresaHelper(WizardDatiImpresaHelper datiImpresaHelper) {
-		this.datiImpresaHelper = datiImpresaHelper;
+	public void setImpresa(WizardDatiImpresaHelper impresa) {
+		this.impresa = impresa;
 	}
 
 	public Date getDataInvio() {
@@ -187,6 +192,14 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 	public void setTipoBusta(Long tipoBusta) {
 		this.tipoBusta = tipoBusta;
 	}
+	
+	public int getOperazione() {
+		return operazione;
+	}
+
+	public void setOperazione(int operazione) {
+		this.operazione = operazione;
+	}
 
 	public Date getDataScadenza() {
 		return dataScadenza;
@@ -203,17 +216,59 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 	public void setEntita(String entita) {
 		this.entita = entita;
 	}
+	
+	public boolean isConcorsoDiProgettazione() {
+		return isConcorsoDiProgettazione;
+	}
+	
+	public void setConcorsoDiProgettazione(boolean concorsoDiProgettazione) {
+		isConcorsoDiProgettazione = concorsoDiProgettazione;
+	}
+	
+	public void setConcorsoDiProgettazioneCrypted(boolean isConcorsoDiProgettazioneCrypted) {
+		this.isConcorsoDiProgettazioneCrypted = isConcorsoDiProgettazioneCrypted;
+	}
+
+	public boolean isConcorsoDiProgettazioneCrypted() {
+		return isConcorsoDiProgettazioneCrypted;
+	}
+
+	public void setConcEnded(boolean isConcEnded) {
+		this.isConcEnded = isConcEnded;
+	}
+	
+	public boolean isConcEnded() {
+		return isConcEnded;
+	}
+
+	public String getProgressivoOfferta() {
+		return progressivoOfferta;
+	}
+
+	public void setProgressivoOfferta(String progressivoOfferta) {
+		this.progressivoOfferta = progressivoOfferta;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
 
 	/**
 	 * costruttore 
 	 */
     public WizardNuovaComunicazioneHelper() {
+    	// inizializza gli step del wizard!!!
     	this.documenti = new DocumentiComunicazioneHelper();
     	this.stepNavigazione = new Stack<String>();
     	this.tipoRichiesta = null;
     	this.oggetto = null;
     	this.testo = null;
-    	this.comunicazioneId = null;
+    	this.comunicazioneApplicativo = null;	// id comunicazione di BO/risposta 
+    	this.comunicazioneId = null;			// applicativo della comunicazione di BO/risposta
     	this.idDestinatario = null;
     	this.destinatario = null;
     	this.mittente = null;
@@ -223,7 +278,10 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
     	this.documentiRichiesti = new ArrayList<DocumentazioneRichiestaType>();
     	this.modello = null;
     	this.tipoBusta = null;
+    	this.operazione = 0;
     	this.entita	= null;
+    	this.progressivoOfferta = null;
+    	this.from = null;
 	}
     
 	@Override
@@ -241,9 +299,9 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 	 * corretta navigazione.
 	 */
 	public void fillStepsNavigazione() {
-		this.stepNavigazione.push(WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE);
-		this.stepNavigazione.push(WizardNuovaComunicazioneHelper.STEP_DOCUMENTI);
-		this.stepNavigazione.push(WizardNuovaComunicazioneHelper.STEP_INVIO_COMUNICAZIONE);
+		this.stepNavigazione.push(STEP_TESTO_COMUNICAZIONE);
+		this.stepNavigazione.push(STEP_DOCUMENTI);
+		this.stepNavigazione.push(STEP_INVIO_COMUNICAZIONE);
 	}
 
 	/**
@@ -302,4 +360,41 @@ public class WizardNuovaComunicazioneHelper implements HttpSessionBindingListene
 		return risultato;
 	}
 
+    public boolean isModelloSoccorsoItruttorio() {
+    	return isModelloSoccorsoItruttorio(modello);
+    }
+    
+	public boolean isModelloRettifica() {
+    	return isModelloRettifica(modello);
+	}
+	
+    /**
+     * restituire true se il modello della comunicazione e' di un soccorso istruttorio 
+     */
+    public static boolean isModelloSoccorsoItruttorio(Long modello) {
+    	boolean soccorso = false; 
+    	if(modello != null && modello.longValue() > 0) {
+    		soccorso = !isModelloRettifica(modello);
+        }
+    	return soccorso;
+    }
+
+	/**
+	 * restituire true se il modello della comunicazione e' di una rettifica
+	 */
+    public static boolean isModelloRettifica(Long modello) {
+    	boolean rettifica = false; 
+    	if(modello != null) {
+    		rettifica = modello.longValue() == PortGareSystemConstants.RICHIESTA_RETTIFICA_BUSTA_TEC  
+    					|| modello.longValue() == PortGareSystemConstants.ACCETTAZIONE_RETTIFICA_BUSTA_TEC
+    					|| modello.longValue() == PortGareSystemConstants.RIFIUTO_RETTIFICA_BUSTA_TEC
+    					|| modello.longValue() == PortGareSystemConstants.RETTIFICA_BUSTA_TEC
+    					|| modello.longValue() == PortGareSystemConstants.RICHIESTA_RETTIFICA_BUSTA_ECO
+    					|| modello.longValue() == PortGareSystemConstants.ACCETTAZIONE_RETTIFICA_BUSTA_ECO
+    					|| modello.longValue() == PortGareSystemConstants.RIFIUTO_RETTIFICA_BUSTA_ECO
+    					|| modello.longValue() == PortGareSystemConstants.RETTIFICA_BUSTA_ECO;
+        }
+    	return rettifica;
+    }
+    
 }

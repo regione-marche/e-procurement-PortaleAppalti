@@ -13,7 +13,7 @@
 
 <es:checkCustomization var="visBarcode" objectId="GARE" attribute="BARCODE" feature="VIS" />
 <es:checkCustomization var="visDocRichiesti" objectId="GARE" attribute="DOCRICHIESTI" feature="VIS" />
-<es:checkCustomization var="visDocAttiArt29" objectId="GARE" attribute="ATTIDOCART29" feature="VIS" />
+<es:checkCustomization var="visDocAtti" objectId="GARE" attribute="ATTIDOC" feature="VIS" />
 <es:checkCustomization var="visAderenti" objectId="GARE" attribute="ADERENTI" feature="VIS" />
 <es:checkCustomization var="visDocInvitoPubblica" objectId="GARE" attribute="DOCINVITOPUBBLICA" feature="VIS" />
 <es:getAppParam name = "denominazioneStazioneAppaltanteUnica" var = "stazAppUnica" scope = "page"/> 	
@@ -24,6 +24,7 @@
 	<c:set var="codice" value="${codiceFromLotto}" />
 </c:if>
 
+<c:set var="currentDate" value="<%= new java.util.Date() %>"/>
 <c:set var="proceduraTelematica" value="${dettaglioGara.datiGeneraliGara.proceduraTelematica}"/>
 <c:set var="richPartecipazione" value="${abilitazioniGara.richPartecipazione}"/>
 <c:set var="richInvioOfferta" value="${abilitazioniGara.richInvioOfferta}"/>
@@ -31,9 +32,8 @@
 <c:set var="faseGara" value="${dettaglioGara.datiGeneraliGara.faseGara}"/>
 <c:set var="garaPrivatistica" value="${dettaglioGara.datiGeneraliGara.garaPrivatistica}" />
 <c:set var="visualizzaEspletamento" value="${dettaglioGara.datiGeneraliGara.visualizzaEspletamento}" />
-<c:set var="visualizzaEspletamento" value="${dettaglioGara.datiGeneraliGara.visualizzaEspletamento}" />
 <c:set var="garaSospesa" value="${false}" />
-<s:if test="%{dettaglioGara.datiGeneraliGara.stato != null && dettaglioGara.datiGeneraliGara.stato == 4}">
+<s:if test="%{dettaglioGara.datiGeneraliGara.stato != null && (dettaglioGara.datiGeneraliGara.stato == 4 || dettaglioGara.datiGeneraliGara.stato == 3)}">
 	<c:set var="garaSospesa" value="${true}" />
 	<c:set var="richPartecipazione" value="${false}"/>
 	<c:set var="richInvioOfferta" value="${false}"/>
@@ -57,10 +57,12 @@
 			        && (dettaglioGara.datiGeneraliGara.iterGara == 2 || dettaglioGara.datiGeneraliGara.iterGara == 4)
                     && invitoPresentato) }"/>
 
-<%-- o si tratta di una procedura aperta, oppure indipendentemente che sia negoziata o ristretta, devo essere loggato ed invitato a presentare offerta --%>
+<%-- o si tratta di una procedura aperta, oppure indipendentemente che sia negoziata o ristretta, o un concorso di progettazione pubblico 
+	   devo essere loggato ed invitato a presentare offerta --%>
 <c:set var="visDocumentazioneOfferta"
  	 value="${ (dettaglioGara.datiGeneraliGara.iterGara == 1)
-		        || (sessionScope.currentUser != 'guest' && invitoPresentato) }" />
+		        || (sessionScope.currentUser != 'guest' && invitoPresentato) 
+		        || (dettaglioGara.datiGeneraliGara.iterGara == 9)}" />
 
 <c:set var="dataPubblicazioneBando"><s:date name="dettaglioGara.datiGeneraliGara.dataPubblicazione" format="dd/MM/yyyy" /></c:set>
 
@@ -127,6 +129,12 @@
 			<label><wp:i18n key="LABEL_RUP" /> : </label>
 			<s:property value="dettaglioGara.stazioneAppaltante.rup" />
 		</div>
+		<s:if test="%{dettaglioGara.stazioneAppaltante.responsabileFaseAffidamento != null && !dettaglioGara.stazioneAppaltante.responsabileFaseAffidamento.isEmpty()}">
+			<div class="detail-row">
+				<label><wp:i18n key="LABEL_RESPONSABILE_FASE_AFFIDAMENTO" /> : </label>
+				<s:property value="dettaglioGara.stazioneAppaltante.responsabileFaseAffidamento" />
+			</div>
+		</s:if>
 
 		<c:if test="${visAderenti}">
 			<s:if test="%{dettaglioGara.soggettiAderenti.length > 0}" >
@@ -185,6 +193,17 @@
 			</s:iterator>
 		</div>
 
+		<s:if test='%{"9".equals(dettaglioGara.datiGeneraliGara.iterGara)}'>
+            <div class="detail-row">
+                <label><wp:i18n key="LABEL_TIPO_PROCEDURA_CONCORSO" /> : </label>
+                <s:iterator value="maps['tipoProceduraConcorso']">
+                    <s:if test="%{key == dettaglioGara.datiGeneraliGara.tipoConcorso}">
+                        <s:property value="%{value}" />
+                    </s:if>
+                </s:iterator>
+            </div>
+        </s:if>
+
 		<s:if test="%{dettaglioGara.datiGeneraliGara.iterGara != 7}">
 			<s:if test="%{dettaglioGara.datiGeneraliGara.tipoAggiudicazione != null}">
 				<div class="detail-row">
@@ -207,6 +226,14 @@
 						</s:text> &euro;
 					</s:if>
 				</div>
+				<div class="detail-row">
+                    <label><wp:i18n key="LABEL_VALORE_COMPLESSIVO_APPALTO" /> : </label>
+                    <s:if test="%{dettaglioGara.datiGeneraliGara.valoreComplessivo != null}">
+                        <s:text name="format.money">
+                            <s:param value="dettaglioGara.datiGeneraliGara.valoreComplessivo" />
+                        </s:text> &euro;
+                    </s:if>
+                </div>
 			</c:if>
 		</s:if>
 
@@ -356,14 +383,14 @@
 			<label><wp:i18n key="LABEL_RIFERIMENTO_PROCEDURA" /> : </label>
 				<s:property value="dettaglioGara.datiGeneraliGara.codice" />
 		</div>
-		
+
 		<s:if test="%{numeroOrdineInvito != null}">
 			<div class="detail-row">
 				<label><wp:i18n key="LABEL_NUMERO_ORDINE_INVITO" /> : </label>
 					<s:property value="%{numeroOrdineInvito}" />
 			</div>
 		</s:if>
-		
+
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_STATO_GARA" /> : </label>
 			<s:if test="%{dettaglioGara.datiGeneraliGara.stato != null}">
@@ -377,11 +404,11 @@
 				</s:if>
 			</s:if>
 		</div>
-		
+
 		<div class="detail-row">
 			<ul class="list">
 				<li class='first last'>
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewLotti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewLotti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}"
 					   class="bkg-big go"
 					   title="<wp:i18n key="LABEL_VISUALIZZA_LOTTI" />" >
 						<wp:i18n key="LABEL_LOTTI" />
@@ -390,29 +417,44 @@
 			</ul>
 		</div>
 		
-		<!-- ATTI E DOCUMENTI BANDO GARA -->
-		<c:if test="${visDocAttiArt29}">
+		<%-- BDNCP url trasparenza scheda ANAC --%>
+		<c:if test="${! empty dettaglioGara.datiGeneraliGara.BDNCPAnac}">
 			<div class="detail-row">
 				<ul class="list">
 					<li class='first last'>
-						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewAttiDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
-						   class="bkg-big go" 
-						   title="<wp:i18n key="LABEL_VISUALIZZA_ATTI_DOC_ART29" />">
-							<wp:i18n key="LABEL_ATTI_DOC_ART29" />
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewBDNCP.action"/>&amp;codice=${codice}&amp;ext=${param.ext}"
+						   class="bkg-big go"
+						   title="<wp:i18n key="LABEL_VISUALIZZA_BDNCP" />" >
+							<wp:i18n key="LABEL_BDNCP" />
 						</a>
 					</li>
 				</ul>
 			</div>
-		</c:if>	
+		</c:if>
+
+		<!-- ATTI E DOCUMENTI BANDO GARA -->
+		<c:if test="${visDocAtti}">
+			<div class="detail-row">
+				<ul class="list">
+					<li class='first last'>
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewAttiDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}"
+						   class="bkg-big go"
+						   title="<wp:i18n key="LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI" />">
+							<wp:i18n key="LABEL_ALTRI_ATTI_DOCUMENTI" />
+						</a>
+					</li>
+				</ul>
+			</div>
+		</c:if>
 	</div>
-	
+
 	<s:set var="numeroDocumentiAllegati"
 		value="%{dettaglioGara.documento != null ? dettaglioGara.documento.length : 0}" />
 	<s:iterator var="lotto" value="%{dettaglioGara.lotto}">
 		<s:set var="numeroDocumentiAllegati"
 			value="%{#numeroDocumentiAllegati + (#lotto.documento != null ? #lotto.documento.length : 0)}" />
 	</s:iterator>
-		
+
 	<!-- DOCUMENTAZIONE DI GARA -->
 	<s:if test="%{#numeroDocumentiAllegati > 0}">
 		<div class="detail-section">
@@ -447,10 +489,10 @@
 	</s:if>
 
 	<!-- DOCUMENTAZIONE DI INVITO -->
-	<s:set var="visualizzaSezioneInvito" value="false"/> 
+	<s:set var="visualizzaSezioneInvito" value="false"/>
 	<c:if test="${invitoPresentato}">
 		<s:set var="visualizzaSezioneInvito" value="true"/>
-	</c:if>	
+	</c:if>
 	<c:if test="${visDocInvitoPubblica}" >
 		<s:set var="visualizzaSezioneInvito" value="true"/>
 	</c:if>
@@ -464,10 +506,14 @@
 					<span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_DETTAGLIO_GARA_DOCUMENTAZIONE_INVITO" />
 				</h3>
 				<div class="detail-row">
-					
+
 					<c:set var="tipoDownload" value="downloadDocumentoRiservato" />
 					<c:if test="${visDocInvitoPubblica}" >
 						<c:set var="tipoDownload" value="downloadDocumentoInvito" />
+					</c:if>
+					<%-- quando la gara scade l'invito diventa pubblico --%>
+					<c:if test="${currentDate > dettaglioGara.datiGeneraliGara.dataTerminePresentazioneOfferta}" >
+						<c:set var="tipoDownload" value="downloadDocumentoPubblico" />
 					</c:if>
 					
 					<s:set var="elencoDocumentiAllegati" value="%{dettaglioGara.invito}" />
@@ -479,7 +525,7 @@
 			</div>
 		</s:if>
 	</s:if>
-	
+
 	<!-- REQUISITI RICHIESTI -->
 	<s:set var="numeroRequisitiRichiesti"
 		value="%{dettaglioGara.requisitoRichiesto != null ? dettaglioGara.requisitoRichiesto.length : 0}" />
@@ -518,14 +564,14 @@
 
 	<c:if test="${visDocRichiesti}">
 	<s:set var="numeroDocumentiRichiesti" value="0" />
-	
+
 	<s:set var="numeroDocumentiRichiesti"
-		value="%{#numeroDocumentiRichiesti + (dettaglioGara.documentoBustaPreQualifica != null ? dettaglioGara.documentoBustaPreQualifica.length : 0)}" />	
+		value="%{#numeroDocumentiRichiesti + (dettaglioGara.documentoBustaPreQualifica != null ? dettaglioGara.documentoBustaPreQualifica.length : 0)}" />
 	<s:iterator var="lotto" value="%{dettaglioGara.lotto}">
 		<s:set var="numeroDocumentiRichiesti"
 			value="%{#numeroDocumentiRichiesti + (#lotto.documentoBustaPreQualifica != null ? #lotto.documentoBustaPreQualifica.length : 0)}" />
 	</s:iterator>
-			
+
 	<c:if test="${visDocumentazioneOfferta}">
 		<s:set var="numeroDocumentiRichiesti"
 			value="%{#numeroDocumentiRichiesti + (dettaglioGara.documentoBustaAmministrativa != null ? dettaglioGara.documentoBustaAmministrativa.length : 0)}" />
@@ -542,7 +588,7 @@
 				value="%{#numeroDocumentiRichiesti + (#lotto.documentoBustaEconomica != null ? #lotto.documentoBustaEconomica.length : 0)}" />
 		</s:iterator>
 	</c:if>
-	
+
 	<s:if test="%{#numeroDocumentiRichiesti > 0}">
 		<div class="detail-section">
 			<h3 class="detail-section-title">
@@ -582,7 +628,7 @@
 
 			<!-- DOCUMENTAZIONE PER L'OFFERTA -->
 			<c:if test="${visDocumentazioneOfferta}">
-						
+
 				<s:set var="documentiRichiestiAmministrativa"
 					value="%{(dettaglioGara.documentoBustaAmministrativa != null ? dettaglioGara.documentoBustaAmministrativa.length : 0)}" />
 				<s:iterator var="lotto" value="%{dettaglioGara.lotto}"
@@ -612,7 +658,7 @@
 						</div>
 					</div>
 				</s:if>
-	
+
 				<s:set var="documentiRichiestiTecnica"
 					value="%{(dettaglioGara.documentoBustaTecnica != null ? dettaglioGara.documentoBustaTecnica.length : 0)}" />
 				<s:iterator var="lotto" value="%{dettaglioGara.lotto}"
@@ -642,7 +688,7 @@
 						</div>
 					</div>
 				</s:if>
-	
+
 				<s:set var="documentiRichiestiEconomica"
 					value="%{(dettaglioGara.documentoBustaEconomica != null ? dettaglioGara.documentoBustaEconomica.length : 0)}" />
 				<s:iterator var="lotto" value="%{dettaglioGara.lotto}"
@@ -672,54 +718,78 @@
 						</div>
 					</div>
 				</s:if>
-				
+
 			</c:if>
 		</div>
 	</s:if>
 	</c:if>
-	
+
 	<!-- ACCESSO ALLA DOCUMENTAZIONE PER L'INVITO E FASI DELL'ASTA ELETTRONICA -->
-	<c:if test="${sessionScope.currentUser != 'guest'}" > 
+	<c:if test="${sessionScope.currentUser != 'guest'}" >
 		<s:if test="%{dettaglioGara.datiGeneraliGara.invitataAsta && dettaglioGara.datiGeneraliGara.astaElettronica}">
 			<div class="detail-row">
 				<ul class="list">
 					<li class='first last'>
-						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Aste/viewDocumenti.action"/>&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}"
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Aste/viewDocumenti.action"/>&amp;codice=${codice}&amp;ext="
 						   class="bkg-big go"
 						   title="<wp:i18n key="LABEL_DETTAGLIO_GARA_ASTA_ELETTRONICA" />" >
-							<wp:i18n key="LABEL_ASTA_ELETTRONICA" /> 
+							<wp:i18n key="LABEL_ASTA_ELETTRONICA" />
 						</a>
 					</li>
 				</ul>
 			</div>
 		</s:if>
 	</c:if>
-	
+
 	<!-- DOCUMENTAZIONE DELL'ESPLETAMENTO DI GARA  -->
 	<c:if test="${(sessionScope.currentUser != 'guest'
-	              && proceduraTelematica  
- 	              && faseGara >= 2 
+	              && proceduraTelematica
+ 	              && faseGara >= 2
 	              && abilitaRiepilogoOfferta
-	              && visualizzaEspletamento)}" >
+	              && (visualizzaEspletamento || abilitaAccessoDocumenti))}" >
 		<div class="detail-section">
 			<h3 class="detail-section-title">
 				<span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_ESPLETAMENTO_GARA" />
 			</h3>
-	 	    
-			<div class="detail-row">
-				<ul class="list">
-					<li class='first last'>
-						<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
-						   class="bkg-big go"
-						   title="<wp:i18n key="LABEL_DETTAGLIO_GARA_ESPLETAMENTO_GARA" />" >
-							<wp:i18n key="LABEL_DETTAGLIO_GARA_FASI_GARA" /> 
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>	
+
+			<%-- fasi di gara --%>
+			<c:if test="${visualizzaEspletamento}">
+				<div class="detail-row">
+					<ul class="list">
+						<li class='first last'>
+							<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action"/>&amp;codice=${codice}&amp;ext=${param.ext}"
+							   class="bkg-big go"
+							   title="<wp:i18n key="LABEL_DETTAGLIO_GARA_ESPLETAMENTO_GARA" />" >
+								<wp:i18n key="LABEL_DETTAGLIO_GARA_FASI_GARA" />
+							</a>
+						</li>
+					</ul>
+				</div>
+			</c:if>
+			
+			<%-- accesso ai documenti art. 36 --%>
+			<c:if test="${abilitaAccessoDocumenti}">
+				<div class="detail-row">
+					<ul class="list">
+						<li class='first last'>
+							<s:if test="%{garaLotti}">
+								<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewAccessoDocumentiLotti.action" />
+							</s:if>
+							<s:else>
+							    <c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewAccessoDocumenti.action" />
+							</s:else>
+							<a href="<wp:action path="${href}"/>&amp;codice=${codice}&amp;ext=${param.ext}"
+							   class="bkg-big go"
+							   title="<wp:i18n key="LABEL_ACCESSO_DOCUMENTI" />" >
+								<wp:i18n key="LABEL_ACCESSO_DOCUMENTI" />
+							</a>
+						</li>
+					</ul>
+				</div>
+			</c:if>
+		</div>
 	</c:if>
-	
+
 	<div
 		class="detail-section <c:if test="${sessionScope.currentUser == 'guest'}">last-detail-section</c:if>">
 		<h3 class="detail-section-title">
@@ -753,7 +823,7 @@
 		</div>
 	</div>
 
-	
+
 	<c:if test="${sessionScope.currentUser != 'guest'}">
 		<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/sommarioComunicazioni.jsp" >
 			<jsp:param name="genere" value="${genere}"/>
@@ -770,13 +840,13 @@
 					<div>
 						<wp:i18n key="BUTTON_DETTAGLIO_GARA_ESITO" var="valueEsitoButton" />
 						<s:submit value="%{#attr.valueEsitoButton}" cssClass="button" />
-						<input type="hidden" name="codice" value="${codice}" /> 
+						<input type="hidden" name="codice" value="${codice}" />
 						<input type="hidden" name="ext" value="1" />
 					</div>
 				</form>
 			</c:if>
 			<c:if test="${sessionScope.currentUser != 'guest'}">
-			
+
 				<c:if test="${richPartecipazione}">
 					<s:if test="%{dettaglioGara.datiGeneraliGara.busteDistinte}">
 						<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openGestioneListaOfferte.action"/>
@@ -784,7 +854,7 @@
 					<s:else>
 						<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openGestioneBuste.action"/>
 					</s:else>
-					
+
 					<wp:i18n key="BUTTON_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE" var="valueDomandaPartecipazioneButton" />
 					<wp:i18n key="LABEL_DETTAGLIO_GARA_PRESENTA_PARTECIPAZIONE" var="titleDomandaPartecipazioneButton" />
 					<c:choose>
@@ -830,14 +900,15 @@
 							<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 							<div>
 								<s:submit value="%{#attr.valueRiepilogoPartecipazioneButton}" title="%{#attr.titleRiepilogoPartecipazioneButton}" cssClass="button" />
-								<input type="hidden" name="codice" value="${codice}" /> 
+								<input type="hidden" name="codice" value="${codice}" />
 								<input type="hidden" name="operazione" value="${presentaPartecipazione}" />
 								<input type="hidden" name="idComunicazione" value="${idComunicazione}"/>
+								<input type="hidden" name="garaSospesa" value="${garaSospesa}"/>
 							</div>
 						</form>
 					</c:if>
-				</s:if> 
-  				
+				</s:if>
+
 				<c:if test="${richInvioOfferta}">
 					<s:if test="%{dettaglioGara.datiGeneraliGara.busteDistinte}">
 						<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openGestioneListaOfferte.action"/>
@@ -847,7 +918,7 @@
 					</s:else>
 					<wp:i18n key="BUTTON_DETTAGLIO_GARA_PRESENTA_OFFERTA" var="valuePresentaOffertaButton" />
 					<wp:i18n key="LABEL_DETTAGLIO_GARA_PRESENTA_OFFERTA" var="titlePresentaOffertaButton" />
-					
+
 					<c:choose>
 						<c:when test="${proceduraTelematica}">
 							<s:if test="%{!dettaglioGara.datiGeneraliGara.busteDistinte}">
@@ -889,24 +960,25 @@
 						</c:otherwise>
 					</c:choose>
 				</c:if>
-				
-				<s:if test="%{abilitaRiepilogoOfferta}"> 
+
+				<s:if test="%{abilitaRiepilogoOfferta}">
 					<s:if test="%{dettaglioGara.datiGeneraliGara.proceduraTelematica}">
 						<s:if test="%{dettaglioGara.datiGeneraliGara.busteDistinte}">
 							<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openGestioneListaOfferte.action"/>
 						</s:if>
-						<s:else> 
+						<s:else>
 							<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogoOfferta.action"/>
 						</s:else>
 						<wp:i18n key="BUTTON_DETTAGLIO_GARA_RIEPILOGO_OFFERTA" var="valueRiepilogoOffertaButton" />
 						<wp:i18n key="LABEL_DETTAGLIO_GARA_RIEPILOGO_OFFERTA" var="titleRiepilogoOffertaButton" />
-						
+
 						<form action="<wp:action path="${href}" />"	method="post" class="azione">
 							<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 							<div>
 								<s:submit value="%{#attr.valueRiepilogoOffertaButton}" title="%{#attr.titleRiepilogoOffertaButton}" cssClass="button" />
 								<input type="hidden" name="codice" value="${codice}"/>
 								<input type="hidden" name="operazione" value="${inviaOfferta}" />
+								<input type="hidden" name="garaSospesa" value="${garaSospesa}"/>
 								<s:if test="%{dettaglioGara.datiGeneraliGara.busteDistinte}">
 									<input type="hidden" name="codiceGara" value="${codice}"/>
 								</s:if>
@@ -915,7 +987,7 @@
 						</form>
 					</s:if>
 				</s:if>
-				
+
 				<c:if test="${richComprovaRequisiti}">
 					<c:if test="${visBarcode}">
 						<form
@@ -931,12 +1003,12 @@
 						</form>
 					</c:if>
 				</c:if>
-				
+
 				<!-- RINUNCIA OFFERTA -->
-				<c:if test="${abilitaRinunciaOfferta}"> 
+				<c:if test="${abilitaRinunciaOfferta && !garaSospesa}">
 					<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openPageRinunciaOfferta.action"/>
 					<wp:i18n key="BUTTON_DETTAGLIO_GARA_RINUNCIA_OFFERTA" var="valueRinunciaOffertaButton" />
-					
+
 					<form action="<wp:action path="${href}" />"	method="post" class="azione">
 						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 						<div>
@@ -946,15 +1018,16 @@
 						</div>
 					</form>
 				</c:if>
-				<c:if test="${abilitaRiepilogoRinunciaOfferta}"> 
+				<c:if test="${abilitaRiepilogoRinunciaOfferta}">
 					<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openPageRinunciaOfferta.action"/>
 					<wp:i18n key="BUTTON_DETTAGLIO_GARA_RIEPILOGO_RINUNCIA" var="valueRiepilogoRinunciaOffertaButton" />
-					
+
 					<form action="<wp:action path="${href}" />"	method="post" class="azione">
 						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 						<div>
 							<input type="hidden" name="operazione" value="${inviaOfferta}" />
 							<input type="hidden" name="codice" value="${codice}"/>
+							<input type="hidden" name="garaSospesa" value="${garaSospesa}"/>
 							<s:submit value="%{#attr.valueRiepilogoRinunciaOffertaButton}" title="%{#attr.valueRiepilogoRinunciaOffertaButton}" cssClass="button" />
 						</div>
 					</form>
@@ -996,7 +1069,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 	<c:choose>	
 		<c:when test="${sessionScope.fromPage != null && sessionScope.fromPage eq 'news'}"> 
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>">
 					<wp:i18n key="LINK_BACK_TO_NEWS" />
 				</a>
 			</div>
@@ -1011,7 +1084,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 				  verificare se si ritorna dal bando e recuperare dalla sessione
 				  l'id per aprire la comunicazione relativa...  
 				--%>
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromBando=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}&amp;${tokenHrefParams}" >
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromBando=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}" >
 					<c:choose>
 						<c:when test="${sessionScope.fromPage eq 'openPageDettaglioComunicazioneInviata'}">
 							<wp:i18n key="LINK_BACK_TO_COMMUNICATIONS_SENT" />
@@ -1025,7 +1098,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 		</c:when>
 		<c:when test="${sessionScope.fromPage != null && sessionScope.fromPage eq 'listSommeUrgenze'}">
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listSommeUrgenze.action"/>&amp;last=1&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listSommeUrgenze.action"/>&amp;last=1">
 					<wp:i18n key="LINK_BACK_TO_LIST" />
 				</a>
 			</div>
@@ -1042,7 +1115,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 				<c:when test="${sessionScope.fromSearch }">
 					<c:if test="${sessionScope.fromPage != null}">
 						<div class="back-link">
-							<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action"/>&amp;last=1&amp;${tokenHrefParams}">
+							<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action"/>&amp;last=1">
 								<c:choose>
 									<c:when test="${sessionScope.fromPage eq 'searchProcedure'}"><wp:i18n key="LINK_BACK_TO_SEARCH" /></c:when>
 									<c:otherwise><wp:i18n key="LINK_BACK_TO_LIST" /></c:otherwise>
@@ -1054,7 +1127,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 				<c:otherwise>
 					<c:if test="${sessionScope.fromPage != null}">
 						<div class="back-link">
-							<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action"/>${last}&amp;${tokenHrefParams}">
+							<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action"/>${last}">
 								<wp:i18n key="LINK_BACK_TO_LIST" />
 							</a>
 						</div>
@@ -1064,7 +1137,7 @@ sessionScope.fromPage: ${sessionScope.fromPage}<br/>
 		</c:when>
 		<c:otherwise>
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=<s:property value="codice"/>">
 					<wp:i18n key="LINK_BACK_TO_ESITO" />
 				</a>
 			</div>

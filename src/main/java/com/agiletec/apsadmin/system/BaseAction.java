@@ -22,63 +22,67 @@ import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.aps.system.services.i18n.II18nManager;
 import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.role.Permission;
+import com.agiletec.aps.system.services.user.DelegateUser;
+import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import it.eldasoft.utils.sign.DigitalSignatureChecker;
 import it.eldasoft.utils.sign.DigitalSignatureException;
 import it.maggioli.eldasoft.digital.signature.DigitalSignatureCheckClient;
 import it.maggioli.eldasoft.digital.signature.ProviderEnum;
-import it.maggioli.eldasoft.digital.signature.client.invoker.ApiException;
 import it.maggioli.eldasoft.digital.signature.model.ResponseCheckSignature;
 import it.maggioli.eldasoft.digital.signature.providers.Provider;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.SAFilter;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.pdfa.PdfAUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParam;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.*;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.keycloakclient.invoker.ApiException;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -93,7 +97,8 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	private static final long serialVersionUID = -6738957298541768249L;
 	
 	protected final Logger logger = ApsSystemUtils.getLogger();
-	protected final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private static final SimpleDateFormat YYYYMMDD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/** Limite inferiore e superiore di una data. */
 	public static final int DA_DATA 		= 1;
@@ -107,7 +112,30 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	public static final int IS_INVALID 		= 1;
 	public static final int IS_REQUIRED 	= 2;
 
-
+	/**
+	 * ...
+	 */
+	protected void redirectToHome() {
+		try {
+			ConfigInterface configManager = (ConfigInterface) ApsWebApplicationUtils
+					.getBean(SystemConstants.BASE_CONFIG_MANAGER, getRequest());
+			
+			StringBuffer page = new StringBuffer(configManager.getParam(SystemConstants.PAR_APPL_BASE_URL));
+			if (page.charAt(page.length() - 1) != '/')
+				page.append('/');
+			page.append("index.jsp");
+			//page.append("error.jsp");
+			
+			HttpServletResponse response = ServletActionContext.getResponse();
+            response.sendRedirect(page.toString());
+            
+		} catch (Exception ex) {
+			// NON DOVREBBE MAI ACCADERE !!!
+			// ??? come trattare l'eccezione e copsa fare in caso di errore ???
+			ApsSystemUtils.logThrowable(ex, this, "redirectToHome");
+		}
+	}
+	
 	/**
 	 * Check if the current user belongs to the given group. It always returns
 	 * true if the user belongs to the Administrators group.
@@ -116,9 +144,12 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * @return true if the user belongs to the given group, false otherwise.
 	 */
 	protected boolean isCurrentUserMemberOf(String groupName) {
+		boolean isAuth = false;
 		UserDetails currentUser = this.getCurrentUser();
-		IAuthorizationManager authManager = this.getAuthorizationManager();
-		boolean isAuth = authManager.isAuthOnGroup(currentUser, groupName) || authManager.isAuthOnGroup(currentUser, Group.ADMINS_GROUP_NAME);
+		if(currentUser != null) {
+			IAuthorizationManager authManager = this.getAuthorizationManager();
+			isAuth = authManager.isAuthOnGroup(currentUser, groupName) || authManager.isAuthOnGroup(currentUser, Group.ADMINS_GROUP_NAME);
+		}
 		return isAuth;
 	}
 
@@ -197,7 +228,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		if (null != currentLang) {
 			return currentLang;
 		} else {
-			ApsSystemUtils.getLogger().info("Lingua richiesta ''{}'' non definita nel sistema", langCode);
+			logger.warn("Lingua richiesta ''{}'' non definita nel sistema", langCode);
 			return this.getLangManager().getDefaultLang();
 		}
 	}
@@ -224,7 +255,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 			title = defaultValue;
 		}
 		return title;
-	}
+	}	
 
 	/**
 	 * Verifica il formato del file in input.
@@ -286,9 +317,10 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		boolean isTsd = checkFileExtension(documentFileName, ".tsd");
 		boolean isPdf = checkFileExtension(documentFileName, ".pdf");
 		boolean isXml = checkFileExtension(documentFileName, ".xml");
+		boolean signed = (format != null && PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO == format);
 		
 		logger.debug("Verifico che il formato del documento risulti un documento firmato per capire se ecluderlo o meno");
-		if(format != null && PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO == format && !isP7m && !isTsd && !isPdf && !isXml) {
+		if(signed && !isP7m && !isTsd && !isPdf && !isXml) {
 			this.addActionError(this.getText("Errors.p7mRequired"));
 			if (event != null) {
 				event.setLevel(Event.Level.ERROR);
@@ -297,8 +329,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 			throw new ApsSystemException(this.getText("Errors.p7mRequired"));
 		}
 		
-		if (format != null && PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO == format
-			&& onlyP7m && !isP7m) {
+		if (signed && onlyP7m && !isP7m) {
 			addActionError(getText("Errors.onlyP7m"));
 			if (event != null) {
 				event.setLevel(Event.Level.ERROR);
@@ -310,23 +341,24 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		logger.debug("Verifico la firma");
 		// E' inutile fare il controllo visto che se non e' uno dei formati: p7m, tsd, pdf, xml; 
 		// viene fatto un throws e si deve fare la verifica della firma su tutti e 4 i formati
-//		if (isP7m || isTsd || (format != null && PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO == format)) {
 		try {
 			if (isP7m || isTsd || isXml || isPdf) {
 				Integer provider = (Integer) appParamManager.getConfigurationValue("digital-signature-checker-provider");				
 				if (provider == null || provider == 0) {
-					if (!isXml && !isPdf)
+					// verifica della firma con BouncyCastle
+					if ((!isXml && !isPdf) || signed)
 						controlliOk = standardCheckSignatureMethod(
 										document
 										, documentFileName
 										, checkDate
 										, event
 										, onlyP7m
-										, format != null && PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO == format
+										, signed
 								);
 				} else if (provider == 1 || provider == 2)
+					// verifica tramite Maggioli o Infocert
 					controlliOk = checkDocumentSignatureWithNewService(
-									appParamManager.getMapAppParamsByCategory("digital-signature-check")
+									appParamManager
 									, document
 									, documentFileName
 									, checkDate
@@ -365,7 +397,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	{
 		// verifica solo quando e' attiva la customizzazione UPLOAD|UPLOADPDF-A.ACTIVE = 1
 		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());		
-		CustomConfigManager customConfigManager = (CustomConfigManager) ctx.getBean("CustomConfigManager");
+		CustomConfigManager customConfigManager = (CustomConfigManager) ctx.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER);
 		
 		boolean uploadPdfA = customConfigManager.isActiveFunction("PDF", "UPLOADPDF-A");
 		if(uploadPdfA) {
@@ -375,7 +407,9 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 				// recupera il contentuto "pdf"
 				byte[] pdf = (byte[])estraiContenutoDocumentoFirmato(document, documentFileName, true, event);					
 				String pdfFilename = (String)estraiContenutoDocumentoFirmato(document, documentFileName, false, event);		
-				while (pdf != null && !pdfFilename.toUpperCase().endsWith(".PDF")) { 
+				while (pdf != null
+						&& (checkFileExtension(pdfFilename, "P7M") || checkFileExtension(pdfFilename, "TSD"))
+				) {
 					pdf = (byte[])estraiContenutoDocumentoFirmato(pdf, pdfFilename, true, event);
 					pdfFilename = (String)estraiContenutoDocumentoFirmato(pdf, pdfFilename, false, event);
 				}
@@ -402,7 +436,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * verifica della firma digitale di un documento per mezzo di servizio esterno 
 	 */
 	private DocumentiAllegatiFirmaBean checkDocumentSignatureWithNewService(
-			Map<String, AppParam> parameters
+			IAppParamManager appParamManager
 			, File document
 			, String documentFileName
 			, Date checkDate
@@ -417,9 +451,14 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		IEventManager eventManager = null;
 		FileInputStream fis = null;
 		try {
-			String authUrl = parameters.get("digital-signature-check-authurl").getValue();
-			String authUsername = parameters.get("digital-signature-check-authusername").getValue();
-			String authSecret = parameters.get("digital-signature-check-authsecret").getValue();
+			Map<String, AppParam> kongParams = appParamManager.getMapAppParamsByCategory("kong-client");
+			String authUrl = kongParams.get(AppParamManager.KONG_AUTH_URL).getValue();
+			//String authUsername = kongParams.get(AppParamManager.KONG_AUTH_USERNAME).getValue();
+			//String authSecret = kongParams.get(AppParamManager.KONG_AUTH_PASSWORD).getValue();
+			String authUsername = kongParams.get(AppParamManager.KONG_AUTH_CLIENT_ID).getValue();
+			String authSecret = kongParams.get(AppParamManager.KONG_AUTH_CLIENT_SECRET).getValue();
+			
+			Map<String, AppParam> parameters = appParamManager.getMapAppParamsByCategory("digital-signature-check");
 			String providerUrl = parameters.get("digital-signature-check-url").getValue();
 
 			Provider provider =
@@ -444,7 +483,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 					  		  			" presso il servizio " + providerUrl + ", " + authUrl + "");
 			eventManager.insertEvent(eventoCheckFirma);
 			
-			logger.debug("verifica firma alla data: {}", sdf.format(firmacheckts));
+			logger.debug("verifica firma alla data: {}", YYYYMMDD_HHMMSS.format(firmacheckts));
 			fis = new FileInputStream(document);
 			ResponseCheckSignature rcs = null;
 			if (providerEnum == ProviderEnum.MAGGIOLI)
@@ -507,10 +546,6 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 			}
 		}
 		
-		if(evento != null) {
-			eventManager.insertEvent(evento);
-		}
-		
 		return controlliOk;
 	}
 
@@ -548,11 +583,11 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		if (document != null) {
 			controlliOk = new DocumentiAllegatiFirmaBean().firmacheckts(checkDate);
 			if (isP7m)
-				controlliOk.firmacheck(checkDocumentP7m(document, documentFileName, event, Date.from(Instant.now())));				
+				controlliOk.firmacheck(checkDocumentP7m(document, documentFileName, event, Date.from(Instant.now())));
 			else if (isTsd)
 				controlliOk.firmacheck(checkDocumentTsd(document, documentFileName, checkDate, event, signRequested));
 			else if (isPdf)
-				controlliOk.firmacheck(checkDocumentPdf(document, documentFileName, event));
+				controlliOk.firmacheck(checkDocumentPdf(document, documentFileName, event, Date.from(Instant.now())));
 			else if (isXml)
 				controlliOk.firmacheck(checkDocumentXml(document, documentFileName, event));
 		}
@@ -644,7 +679,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 							}
 							controlliOk = false;
 						}
-						if(!checkDocumentPdf(document, documentFileName, event)) {
+						if(!checkDocumentPdf(document, documentFileName, event, null)) {
 							controlliOk = false;
 						} 
 						break;
@@ -673,13 +708,64 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 				else if (isTsd)
 					controlliOk = checkDocumentTsd(document, documentFileName, checkDate, event, Boolean.TRUE, true);
 				else if(isPdf) {
-					controlliOk = checkDocumentPdf(document, documentFileName, event);
+					controlliOk = checkDocumentPdf(document, documentFileName, event, null);
 				} 
 //				else if(isXml) {
 //					controlliOk = checkDocumentXml(document, documentFileName, event);
 //				}
 			}
 		}
+		return controlliOk;
+	}
+
+	/**
+	 * Controllo di validita' della firma di un file utilizzando le bouncy castle (eldasoft-utils)
+	 *
+	 * @param document Il file
+	 * @param documentFileName nome del file
+	 * @param event evento da inserire a db
+	 * @param showActionError In caso di errore se a true inserisce una action error.
+	 * @param currentTime Se valorizzato viene controllato se la firma e' scaduta con la data immessa, se nullo viene saltato il controllo
+	 * @return true = firma verificata, false = firma non verificata
+	 */
+	private boolean checkDocumentSign(
+			File document, 
+			String documentFileName, 
+			Event event, 
+			boolean showActionError, 
+			Date currentTime) 
+	{
+		boolean controlliOk = true;
+
+		try (FileInputStream file = new FileInputStream(document)) {
+			DigitalSignatureChecker checker = new DigitalSignatureChecker();
+			boolean signVerified = checker.verifySignature(IOUtils.toByteArray(file), currentTime);
+			if (!signVerified) {
+				if(showActionError) this.addActionError(this.getText("Errors.invalidSign"));
+				if (event != null) {
+					event.setLevel(Event.Level.ERROR);
+					event.setDetailMessage("Il file " + documentFileName
+							+ " non contiene una firma digitale valida");
+				}
+				controlliOk = false;
+			}
+		} catch (IOException e) {
+			if(showActionError) this.addActionError(this.getText("Errors.fileNotSet"));
+			if (event != null) {
+				event.setError(e);
+			}
+			controlliOk = false;
+		} catch (DigitalSignatureException e) {
+			if(showActionError) this.addActionError(this.getText("Errors.cannotVerifySign"));
+			if (event != null) {
+				event.setLevel(Event.Level.ERROR);
+				event.setDetailMessage("Impossibile verificare la firma digitale per il file "
+						+ documentFileName 
+						+ ": " + e.getMessage());
+			}
+			controlliOk = false;
+		}
+
 		return controlliOk;
 	}
 
@@ -734,40 +820,14 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 			boolean showActionError, 
 			Date currentTime) 
 	{
-		boolean controlliOk = true;
-
-		try (FileInputStream file = new FileInputStream(document)) {
-			DigitalSignatureChecker checker = new DigitalSignatureChecker();
-			boolean signVerified = checker.verifySignature(IOUtils.toByteArray(file), currentTime);
-			if (!signVerified) {
-				if(showActionError) this.addActionError(this.getText("Errors.invalidSign"));
-				if (event != null) {
-					event.setLevel(Event.Level.ERROR);
-					event.setDetailMessage("Il file " + documentFileName
-							+ " non contiene una firma digitale valida");
-				}
-				controlliOk = false;
-			}
-		} catch (IOException e) {
-			if(showActionError) this.addActionError(this.getText("Errors.fileNotSet"));
-			if (event != null) {
-				event.setError(e);
-			}
-			controlliOk = false;
-		} catch (DigitalSignatureException e) {
-			if(showActionError) this.addActionError(this.getText("Errors.cannotVerifySign"));
-			if (event != null) {
-				event.setLevel(Event.Level.ERROR);
-				event.setDetailMessage("Impossibile verificare la firma digitale per il file "
-						+ documentFileName 
-						+ ": " + e.getMessage());
-			}
-			controlliOk = false;
-		}
-
-		return controlliOk;
+		return checkDocumentSign(
+				document, 
+				documentFileName, 
+				event, 
+				showActionError, 
+				currentTime);
 	}
-	
+
 	/**
 	 * verifica la validita' di un documento .tsd 
 	 */
@@ -798,7 +858,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 			boolean showActionError, 
 			boolean signedRequested) 
 	{
-		logger.info("checkDocumentTsd");
+		logger.debug("checkDocumentTsd({})", documentFileName);
 		boolean controlliOk = true;
 		try (FileInputStream file = new FileInputStream(document)) {
 			DigitalSignatureChecker checker = new DigitalSignatureChecker();
@@ -916,16 +976,33 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	}
 
 	/**
-	 * verifica la validita' di un documento in formato .pdf ed addizionalmente anche se e' in formato PDF-A 
+	 * verifica la validita' di un documento in formato .pdf ed addizionalmente anche se e' in formato PDF-A
+	 * 
+	 * @param document Il file
+	 * @param documentFileName nome del file
+	 * @param event evento da inserire a db
+	 * @param currentTime Se valorizzato viene controllato se la firma e' scaduta con la data immessa, se nullo viene saltato il controllo
+	 * @return true = firma verificata, false = firma non verificata
 	 */
 	private boolean checkDocumentPdf(
 			File document, 
-			String documentFileName, 
-			Event event) 
+			String documentFileName,
+			Event event,
+			Date currentTime)
 	{
-		logger.info("checkDocumentPdf");
+		logger.debug("checkDocumentPdf({})", documentFileName);
 		boolean controlliOk = true;
-				
+
+		// verifica la firma solo se necessario...
+		if(currentTime != null) {
+			controlliOk = checkDocumentSign(
+					document, 
+					documentFileName, 
+					event, 
+					Boolean.TRUE, 
+					currentTime); 	
+		}
+		
 		return controlliOk;
 	}
 
@@ -933,7 +1010,7 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * verifica la validita' di un documento in formato .xml
 	 */
 	private boolean checkDocumentXml(File document, String documentFileName, Event event) {
-		logger.info("checkDocumentXml");
+		logger.debug("checkDocumentXml({})", documentFileName);
 		boolean controlliOk = false;
 		
 		return controlliOk;
@@ -949,13 +1026,13 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * @param event evento su cui registrare evetnuali tracciature
 	 * 
 	 */
-	private Object estraiContenutoDocumentoFirmato(
+	public Object estraiContenutoDocumentoFirmato(
 			File document, 
 			String documentFileName, 
 			boolean getContenuto, 
 			Event event) 
 	{
-		logger.info("estraiContenutoDocumentoFirmato");
+		logger.debug("estraiContenutoDocumentoFirmato({})", documentFileName);
 		Object result = null;
 		try {
 			byte[] stream = FileUtils.readFileToByteArray(document);
@@ -979,13 +1056,13 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * @param event evento su cui registrare evetnuali tracciature
 	 * 
 	 */
-	private Object estraiContenutoDocumentoFirmato(
+	public Object estraiContenutoDocumentoFirmato(
 			byte[] content, 
 			String fileName, 
 			boolean getContenuto, 
 			Event event) 
 	{
-		logger.info("estraiContenutoDocumentoFirmato");
+		logger.debug("estraiContenutoDocumentoFirmato({})", fileName);
 		String contentFilename = null;
 		try {
 			DigitalSignatureChecker checker = null;
@@ -997,10 +1074,10 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	
 			contentFilename = fileName;
 			while (contentFilename != null && contentFilename.length() > 0) {
-				boolean isP7m = checkFileExtension(contentFilename, ".P7M");
-				boolean isTsd = checkFileExtension(contentFilename, ".TSD");
-				boolean isPdf = checkFileExtension(contentFilename, ".PDF");
-				boolean isXml = checkFileExtension(contentFilename, ".XML");
+				boolean isP7m = UploadValidator.isP7m(contentFilename);
+				boolean isTsd = UploadValidator.isTsd(contentFilename);
+				boolean isPdf = UploadValidator.isPdf(contentFilename);
+				boolean isXml = UploadValidator.isXml(contentFilename);
 				
 				// recupera il contenuto...
 				if(isTsd) {
@@ -1079,258 +1156,6 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 */
 	protected String getFilenameDocumentoFirmato(File document, String documentFileName, Event event) {
 		return (String) this.estraiContenutoDocumentoFirmato(document, documentFileName, false, event);
-	}
-        
-	/**
-	 * Verifica la dimensione del file di input.
-	 *
-	 * @param dimensioneDocumento dimensione del file allegato
-	 * @param documentFileName nome del file allegato
-	 * @param actualTotalSize la dimensione totale dei file finora caricati
-	 * @param limiteDimensioneSingoloFile la dimensione massima per singolo file
-	 * @param limiteDimensioneTotaliFile la dimensione massima per la busta
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileSize(
-			int dimensioneDocumento, 
-			String documentFileName, 
-			int actualTotalSize,
-			int limiteDimensioneSingoloFile,
-			int limiteDimensioneTotaliFile,
-			Event event) {
-		boolean controlliOk = true;
-		if (dimensioneDocumento < 0) {
-			this.addActionError(this.getText("Errors.fileNotSet"));
-			if (event != null) {
-				event.setLevel(Event.Level.ERROR);
-				event.setDetailMessage("File da caricare non selezionato");
-			}
-			controlliOk = false;
-		} else {
-			if (dimensioneDocumento == 0) {
-				this.addActionError(this.getText("Errors.emptyFile"));
-				if (event != null) {
-					event.setLevel(Event.Level.ERROR);
-					event.setDetailMessage("File " + documentFileName
-							+ " vuoto");
-				}
-				controlliOk = false;
-			} else {
-				// se e' stato allegato un file si controlla che non superi la dimensione massima
-				//int limiteDimensioneSingoloFile = FileUploadUtilities.getLimiteUploadFile(appParamManager);
-				if (dimensioneDocumento > limiteDimensioneSingoloFile) {
-					this.addActionError(this.getText("Errors.overflowFileSize"));
-					if (event != null) {
-						event.setLevel(Event.Level.ERROR);
-						event.setDetailMessage("Upload del file " + documentFileName
-								+ " bloccato in quanto la sua dimensione ("
-								+ dimensioneDocumento
-								+ " KB) supera il limite per singolo file di "
-								+ limiteDimensioneSingoloFile
-								+ " KB definito in configurazione");
-					}
-					controlliOk = false;
-				}
-				//int limiteDimensioneTotaliFile = FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-				if (controlliOk && (dimensioneDocumento + actualTotalSize > limiteDimensioneTotaliFile)) {
-					this.addActionError(this.getText("Errors.overflowTotalFileSize"));
-					if (event != null) {
-						event.setLevel(Event.Level.ERROR);
-						event.setDetailMessage("Upload del file " + documentFileName
-								+ " bloccato in quanto la sua dimensione ("
-								+ dimensioneDocumento
-								+ " KB) sommata ai file caricati in precedenza ("
-								+ actualTotalSize 
-								+ " KB) supera il limite di "
-								+ limiteDimensioneTotaliFile
-								+ " KB definito in configurazione");
-					}
-					controlliOk = false;
-				}
-			}
-		}
-		return controlliOk;
-	}
-
-	/**
-	 * Verifica la dimensione del file di input.
-	 *
-	 * @param document file allegato
-	 * @param documentFileName nome del file allegato
-	 * @param actualTotalSize la dimensione totale dei file finora caricati
-	 * @param limiteDimensioneSingoloFile la dimensione massima per singolo file
-	 * @param limiteDimensioneTotaliFile la dimensione massima per la busta
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileSize(
-			File document, 
-			String documentFileName, 
-			int actualTotalSize,
-			int limiteDimensioneSingoloFile,
-			int limiteDimensioneTotaliFile,
-			Event event) 
-	{
-		int dimensioneDocumento = (document != null ? FileUploadUtilities.getFileSize(document) : -1);
-		return this.checkFileSize(
-				dimensioneDocumento, 
-				documentFileName, 
-				actualTotalSize,
-				limiteDimensioneSingoloFile,
-				limiteDimensioneTotaliFile,
-				event);
-	}
-	
-	/**
-	 * Verifica la dimensione del file di input.
-	 *
-	 * @param dimensioneDocumento dimensione del file allegato
-	 * @param documentFileName nome del file allegato
-	 * @param actualTotalSize la dimensione totale dei file finora caricati
-	 * @param appParamManager l'appParamManager per ricavare le costanti di check
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileSize(
-			int dimensioneDocumento, 
-			String documentFileName, 
-			int actualTotalSize,
-			IAppParamManager appParamManager, 
-			Event event) 
-	{
-		int limiteDimensioneSingoloFile = FileUploadUtilities.getLimiteUploadFile(appParamManager);
-		int limiteDimensioneTotaliFile = FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-		return this.checkFileSize(
-				dimensioneDocumento, 
-				documentFileName, 
-				actualTotalSize,
-				limiteDimensioneSingoloFile,
-				limiteDimensioneTotaliFile,
-				event);
-	}
-
-	/**
-	 * Verifica la dimensione del file di input.
-	 *
-	 * @param document file allegato
-	 * @param documentFileName nome del file allegato
-	 * @param actualTotalSize la dimensione totale dei file finora caricati
-	 * @param appParamManager l'appParamManager per ricavare le costanti di check
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileSize(
-			File document, 
-			String documentFileName, 
-			int actualTotalSize,
-			IAppParamManager appParamManager, 
-			Event event) 
-	{
-		int limiteDimensioneSingoloFile = FileUploadUtilities.getLimiteUploadFile(appParamManager);
-		int limiteDimensioneTotaliFile = FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-		return this.checkFileSize(
-				document, 
-				documentFileName, 
-				actualTotalSize, 
-				limiteDimensioneSingoloFile, 
-				limiteDimensioneTotaliFile, 
-				event);
-	}
-	
-	/**
-	 * Verifica il nome del file di input.
-	 *
-	 * @param documentFileName nome del file allegato
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileName(String documentFileName, Event event) {
-		boolean controlliOk = true;
-		if (documentFileName != null) {
-			if (documentFileName.length() > FileUploadUtilities.MAX_LUNGHEZZA_NOME_FILE) {
-				this.addActionError(this.getText("Errors.overflowFileNameLength"));
-				if (event != null) {
-					event.setLevel(Event.Level.ERROR);
-					event.setDetailMessage("Il nome file " + documentFileName
-							+ " supera il limite di "
-							+ FileUploadUtilities.MAX_LUNGHEZZA_NOME_FILE
-							+ " caratteri");
-				}
-				controlliOk = false;
-			}
-			//matcher to find if there is any special character in string
-			Pattern regex = Pattern.compile(FileUploadUtilities.INVALID_FILE_NAME_REGEX);
-			Matcher matcher = regex.matcher(documentFileName);
-			if (matcher.find()) {
-				this.addActionError(this.getText("Errors.invalidFileName"));
-				if (event != null) {
-					event.setLevel(Event.Level.ERROR);
-					event.setDetailMessage("Il nome file " + documentFileName
-							+ " contiene caratteri non ammessi");
-				}
-				controlliOk = false;
-			}
-		}
-		return controlliOk;
-	}
-	
-	/**
-	 * Verifica il nome del file di input.
-	 *
-	 * @param documentDescription descrizione del file allegato
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileDescription(String documentDescription, Event event) {
-		boolean controlliOk = true;
-		if (StringUtils.isEmpty(documentDescription)) {
-			this.addActionError(this.getText("Errors.fileDescriptionMissing"));
-			if (event != null) {
-				event.setLevel(Event.Level.ERROR);
-				event.setDetailMessage("Descrizione obbligatoria mancante per il file caricato");
-			}
-			controlliOk = false;
-		}
-		return controlliOk;
-	}
-	
-	/**
-	 * Verifica il nome del file di input.
-	 *
-	 * @param documentFileName nome del file allegato
-	 * @param appParamManager l'appParamManager per ricavare le costanti di check
-	 * @param estensioniParamName il parametro che indica quali estensioni sono
-	 * accettate
-	 * @param event evento da modificare in caso di errore per la tracciatura eventi
-	 * @return true se i controlli sono andati a buon fine, false altrimenti
-	 */
-	protected boolean checkFileExtension(String documentFileName, IAppParamManager appParamManager, String estensioniParamName, Event event) {
-
-		boolean controlliOk = true;
-		boolean trovato = false;
-		String estensioniAmmesse = StringUtils.stripToNull((String) appParamManager.getConfigurationValue(estensioniParamName));
-		if (documentFileName != null && estensioniAmmesse != null) {
-			String[] estensioni = StringUtils.split(estensioniAmmesse, ',');
-			for (String estensione : estensioni) {
-				if (documentFileName.toUpperCase().endsWith(estensione.toUpperCase())) {
-					trovato = true;
-				}
-			}
-		} else {
-			trovato = true;
-		}
-		if (!trovato) {
-			this.addActionError(this.getText("Errors.fileNameExtensionNotSupported", new String[]{estensioniAmmesse}));
-			if (event != null) {
-				event.setLevel(Event.Level.ERROR);
-				event.setDetailMessage("Il file " + documentFileName
-						+ " non utilizza una delle estensioni ammesse ("
-						+ estensioniAmmesse + ")");
-			}
-			controlliOk = false;
-		}
-		return controlliOk;
 	}
 	
 	/**
@@ -1719,23 +1544,40 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	public II18nManager getI18nManager() {
 		return _i18nManager;
 	}
+	
 	public void setI18nManager(II18nManager i18nManager) {
 		_i18nManager = i18nManager;
 	}
 	
-	private ILangManager _langManager;
+	private transient ILangManager _langManager;
 
-	private IAuthorizationManager _authorizationManager;
+	private transient IAuthorizationManager _authorizationManager;
 
-	private II18nManager _i18nManager;
+	private transient II18nManager _i18nManager;
 
-	public static final String FAILURE = "failure";
-
-	private HttpServletRequest _request;
+	private transient HttpServletRequest _request;
+	
 	private Map<String, String[]> _params;
 
+	public static final String FAILURE 			= "failure";
+	
 	public static final String USER_NOT_ALLOWED = "userNotAllowed";
 	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			_langManager = (ILangManager) ctx.getBean(SystemConstants.LANGUAGE_MANAGER);
+			_authorizationManager = (IAuthorizationManager) ctx.getBean(SystemConstants.AUTHORIZATION_SERVICE);
+			_i18nManager = (II18nManager) ctx.getBean(SystemConstants.I18N_MANAGER);
+			//_request = ???
+		} catch (Exception e) {
+		}
+	}
+
 	/**
 	 * restituisce il valore del codice della stazione appaltante impostata 
 	 * come filtro della webapp  
@@ -1789,18 +1631,6 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 	 * NB: utilizzato ad esempio per il parametro urlPage delle action di generazione dei PDF 
 	 */
 	public String getCurrentPageUrl() {
-		//int i1 = _request.getQueryString().lastIndexOf('/');
-		//int i2 = _request.getQueryString().indexOf(".action");
-		//String actionPath = _request.getQueryString().substring(0, i1 + 1) + 
-		//					  ActionContext.getContext().getActionInvocation().getProxy().getActionName() + 
-		//                    _request.getQueryString().substring(i2);
-//		String url = _request.getRequestURI();
-//		int i = url.indexOf(_request.getContextPath());
-//		if(i == 0)
-//			url = url.substring(i + _request.getContextPath().length());
-
-		//url = url + "?" + actionPath;
-//		return url;
 		String uri = (String) _request.getAttribute("javax.servlet.forward.request_uri");
 		if (uri == null)
 			return _request.getRequestURL().toString();
@@ -1810,7 +1640,11 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		return scheme + "://" + serverName + ":" + serverPort + uri;
 	}
 		
-	protected Map<String, String> getTextAndElementAndHtmlID() {	//Da considerarsi astratto
+	/**
+	 * Restituisce ... 
+	 * NB: Da considerarsi astratto
+	 */
+	protected Map<String, String> getTextAndElementAndHtmlID() {
 		return null;
 	}
 	
@@ -1818,9 +1652,11 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 		Map<String, String> textAndElementID = getTextAndElementAndHtmlID();	//Errore + IdHtml
 		if (MapUtils.isNotEmpty(textAndElementID)) {
 			Map<String, List<String>> empty = getActionErrors().stream().collect(Collectors.groupingBy(groupByHtmlId(textAndElementID)));
-			clearActionErrors();//Devo utilizzare perforza questo metodo perchÃ¨ eliminare i campi a mano della lista non funziona.
+			// Devo utilizzare perforza questo metodo perche' eliminare i campi a mano della lista non funziona
+			clearActionErrors();
 			List<String> toKeep = empty.remove("EMPTY");
-			if (CollectionUtils.isNotEmpty(toKeep))	//Non faccio un clear perchÃ¨ non tutti gli errori sono collegati alla compilazione del form
+			// Non faccio un clear perche' non tutti gli errori sono collegati alla compilazione del form
+			if (CollectionUtils.isNotEmpty(toKeep))	
 				toKeep.forEach(this::addActionError);
 
 			empty.forEach((htmlId, errors) -> errors.forEach(error -> addFieldError(htmlId, error)));
@@ -1829,6 +1665,481 @@ public class BaseAction extends ActionSupport implements ServletRequestAware, Pa
 
 	private Function<String, String> groupByHtmlId(Map<String, String> textAndElementID) {
 		return error -> textAndElementID.getOrDefault(error, "EMPTY");
+	}
+
+	/**
+	 * A causa di problemi di sessione, in caso di maschere di ricerca sulla stessa pagina, ma
+	 * diversa showlet, non era possibile cercare utilizzando dei filtri su nessuno dei 2 form.
+	 *
+	 * Questo metodo inserisce un attributo in sessione, in caso questo non attributo non esista
+	 * e se esiste ritorna true
+	 *
+	 * In caso questa funzione ritorni "true", è necessario non inserire in sessione la pagina
+	 * di provenienza:
+	 * ES:
+	 * 	if (!isMultipleSearchInRequest() {
+	 * 		this.session.put(PortGareSystemConstants.SESSION_ID_FROM_SEARCH, fromSearch);
+	 * 		this.session.put(PortGareSystemConstants.SESSION_ID_FROM_PAGE, fromPage);
+	 * 		this.session.put(PortGareSystemConstants.SESSION_ID_FROM_PAGE_OWNER, FROM_PAGE_OWNER);
+	 * 	}
+	 *
+	 * 	Inoltre bisogna prevenire il form di ricerca dal utilizzare i dati presenti in sessione.
+	 * 	ES:
+	 * 	if(!isMultipleSearchInRequest() && finder != null && fromPage != null) {
+	 * 		String lastFrom = (String)this.session.get(PortGareSystemConstants.SESSION_ID_FROM_PAGE_OWNER) +
+	 * 			              (String)this.session.get(PortGareSystemConstants.SESSION_ID_FROM_PAGE);
+	 * 		if(!(FROM_PAGE_OWNER + fromPage).equalsIgnoreCase(lastFrom)) {
+	 * 			this.model.restoreFrom(finder);
+	 *      }
+	 *	}
+	 *
+	 * Questo metodo non risolve completamente i problemi causati da un doppio form di ricerca,
+	 * ma almeno permette la ricerca.
+	 *
+	 * @return true = ci sono più form di ricerca sulla stessa pagina.
+	 */
+	protected boolean isMultipleSearchInRequest() {
+		boolean toReturn = false;
+
+		if (getRequest().getAttribute("COUNT_SEARCH_IN_REQUEST") == null)
+			getRequest().setAttribute("COUNT_SEARCH_IN_REQUEST", 1);
+		else
+			toReturn = true;
+
+		return toReturn;
+	}
+
+	/**
+	 * effettua il lock per l'accesso ad un determinatp flusso (offerta, iscrizione elenco, ...)
+	 */
+	protected boolean lockAccessoFunzione(EFlussiAccessiDistinti flusso, String codice) {
+		boolean lockOk = false; 
+		
+		if(AccountSSO.isAccessiDistinti()  
+		   && null != this.getCurrentUser() 
+		   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME))
+		{
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			IEventManager eventManager = (IEventManager) ctx.getBean(PortGareSystemConstants.EVENTI_MANAGER);
+			IUserManager userManager = (IUserManager) ctx.getBean(SystemConstants.USER_MANAGER);
+			
+			synchronized (this) {
+				// recupera le info del soggetto impresa
+				AccountSSO accessoSSO = AccountSSO.getFromSession();
+				
+				// fai una copia del flusso attuale prima di aggiornarlo... 
+				// nel caso il lock non sia possibile, va ripristinato!!!
+				String oldFlusso = (accessoSSO != null && accessoSSO.getProfilo() != null ? accessoSSO.getProfilo().getFlusso() : null);
+				
+				Event evento = null;
+				try {
+					String delegate = (StringUtils.isNotEmpty(accessoSSO.getProfilo().getDelegate()) 
+					   		   		   ? accessoSSO.getProfilo().getDelegate() : "");
+					
+					String funzione = flusso.toString() + 
+									  (StringUtils.isNotEmpty(codice) ? "-" + codice : "");	 // lock a livello di (funzione, gara)
+					
+					accessoSSO.getProfilo().setFlusso(funzione);
+				
+					// esegui il LOCK sul flusso corrente se ci sono i permessi necessari...
+					boolean tryLock = true;
+					List<DelegateUser> lockAttivi = userManager.loadProfiliSSOAccesses(this.getCurrentUser().getUsername());
+					if(CollectionUtils.isNotEmpty(lockAttivi)) {
+						tryLock = lockAttivi.stream()
+								.filter(a -> delegate.equalsIgnoreCase(a.getDelegate()))
+								.map(DelegateUser::getFlusso)
+								.noneMatch(f -> funzione.equalsIgnoreCase(f));
+					}
+					
+					if( !tryLock ) {
+						// esiste gia' un LOCK attivo per questo flusso, quindi non serve rieseguirlo
+						lockOk = true;
+					} else {
+						// non ci sono LOCK per questo flusso...
+						if(hasPermessiCompilazioneFlusso() || hasPermessiInvioFlusso()) {
+							evento = new Event();
+							evento.setUsername(this.getCurrentUser().getUsername());
+							evento.setDestination(codice);
+							evento.setIpAddress(this.getCurrentUser().getIpAddress());
+							evento.setSessionId(this.getCurrentUser().getSessionId());
+							evento.setLevel(Event.Level.INFO);
+							
+							// esegui un tentativo di LOCK sulla funzione
+							DelegateUser lock = userManager.lockProfiloSSOAccess(
+									this.getCurrentUser(),	
+									accessoSSO.getProfilo().getDelegate(),
+									funzione);	
+							
+							if(lock == null) {
+								// lock effettuato con successo, ricarica il profilo SSO aggiornato
+								lockOk = true;
+								accessoSSO.loadProfilo(this.getCurrentUser().getUsername());
+								evento.setEventType(PortGareEventsConstants.LOCK);
+								evento.setMessage("Lock effettuato per l'accesso a " + flusso.name() + 
+												  (StringUtils.isNotEmpty(codice) ? " " + codice : "") +
+												  " dall'utente " + this.getCurrentUser().getUsername() + 
+												  " con soggetto impresa " + delegate);
+								logger.debug("lockAccessoFunzione => {} {} lock succesfull", flusso.name(), delegate);
+							} else {
+								// un altro utente ha gia' il lock sulla risorsa
+								// mostra il messaggio di accesso multiplo 
+								evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
+								evento.setLevel(Event.Level.ERROR);
+								evento.setMessage("L'accesso alla funzionalita' " + flusso.name() + 
+												  " viene impedito in quanto il soggetto " + lock.getDelegate() + 
+												  " sta operando a partire da " + YYYYMMDD_HHMMSS.format(lock.getLoginTime())); 
+								this.addActionError(getText("Errors.cannotLockFunction", 
+											 					new String[] { flusso.name(), lock.getDelegate(), YYYYMMDD_HHMMSS.format(lock.getLoginTime()) }));
+								logger.debug("lockAccessoFunzione => {} {} locked by another sso user", flusso.name(), delegate);
+							}
+						} else {
+							// il profilo del soggetto impresa non ha i permessi per accedere alla funzione
+							evento = new Event();
+							evento.setUsername(this.getCurrentUser().getUsername());
+							evento.setDestination(codice);
+							evento.setIpAddress(this.getCurrentUser().getIpAddress());
+							evento.setSessionId(this.getCurrentUser().getSessionId());
+							evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
+							evento.setLevel(Event.Level.ERROR);
+							evento.setMessage("Accesso alla funzione " + flusso.name() + " non disponibile" +
+											  " per mancanza di permessi per l'utente " + this.getCurrentUser().getUsername() + 
+											  " e soggetto impresa " + delegate);
+							this.addActionError(getText("Errors.noAccessPermissions", 
+					 									new String[] { flusso.name(), delegate, this.getCurrentUser().getUsername() }));
+							logger.debug("lockAccessoFunzione => {} {} sso user has no permissions", flusso.name(), delegate);
+						}
+					}
+					
+				} catch (Throwable t) {
+					ApsSystemUtils.logThrowable(t, this, "lockAccessoFunzione");
+					ExceptionUtils.manageExceptionError(t, this);
+				} finally {
+					if (evento != null) {
+						eventManager.insertEvent(evento);
+					}
+				}
+				
+				// nel caso il lock non sia possibile, ripristina il precedente flusso!!! 
+				if( !lockOk ) {
+					if(accessoSSO != null && accessoSSO.getProfilo() != null)
+						accessoSSO.getProfilo().setFlusso(oldFlusso);
+				}
+			}
+		} else {
+			// gestione soggetti impresa con SSO NON ATTIVA!!!
+			// il default e' "lock con successo"
+			lockOk = true;
+		}
+		
+		return lockOk;
+	}
+	
+	/**
+	 * effettua l'unlock per l'accesso alla funzione 
+	 */
+	public boolean unlockAccessoFunzione() {
+		boolean unlocked = false;
+
+		AccountSSO accessoSSO = AccountSSO.getFromSession();
+		boolean isProfiloSSO = (accessoSSO != null && accessoSSO.getProfilo() != null); 
+
+		if(isProfiloSSO
+		   && null != this.getCurrentUser() 
+		   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME))
+		{ 
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			IEventManager eventManager = (IEventManager) ctx.getBean("EventManager");
+			IUserManager userManager = (IUserManager) ctx.getBean("UserManager");
+
+			Event evento = null;
+			try {
+				String delegate = (StringUtils.isNotEmpty(accessoSSO.getProfilo().getDelegate()) 
+		   		   		   		   ? accessoSSO.getProfilo().getDelegate() : "");
+				String flusso = AccountSSO.getFlussoAccessiDistinti(accessoSSO);
+				String codice = AccountSSO.getCodiceAccessiDistinti(accessoSSO);
+				
+				// verifica se e' necessatrio un UNLOCK...
+				long lockCount = 0;
+				List<DelegateUser> lockAttivi = userManager.loadProfiliSSOAccesses(this.getCurrentUser().getUsername());
+				if(CollectionUtils.isNotEmpty(lockAttivi)) {
+					lockCount = lockAttivi.stream()
+							.filter(a -> delegate.equalsIgnoreCase(a.getDelegate()))
+							.filter(a -> !EFlussiAccessiDistinti.LOGIN.toString().equalsIgnoreCase(a.getFlusso()))	// tra i lock attivi va ignorata la "funzione" LOGIN !!! 
+							.map(DelegateUser::getFlusso)
+							.count();
+				}
+
+				// esegui l'UNLOCK solo se necessario
+				// NB: un soggetto impresa esegue l'unlock dell'unica funziona che puo' aver aperto
+				if(lockCount > 0) {
+					evento = new Event();
+					evento.setUsername(this.getCurrentUser().getUsername());
+					evento.setDestination(codice);
+					evento.setIpAddress(this.getCurrentUser().getIpAddress());
+					evento.setSessionId(this.getCurrentUser().getSessionId());
+					evento.setEventType(PortGareEventsConstants.UNLOCK);
+					evento.setMessage("Unlock effettuato per l'accesso a " + flusso +
+							  		  (StringUtils.isNotEmpty(codice) ? " " + codice : "") +
+							  		  " dall'utente " + this.getCurrentUser().getUsername() + 
+							  		  " con soggetto impresa " + delegate);
+					evento.setLevel(Event.Level.INFO);
+	
+					unlocked = userManager.unlockProfiloSSOAccess(
+							this.getCurrentUser(),	
+							accessoSSO.getProfilo().getDelegate()
+					);
+					
+					if(unlocked) {
+				    	logger.debug("unlockAccessoFunzione => unlock {} per {} {}", flusso, accessoSSO.getLogin(), delegate);
+				    	accessoSSO.getProfilo().setFlusso(null);
+					}
+				}
+			} catch (Throwable t) {
+				if(evento != null) {
+					evento.setLevel(Event.Level.ERROR);
+					evento.setDetailMessage(t);
+				}
+				ApsSystemUtils.logThrowable(t, this, "unlockAccessoFunzione");
+				ExceptionUtils.manageExceptionError(t, this);
+			} finally {
+				if (evento != null) {
+					eventManager.insertEvent(evento);
+				}
+			}
+		} else {
+			// quando NON c'e' la gestione dei profili per piu' soggetti impresa con SSO
+			// il default e' "unlock con successo" 
+			unlocked = true;
+		}
+		
+		return unlocked;
+	}
+	
+	/**
+	 * verifica se un utente/soggetto impresa ha i permetti per accedere/inviare 
+	 * in base al ruolo definito definito (es: Sola lettura, Istruttore, Completo) 
+	 */
+	private boolean hasPermessiAccessiDistinti(boolean invio) {
+		boolean continua = true;
+		if(null != this.getCurrentUser() 
+		   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
+			try {
+				// la verifica sul profilo viene eseguita solo per l'utente loggato !!!
+				continua = false;
+				
+				AccountSSO sso = AccountSSO.getFromSession();
+				
+				DelegateUser.Accesso ruolo = AccountSSO.getRuoloAccessiDistinti(sso) ;
+				String flusso = AccountSSO.getFlussoAccessiDistinti(sso);
+				
+				if(StringUtils.isEmpty(flusso)) {
+					// se non c'e' flusso, non ci sono restrizioni
+					continua = true;
+				} else {
+					// se c'e' flusso, devono esserci dei permessi
+					DelegateUser.Accesso[] accessi = (invio
+							? EFlussiAccessiDistinti.PERMESSI_INVIO.get(flusso)
+							: EFlussiAccessiDistinti.PERMESSI_COMPILAZIONE.get(flusso)
+					);
+					
+					if(accessi != null)
+						continua = Arrays.asList(accessi).contains(ruolo);
+				}
+			} catch (Throwable t) {
+				ApsSystemUtils.logThrowable(t, this, "hasPermessiAccessiDistinti");
+				ExceptionUtils.manageExceptionError(t, this);
+			}
+		}
+		return continua;
+	}
+	
+	protected boolean hasPermessiCompilazioneFlusso() {
+		return hasPermessiAccessiDistinti(false);
+	}
+	
+	protected boolean hasPermessiInvioFlusso() {
+		return hasPermessiAccessiDistinti(true);
+	}
+	
+	protected boolean hasPermessiSolaLettura() {
+		boolean readonly = false;
+		if(null != this.getCurrentUser() 
+		   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
+			if(AccountSSO.isAccessiDistinti()) {
+				try {
+					 // la verifica sul profilo viene eseguita solo per l'utente loggato !!!
+					AccountSSO sso = AccountSSO.getFromSession();
+					DelegateUser.Accesso ruolo = AccountSSO.getRuoloAccessiDistinti(sso);
+					readonly = (ruolo == DelegateUser.Accesso.READONLY);
+				} catch (Throwable t) {
+					ApsSystemUtils.logThrowable(t, this, "hasPermessiSolaLettura");
+					ExceptionUtils.manageExceptionError(t, this);
+				}
+			}
+		}
+		return readonly;
+	}
+
+	/**
+	 * aggiunge l'errore di mancanza di permessi di accesso per l'utente/soggetto impresa
+	 */
+	protected void addActionErrorSoggettoImpresaPermessiAccessoInsufficienti() {
+		AccountSSO sso = AccountSSO.getFromSession();
+		String flusso = (StringUtils.isNotEmpty(sso.getProfilo().getFlusso()) ? sso.getProfilo().getFlusso() : "");
+		String delegate = (StringUtils.isNotEmpty(sso.getProfilo().getDelegate()) ? sso.getProfilo().getDelegate() : "");
+		addActionError(getText("Errors.noAccessPermissions", new String[] { flusso, delegate, getCurrentUser().getUsername() }));
+	}
+		
+	/**
+	 * verifica se il profilo del soggetto impresa ha aperto un flusso e se e' compatibile con quelli previsti  
+	 */
+	public boolean isFlussoValid(AccountSSO accessoSSO) {
+		boolean valid = true;
+		
+		if(accessoSSO.getProfilo() != null) {
+			// estrae dalla action le annotazioni dei i flussi previsti
+			List<String> flussiAmmessi = null;
+			try {
+				Annotation[] classAnnotations = getClass().getAnnotations();
+				for (Annotation item : classAnnotations) {
+					if (item instanceof FlussiAccessiDistinti) {
+						FlussiAccessiDistinti annotation = (FlussiAccessiDistinti)item;
+						flussiAmmessi = new ArrayList<String>();
+						flussiAmmessi.addAll(Arrays.asList(annotation.value()).stream()
+							.map(EFlussiAccessiDistinti::name)
+							.collect(Collectors.toList()));
+					}
+				}
+				
+				logger.debug("isFlussoValid => " + getClass().toString() + 
+							 (flussiAmmessi != null ? "[ " + flussiAmmessi.toString() + " ]" : ""));
+			} catch (Exception e) {
+				ApsSystemUtils.logThrowable(e, null, "isFlussoValid");
+			}
+
+			// estrai il flusso corrente
+			String flusso = null;
+	    	if(StringUtils.isNotEmpty(accessoSSO.getProfilo().getFlusso())) {
+	    		String[] v = accessoSSO.getProfilo().getFlusso().split("-");
+	    		flusso = (v != null ? v[0] : accessoSSO.getProfilo().getFlusso());
+	    	}
+	    	
+	    	// verifica se il flusso corrente e' compatibile con i flussi previsti dalla action
+	    	// - se non e' attivo un flusso e sono in una action senza flussi previsti => flusso valido
+	    	// - se e' attivo un flusso ma sono in una action senza flussi previsti => flusso non valido
+	    	// - se non e' attivo un flusso ma sono in una action con flussi previsti => flusso non valido
+	    	// - se attivo un flusso e sono in una action con flussi previsti => flusso se e' contenuto nei flussi previsti
+			valid = (StringUtils.isEmpty(flusso) && flussiAmmessi == null);
+			if(StringUtils.isNotEmpty(flusso) && flussiAmmessi != null) {
+		    	valid = flussiAmmessi.contains(flusso);
+			}
+			
+			logger.debug("isFlussoValid => {} IN {} ? ==> {}",  
+						 (flusso != null ? flusso : ""), (flussiAmmessi != null ? flussiAmmessi.toString() : "[]"), valid);
+		}
+		
+		return valid;
+	}
+
+	/**
+	 * verifica se il profilo del soggetto impresa ha ancora il lock attivo su un flusso
+	 * oppure l'OWNER lo ha revocato 
+	 */
+	public synchronized boolean isLockRevoked(AccountSSO accessoSSO) {
+		boolean attivo = true;
+		if(accessoSSO.getProfilo() != null) {
+			// se il soggetto impresa aveva aperto un lock su un flusso...
+			// verifica se il lock e' ancora attivo o se e' stato revocato 
+			String username = this.getCurrentUser().getUsername();
+			String flusso = accessoSSO.getProfilo().getFlusso();
+			if(StringUtils.isNotEmpty(flusso))
+				if(logger.isDebugEnabled()) {
+					//log.debug("intercept '{}/{}' { ", invocation.getProxy().getNamespace(), invocation.getProxy().getActionName());
+					logger.debug("isLockRevoked {} {} {} => {} aggiornamento profilo da DB"
+								 , (accessoSSO.getLogin() != null ? accessoSSO.getLogin() : "") 
+								 , accessoSSO.getProfilo().getDelegate()
+								 , accessoSSO.getProfilo().getFlusso()
+								 , getClass().getName()
+					);
+				
+				// aggiorna i dati della sessione del soggetto impresa...
+				DelegateUser profilo = accessoSSO.loadProfilo(username);
+				if(profilo != null) {
+					attivo = (StringUtils.isNotEmpty(profilo.getFlusso()) 								// deve esserci un flusso attivo
+							  && (profilo.getFlusso().equalsIgnoreCase(flusso))							// il flusso corrente deve essere lo stesso dell'ultima action
+							  && (profilo.getLoginTime() != null && profilo.getLogoutTime() == null)	// deve esserci un login al flusso e un logout nullo
+					);
+				}
+			}
+		}
+		// il lock e' revocato se NON e' piu' attivo !!!
+		return !attivo;
+	}
+	 	
+	/**
+	 * Metodo di utilità per la pulizia del codice.
+	 * @param message
+	 */
+	public void addErrorAndLog(String message) {
+		super.addActionError(message);
+		logger.error(message);
+	}
+
+	public void addMessageAndLog(String message) {
+		super.addActionMessage(message);
+		logger.debug(message);
+	}
+		
+	/** ******************************************************************************
+	 * validatori per l'upload di un documento (PORTAPPALT-1089 - validazione formati)
+	 */
+	protected UploadValidator uploadValidator;
+	
+	protected UploadValidator getUploadValidator() {
+		uploadValidator = (uploadValidator != null ? uploadValidator : new UploadValidator(this));
+		return uploadValidator;
+	}
+
+	public Integer getLimiteUploadFile() {
+		return getUploadValidator().getLimiteUploadFile();
+	}
+	
+	public Integer getLimiteTotaleUpload() {
+		return getUploadValidator().getLimiteTotaleUploadFile();
+	}
+	
+	public List<String> getInfoEstensioniAmmesse() {
+		return getUploadValidator().getInfoEstensioniAmmesse(); 
+	}
+	
+	protected boolean checkFileDescription(String documentDescription, Event event) {
+    	return getUploadValidator().checkFileDescription(documentDescription, event);
+    }
+	
+	protected boolean checkFileName(String documentFileName, Event event) {
+		return getUploadValidator().checkFileName(documentFileName, event);
+	}
+	
+	protected boolean checkFileExtension(String documentFileName, Event event) {
+		return getUploadValidator().checkFileExtension(documentFileName, event);
+	}
+	
+	protected boolean checkFileSize(File document, String documentFileName, int actualTotalSize, Event event) {
+		return getUploadValidator().checkFileSize(document, documentFileName, actualTotalSize, event);
+	}
+	
+	protected boolean checkFileSize(int documentSize, String documentFileName, int actualTotalSize, Event event) {
+		return getUploadValidator().checkFileSize(documentSize, documentFileName, actualTotalSize, event);
+	}
+	
+	protected boolean checkFileFormat(File document, String documentFileName, Integer format, boolean onlyP7m, Event event) {
+		return getUploadValidator().checkFileFormat(document, documentFileName, format, onlyP7m, event);
+	}
+	
+	protected DocumentiAllegatiFirmaBean checkFileSignature(File document, String documentFileName, Integer format, Date checkDate, boolean onlyP7m, Event event) throws ApsSystemException {
+		return getUploadValidator().checkFileSignature(document, documentFileName, format, checkDate, onlyP7m, event);
 	}
 
 }

@@ -18,20 +18,37 @@
 package com.agiletec.plugins.jacms.aps.system.services.resource.model;
 
 import java.io.File;
-import java.io.Serializable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.agiletec.aps.system.services.category.Category;
 import com.agiletec.aps.system.services.group.Group;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.util.IResourceInstanceHelper;
 import com.agiletec.plugins.jacms.aps.system.services.resource.parse.ResourceDOM;
 
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
+
 /**
  * Classe astratta di base per gli oggetti Resource.
  * @author W.Ambu - E.Santoboni
  */
-public abstract class AbstractResource implements ResourceInterface, Serializable {
+public abstract class AbstractResource implements ResourceInterface {
+	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			_instanceHelper = (IResourceInstanceHelper ) ctx.getBean("jacmsResourceInstanceFileHelper");
+		} catch (Exception e) {
+		}
+	}
 	
 	/**
 	 * Inizializza gli elementi base costituenti la Risorsa.
@@ -403,6 +420,6 @@ public abstract class AbstractResource implements ResourceInterface, Serializabl
 	
 	private String _allowedExtensions;
 	
-	private IResourceInstanceHelper _instanceHelper;
+	private transient IResourceInstanceHelper _instanceHelper;
 	
 }

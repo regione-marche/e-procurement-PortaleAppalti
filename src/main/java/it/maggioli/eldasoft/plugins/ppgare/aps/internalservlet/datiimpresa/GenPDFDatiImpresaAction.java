@@ -4,6 +4,8 @@ import it.eldasoft.sil.portgare.datatypes.AggiornamentoAnagraficaImpresaDocument
 import it.eldasoft.sil.portgare.datatypes.DatiImpresaType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import org.apache.xmlbeans.XmlObject;
@@ -16,6 +18,11 @@ import java.util.HashMap;
  * @author stefano.sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class GenPDFDatiImpresaAction extends GenPDFAction { 
     /**
      * UID

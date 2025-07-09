@@ -3,6 +3,8 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 /**
@@ -12,6 +14,11 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageRiepilogoAction extends AbstractOpenPageAction {
 
     /**

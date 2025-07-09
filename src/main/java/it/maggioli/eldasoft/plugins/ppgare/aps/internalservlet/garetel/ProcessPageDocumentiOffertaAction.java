@@ -6,14 +6,13 @@ import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.itextpdf.text.exceptions.InvalidPdfException;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaEconomica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
@@ -21,11 +20,12 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.helpers.WizardOffertaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.utils.PdfUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,11 +35,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
-
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -273,6 +276,44 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 	}
 	
 	/**
+	 * verifica l'integrita' della busta 
+	 */
+	public String check() {
+		String target = SUCCESS_BACK_TO_DOCUMENTI;
+		
+		Event evento = null;
+		try {
+			BustaEconomica bustaEco = GestioneBuste.getBustaEconomicaFromSession();
+			String codiceGara = bustaEco.getCodiceGara();
+			String codiceLotto = (StringUtils.isNotEmpty(codice) ? codice : codiceGara);
+			
+			evento = VerificaDocumentiCorrotti.createNewEvent(bustaEco);
+			
+			VerificaDocumentiCorrotti validazione = new VerificaDocumentiCorrotti(evento);
+			validazione.validate(bustaEco, codiceLotto);
+			if( !validazione.isErroriPresenti() ) {
+				this.addActionMessage(this.getText("Envelope.prontaInvio"));
+			} else {
+				validazione.addActionErrors(this, evento);
+				target = INPUT;
+			}
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "check");
+			ExceptionUtils.manageExceptionError(t, this);
+			target = CommonSystemConstants.PORTAL_ERROR;
+			if(evento != null) {
+				evento.setError(t);
+			}
+		} finally {
+			if(evento != null) {
+				eventManager.insertEvent(evento);
+			}
+		}
+		
+		return target;
+	}
+
+	/**
 	 * ...
 	 */
 	public String addDocRich() {
@@ -297,42 +338,25 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 						? helper.getCodice() 
 						: helper.getGara().getCodice() );
 				
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docRichiesto);
-
-				// traccia l'evento di upload di un file...
-				evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(codice);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(bustaEco.getDescrizioneBusta() + ": documento richiesto"
-						+ " con id=" + this.docRichiestoId
-						+ ", file=" + this.docRichiestoFileName
-						+ ", dimensione=" + dimensioneDocumento + "KB");
+				evento = getUploadValidator().getEvento();
 				
-				boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				controlliOk =
-						checkFileSize(docRichiesto, docRichiestoFileName, getActualTotalSize(documentiBustaHelper), appParamManager, evento)
-						&& checkFileName(docRichiestoFileName, evento)
-						&& checkFileFormat(docRichiesto, docRichiestoFileName, formato, evento, onlyP7m);
-				if (controlliOk) {
-					logger.info("Controlli per i file prima del ws: {}", controlliOk);
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docRichiesto
-							, docRichiestoFileName
-							, formato
-							, checkDate
-							, evento
-							, onlyP7m
-							, appParamManager
-							, customConfigManager
-					);
-					logger.info("ProcessPageDocumentiOffertaAction -> checkFirma: {}", checkFirma);
-					logger.info("Controlli per i file dopo ws: {}", controlliOk);
-
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(bustaEco)
+						.setDocumento(docRichiesto)
+						.setDocumentoFileName(docRichiestoFileName)
+						.setDocumentoFormato(formato)
+						//.setOnlyP7m( customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M") )
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(codice)
+						.setEventoMessaggio(bustaEco.getDescrizioneBusta() + ": documento richiesto"
+											+ " con id=" + this.docRichiestoId
+											+ ", file=" + this.docRichiestoFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docRichiesto) + "KB");					
+				
+				if ( getUploadValidator().validate() ) {
+					controlliOk = true;
+					
 					// se si carica l'offerta economica allora si controlla, se necessario, la hash del file firmato
 					if (docRichiestoId.longValue() == helper.getIdOfferta().longValue())
 						controlliOk = checkFileFirmato(docRichiesto, docRichiestoFileName, helper.getPdfUUID(), evento);
@@ -349,7 +373,8 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 								this.docRichiesto,
 								this.docRichiestoContentType,
 								this.docRichiestoFileName,
-								evento,checkFirma);
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma());
 						
 						if(this.docRichiestoId.longValue() == helper.getIdOfferta().longValue()){
 							documentiBustaHelper.setDocOffertaPresente(true);
@@ -402,8 +427,8 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 	public String addUltDoc() {
 		String target = SUCCESS_BACK_TO_DOCUMENTI;
 		
-		BustaEconomica bustaEco = GestioneBuste.getBustaEconomicaFromSession();			
-		WizardOffertaEconomicaHelper helper = bustaEco.getHelper();			
+		BustaEconomica bustaEco = GestioneBuste.getBustaEconomicaFromSession();
+		WizardOffertaEconomicaHelper helper = bustaEco.getHelper();
 		WizardDocumentiBustaHelper documentiBustaHelper = helper.getDocumenti();
 
 		if (documentiBustaHelper == null) {
@@ -418,53 +443,22 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 						? helper.getCodice() 
 						: helper.getGara().getCodice() );
 
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docUlteriore);
-				
-				// traccia l'evento di upload di un file...
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(codice);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(bustaEco.getDescrizioneBusta() + ": documento ulteriore" 
-						+ " con file=" + this.docUlterioreFileName
-						+ ", dimensione=" + dimensioneDocumento+"KB");
-
-				boolean controlliOk = true;
-				if(StringUtils.isEmpty(this.docUlterioreFileName)){
-					this.addFieldError("docUlteriore", this.getText("Errors.offertaTelematica.docUlteriore.nomeNonValido"));
-					controlliOk = false;
-				}
-				if(controlliOk){
-					String nome = (this.docUlterioreFileName).substring(0, this.docUlterioreFileName.lastIndexOf('.')).toUpperCase().trim();
-					if(nome.equals((PortGareSystemConstants.DESCRIZIONE_DOCUMENTO_OFFERTA_ECONOMICA).toUpperCase())){
-						this.addFieldError("docUlteriore", this.getText("Errors.offertaTelematica.docUlteriore.nomeNonValido"));
-						controlliOk = false;
-					}
-				}
-
-				boolean onlyP7m = customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				controlliOk = controlliOk
-								&& checkFileDescription(docUlterioreDesc, evento)
-								&& checkFileSize(docUlteriore, docUlterioreFileName, getActualTotalSize(documentiBustaHelper), appParamManager, evento)
-								&& checkFileName(docUlterioreFileName, evento)
-								&& checkFileExtension(docUlterioreFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-								&& checkFileFormat(this.docUlteriore, this.docUlterioreFileName, null, evento, onlyP7m);
-
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docUlteriore
-							, docUlterioreFileName
-							, null
-							, checkDate
-							, evento
-							, onlyP7m
-							, appParamManager
-							, customConfigManager
-					);
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(bustaEco)
+						.setDocumentoDescrizione(docUlterioreDesc)
+						.setDocumento(docUlteriore)
+						.setDocumentoFileName(docUlterioreFileName)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(codice)
+						.setEventoMessaggio(bustaEco.getDescrizioneBusta() + ": documento ulteriore" 
+											+ " con file=" + this.docUlterioreFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docUlteriore) + "KB")
+					.addFilenameNonValido(PortGareSystemConstants.DESCRIZIONE_DOCUMENTO_OFFERTA_ECONOMICA,
+										  "docUlteriore", 
+										  "Errors.offertaTelematica.docUlteriore.nomeNonValido");
+  					
+				if ( getUploadValidator().validate() ) {
 					// si inseriscono i documenti in sessione	
 					if (Attachment.indexOf(documentiBustaHelper.getAdditionalDocs(), Attachment::getDesc, docUlterioreDesc) != -1) {
 						addActionError(getText("Errors.docUlteriorePresent"));
@@ -479,8 +473,8 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 							, docUlteriore
 							, docUlterioreContentType
 							, docUlterioreFileName
-							, evento
-							, checkFirma
+							, getUploadValidator().getEvento()
+							, getUploadValidator().getCheckFirma()
 						);
 						
 						docUlterioreDesc = null;
@@ -492,7 +486,7 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 					target = INPUT;
 				}
 				
-				this.eventManager.insertEvent(evento);
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 				
 			} catch (GeneralSecurityException e) {
 				ApsSystemUtils.logThrowable(e, this, "addDocUlt", "Errore durante la cifratura dell'allegato richiesto " + this.docRichiestoFileName);
@@ -727,7 +721,7 @@ public class ProcessPageDocumentiOffertaAction extends AbstractProcessPageAction
 	 * @return totale in KB dei file caricati
 	 */
 	private int getActualTotalSize(WizardDocumentiBustaHelper helper) {
-		return Attachment.sumSize(helper.getRequiredDocs()) + Attachment.sumSize(helper.getRequiredDocs());
+		return helper.getTotalSize();
 	}
 
 }

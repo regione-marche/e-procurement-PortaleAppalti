@@ -50,6 +50,62 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 	}
 
 	@Override
+	public SearchResult<AvvisoType> searchAvvisiGenerali(AvvisiSearchBean model) throws ApsException {
+		SearchResult<AvvisoType> avvisi = new SearchResult<AvvisoType>();
+		ElencoAvvisiOutType retWS = null;
+		try {
+			String stazioneAppaltante = BandiManager.getApplicationFilter(
+					PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE, model.getStazioneAppaltante());
+
+			Integer numAnniPubblicazione = (Integer) wsGareAppalto
+				.getAppParamManager().getConfigurationValue(
+					AppParamManager.PUBBLICAZIONE_NUM_ANNI);
+
+			AvvisiTypeSearch filtri = new AvvisiTypeSearch();
+			filtri.setNumAnniPubblicazione(numAnniPubblicazione);
+			filtri.setStazioneAppaltante(stazioneAppaltante);
+			filtri.setOggetto(model.getOggetto());
+			filtri.setTipoAvviso(model.getTipoAvviso());
+			filtri.setDataPubblicazioneDa(model.convertDate(model.getDataPubblicazioneDa()));
+			filtri.setDataPubblicazioneA(model.convertDate(model.getDataPubblicazioneA()));
+			filtri.setDataScadenzaDa(model.convertDate(model.getDataScadenzaDa()));
+			filtri.setDataScadenzaA(model.convertDate(model.getDataScadenzaA()));
+			filtri.setStato(model.getStato());
+			filtri.setAltriSoggetti(model.getAltriSoggetti());
+			filtri.setIsGreen(model.getIsGreen());
+			filtri.setIsRecycle(model.getIsRecycle());
+			filtri.setIsPnrr(model.getIsPnrr());
+			filtri.setTipoAvvisoGenerale(model.getTipoAvvisoGenerale());
+			filtri.setIndicePrimoRecord(model.getIndicePrimoRecord());
+			filtri.setMaxNumRecord(model.getiDisplayLength());
+
+			retWS = wsGareAppalto.getProxyWSGare().searchAvvisiGenerali(filtri);
+			if (retWS.getErrore() == null) {
+				if (retWS.getElencoAvvisi() != null)
+					avvisi.setDati(Arrays.asList(retWS.getElencoAvvisi()));
+				else
+					avvisi.setDati(new ArrayList<>());
+				avvisi.setNumTotaleRecord(retWS.getNumAvvisi());
+				avvisi.setNumTotaleRecordFiltrati(retWS.getNumAvvisi());
+				model.processResult(avvisi.getNumTotaleRecord(), avvisi.getNumTotaleRecordFiltrati());
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura della ricerca avvisi: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura della ricerca avvisi",
+					t);
+		}
+
+		return avvisi;
+	}
+
+	@Override
 	public SearchResult<AvvisoType> searchAvvisi(AvvisiSearchBean model) throws ApsException {
 		SearchResult<AvvisoType> avvisi = new SearchResult<AvvisoType>();
 		ElencoAvvisiOutType retWS = null;
@@ -70,10 +126,12 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 			filtri.setDataPubblicazioneA(model.convertDate(model.getDataPubblicazioneA()));
 			filtri.setDataScadenzaDa(model.convertDate(model.getDataScadenzaDa()));
 			filtri.setDataScadenzaA(model.convertDate(model.getDataScadenzaA()));
+			filtri.setStato(model.getStato());
 			filtri.setAltriSoggetti(model.getAltriSoggetti());
 			filtri.setIsGreen(model.getIsGreen());
 			filtri.setIsRecycle(model.getIsRecycle());
 			filtri.setIsPnrr(model.getIsPnrr());
+			filtri.setTipoAvvisoGenerale(null);
 			filtri.setIndicePrimoRecord(model.getIndicePrimoRecord());
 			filtri.setMaxNumRecord(model.getiDisplayLength());
 
@@ -85,6 +143,7 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 					avvisi.setDati(new ArrayList<>());
 				avvisi.setNumTotaleRecord(retWS.getNumAvvisi());
 				avvisi.setNumTotaleRecordFiltrati(retWS.getNumAvvisi());
+				model.processResult(avvisi.getNumTotaleRecord(), avvisi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -101,7 +160,7 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 
 		return avvisi;
 	}
-
+	
 	@Override
 	public SearchResult<AvvisoType> getElencoAvvisi(AvvisiSearchBean model) throws ApsException	{
 		SearchResult<AvvisoType> avvisi = new SearchResult<>();
@@ -122,10 +181,12 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 			filtri.setDataPubblicazioneA(model.convertDate(model.getDataPubblicazioneA()));
 			filtri.setDataScadenzaDa(model.convertDate(model.getDataScadenzaDa()));
 			filtri.setDataScadenzaA(model.convertDate(model.getDataScadenzaA()));
+			filtri.setStato(null);
 			filtri.setAltriSoggetti(model.getAltriSoggetti());
 			filtri.setIsGreen(model.getIsGreen());
 			filtri.setIsRecycle(model.getIsRecycle());
 			filtri.setIsPnrr(model.getIsPnrr());
+			filtri.setTipoAvvisoGenerale(null);
 			filtri.setIndicePrimoRecord(model.getIndicePrimoRecord());
 			filtri.setMaxNumRecord(model.getiDisplayLength());
 
@@ -137,6 +198,7 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 					avvisi.setDati(new ArrayList<>());
 				avvisi.setNumTotaleRecord(retWS.getNumAvvisi());
 				avvisi.setNumTotaleRecordFiltrati(retWS.getNumAvvisi());
+				model.processResult(avvisi.getNumTotaleRecord(), avvisi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -176,10 +238,12 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 			filtri.setDataPubblicazioneA(model.convertDate(model.getDataPubblicazioneA()));
 			filtri.setDataScadenzaDa(model.convertDate(model.getDataScadenzaDa()));
 			filtri.setDataScadenzaA(model.convertDate(model.getDataScadenzaA()));
+			filtri.setStato(null);
 			filtri.setAltriSoggetti(model.getAltriSoggetti());
 			filtri.setIsGreen(model.getIsGreen());
 			filtri.setIsRecycle(model.getIsRecycle());
 			filtri.setIsPnrr(model.getIsPnrr());
+			filtri.setTipoAvvisoGenerale(null);
 			filtri.setIndicePrimoRecord(model.getIndicePrimoRecord());
 			filtri.setMaxNumRecord(model.getiDisplayLength());
 
@@ -191,6 +255,7 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 					avvisi.setDati(new ArrayList<>());
 				avvisi.setNumTotaleRecord(retWS.getNumAvvisi());
 				avvisi.setNumTotaleRecordFiltrati(retWS.getNumAvvisi());
+				model.processResult(avvisi.getNumTotaleRecord(), avvisi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -214,7 +279,11 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 		DettaglioAvvisoType dettaglio = null;
 		DettaglioAvvisoOutType retWS = null;
 		try {
-			retWS = wsGareAppalto.getProxyWSGare().getDettaglioAvviso(codiceGara);
+			Integer numAnniPubblicazione = (Integer) wsGareAppalto
+					.getAppParamManager().getConfigurationValue(
+							AppParamManager.PUBBLICAZIONE_NUM_ANNI);
+
+			retWS = wsGareAppalto.getProxyWSGare().getDettaglioAvviso(codiceGara, numAnniPubblicazione);
 			if (retWS.getErrore() == null)
 				dettaglio = retWS.getAvviso();
 			else {
@@ -233,5 +302,35 @@ public class AvvisiManager extends AbstractService implements IAvvisiManager {
 
 		return dettaglio;
 	}
-	
+
+	@Override
+	public DettaglioAvvisoType getDettaglioAvvisoByCig(String cig)
+			throws ApsException {
+		DettaglioAvvisoType dettaglio = null;
+		DettaglioAvvisoOutType retWS = null;
+		try {
+			Integer numAnniPubblicazione = (Integer) wsGareAppalto
+					.getAppParamManager().getConfigurationValue(
+							AppParamManager.PUBBLICAZIONE_NUM_ANNI);
+
+			retWS = wsGareAppalto.getProxyWSGare().getDettaglioAvvisoByCig(cig, numAnniPubblicazione);
+			if (retWS.getErrore() == null)
+				dettaglio = retWS.getAvviso();
+			else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura del dettaglio avviso di gara: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura del dettaglio avviso di gara",
+					t);
+		}
+
+		return dettaglio;
+	}
+
 }

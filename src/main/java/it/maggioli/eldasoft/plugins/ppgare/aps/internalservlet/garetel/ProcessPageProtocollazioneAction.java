@@ -23,11 +23,12 @@ import it.eldasoft.www.sil.WSGareAppalto.DettaglioStazioneAppaltanteType;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
 import it.eldasoft.www.sil.WSGareAppalto.StazioneAppaltanteBandoType;
-import it.maggioli.eldasoft.digitaltimestamp.beans.DigitalTimeStampResult;
+import it.maggioli.eldasoft.digitaltimestamp.model.ITimeStampResult;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -143,9 +144,6 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 	protected String titoloPdfRiepilogoComunicazione;
 	protected String descrizioneGenerePdfRiepilogoComunicazione;
 		
-	protected final static String NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF = "comunicazione.pdf";	
-	protected final static String NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD = "comunicazione.pdf.tsd";
-	
 	private static final String DESCRIZIONE_GENERE_GARA 				= "gara";
 	private static final String DESCRIZIONE_GENERE_ELENCO 				= "elenco";
 	private static final String DESCRIZIONE_GENERE_CATALOGO 			= "catalogo";
@@ -415,8 +413,13 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 			// imposta la stazione appaltante per recuperare i parametri
 			this.appParamManager.setStazioneAppaltanteProtocollazione(this.codiceSA);
 			
-			this.tipoProtocollazione = this.appParamManager.getTipoProtocollazione(this.codiceSA);
-			
+			this.tipoProtocollazione =
+					dettaglioGara != null
+					&& dettaglioGara.getDatiGeneraliGara() != null
+					&& "10".equals(dettaglioGara.getDatiGeneraliGara().getIterGara())
+						? new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA)
+						: this.appParamManager.getTipoProtocollazione(this.codiceSA);
+
 			// in caso di protocollazione WSDM se non esiste una configurazione segnala un errore
 			if(this.appParamManager.isConfigWSDMNonDisponibile()) {
 				continua = false;
@@ -559,7 +562,7 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 									" e risposta alla comunicazione con id " + this.idComunicazione + 
 									" per codice procedura vuoto");
 						}
-						
+
 						nuovaComunicazione.getDettaglioComunicazione().setId(this.comunicazioniManager.sendComunicazione(nuovaComunicazione));
 						this.idComunicazione = nuovaComunicazione.getDettaglioComunicazione().getId();
 						
@@ -906,8 +909,8 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 	}
 
 	private boolean isRiepilogoComunicazione(String filename) { 
-		return NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF.equalsIgnoreCase(filename) ||
-			   NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD.equalsIgnoreCase(filename);
+		return PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF.equalsIgnoreCase(filename) ||
+				PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD.equalsIgnoreCase(filename);
 	}
 
 	/**
@@ -1152,7 +1155,11 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 		wsdmProtocolloDocumentoIn.setCig(this.codiceCig);
 		wsdmProtocolloDocumentoIn.setDestinatarioPrincipale(this.codiceSA);
 		wsdmProtocolloDocumentoIn.setMezzo(mezzo);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -1221,21 +1228,14 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
-		} if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
+		} else if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(this.impresa.getDatiPrincipaliImpresa().getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1293,14 +1293,9 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
 		// Default: inserisci in coda
-		boolean inTesta = false;
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 	
 		WSDMProtocolloAllegatoType[] allegati = createAttachmentsWSDM(comunicazione, inTesta);
 		
@@ -1422,8 +1417,11 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 			// NON DOVREBBE MAI ACCADERE !!!
 			throw new ApsSystemException("Allegato \"Comunicazione.pdf\" o \"Comunicazione.pdf.tsd\" non trovato.");
 		} else {
-			String tipo = (NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD.equalsIgnoreCase(comunicazione.getAllegato(iComunicazionePdf).getNomeFile())
-						   ? "tsd" : "pdf");
+			String tipo = (PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD
+					.equalsIgnoreCase(comunicazione.getAllegato(iComunicazionePdf).getNomeFile())
+					? "tsd" 
+					: "pdf"
+			);
 			allegati[posComunicazionePdf] = new WSDMProtocolloAllegatoType();
 			allegati[posComunicazionePdf].setTitolo(this.getOggettoMailUfficioProtocollo());	// "Testo della comunicazione"
 			allegati[posComunicazionePdf].setNome(comunicazione.getAllegato(iComunicazionePdf).getNomeFile());
@@ -1580,26 +1578,18 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 		// prepara l'allegato in formato PDF o TSD...
 		byte[] pdfRiepilogo = null;
 		try {
-			boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-			String contenuto = this.getComunicazionePdf();
-			if(isActiveFunctionPdfA) {
-				try {
-					InputStream iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-					ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-					pdfRiepilogo = UtilityStringhe.string2PdfA(contenuto,iccFilePath);
-				} catch (com.itextpdf.text.DocumentException e) {
-					DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-					de.initCause(e);
-					throw de;
-				}
-			} else {
-				pdfRiepilogo = UtilityStringhe.string2Pdf(contenuto);
-			}
+			boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A", false);
 			
-			if(this.customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")){
+			pdfRiepilogo = JRPdfExporterEldasoft.textToPdf(
+					this.getComunicazionePdf()
+					, "Riepilogo comunicazione"
+					, this
+			);
+					
+			if(this.customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")) {
 				try {
 					// prepara il riepilogo comprensivo di marcatura temporale...
-					DigitalTimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogo, this.appParamManager);
+					ITimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogo, this.appParamManager);
 					if(resultMarcatura.getResult() == false){
 						ApsSystemUtils.getLogger().error(
 								"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + 
@@ -1613,7 +1603,7 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 					}
 					AllegatoComunicazioneType pdfMarcatoTemporale = new AllegatoComunicazioneType();
 					pdfMarcatoTemporale.setFile(pdfRiepilogo);
-					pdfMarcatoTemporale.setNomeFile(NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD);
+					pdfMarcatoTemporale.setNomeFile(PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD);
 					pdfMarcatoTemporale.setTipo("tsd");
 					pdfMarcatoTemporale.setDescrizione("File di riepilogo comunicazione con marcatura temporale");
 					// Aggiungo il file agli allegati della comunicazione
@@ -1627,8 +1617,8 @@ public abstract class ProcessPageProtocollazioneAction extends AbstractProcessPa
 			} else {
 				AllegatoComunicazioneType pdfRiepilogoNonMarcato = new AllegatoComunicazioneType();
 				pdfRiepilogoNonMarcato.setFile(pdfRiepilogo);
-				pdfRiepilogoNonMarcato.setNomeFile(NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF);
-				pdfRiepilogoNonMarcato.setTipo("pdf");
+				pdfRiepilogoNonMarcato.setNomeFile(PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF);
+				pdfRiepilogoNonMarcato.setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
 				pdfRiepilogoNonMarcato.setDescrizione("File di riepilogo comunicazione");
 				// Aggiungo il file agli allegati della comunicazione
 				allegati[allegati.length - 1] =  pdfRiepilogoNonMarcato;

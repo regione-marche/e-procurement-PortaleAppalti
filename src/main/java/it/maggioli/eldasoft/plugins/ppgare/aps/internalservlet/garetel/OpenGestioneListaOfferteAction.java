@@ -27,6 +27,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.OffertaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
@@ -45,6 +47,7 @@ import com.agiletec.aps.system.exception.ApsException;
 /**
  * ... 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenGestioneListaOfferteAction extends EncodedDataAction implements SessionAware{
 	/**
 	 * UID

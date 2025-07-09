@@ -1,6 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IRaggruppamenti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -13,6 +15,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageRTIAction extends it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageRTIAction {
 	/**
 	 * UID

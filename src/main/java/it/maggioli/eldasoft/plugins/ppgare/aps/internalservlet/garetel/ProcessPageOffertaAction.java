@@ -7,6 +7,9 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaGara;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.helpers.WizardOffertaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -20,6 +23,11 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.agiletec.aps.system.SystemConstants;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -241,7 +249,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 				helper.setPdfUUID(null);
 			}
 			
-			// si aggiorna l'helper in sessione con i dati della form...			
+			// si aggiorna l'helper in sessione con i dati della form...
 			if( helper.isCriteriValutazioneVisibili() ) {
 				if(this.validateAndSetCriteriValutazione(
 						helper.getListaCriteriValutazione(), 
@@ -261,12 +269,12 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 							if(criterio != null && StringUtils.isNotEmpty(criterio.getValore())) {
 								this.setImportoOfferto( criterio.getValore() );
 							}
-						}						
+						}
 					}
 				} else {
 					// qualcosa non e' andato bene durante la validazione dei valori...
 					target = INPUT;
-				}	
+				}
 				
 			} else { 
 				if(this.getImportoOfferto() != null) {
@@ -299,7 +307,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 					helper.setImportoManodopera(Double.parseDouble(this.getImportoManodopera()));
 				}
 			} else {
-				helper.setCostiSicurezzaAziendali(null);			
+				helper.setCostiSicurezzaAziendali(null);
 				helper.setImportoManodopera(null);
 				helper.setPercentualeManodopera(null);
 			}
@@ -322,7 +330,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 			
 			this.nextResultAction = helper.getNextAction(WizardOffertaEconomicaHelper.STEP_OFFERTA);
 
-			// salva l'helper in sessione...			
+			// salva l'helper in sessione...
 			bustaEco.putToSession();
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));
@@ -360,7 +368,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 	/**
 	 * ... 
 	 */
-	public void validate() {	
+	public void validate() {
 		super.validate();
 		if (this.getFieldErrors().size() > 0) {
 			return;
@@ -398,10 +406,10 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 					// cerca i criteri relativi a  
 					//   - Offerta mediante prezzi unitari
 					//   - Offerta mediante importo
-					//	 - Offerta mediante ribasso					
+					//	 - Offerta mediante ribasso
 					int iPrezziUnitari = -1;
 					int iImporto = -1;
-					int iRibasso = -1;					
+					int iRibasso = -1;
 					for(int i = 0; i < helper.getListaCriteriValutazione().size(); i++) {
 						CriterioValutazioneOffertaType criterio = helper.getListaCriteriValutazione().get(i);
 						switch (helper.getListaCriteriValutazione().get(i).getFormato()) {
@@ -431,7 +439,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 									}
 								}
 								break;
-						}	
+						}
 					}
 					
 					CriterioValutazioneOffertaType criterio = null;
@@ -441,11 +449,11 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 					if(iPrezziUnitari >= 0 && StringUtils.isNotEmpty(this.criterioValutazione[iPrezziUnitari])) {
 						criterio = helper.getListaCriteriValutazione().get(iPrezziUnitari);
 						importoOffertoDouble = Double.parseDouble(this.criterioValutazione[iPrezziUnitari]);
-						importoOffertoPresente = true;						
+						importoOffertoPresente = true;
 					} else if(iImporto >= 0 && StringUtils.isNotEmpty(this.criterioValutazione[iImporto])) {
 						criterio = helper.getListaCriteriValutazione().get(iImporto);
 						importoOffertoDouble = Double.parseDouble(this.criterioValutazione[iImporto]);
-						importoOffertoPresente = true;								
+						importoOffertoPresente = true;
 					}
 					if(importoOffertoPresente && criterio != null) {
 						switch (criterio.getFormato()) {
@@ -491,7 +499,13 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 				} else {
 					importoOffertoDouble = Double.parseDouble(this.getImportoOfferto());
 				}
-			}			
+			}
+			
+			// per i confronti successivi, arrotonda l'importo offerta a 2 cifre decimali
+			importoOffertoDouble = (importoOffertoDouble == null
+				? null
+				: BigDecimal.valueOf(Double.valueOf(importoOffertoDouble)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
+			);
 			
 			if(importoOffertoPresente) {
 				if(importoOffertoDouble == 0) {
@@ -510,7 +524,8 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 						}
 					}
 				}	
-			}			
+			}
+			
 			if(importoOffertoPresente && helper.isCostiSicurezzaVisible()) {
 				if(Double.parseDouble(this.getCostiSicurezzaAziendali()) >= importoOffertoDouble) {
 					this.addFieldError("costiSicurezzaAziendali", 
@@ -751,7 +766,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 	 */
 	private boolean isCriteriValidazioneVariati(WizardOffertaEconomicaHelper helper){
 		boolean variati = false;
-		if(this.getCriterioValutazione() != null) {			
+		if(this.getCriterioValutazione() != null) {
 			for(int i = 0; i < this.getCriterioValutazione().length; i++) {
 				if(helper.getListaCriteriValutazione().get(i).getTipo() == PortGareSystemConstants.CRITERIO_ECONOMICO) {
 					if( !this.getCriterioValutazione()[i].equals(helper.getListaCriteriValutazione().get(i).getValore()) ) {
@@ -801,7 +816,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 					} else {
 						try {
 							// usa la validazione ed imposta il valore solo se richiesto
-							WizardOffertaTecnicaHelper.setValoreCriterioValutazione(
+							WizardOffertaHelper.setValoreCriterioValutazione(
 										listaCriteriValutazione.get(i),	
 										valori[i],
 										validateAndSet);
@@ -820,9 +835,9 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 									   this.getText(e.getMessage(), new String[]{listaCriteriValutazione.get(i).getDescrizione()}));
 							validazioneOk = false;
 						}
-					}					
+					}
 				}
-			}							
+			}
 		}
 		
 		return validazioneOk; 
@@ -877,7 +892,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 //			for(int i = 0; i < helper.getVociDettaglio().size(); i++) {
 //				double qta = helper.getVociDettaglio().get(i).getQuantita();
 //				double prz = helper.getPrezzoUnitario()[i];
-//				double imp = qta * prz;				
+//				double imp = qta * prz;
 //				
 //				if(helper.getVociDettaglio().get(i).isSoloSicurezza()) {
 //					totaleSoloSicurezza += imp;
@@ -893,7 +908,7 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 //			for(int i = 0; i < helper.getVociDettaglioNoRibasso().size(); i++) {
 //				double qta = helper.getVociDettaglioNoRibasso().get(i).getQuantita();
 //				double prz = helper.getVociDettaglioNoRibasso().get(i).getPrezzoUnitario();
-//				double imp = qta * prz;				
+//				double imp = qta * prz;
 //				
 //				if(helper.getVociDettaglioNoRibasso().get(i).isSoloSicurezza()) {
 //					totaleSoloSicurezza += imp;
@@ -911,16 +926,16 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 //		if(helper.getGara().getImportoSicurezza() != null &&
 //		   helper.getGara().getImportoSicurezza() != totaleSoloSicurezza) {
 //			valida += 1;
-//			ApsSystemUtils.getLogger().info(
+//			ApsSystemUtils.getLogger().debug(
 //					"codice " + helper.getGara().getCodice() + " " +
-//					"ProcessPageOffertaAction.isTotaliLavorazioniCorretti() " +					
+//					"ProcessPageOffertaAction.isTotaliLavorazioniCorretti() " +
 //					"helper.getGara().getImportoSicurezza() != totaleSoloSicurezza " +
 //					"(" + helper.getGara().getImportoSicurezza() + " != " + totaleSoloSicurezza + ")" );
 //		}
 //		if(helper.getGara().getImportoNonSoggettoRibasso() != null &&
 //		   helper.getGara().getImportoNonSoggettoRibasso() != totaleVociNonSoggette) {
 //			valida += 2;
-//			ApsSystemUtils.getLogger().info(
+//			ApsSystemUtils.getLogger().debug(
 //					"codice " + helper.getGara().getCodice() + " " +
 //					"ProcessPageOffertaAction.isTotaliLavorazioniCorretti() " +
 //					"helper.getGara().getImportoNonSoggettoRibasso() != totaleVociNonSoggette" + 
@@ -928,14 +943,14 @@ public class ProcessPageOffertaAction extends AbstractProcessPageAction {
 //		}
 //		if(helper.getTotaleOffertaPrezziUnitari() != totaleVociSoggette) {
 //			valida += 4;
-//			ApsSystemUtils.getLogger().info(
+//			ApsSystemUtils.getLogger().debug(
 //					"codice " + helper.getGara().getCodice() + " " +
 //					"ProcessPageOffertaAction.isTotaliLavorazioniCorretti() " +
 //					"totaleOffertaPrezziUnitari != totaleVociSoggette" +
 //					"(" + helper.getTotaleOffertaPrezziUnitari() + " != " + totaleVociSoggette + ")" );
 //		}
-//						
-//		return valida;		
+//		
+//		return valida;
 //	}
 
 }

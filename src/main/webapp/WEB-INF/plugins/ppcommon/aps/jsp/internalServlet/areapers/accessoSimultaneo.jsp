@@ -21,7 +21,28 @@
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_messages.jsp" />
 	
 	<div class="question">
-		<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_1" /> <s:property value="%{sessioneSimultanea[1]}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_2" /> <s:property value="%{sessioneSimultanea[2]}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_3" /> <s:property value="%{sessioneSimultanea[0]}" />.<br/> 
+<%--
+		<c:choose>
+			<c:when test="${sessionScope.currentUser != 'guest' && sessionScope.accountSSO != null && sessionScope.accountSSO.profilo != null}">
+				L'utente ${sessionScope.accountSSO.profilo.delegate} ha l'accesso alla funzione richiesta dal ${sessionScope.accountSSO.profilo.login}
+				<ol>
+					<li><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_1" /></li>
+					<li><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_2_1" />. <strong><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_2_2" /></strong></li>
+				</ol>
+				<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_QUESTION" />
+			</c:when>
+			<c:otherwise>
+				<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_1" /> <s:property value="%{sessioneSimultanea[1]}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_2" /> <s:property value="%{sessioneSimultanea[2]}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_3" /> <s:property value="%{sessioneSimultanea[0]}" />.<br/> 
+				<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_4" />:
+				<ol>
+					<li><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_1" /></li>
+					<li><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_2_1" />. <strong><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_2_2" /></strong></li>
+				</ol>
+				<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_QUESTION" />
+			</c:otherwise>
+		</c:choose>
+ --%>
+		<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_1" /> <s:property value="%{sessioneSimultanea.login}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_2" /> <s:property value="%{sessioneSimultanea.loginTime}" /> <wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_3" /> <s:property value="%{sessioneSimultanea.ip}" />.<br/> 
 		<wp:i18n key="LABEL_ACCESSO_SIMULTANEO_WARNING_4" />:
 		<ol>
 			<li><wp:i18n key="LABEL_ACCESSO_SIMULTANEO_OPTION_1" /></li>

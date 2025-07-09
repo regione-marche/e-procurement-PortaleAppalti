@@ -62,6 +62,8 @@ public interface ICustomConfigManager {
 	public boolean isActiveFunction(String objectId, String attrib)
 			throws Exception;
 
+	public boolean isActiveFunction(String objectId, String attrib, boolean defValue);
+
 	/**
 	 * Legge le configurazioni definite nel DB.
 	 * 

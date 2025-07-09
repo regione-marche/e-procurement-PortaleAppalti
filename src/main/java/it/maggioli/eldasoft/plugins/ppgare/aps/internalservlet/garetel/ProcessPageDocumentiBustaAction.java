@@ -4,13 +4,12 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.apsadmin.system.BaseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaDocumenti;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
@@ -18,6 +17,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -30,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -40,6 +40,7 @@ import java.util.Map;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -230,6 +231,10 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 	public int getBUSTA_ECONOMICA() { 
 		return PortGareSystemConstants.BUSTA_ECONOMICA; 
 	}
+	
+	public int getBUSTA_PRE_QUALIFICA() { 
+		return PortGareSystemConstants.BUSTA_PRE_QUALIFICA; 
+	}
 
 
 	/**
@@ -240,7 +245,7 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 	 * @return totale in KB dei file caricati
 	 */
 	protected int getActualTotalSize(WizardDocumentiBustaHelper helper) {
-		return Attachment.sumSize(helper.getRequiredDocs()) + Attachment.sumSize(helper.getRequiredDocs());
+		return helper.getTotalSize();
 	}
 
 	/**
@@ -266,53 +271,34 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 					codice = this.codiceGara;
 				}
 				
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docRichiesto);
+				evento = getUploadValidator().getEvento();
 				
-				evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(codice);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(busta.getDescrizioneBusta() + ": documento richiesto" 
-						+ " con id=" + this.docRichiestoId
-						+ ", file=" + this.docRichiestoFileName
-						+ ", dimensione=" + dimensioneDocumento + "KB");
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(busta)
+						.setDocumento(docRichiesto)
+						.setDocumentoFileName(docRichiestoFileName)
+						.setDocumentoFormato(formato)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(codice)
+						.setEventoMessaggio(busta.getDescrizioneBusta() + ": documento richiesto" 
+											+ " con id=" + this.docRichiestoId
+											+ ", file=" + this.docRichiestoFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docRichiesto) + "KB");
 				
-				boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				controlliOk =
-							checkFileSize(docRichiesto, docRichiestoFileName, getActualTotalSize(documentiBustaHelper), appParamManager, evento)
-							&& checkFileName(docRichiestoFileName, evento)
-							&& checkFileFormat(docRichiesto, docRichiestoFileName, formato, evento, onlyP7m);
-				logger.info("Controlli per i file prima del ws: {}",controlliOk);
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docRichiesto
-							, docRichiestoFileName
-							, formato
-							, checkDate
-							, evento
-							, onlyP7m
-							, appParamManager
-							, customConfigManager
-					);
-					logger.info("ProcessPageDocumentiBustaAction -> checkFirma: {}",checkFirma);
-					logger.info("Controlli per i file dopo ws: {}",controlliOk);
+				if ( getUploadValidator().validate() ) {
 					if (Attachment.indexOf(documentiBustaHelper.getRequiredDocs(), Attachment::getId, docRichiestoId) == -1) {
 						// in questo modo evito che si ripeta un inserimento
 						// effettuando F5 con il browser in quanto controllo se
 						// esiste gia' il documento con tale id, dato che posso
-						// inserirlo solo se non e' tra quelli inseriti in
-						// precedenza
+						// inserirlo solo se non e' tra quelli inseriti in precedenza
 						documentiBustaHelper.addDocRichiesto(
 								docRichiestoId,
 								docRichiesto,
 								docRichiestoContentType,
 								docRichiestoFileName,
-								evento,
-								checkFirma
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma()
 						);
 						
 						if( !this.aggiornaAllegato() ) {
@@ -361,7 +347,7 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 	 * aggiungi un documento ulteriore alla busta 
 	 */
 	public String addUltDoc() {
-		String target = BACK_TO_DOCUMENTI;		
+		String target = BACK_TO_DOCUMENTI;
 		try {
 			BustaDocumenti busta = GestioneBuste.getBustaFromSession(this.tipoBusta);
 			WizardDocumentiBustaHelper documentiBustaHelper = busta.getHelperDocumenti();
@@ -369,7 +355,7 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 			if (documentiBustaHelper == null) {
 				// la sessione e' scaduta, occorre riconnettersi
 				this.addActionError(this.getText("Errors.sessionExpired"));
-				target = CommonSystemConstants.PORTAL_ERROR;				
+				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {
 				// la sessione non e' scaduta, per cui proseguo regolarmente
 				String codice = (StringUtils.isNotEmpty(this.codice) ? this.codice : this.codiceGara);
@@ -377,43 +363,20 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 					codice = this.codiceGara;
 				}
 				
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docUlteriore);
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(busta)
+						.setDocumentoDescrizione(docUlterioreDesc)
+						.setDocumento(docUlteriore)
+						.setDocumentoFileName(docUlterioreFileName)
+						.setOnlyP7m(false)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(codice)
+						.setEventoMessaggio(busta.getDescrizioneBusta() + ": documento ulteriore"
+											+ " con file=" + this.docUlterioreFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docUlteriore) + "KB");
 				
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(codice);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(busta.getDescrizioneBusta() + ": documento ulteriore"
-								  + " con file=" + this.docUlterioreFileName
-								  + ", dimensione=" + dimensioneDocumento + "KB");
-
-				boolean controlliOk =
-							checkFileDescription(docUlterioreDesc, evento)
-							&& checkFileSize(docUlteriore, docUlterioreFileName, getActualTotalSize(documentiBustaHelper), appParamManager, evento)
-							&& checkFileName(docUlterioreFileName, evento)
-							&& checkFileExtension(docUlterioreFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-							&& checkFileFormat(docUlteriore, docUlterioreFileName, null, evento, false);
-				
-				logger.info("Controlli per i file prima del ws: {}", controlliOk);
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docUlteriore
-							, docUlterioreFileName
-							, formato
-							, checkDate
-							, evento
-							, Boolean.FALSE
-							, appParamManager
-							, customConfigManager
-					);
-					logger.info("ProcessPageDocumentiBustaAction -> checkFirma: {}", checkFirma);
-					logger.info("Controlli per i file dopo ws: {}", controlliOk);
-				
-//				if (controlliOk) {
+				if ( getUploadValidator().validate() ) {
 					if (Attachment.indexOf(documentiBustaHelper.getAdditionalDocs(), Attachment::getDesc, docUlterioreDesc) != -1) {
 						this.addActionError(this.getText("Errors.docUlteriorePresent"));
 					} else {
@@ -427,7 +390,8 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 								this.docUlteriore,
 								this.docUlterioreContentType,
 								this.docUlterioreFileName,
-								evento,checkFirma);
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma());
 						
 						this.docUlterioreDesc = null;
 						documentiBustaHelper.setDatiModificati(true);
@@ -440,7 +404,7 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 					target = INPUT;
 				}
 				
-				this.eventManager.insertEvent(evento);
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		} catch (GeneralSecurityException e) {
 			ApsSystemUtils.logThrowable(e, this, "addUltDoc", "Errore durante la cifratura dell'allegato ulteriore " + this.docUlterioreFileName);
@@ -495,6 +459,44 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 	}
 	
 	/**
+	 * verifica l'integrita' della busta 
+	 */
+	public String check() {
+		String target = BACK_TO_DOCUMENTI;
+		
+		Event evento = null;
+		try {
+			GestioneBuste buste = GestioneBuste.getFromSession();
+			BustaDocumenti busta = buste.getBusta(tipoBusta);
+			String codiceLotto = (StringUtils.isNotEmpty(codice) ? codice : codiceGara);
+			
+			evento = VerificaDocumentiCorrotti.createNewEvent(busta);
+			
+			VerificaDocumentiCorrotti validazione = new VerificaDocumentiCorrotti(evento);
+			validazione.validate(busta, codiceLotto);
+			if( !validazione.isErroriPresenti() ) {
+				this.addActionMessage(this.getText("Envelope.prontaInvio"));
+			} else {
+				validazione.addActionErrors(this, evento);
+				target = INPUT;
+			}
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "check");
+			ExceptionUtils.manageExceptionError(t, this);
+			target = CommonSystemConstants.PORTAL_ERROR;
+			if(evento != null) {
+				evento.setError(t);
+			}
+		} finally {
+			if(evento != null) {
+				eventManager.insertEvent(evento);
+			}
+		}
+		
+		return target;
+	}
+	
+	/**
 	 * salva la busta ed invia tutti gli allegati 
 	 * (usato fino alla v 1.14.5)  
 	 */
@@ -542,7 +544,9 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 					this.tipoBusta,
 					this.session,
 					this);
-		} catch (Throwable e) {
+			
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "aggiornaAllegato");
 			target = INPUT;
 		}
  
@@ -600,7 +604,7 @@ public class ProcessPageDocumentiBustaAction extends AbstractProcessPageAction {
 			// ----- INVIO COMUNICAZIONI -----
 			try {
 				// invia la comunicazione della busta (e il riepilogo) in stato BOZZA
-				logger.info("ProcessPageDocumentiBustaAction->saveDocumenti->send");
+				logger.debug("ProcessPageDocumentiBustaAction->saveDocumenti->send");
 				busta.send(CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
 				
 			} catch (ApsException e) {

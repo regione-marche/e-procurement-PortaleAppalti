@@ -24,6 +24,9 @@
 
 	<dt style="width: 15%"><s:text name="ppcommon.searchEvents.label.search.username"/></dt>
 	<dd style="width: 80%"><s:property value="%{selectedEvent.username}" />&nbsp;</dd>
+		
+	<dt style="width: 15%"><s:text name="ppcommon.searchEvents.label.search.delegate"/></dt>
+	<dd style="width: 80%"><s:property value="%{selectedEvent.delegate}" />&nbsp;</dd>
 
 	<dt style="width: 15%"><s:text name="ppcommon.searchEvents.label.search.sessionId"/></dt>
 	<dd style="width: 80%"><s:property value="%{selectedEvent.sessionId}" />&nbsp;</dd>

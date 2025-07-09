@@ -53,7 +53,6 @@ public class WizardRegistrazioneImpresaHelper extends WizardDatiImpresaHelper {
     // True indica che e' attiva la registrazione manuale delle imprese 
     private boolean attesaValidazione;
     
-
     public String getUsername() {
     	return username;
     }
@@ -226,8 +225,8 @@ public class WizardRegistrazioneImpresaHelper extends WizardDatiImpresaHelper {
 	 */
 	public void exportToXmlPortale(OutputStream os, String filename) throws Exception {
 		try {
-			ImpresaImportExport xml = new ImpresaImportExport();
-			xml.exportToXml(this, os, filename);
+			importExport = new ImpresaImportExport();
+			importExport.exportToXml(this, os, filename);
 		} catch(Exception ex) {
 			throw ex;
 		}
@@ -243,8 +242,8 @@ public class WizardRegistrazioneImpresaHelper extends WizardDatiImpresaHelper {
 	 */
 	public void importFromXmlPortale(File file, String filename, boolean isSpidBusiness) throws WrongCRCException, Exception {
 		try {
-			ImpresaImportExport importa = new ImpresaImportExport();
-			importa.importFromXml(file, filename, this, isSpidBusiness);
+			importExport = new ImpresaImportExport();
+			importExport.importFromXml(file, filename, this, isSpidBusiness);
 		} catch(WrongCRCException ex) {
 			throw ex;
 		} catch(Exception ex) {
@@ -259,8 +258,22 @@ public class WizardRegistrazioneImpresaHelper extends WizardDatiImpresaHelper {
 	 */
 	public void importFromXmlDGUE(File file, String filename) throws Exception {
 		try {
-			ImpresaImportExport xml = new ImpresaImportExport();
-			xml.importFromDGUE(file, filename, this);
+			importExport = new ImpresaImportExport();
+			importExport.importFromDGUE(file, filename, this);
+		} catch(Exception ex) {
+			throw ex;
+		}
+	}
+	
+	/**
+	 * importa i dati impresa da Michelangelo (SACE)
+	 * @throws ImportExportException 
+	 * @throws Exception 
+	 */
+	public void importFromMichelangelo(String codiceFiscale) throws Exception {
+		try {
+			importExport = new ImpresaImportExport();
+			importExport.importFromMichelangelo(codiceFiscale, this);
 		} catch(Exception ex) {
 			throw ex;
 		}

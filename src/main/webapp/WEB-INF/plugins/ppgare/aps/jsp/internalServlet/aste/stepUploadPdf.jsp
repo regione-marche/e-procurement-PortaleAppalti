@@ -51,7 +51,7 @@
 	</jsp:include>
 
 	<s:if test="%{deleteAllegato}">
-		<s:if test="%{not #helper.datiInviati}">
+		<s:if test="%{ !#helper.datiInviati }">
 			<p class="question">
 				<wp:i18n key='LABEL_ELIMINA_DOCUMENTO'/> "<s:property value="%{#helperDocumenti.docUlterioriDesc.get(id)}" />" 
 				(<wp:i18n key='LABEL_FILE'/> <s:property value="%{#helperDocumenti.docUlterioriFileName.get(id)}" />)?
@@ -110,10 +110,10 @@
 					<tbody>
 						<s:url id="urlDownload" namespace="/do/FrontEnd/Aste" action="downloadAllegatoAsta" />
 
-						<s:set var="docOffertaAllegato" value="false"/>
+						<s:set var="docOffertaAllegato" value="%{false}"/>
 						<s:iterator value="%{#helperDocumenti.docUlterioriDesc}" var="descDocUlteriore" status="status">								
 							<tr>
-								<s:set var="docOffertaAllegato" value="true"/>
+								<s:set var="docOffertaAllegato" value="%{true}"/>
 								
 								<td >
 									<c:choose>
@@ -140,18 +140,17 @@
 											<img class="resize-svg-16" title='<wp:i18n key="LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA" />' alt='<wp:i18n key="LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA" />' src="<s:property value='%{#imgDocNonFirmato}'/>">
 										</s:if> --%>
 										
-										 	<s:set var="firmaWarning" value="%{false}" />
-											<s:if test="%{#documenti.docRichiestiFirmaBean.get(#statusCaricato.index)!=null}">
-												<s:set var="firmaWarning" value="%{!(#documenti.docRichiestiFirmaBean.get(#statusCaricato.index).firmacheck)}" />
-											</s:if>
-											<s:else>
-												<s:set var="firmaWarning" 
-												value='%{!(#documenti.docRichiestiFileName.get(#statusCaricato.index).toUpperCase().endsWith(".P7M") ||
-												           #documenti.docRichiestiFileName.get(#statusCaricato.index).toUpperCase().endsWith(".TSD"))}' />
-											</s:else>
-											<s:if test='%{#firmaWarning}'>
-												<img class="resize-svg-16" title="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" alt="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" src="<s:property value='%{#imgDocNonFirmato}'/>">
-											</s:if> 
+									 	<s:set var="firmaWarning" value="%{false}" />
+										<s:if test="%{#documenti.docRichiestiFirmaBean.get(#statusCaricato.index)!=null}">
+											<s:set var="firmaWarning" value="%{!(#documenti.docRichiestiFirmaBean.get(#statusCaricato.index).firmacheck)}" />
+										</s:if>
+										<s:else>
+											<s:set var="firmaWarning" value='%{!(#documenti.docRichiestiFileName.get(#statusCaricato.index).toUpperCase().endsWith(".P7M") ||
+											           						   #documenti.docRichiestiFileName.get(#statusCaricato.index).toUpperCase().endsWith(".TSD"))}' />
+										</s:else>
+										<s:if test='%{#firmaWarning}'>
+											<img class="resize-svg-16" title="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" alt="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" src="<s:property value='%{#imgDocNonFirmato}'/>">
+										</s:if> 
 	
 										<c:choose>
 											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
@@ -159,12 +158,17 @@
 													<s:property value="%{#helperDocumenti.docUlterioriFileName.get(#status.index)}" />
  													<span>(<s:property value="%{#helperDocumenti.docUlterioriSize.get(#status.index)}" /> KB)</span> 
 												</li>
-												<s:if test="%{not #helper.datiInviati}">
+												<s:if test="%{ !#helper.datiInviati }">
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/confirmDeleteAllegato.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														   title='<wp:i18n key="TITLE_ELIMINA_ALLEGATO"/>'>
+														<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/confirmDeleteAllegato.action"/>' method="post">
+															<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+															<input type="hidden" name="id" value="${status.index}" />
+															<input type="hidden" name="ext" value="${param.ext}" />
+															
+															<a href="javascript:;" onclick="parentNode.submit();" title='<wp:i18n key="TITLE_ELIMINA_ALLEGATO"/>'>
 															 <wp:i18n key="TITLE_ELIMINA_ALLEGATO"/>
-														</a>
+															</a>
+														</form>
 													</li>
 												</s:if>
 											</c:when>
@@ -179,11 +183,16 @@
 													<s:property value="%{#helperDocumenti.docUlterioriFileName.get(#status.index)}" />
 													<span>(<s:property value="%{#helperDocumenti.docUlterioriSize.get(#status.index)}" /> KB)</span>  
 												</li>
-												<s:if test="%{not #helper.datiInviati}">
+												<s:if test="%{ !#helper.datiInviati }">
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/confirmDeleteAllegato.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														   title='<wp:i18n key="TITLE_ELIMINA_ALLEGATO"/>' class="bkg delete">
-														</a>
+														<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/confirmDeleteAllegato.action"/>' method="post">
+															<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+															<input type="hidden" name="id" value="${status.index}" />
+															<input type="hidden" name="ext" value="${param.ext}" />
+															
+															<a href="javascript:;" onclick="parentNode.submit();" title='<wp:i18n key="TITLE_ELIMINA_ALLEGATO"/>' class="bkg delete">
+															</a>
+														</form>
 													</li>
 												</s:if>
 											</c:otherwise>
@@ -192,9 +201,9 @@
 								</td>
 							</tr>
 						</s:iterator>
-	
-						<s:if test="%{not #docOffertaAllegato}">
-							<s:if test="%{not #helper.datiInviati}">
+
+						<s:if test="%{ !#docOffertaAllegato }">
+							<s:if test="%{ !#helper.datiInviati }">
 								<tr>
 									<td >
 										<c:choose>
@@ -237,6 +246,7 @@
 					</tbody>
 				</table>
 			</div>
+			
 			<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
 			<s:set var="kbDisponibili" value="%{limiteTotaleUpload - dimensioneAttualeFileCaricati}"></s:set>
 			<p>

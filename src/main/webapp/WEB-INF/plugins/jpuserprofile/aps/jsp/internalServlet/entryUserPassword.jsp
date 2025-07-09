@@ -120,12 +120,12 @@ jpuserprofile_PLEASE_LOGIN_TO_EDIT_PASSWORD = E' necessario logarsi per cambiare
 				<table>
 					<tr>
 						<td class="label"><label for="jpuserprofile_oldPassword"><wp:i18n key="jpuserprofile_OLDPASSWORD" /></label></td>
-						<td class="field"><s:password name="oldPassword" id="jpuserprofile_oldPassword" cssClass="text" value="" maxlength="50" /></td>
+						<td class="field" ><s:password autocomplete="off" name="oldPassword" id="jpuserprofile_oldPassword" cssClass="text" value="" maxlength="50" /></td>
 						<td class="status"> </td>
 					</tr>
 					<tr>
 						<td class="label"><label for="jpuserprofile_newPassword"><wp:i18n key="jpuserprofile_NEWPASS" /></label></td>
-						<td class="field"><s:password name="password" id="jpuserprofile_newPassword" cssClass="text" value="" maxlength="50" /></td>
+						<td class="field"><s:password autocomplete="off" name="password" id="jpuserprofile_newPassword" cssClass="text" value="" maxlength="50" /></td>
 						<td class="status">
 							<div class="password-meter">
 								<div class="password-meter-message"> </div>
@@ -137,7 +137,7 @@ jpuserprofile_PLEASE_LOGIN_TO_EDIT_PASSWORD = E' necessario logarsi per cambiare
 					</tr>
 					<tr>
 						<td class="label"><label for="jpuserprofile_passwordConfirm"><wp:i18n key="jpuserprofile_CONFIRM_NEWPASS" /></label></td>
-						<td class="field"><s:password name="passwordConfirm" id="jpuserprofile_passwordConfirm" cssClass="text" value="" maxlength="50" /></td>
+						<td class="field"><s:password autocomplete="off" name="passwordConfirm" id="jpuserprofile_passwordConfirm" cssClass="text" value="" maxlength="50" /></td>
 						<td class="status"> </td>
 					</tr>
 				</table>

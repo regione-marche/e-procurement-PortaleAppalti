@@ -15,6 +15,30 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.SearchR
 public interface IAvvisiManager {
 
 	/**
+	 * Restituisce la lista degli avvisi di carattere generale di gara filtrando per i parametri di input
+	 * 
+	 * @param stazioneAppaltante
+	 *            stazione appaltante
+	 * @param oggetto
+	 *            oggetto del bando di gara
+	 * @param tipoAppalto
+	 *            tipo di appalto (lavori/forniture/servizi)
+	 * @param dataPubblicazioneDa
+	 *            data pubblicazione a partire da
+	 * @param dataPubblicazioneA
+	 *            data pubblicazione fino a
+	 * @param dataScadenzaDa
+	 *            data scadenza a partire da
+	 * @param dataScadenzaA
+	 *            data scadenza fino a
+	 * 
+	 * @return lista avvisi
+	 * @throws ApsException
+	 *             In caso di errori in accesso al servizio web.
+	 */
+	public SearchResult<AvvisoType> searchAvvisiGenerali(AvvisiSearchBean model) throws ApsException;
+	
+	/**
 	 * Restituisce la lista degli avvisi di gara filtrando per i parametri di input
 	 * 
 	 * @param stazioneAppaltante
@@ -100,4 +124,18 @@ public interface IAvvisiManager {
     public DettaglioAvvisoType getDettaglioAvviso(String codiceGara)
 	    throws ApsException;
 
+    /**
+     * Restituisce il dettaglio di un avviso di gara a partire dal cig
+     * 
+     * @param cig
+     *            cig associato alla gara
+     * 
+     * @return dettaglio dell'avviso, costituito dai suoi dati generali, quelli
+     *         della stazione appaltante, ed i documenti
+     * @throws ApsException
+     *             In caso di errori in accesso al servizio web.
+     */
+    public DettaglioAvvisoType getDettaglioAvvisoByCig(String cig)
+	    throws ApsException;
+    
 }

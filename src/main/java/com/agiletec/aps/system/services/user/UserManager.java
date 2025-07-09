@@ -304,11 +304,11 @@ public class UserManager extends AbstractService implements IUserManager, GroupU
 	}
 
 	@Override
-	public int logLogin(String username, String ipAddress, String sessionId) throws ApsSystemException {
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException {
 		int exitCode = 0;
 		if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(ipAddress)) {
 			try {
-				exitCode = this.getUserDAO().logLogin(username, ipAddress, sessionId);
+				exitCode = this.getUserDAO().logLogin(username, delegate, ipAddress, sessionId);
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "logLogin");
 				throw new ApsSystemException("Error while logging the access of the User " + username, t);
@@ -330,11 +330,11 @@ public class UserManager extends AbstractService implements IUserManager, GroupU
 	}
 
 	@Override
-	public boolean logLogout(String username, String ipAddress, String sessionId) throws ApsSystemException {
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException {
 		boolean logout = false;
 		if (StringUtils.isNotBlank(username) && (StringUtils.isNotBlank(ipAddress) || StringUtils.isNotBlank(sessionId))) {
 			try {
-				logout = this.getUserDAO().logLogout(username, ipAddress, sessionId);
+				logout = this.getUserDAO().logLogout(username, delegate, ipAddress, sessionId);
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "logLogout");
 				throw new ApsSystemException("Error while logging the exipation of the User " + username + " session", t);
@@ -811,6 +811,150 @@ public class UserManager extends AbstractService implements IUserManager, GroupU
 	@Override
 	public List<String[]> getLoggedUsers() throws ApsSystemException {
 		return this._userDao.getLoggedUsers();
+	}
+	
+	/**
+	 * restituisce la lista dei profili utente associati ad un account SSO 
+	 */
+	@Override
+	public List<DelegateUser> getProfiliSSO(String username, String delegate) throws ApsSystemException {
+		List<DelegateUser> profiles = null;
+		try {
+			profiles = this.getUserDAO().loadProfiliSSO(username, delegate);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "getProfiliSSO");
+			throw new ApsSystemException("Error loading the list of users OE", t);
+		}
+		return profiles;
+	}
+	
+	/**
+	 * recupera un profilo utente associato ad un operatore economico
+	 */
+	@Override
+	public DelegateUser getProfiloSSO(String username, String delegate) throws ApsSystemException {
+		DelegateUser du = null;
+		try {
+			du = this.getUserDAO().loadProfiloSSO(username, delegate);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "getProfiloSSO");
+			throw new ApsSystemException("Error loading user OE", t);
+		}
+		return du;	
+	}
+
+	/**
+	 * elimina un profilo utente impresa associato ad un operatore economico
+	 */
+	@Override
+	public void removeProfiloSSO(String username, String delegate) throws ApsSystemException {
+		try {
+			this.getUserDAO().deleteProfiloSSO(username, delegate);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "removeProfiloSSO");
+			throw new ApsSystemException("Error deleting a user OE", t);
+		}	
+	}
+
+	/**
+	 * aggiorna un profilo utente associato ad un operatore economico
+	 */
+	@Override
+	public void updateProfiloSSO(DelegateUser delegateUser) throws ApsSystemException {
+		try {
+			this.getUserDAO().updateProfiloSSO(delegateUser);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "updateProfiloSSO");
+			throw new ApsSystemException("Error updating the user OE", t);
+		}
+	}
+
+	/**
+	 * aggiunge un nuovo profilo utente associato ad un operatore economico
+	 */
+	@Override
+	public void addProfiloSSO(DelegateUser delegateUser) throws ApsSystemException {
+		try {
+			this.getUserDAO().addProfiloSSO(delegateUser);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "addProfiloSSO");
+			throw new ApsSystemException("Error adding a new user OE", t);
+		}
+	}
+	
+	/**
+	 * crea un lock esclusivo per il soggetto impresa di una ditta per l'accesso ad una specifica funzione
+	 */
+	@Override
+	public DelegateUser lockProfiloSSOAccess(UserDetails user, String delegate, String function) throws ApsSystemException {
+		DelegateUser lock = null;
+		try {
+			// tenta il lock per il soggetto impresa...
+			boolean lockDone = this.getUserDAO().lockProfiloSSOAccess(
+					user.getUsername(), 
+					delegate,
+					function);
+			if( !lockDone ) {
+				// recupera il soggetto impresa che ha gia' un lock per la stessa funzione
+				List<DelegateUser> accessi = this.getUserDAO().loadProfiliSSOAccesses(user.getUsername());				
+				lock = accessi.stream()
+						.filter(a -> !a.getDelegate().equalsIgnoreCase(delegate))
+						.findFirst()
+						.orElse(null);
+			}
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "lockProfiloSSOAccess");
+			throw new ApsSystemException("Error getting lock for OE", t);
+		}
+		return lock;
+	}
+	
+	/**
+	 * rimuove un lock per il soggetto impresa di una ditta per l'accesso ad una specifica funzione
+	 */
+	@Override
+	public boolean unlockProfiloSSOAccess(UserDetails user, String delegate) throws ApsSystemException {
+		boolean unlocked = false;
+		try {
+			unlocked = this.getUserDAO().unlockProfiloSSOAccess(
+					user.getUsername(), 
+					delegate);
+			
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "unlockProfiloSSOAccess");
+			throw new ApsSystemException("Error getting unlock for OE", t);
+		}
+		return unlocked;
+	}
+
+	/**
+	 * restituisce l'elenco degli accessi dei soggetti impresa di una ditta
+	 */
+	@Override
+	public DelegateUser loadProfiloSSOAccess(String username, String delegate) throws ApsSystemException {
+		DelegateUser access = null;
+		try {
+			access = this.getUserDAO().loadProfiloSSOAccess(username, delegate);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "loadProfiloSSOAccess");
+			throw new ApsSystemException("Error loading access for OE", t);
+		}
+		return access;
+	}
+	
+	/**
+	 * restituisce l'elenco degli accessi dei soggetti impresa di una ditta
+	 */
+	@Override
+	public List<DelegateUser> loadProfiliSSOAccesses(String username) throws ApsSystemException {
+		List<DelegateUser> accesses = null;
+		try {
+			accesses = this.getUserDAO().loadProfiliSSOAccesses(username);
+		} catch (Throwable t) {
+			ApsSystemUtils.logThrowable(t, this, "loadProfiliSSOAccesses");
+			throw new ApsSystemException("Error loading accesses for OE", t);
+		}
+		return accesses;
 	}
 	
 }

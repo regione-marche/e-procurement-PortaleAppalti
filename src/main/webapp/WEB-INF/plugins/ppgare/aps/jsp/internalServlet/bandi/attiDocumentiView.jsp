@@ -7,10 +7,16 @@
 <wp:i18n key="LABEL_MERCATO_ELETTRONICO" var="mepa" />
 
 <c:choose>
+	<c:when test="${avvisiComunicazioniAtti != null && avvisiComunicazioniAtti}">
+		<c:set var="titolo"><wp:i18n key="LABEL_ALTRI_DOCUMENTI" /></c:set>
+		<c:set var="balloon">BALLOON_ALTRI_DOCUMENTI</c:set>
+		<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Avvisi/viewAvvisoComunicazioneAtto.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}</c:set>
+		<c:set var="backLink">Torna all'avviso</c:set>
+	</c:when>
 	<c:when test="${dettaglioAvviso != null}">
 		<c:set var="titolo"><wp:i18n key="LABEL_ALTRI_DOCUMENTI" /></c:set>
 		<c:set var="balloon">BALLOON_ALTRI_DOCUMENTI</c:set>
-		<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}</c:set>		
+		<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}</c:set>
 		<c:set var="backLink">Torna all'avviso</c:set>
 	</c:when>
 	<c:when test="${dettaglioIscrizione != null}">
@@ -18,19 +24,19 @@
 		<c:set var="balloon">BALLOON_ALTRI_DOCUMENTI</c:set>
 		<c:choose>
 			<c:when test="${param.entita == mepa}">
-				<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}</c:set>
+				<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}</c:set>
 				<c:set var="backLink"><wp:i18n key="LINK_BACK_TO_ISCRIZIONE" /></c:set>
 			</c:when>
 			<c:otherwise>
-				<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}</c:set>
+				<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}</c:set>
 				<c:set var="backLink"><wp:i18n key="LINK_BACK_TO_ELENCO" /></c:set>
 			</c:otherwise>
 		</c:choose> 
 	</c:when>
 	<c:otherwise>
-		<c:set var="titolo"><wp:i18n key="LABEL_ATTI_DOC_ART29" /></c:set>
-		<c:set var="balloon">BALLOON_ATTI_DOCUMENTI</c:set>
-		<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}</c:set>
+		<c:set var="titolo"><wp:i18n key="LABEL_ALTRI_ATTI_DOCUMENTI" /></c:set>
+		<c:set var="balloon">BALLOON_ALTRI_ATTI_DOCUMENTI</c:set>
+		<c:set var="backUrl"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}</c:set>
 		<c:set var="backLink"><wp:i18n key="LINK_BACK_TO_PROCEDURE" /></c:set>
 	</c:otherwise>
 </c:choose>
@@ -70,12 +76,10 @@
 			</h3>
 
 			<div class="detail-row">
-				
 				<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/iteratorDocAllegati.jsp">
 					<jsp:param name="path" value="downloadDocumentoPubblico"/>
 					<jsp:param name="dataPubblicazione" value="DATA_FITTIZIA_SEMPRE_VISIBILE" />
 				</jsp:include>
-		
 			</div>
 		</div>
 	</s:if>

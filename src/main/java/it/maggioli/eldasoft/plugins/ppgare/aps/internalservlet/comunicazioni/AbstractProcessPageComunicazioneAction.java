@@ -1,5 +1,7 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni;
 
+import java.util.Map;
+
 import com.agiletec.aps.system.exception.ApsException;
 import it.eldasoft.www.sil.WSGareAppalto.ContrattoType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioAvvisoType;
@@ -11,6 +13,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IA
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardNuovaComunicazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IAvvisiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IContrattiLFSManager;
@@ -28,10 +31,10 @@ public abstract class AbstractProcessPageComunicazioneAction extends AbstractPro
 	 */
 	private static final long serialVersionUID = 5641977067765041699L;
 
-	private IAppParamManager appParamManager;
-	private IBandiManager bandiManager;
-	private IContrattiManager contrattiManager;
-	private IAvvisiManager avvisiManager;
+	protected IAppParamManager appParamManager;
+	protected IBandiManager bandiManager;
+	protected IContrattiManager contrattiManager;
+	protected IAvvisiManager avvisiManager;
 	protected IContrattiLFSManager contrattiLFSManager;
 	
 	private StazioneAppaltanteBandoType stazioneAppaltante;
@@ -39,6 +42,9 @@ public abstract class AbstractProcessPageComunicazioneAction extends AbstractPro
 	private String codiceSA;
 	@Validate(EParamValidation.CIG)
 	private String codiceCig;
+	
+	protected WizardNuovaComunicazioneHelper helper;
+	protected String helperSessionId;
 	
 	public IAppParamManager getAppParamManager() {
 		return appParamManager;
@@ -92,6 +98,29 @@ public abstract class AbstractProcessPageComunicazioneAction extends AbstractPro
 		return codiceCig;
 	}
 
+	
+	/**
+	 * costruttore generico
+	 */
+	public AbstractProcessPageComunicazioneAction(WizardNuovaComunicazioneHelper helper, String helperSessionId) {
+		super();
+		this.helper = helper;
+		this.helperSessionId = helperSessionId;
+	}
+	
+	public AbstractProcessPageComunicazioneAction() {
+		this(null, null);
+	}
+		
+	protected Object getWizardFromSession() {
+		helper = (WizardNuovaComunicazioneHelper) session.get(helperSessionId);
+		return helper;
+	}
+	
+	protected void putWizardToSession() {
+		session.put(helperSessionId, helper);
+	}
+
 	/**
 	 * Metodo che centralizza ed estrae alcune informazioni utili per procedere
 	 * alla successiva eventuale protocollazione.
@@ -99,13 +128,15 @@ public abstract class AbstractProcessPageComunicazioneAction extends AbstractPro
 	 * @throws ApsException
 	 */
 	public void setInfoPerProtocollazione(WizardNuovaComunicazioneHelper helper) throws ApsException {				
-		if("APPA".equalsIgnoreCase(helper.getEntita())) {
+		if(PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equalsIgnoreCase(helper.getEntita())) {
 			// gestione per contrati LFS
 //			ContrattoLFSType dettaglioContrattoLFS = contrattiLFSManager.getDettaglioContrattoLFS(helper.getCodice(), helper.getCodice2());
 //			if(dettaglioContrattoLFS != null) {
 //				this.codiceSA = dettaglioContrattoLFS.getStazioneAppaltante();
 //				this.codiceCig = dettaglioContrattoLFS.getCig();
-//			}		
+//			}	
+		} else if(PortGareSystemConstants.ENTITA_GENERICA_RISERVATA.equalsIgnoreCase(helper.getEntita())) {
+			this.codiceSA = helper.getStazioneAppaltante();
 		} else {
 			// gestione standard
 			DettaglioGaraType dettaglioGara = bandiManager.getDettaglioGara(helper.getCodice());
@@ -148,6 +179,4 @@ public abstract class AbstractProcessPageComunicazioneAction extends AbstractPro
 		}
 	}
 	
-	
-
 }

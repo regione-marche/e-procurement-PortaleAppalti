@@ -47,7 +47,7 @@
 	<fmt:formatDate var="dta" pattern="dd/MM/yyyy" value="${dettaglio.datiGeneraliBandoIscrizione.dataInizioIscrizione}"  />	
 	<fmt:parseDate var="dataInizioIscrizione" pattern="dd/MM/yyyy" value="${dta}" />
 	<s:if test="%{dettaglio.datiGeneraliBandoIscrizione.oraInizioIscrizione != null}">
-		<fmt:parseDate var="dataInizioIscrizione" pattern="dd/MM/yyyy HH:mm">${dta} ${dettaglio.datiGeneraliBandoIscrizione.oraInizioIscrizione}</fmt:parseDate> 
+		<fmt:parseDate var="dataInizioIscrizione" pattern="dd/MM/yyyy HH:mm" value="${dta} ${dettaglio.datiGeneraliBandoIscrizione.oraInizioIscrizione}"/>
 	</s:if>
 </s:if>
 
@@ -56,7 +56,7 @@
 	<fmt:formatDate var="dta" pattern="dd/MM/yyyy" value="${dettaglio.datiGeneraliBandoIscrizione.dataFineIscrizione}"  />
 	<fmt:parseDate var="dataFineIscrizione" pattern="dd/MM/yyyy HH:mm:ss" value="${dta} 23:59:59" />
 	<s:if test="%{dettaglio.datiGeneraliBandoIscrizione.oraFineIscrizione != null}">
-		<fmt:parseDate var="dataFineIscrizione" pattern="dd/MM/yyyy HH:mm">${dta} ${dettaglio.datiGeneraliBandoIscrizione.oraFineIscrizione}</fmt:parseDate>
+		<fmt:parseDate var="dataFineIscrizione" pattern="dd/MM/yyyy HH:mm" value="${dta} ${dettaglio.datiGeneraliBandoIscrizione.oraFineIscrizione}"/>
 	</s:if>	
 </s:if>
 
@@ -64,6 +64,7 @@
 	value="${not empty dataFineValidita && now.time > dataFineValidita.time}" />
 
 <c:set var="completamentoIscrizione" value="${!validitaScaduta 
+		&& abilitaIscrizione 
 		&& ((dettaglio.datiGeneraliBandoIscrizione.fase == 1 && stato == 1)
 		    || iscrizioneInBozza)}" />
 
@@ -80,7 +81,8 @@
 		
 <c:set var="completamentoAggiornamento" value="${aggiornamentoInBozza}"/>
 		
-<c:set var="richiestaIscrizione" value="${!validitaScaduta 
+<c:set var="richiestaIscrizione" value="${!validitaScaduta
+		&& abilitaIscrizione 
 		&& dettaglio.datiGeneraliBandoIscrizione.fase == 1 && (stato != 1 && stato != 2)
 		&& !completamentoIscrizione}" />
 		
@@ -258,7 +260,7 @@ ext: <s:property value="%{ext}" /> <br/>
 	<c:choose>
 		<c:when test="${sessionScope.fromPage != null && sessionScope.fromPage eq 'news'}">
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>">
 					<wp:i18n key="LINK_BACK_TO_NEWS" />
 				</a>
 			</div>
@@ -271,14 +273,14 @@ ext: <s:property value="%{ext}" /> <br/>
                 <c:set var="backUrl" value="/ExtStr2/do/FrontEnd/Bandi/listAllIscrizioneArchiviata.action" />
 		    </s:else>
 			<div class="back-link">
-				<a href='<wp:action path="${backUrl}" />&amp;${tokenHrefParams}'>
+				<a href='<wp:action path="${backUrl}" />'>
 					<wp:i18n key="LINK_BACK_TO_LIST" />
 				</a>
 			</div>
 		</c:when>
 		<c:otherwise>
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>">
 					<wp:i18n key="LINK_BACK_TO_AVVISO" />
 				</a>
 			</div>

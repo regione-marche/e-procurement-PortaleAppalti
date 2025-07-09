@@ -7,9 +7,7 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-import com.lowagie.text.DocumentException;
 import it.eldasoft.utils.utility.UtilityDate;
-import it.eldasoft.utils.utility.UtilityStringhe;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
@@ -18,11 +16,12 @@ import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoTypeVerso;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
-import it.maggioli.eldasoft.digitaltimestamp.beans.DigitalTimeStampResult;
+import it.maggioli.eldasoft.digitaltimestamp.model.ITimeStampResult;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
@@ -38,6 +37,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.Marcatura
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageProtocollazioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -57,6 +58,7 @@ import it.maggioli.eldasoft.ws.dm.WSDMProtocolloDocumentoType;
 import it.maggioli.eldasoft.ws.dm.WSDMProtocolloInOutType;
 import it.maggioli.eldasoft.ws.dm.WSDMTipoVoceRubricaType;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
@@ -65,10 +67,10 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
@@ -91,6 +93,10 @@ import java.util.TreeSet;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class SaveWizardIscrizioneAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -261,6 +267,12 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			this.setTarget("successBozza");
 		}
 
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
 			.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 
@@ -283,6 +295,8 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			
 			this.setTarget(target);
 		}
+		
+		unlockAccessoFunzione();
 		
 		return this.getTarget();
 	}
@@ -338,8 +352,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 								  + tipoComunicazione
 								  + " con id " + helper.getIdComunicazione()
 								  + " in stato "
-								  + CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);			
-//				logger.info("sendComunicazione");
+								  + CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
 				sendComunicazione(
 						helper,
 						CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA,
@@ -347,10 +360,9 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 						listaSA,
 						evento, 
 						action,
-						null);				
-//				logger.info("sendComunicazione - called");
+						null);
 			}
-			catch (XmlException e) {				
+			catch (XmlException e) {
 				ApsSystemUtils.logThrowable(e, action, "saveDocumenti");
 				ExceptionUtils.manageExceptionError(e, action);
 				target = "errorWS";
@@ -363,7 +375,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			catch (OutOfMemoryError e) {
 				evento.setError(e);
 				ApsSystemUtils.logThrowable(e, action, "saveDocumenti");
-				action.addActionError(action.getText("Errors.save.outOfMemory"));				
+				action.addActionError(action.getText("Errors.save.outOfMemory"));
 				target = INPUT;
 			} 
 			catch (Throwable e) {
@@ -462,7 +474,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		// Invio della comunicazione
 		try {
 			IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ApsWebApplicationUtils
-				.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER,
+				.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER,
 						 ServletActionContext.getRequest());
 			
 			// Verifica l'esistenza di una comunicazione preesistente 
@@ -589,21 +601,33 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		return comunicazione;
 	}
 		
-	private static String getPdfRiepilogo(WizardDocumentiHelper documenti) {
+	/**
+	 * crea lo stream del pdf di riepilogo 
+	 */
+	private static byte[] getPdfRiepilogo(WizardDocumentiHelper documenti, BaseAction action) throws Exception {
 		StringBuilder sb = new StringBuilder();
-
 		sb.append(Attachment.toPdfRiepilogo(documenti.getRequiredDocs()));
 		sb.append(Attachment.toPdfRiepilogo(documenti.getAdditionalDocs()));
-
-		return sb.length() > 0
-				? sb.toString()
-				: "Nessun documento allegato";
+		String text = (sb.length() > 0 ? sb.toString() : "Nessun documento allegato");
+		
+		byte[] pdfRiepilogo = JRPdfExporterEldasoft.textToPdf(
+				text
+				, "Riepilogo allegati"
+				, action
+		); 
+		
+		return pdfRiepilogo;
 	}
 
 	/**
-	 * ... 
+	 * invia il flusso di iscrizione ad elenco 
 	 */
 	public String send() throws Exception {
+
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
 
 		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
 			.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
@@ -680,6 +704,16 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			}
 			
 			// FASE 1: invio della comunicazione
+			//
+			
+			// verifica la correttezza dei documenti...
+			if(controlliOk && !SaveWizardIscrizioneAction.verificaDocumenti(iscrizioneHelper, this)) {
+				//addActionError(getText("Errors.invio.nullSurvey"));
+				controlliOk = false;
+				this.setTarget(INPUT);
+			}
+			
+			// verifica SA e categorie selezionate
 			if(controlliOk) {
 				if (iscrizioneHelper.getStazioniAppaltanti().isEmpty()
 					|| (!iscrizioneHelper.isCategorieAssenti() && iscrizioneHelper.getCategorie().getCategorieSelezionate().size() == 0)) 
@@ -697,17 +731,11 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			// tutti i documenti richiesti ed obbligatori siano
 			// presenti nella domanda
 			if(controlliOk) {
-				List<DocumentazioneRichiestaType> documentiRichiesti = this.bandiManager
-						.getDocumentiRichiestiBandoIscrizione(
-								iscrizioneHelper.getIdBando(),
-								iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-								iscrizioneHelper.isRti());
+				List<DocumentazioneRichiestaType> documentiRichiesti = iscrizioneHelper.getDocumentiRichiestiBO();
 				
 				for (int i = 0; i < documentiRichiesti.size(); i++) {
 					if (documentiRichiesti.get(i).isObbligatorio()
-						&& !iscrizioneHelper
-							.getDocumenti().getDocRichiestiId().contains(
-									documentiRichiesti.get(i).getId())) {
+						&& !iscrizioneHelper.getDocumenti().getDocRichiestiId().contains(documentiRichiesti.get(i).getId())) {
 						controlliOk = false;
 						this.setTarget(INPUT);
 						this.addActionError(this.getText(
@@ -794,28 +822,19 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 							? CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE
 							: CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROTOCOLLARE);
 
-					
 					ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
 						.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
 								ServletActionContext.getRequest());
-					boolean isActiveFunctionPdfA = false;
-					try {
-						isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-					} catch (Exception e1) {
-						throw new ApsException(e1.getMessage(), e1);
-					}
-					InputStream iccFilePath = null;
-					if(isActiveFunctionPdfA) {
-						iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-					}
-					byte[] pdfRiepilogoNonMarcato = trasformaStringaInPdf(getPdfRiepilogo(iscrizioneHelper.getDocumenti()), isActiveFunctionPdfA, iccFilePath);
+
+					byte[] pdfRiepilogoNonMarcato = getPdfRiepilogo(iscrizioneHelper.getDocumenti(), this);
 						
+					// marca temporalmente il riepilogo pdf
 					if(customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")){
 						try {
 							IAppParamManager appParam = (IAppParamManager) ApsWebApplicationUtils
-								.getBean(PortGareSystemConstants.APPPARAM_MANAGER,
+								.getBean(CommonSystemConstants.APP_PARAM_MANAGER,
 										 ServletActionContext.getRequest());
-							DigitalTimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogoNonMarcato, appParam);
+							ITimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogoNonMarcato, appParam);
 							if(resultMarcatura.getResult() == false){
 								ApsSystemUtils.getLogger().error(
 										"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage(),
@@ -835,13 +854,15 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 					}
 					
 					nuovaComunicazione = sendComunicazione(
-							iscrizioneHelper,
-							statoComunicazione,
-							PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO,
-							this.getMaps().get(""),
-							evento, 
-							this,
-							pdfRiepilogo);
+							iscrizioneHelper
+							, statoComunicazione
+							, PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO
+							, this.getMaps().get("")
+							, evento 
+							, this
+							, pdfRiepilogo
+					);
+					
 					inviataComunicazione = true;
 					this.setTarget("successIscrizione");
 				}
@@ -1129,6 +1150,8 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			// concludi la protocollazione
 			this.appParamManager.setStazioneAppaltanteProtocollazione(null);
 		}
+		
+		unlockAccessoFunzione();
 
 		return this.getTarget();
 	}
@@ -1343,7 +1366,12 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		if (SUCCESS.equals(this.getTarget())) {
 			this.setTarget("successUpdate");
 		}
-		byte[] pdfRiepilogo = null;
+		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
+		
 		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
 				.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 
@@ -1358,6 +1386,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			boolean protocollazioneOk = true;
 			ComunicazioneType nuovaComunicazione = null;
 			Event evento = null;
+			byte[] pdfRiepilogo = null;
 
 			// per prima cosa si estrae la data NTP dell'istante in cui avviene la richiesta
 			String ntpError = null;
@@ -1540,33 +1569,24 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 						ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
 							.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
 									ServletActionContext.getRequest());
-						boolean isActiveFunctionPdfA = false;
-						try {
-							isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-						} catch (Exception e1) {
-							throw new ApsException(e1.getMessage(), e1);
-						}
-						InputStream iccFilePath = null;
-						if(isActiveFunctionPdfA) {
-							iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-						}
-						byte[] pdfRiepilogoNonMarcato = trasformaStringaInPdf(getPdfRiepilogo(iscrizioneHelper.getDocumenti()), isActiveFunctionPdfA, iccFilePath);
+						
+						byte[] pdfRiepilogoNonMarcato = getPdfRiepilogo(iscrizioneHelper.getDocumenti(), this);
 							
 						if(customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")){
 							try {	
 								IAppParamManager appParam = (IAppParamManager) ApsWebApplicationUtils
-									.getBean(PortGareSystemConstants.APPPARAM_MANAGER,
+									.getBean(CommonSystemConstants.APP_PARAM_MANAGER,
 											 ServletActionContext.getRequest());
-								DigitalTimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogoNonMarcato, appParam);
-								if(resultMarcatura.getResult() == false){
+								ITimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogoNonMarcato, appParam);
+								if(resultMarcatura.getResult() == false) {
 									ApsSystemUtils.getLogger().error(
 											"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage(),
 											new Object[] { this.getCurrentUser().getUsername(), "marcaturaTemporale" });
 									throw new ApsException("Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage());
-								} else{
+								} else {
 									pdfRiepilogo = resultMarcatura.getFile();
 								}
-							}catch(Exception e){
+							} catch(Exception e) {
 								ApsSystemUtils.logThrowable(e, this, "marcaturaTemporale");
 								this.addActionError(this.getText("Errors.marcatureTemporale.generic")); 
 								this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -1863,23 +1883,25 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			this.appParamManager.setStazioneAppaltanteProtocollazione(null);
 		}
 		
+		unlockAccessoFunzione();
+		
 		return this.getTarget();
 	}
 
 	/**
 	 * ...
-	 * @throws DocumentException 
+	 * @throws Exception 
 	 */
 	private WSDMProtocolloDocumentoInType creaInputProtocollazioneWSDM(
-			WizardIscrizioneHelper iscrizioneHelper,
-			WizardDatiImpresaHelper datiImpresaHelper, 
-			String prefissoLabel,
-			String tipoComunicazione,
-			FascicoloProtocolloType fascicoloBackOffice,
-			ComunicazioneType comunicazione, 
-			DettaglioBandoIscrizioneType bando,
-			byte[] pdfRiepilogo) throws IOException, ApsException, DocumentException 
-	{
+			WizardIscrizioneHelper iscrizioneHelper
+			, WizardDatiImpresaHelper datiImpresaHelper 
+			, String prefissoLabel
+			, String tipoComunicazione
+			, FascicoloProtocolloType fascicoloBackOffice
+			, ComunicazioneType comunicazione
+			, DettaglioBandoIscrizioneType bando
+			, byte[] pdfRiepilogo
+	) throws Exception {
 		// ATTENZIONE:
 		// L'UTILIZZO DEL CAST A INTEGER SUL METODO appParamManager.getConfigurationValue(...)
 		// E' DEPRECATO, IN QUANTO NON E' SEMPRE VERO CHE IN PPCOMMON_PROPERTIES ESISTA
@@ -1945,7 +1967,11 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		wsdmProtocolloDocumentoIn.setTipoDocumento( (String)this.appParamManager
 				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TIPO_DOCUMENTO));
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -2032,6 +2058,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -2039,14 +2066,6 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(impresa.getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -2101,11 +2120,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		// recupera l'elenco dei documenti richiesti
 		List<DocumentazioneRichiestaType> listaDocRichiesti = null;
 		if(PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO.equals(tipoComunicazione)) {
-			listaDocRichiesti = this.bandiManager
-					.getDocumentiRichiestiBandoIscrizione(
-							iscrizioneHelper.getIdBando(), 
-							iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-							iscrizioneHelper.isRti());
+			listaDocRichiesti = iscrizioneHelper.getDocumentiRichiestiBO();
 		}
 		
 		List<File>   docRichiesti     = null;
@@ -2128,14 +2143,9 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 		
 		// (inserisciProtocollo richiede obbligatoriamente un documento da protocollare)
 		int numDocDaProtocollare = 
@@ -2144,9 +2154,18 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		// Inserisco il pdf ( eventualmente marcato temporalmente) di riepilogo;
 		numDocDaProtocollare++;
 		
-		WSDMProtocolloAllegatoType[] allegati = createAttachments(iscrizioneHelper, comunicazione, pdfRiepilogo,
-				documentiHelper, ragioneSociale, codiceFiscale, indirizzo, listaDocRichiesti, inTesta, numDocDaProtocollare);
-
+		WSDMProtocolloAllegatoType[] allegati = createAttachments(
+				iscrizioneHelper
+				, comunicazione
+				, pdfRiepilogo
+				, documentiHelper
+				, ragioneSociale
+				, codiceFiscale
+				, indirizzo
+				, listaDocRichiesti
+				, inTesta
+				, numDocDaProtocollare
+		);
 		wsdmProtocolloDocumentoIn.setAllegati(allegati);
 
 		// INTERVENTI ARCHIFLOW
@@ -2182,11 +2201,21 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 		return wsdmProtocolloDocumentoIn;
 	}
 
-	private WSDMProtocolloAllegatoType[] createAttachments(WizardIscrizioneHelper iscrizioneHelper,
-			ComunicazioneType comunicazione, byte[] pdfRiepilogo, WizardDocumentiHelper documentiHelper,
-			String ragioneSociale, String codiceFiscale, String indirizzo,
-			List<DocumentazioneRichiestaType> listaDocRichiesti, boolean inTesta, int numDocDaProtocollare)
-			throws IOException, ApsException, FileNotFoundException, DocumentException {
+	/**
+	 * ... 
+	 */
+	private WSDMProtocolloAllegatoType[] createAttachments(
+			WizardIscrizioneHelper iscrizioneHelper
+			, ComunicazioneType comunicazione
+			, byte[] pdfRiepilogo
+			, WizardDocumentiHelper documentiHelper
+			, String ragioneSociale
+			, String codiceFiscale
+			, String indirizzo
+			, List<DocumentazioneRichiestaType> listaDocRichiesti
+			, boolean inTesta
+			, int numDocDaProtocollare
+	) throws Exception {
 		WSDMProtocolloAllegatoType[] allegati = new WSDMProtocolloAllegatoType[numDocDaProtocollare];
 		
 		int n = 0;
@@ -2300,9 +2329,12 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			titolo = MessageFormat.format(this.getI18nLabelFromDefaultLocale("NOTIFICA_ISCRIZIONE_OGGETTO"),
 								  new Object[] { iscrizioneHelper.getIdBando() });
 		}
-		String contenuto = null;
+
+		boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
+				
+		String comunicazioneTxt = null;
 		if(iscrizioneHelper.isAggiornamentoIscrizione()) {
-			contenuto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI"),
+			comunicazioneTxt = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_AGGISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI"),
 					new Object[] { 
 						ragioneSociale, 
 						codiceFiscale,
@@ -2313,7 +2345,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 						iscrizioneHelper.getDescBando() 
 					});
 		} else {
-			contenuto = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_ISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI"),
+			comunicazioneTxt = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_ISCRIZIONE_PROTOCOLLO_TESTOCONALLEGATI"),
 					new Object[] { 
 						ragioneSociale, 
 						codiceFiscale,
@@ -2324,23 +2356,18 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 						iscrizioneHelper.getDescBando() 
 					});
 		}
-		boolean isActiveFunctionPdfA = false;
-		try {
-			isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-		} catch (Exception e1) {
-			throw new ApsException(e1.getMessage(), e1);
-		}
-		InputStream iccFilePath = null;
-		if(isActiveFunctionPdfA) {
-			iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-		}
-		byte[] contenutoPdf = trasformaStringaInPdf(contenuto, isActiveFunctionPdfA, iccFilePath);
+		
+		byte[] comunicazionePdf = JRPdfExporterEldasoft.textToPdf(
+				comunicazioneTxt
+				, "Riepilogo comunicazione"
+				, this
+		);
 		
 		allegati[n2] = new WSDMProtocolloAllegatoType();
 		allegati[n2].setNome("comunicazione.pdf");
-		allegati[n2].setTipo("pdf");
+		allegati[n2].setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
 		allegati[n2].setTitolo(titolo);
-		allegati[n2].setContenuto(contenutoPdf);
+		allegati[n2].setContenuto(comunicazionePdf);
 		// serve per Titulus
 		allegati[n2].setIdAllegato("W_INVCOM/"
 				+ CommonSystemConstants.ID_APPLICATIVO + "/"
@@ -2391,7 +2418,7 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 			ComunicazioneType comunicazione, 
 			WizardIscrizioneHelper helper,
 			String nomeFile, 
-			String descrizioneFile) throws IOException 
+			String descrizioneFile) throws Exception 
 	{	
 		HashMap<String, String> suggestedPrefixes = new HashMap<String, String>();
 		suggestedPrefixes.put("http://www.eldasoft.it/sil/portgare/datatypes", "");
@@ -2419,19 +2446,50 @@ public class SaveWizardIscrizioneAction extends EncodedDataAction implements Ses
 				allegatiXml.toArray(new AllegatoComunicazioneType[allegatiXml.size()]) );
 	}
 	
-	private byte[] trasformaStringaInPdf(String contenuto, boolean isActiveFunctionPdfA, InputStream iccFilePath) throws DocumentException, IOException {
-		if(isActiveFunctionPdfA) {
-			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-				return UtilityStringhe.string2PdfA(contenuto,iccFilePath);
-			} catch (com.itextpdf.text.DocumentException e) {
-				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-				de.initCause(e);
-				throw de;
+	/**
+	 * verifica se i documenti della domanda sono corretti
+	 */
+	public static boolean verificaDocumenti(WizardIscrizioneHelper helper, EncodedDataAction action) {
+		boolean controlliOK = true;
+		IEventManager eventManager = null;
+		Event evento = null;
+		try {
+			eventManager = (IEventManager) ApsWebApplicationUtils
+					.getBean(PortGareSystemConstants.EVENTI_MANAGER, ServletActionContext.getRequest());
+			
+			// nome del tipo di operazione
+			String funzione = helper.getDescrizioneFunzione() + " " +
+							  (helper.getTipologia() == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
+							   ? action.getI18nLabelFromDefaultLocale("LABEL_ALL_ELENCO") 
+							   : action.getI18nLabelFromDefaultLocale("LABEL_AL_MERCATO_ELETTRONICO"));
+			
+			// SEPR-1151
+			// (QForm - Questionari) in caso di questionario
+			// verifica se e' presente il pdf del riepilogo (manuale o automatico)
+			if(helper.getDocumenti().isGestioneQuestionario() && !helper.getDocumenti().isQuestionarioCompletato()) {
+				controlliOK = false;
+				String msgerr = action.getText("Errors.invio.nullSurvey");
+				action.addActionError(msgerr);
+				evento = new Event();
+				evento.setUsername(action.getCurrentUser().getUsername());
+				evento.setDestination(helper.getIdBando());
+				evento.setLevel(Event.Level.ERROR);
+				evento.setEventType(PortGareEventsConstants.CHECK_INVIO);
+				evento.setIpAddress(action.getCurrentUser().getIpAddress());
+				evento.setSessionId(action.getCurrentUser().getSessionId());
+				evento.setMessage("Controlli preinvio dati " + funzione);
+				evento.setDetailMessage(msgerr);
 			}
-		} else {
-			return UtilityStringhe.string2Pdf(contenuto);
+			
+		} catch (Exception e) {
+			controlliOK = false;
+			action.setTarget(INPUT);
+		} finally {
+			if(evento != null) {
+				eventManager.insertEvent(evento);
+			}
 		}
+		return controlliOK;
 	}
 
 }

@@ -31,7 +31,6 @@
 		<property name="urlManager" ref="URLManager"/>
 		<property name="langManager" ref="LangManager" />
 		<property name="pageManager" ref="PageManager" />
-		<property name="customConfigManager" ref="CustomConfigManager" />
 	</bean>
 	
 	<bean id="accessoSimultaneoAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AccessoSimultaneoAction" 
@@ -39,6 +38,8 @@
 		<property name="pageManager" ref="PageManager" />
 		<property name="urlManager" ref="URLManager"/>
 		<property name="eventManager" ref="EventManager" />
+		<property name="userManager" ref="UserManager" />
+		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
 	</bean>
 	
 	<bean id="areaPersonaleAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AreaPersonaleAction" 
@@ -145,6 +146,10 @@
 	<bean id="loginGatewayAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.gateway.GatewayLoginResponseAction" 
 				parent="abstractBaseResponseAction" scope="prototype">
 	</bean>
+
+	<bean id="loginEidasAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.eidas.EidasLoginResponseAction" 
+				parent="abstractBaseResponseAction" scope="prototype">
+	</bean>
 	
 	<bean id="loginSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.SSOLoginResponseAction" 
 				parent="abstractBaseAction" scope="prototype">
@@ -154,11 +159,13 @@
 		<property name="registrazioneImpresaManager" ref="RegistrazioneImpresaManager" />
 		<property name="userManager" ref="UserManager" />
 		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
+		<property name="configManager" ref="BaseConfigManager"/>
 	</bean>
 
 	<bean id="logoutSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.SSOLogoutResponseAction" 
 				parent="abstractBaseAction" scope="prototype">
 		<property name="appParamManager" ref="AppParamManager" />
+		<property name="wsAuthServiceSPID" ref="WSAuthServiceSPID" />
 	</bean>
 
 	<bean id="abilitaAccessoSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AbilitaAccessoSSOAction" 
@@ -196,6 +203,15 @@
 		<property name="userProfileManager" ref="jpuserprofileUserProfileManager" />
 		<property name="pageManager" ref="PageManager" />
 		<property name="eventManager" ref="EventManager"/>
+		<property name="userManager" ref="UserManager" />
+	</bean>
+	
+	<bean id="delegatiImpresaSSOAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.DelegatiImpresaSSOAction" 
+				parent="abstractBaseAction" scope="prototype">
+		<property name="userManager" ref="UserManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="eventManager" ref="EventManager"/>
+		<property name="configManager" ref="BaseConfigManager"/>
 	</bean>
 	
 	<bean id="registrazioneManualeOperatoriEconomiciAction" class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.RegistrazioneManualeOperatoriEconomiciAction" 

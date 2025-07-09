@@ -14,6 +14,8 @@ import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.xmlbeans.XmlObject;
@@ -27,6 +29,10 @@ import java.util.List;
  * @author stefano.sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class GenPDFRiepilogoIscrizioneAction extends GenPDFAction { //extends EncodedDataAction implements SessionAware, IDownloadAction {
 	/**
 	 * UID
@@ -168,12 +174,7 @@ public class GenPDFRiepilogoIscrizioneAction extends GenPDFAction { //extends En
 		decodeCategorieBandoIscrizione(listaCat, categorie);
 
 		if (listaDoc != null) {
-			List<DocumentazioneRichiestaType> documentiRichiesti = bandiManager
-					.getDocumentiRichiestiBandoIscrizione(
-							helper.getIdBando(), 
-							helper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-							helper.isRti());
-			
+			List<DocumentazioneRichiestaType> documentiRichiesti = helper.getDocumentiRichiestiBO();
 			decodeDocumentiRichiesti(listaDoc, documentiRichiesti);
 		}
 		

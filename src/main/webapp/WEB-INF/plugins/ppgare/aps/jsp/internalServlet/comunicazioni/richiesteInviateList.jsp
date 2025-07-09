@@ -39,7 +39,7 @@
 				<s:iterator var="riga" value="elencoInvii" status="status">
 					<tr>
 						<td>
-							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/dettaglioRichiesta.action"/>&amp;id=<s:property value="%{#riga.id}" />&amp;codiceElenco=<s:property value="%{codiceElenco}" />&amp;${tokenHrefParams}'
+							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/dettaglioRichiesta.action"/>&amp;id=<s:property value="%{#riga.id}" />&amp;codiceElenco=<s:property value="%{codiceElenco}" />'
 								title="Visualizza dettaglio invio"	>
 								<%-- <s:property value="%{#riga.tipo}" /> - --%>
 								<s:iterator value="maps['tipiComunicazione']" var="m">
@@ -64,7 +64,7 @@
 	</s:else>
 	
 	<div class="back-link">
-		<a href='<wp:action path="${pathProcedura}" />&amp;codice=<s:property value="%{codiceElenco}"/>&amp;${tokenHrefParams}'>
+		<a href='<wp:action path="${pathProcedura}" />&amp;codice=<s:property value="%{codiceElenco}"/>'>
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

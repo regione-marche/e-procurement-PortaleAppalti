@@ -1,0 +1,21 @@
+:root {
+  --lang-link-foreground: #fff;
+  --lang-link-hover-foreground: #fff;
+  --lang-link-size: var(--link-size); }
+
+#language-sub-menu * {
+  text-transform: uppercase;
+  color: var(--lang-link-foreground) !important;
+  font-weight: bold; }
+
+#language-sub-menu {
+  color: var(--lang-link-foreground);
+  margin-right: 1em; }
+
+#language-sub-menu a {
+  color: var(--lang-link-foreground) !important;
+  font-size: var(--lang-link-size) !important; }
+
+#language-sub-menu a:hover {
+  color: var(--lang-link-foreground) !important;
+  text-decoration: underline; }

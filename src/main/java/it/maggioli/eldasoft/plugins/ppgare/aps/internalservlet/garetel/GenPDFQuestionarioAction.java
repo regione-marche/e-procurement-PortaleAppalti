@@ -2,14 +2,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
-import it.eldasoft.sil.portgare.datatypes.FirmatarioType;
-import it.eldasoft.sil.portgare.datatypes.ImpresaType;
-import it.eldasoft.sil.portgare.datatypes.IndirizzoType;
-import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
-import it.eldasoft.sil.portgare.datatypes.OffertaEconomicaType;
-import it.eldasoft.sil.portgare.datatypes.ReportOffertaEconomicaDocument;
-import it.eldasoft.sil.portgare.datatypes.ReportOffertaEconomicaType;
-import it.eldasoft.sil.portgare.datatypes.StazioneAppaltanteType;
+import it.eldasoft.sil.portgare.datatypes.*;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.utils.utility.UtilityNumeri;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
@@ -17,6 +10,7 @@ import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioStazioneAppaltanteType;
 import it.eldasoft.www.sil.WSGareAppalto.GaraType;
 import it.eldasoft.www.sil.WSGareAppalto.StazioneAppaltanteBandoType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaGara;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario;
@@ -28,6 +22,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.NtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -36,15 +32,14 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.CalendarValidator;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.xmlbeans.XmlObject;
 
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
-public class GenPDFQuestionarioAction extends GenPDFAction {
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
+public class GenPDFQuestionarioAction extends GenPDFAction implements ServletResponseAware {
 	/**
 	 * UID
 	 */
@@ -54,6 +49,8 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 	protected NtpManager ntpManager;
 	protected IComunicazioniManager comunicazioniManager;
 	protected IEventManager eventManager;
+	
+	protected HttpServletResponse response;
 	
 	private Long idCom;
 		
@@ -68,6 +65,10 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 	@Validate(EParamValidation.DIGIT)
 	private String progressivoOfferta;
 	
+	@Override
+	public void setServletResponse(HttpServletResponse response) {
+		this.response = response;
+	}
 	
 	public void setBandiManager(IBandiManager bandiManager) {
 		this.bandiManager = bandiManager;
@@ -115,6 +116,24 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 		      "content");					// nodo radice del datasource json
 	}
 		
+	/**
+	 * Generazione del report PDF
+	 */
+	@Override
+	public String createPdf() {
+		String target = super.createPdf();
+		
+		if( !SUCCESS.equals(target) ) {
+			this.setTarget(ERROR);
+			ApsSystemUtils.getLogger().error("Errore in fase di generazione del PDF di riepilogo del questionario");
+			// invia un errore 500 a QFORM, 
+			// in tal modo si impedisce un successivo upload con eventuale stream nullo 
+			this.response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		
+		return this.getTarget();
+	}
+	
 	@Override
 	protected boolean reportInit() {
 		boolean continua = true;
@@ -127,15 +146,22 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 					this.idCom);
 			
 			this.getParametriFromComunicazione(comunicazione);
-				
-			WizardDocumentiBustaHelper documenti = GestioneBuste
-				.getBustaFromSession(this.tipoBusta).getHelperDocumenti();
+			
+			GestioneBuste buste = GestioneBuste.getFromSession(); 
+			WizardDocumentiBustaHelper documenti = buste.getBusta(this.tipoBusta).getHelperDocumenti();
+			removeOldSummaries(documenti);
 			
 			// recupera il json del questionario...
-			this.questionario = documenti.getQuestionarioAllegato(DocumentiAllegatiHelper.QUESTIONARIO_GARE_FILENAME, this.tipoBusta);
+			this.questionario = documenti.getQuestionarioGare(this.tipoBusta);
 			
 			if (this.questionario == null) {
 				// la sessione e' scaduta, occorre riconnettersi
+				session.put(ERROR_DOWNLOAD, this.getText("Errors.sessionExpired"));
+				this.setTarget(INPUT);
+				continua = false;
+			} if(this.tipoBusta == BustaGara.BUSTA_ECONOMICA && 
+				 (buste.isConcorsoProgettazionePubblico() || buste.isConcorsoProgettazioneRiservato())) {
+				// per i concorsi di progettazione il PDF della busta economica non e' previsto
 				session.put(ERROR_DOWNLOAD, this.getText("Errors.sessionExpired"));
 				this.setTarget(INPUT);
 				continua = false;
@@ -221,8 +247,8 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 			params.put("IMPSICUREZZA", gara.getImportoSicurezza());
 			params.put("SICINC", gara.isOffertaComprensivaSicurezza());
 			params.put("IMPONERIPROGETT", gara.getImportoOneriProgettazione());
+			params.put("SOC_COOP_VISIBLE", hasToShowSocCoop(partecipazioneHelper.getImpresa()));
 		}
-		params.put("SOC_COOP_VISIBLE", hasToShowSocCoop(partecipazioneHelper.getImpresa()));
 
 //		// JASPER 6.16.0: 
 //		// servono ??? 
@@ -733,5 +759,18 @@ public class GenPDFQuestionarioAction extends GenPDFAction {
 			} 
 		}
 	}
-	
+
+	/**
+	 * Rimuozione di tutti i riepiloghi Pdf vecchi/esistenti
+	 * @param dcumentiHelper
+	 */
+	protected void removeOldSummaries(DocumentiAllegatiHelper documentiHelper) {
+		documentiHelper.getAdditionalDocs()
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(it -> it.getDesc() != null)
+				.filter(it -> DocumentiAllegatiHelper.QUESTIONARIO_PDFRIEPILOGO.equalsIgnoreCase(it.getDesc()))
+				.forEach(documentiHelper::removeDocUlteriore);
+	}
+
 }

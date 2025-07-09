@@ -6,6 +6,8 @@ import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.opensymphony.xwork2.ModelDriven;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.sil.WSGareAppalto.DeliberaType;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentoAllegatoLotto;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentoDeliberaType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
@@ -37,6 +39,9 @@ public class OpenSearchDelibereAction extends EncodedDataAction
      * UID
      */
     private static final long serialVersionUID = -7120555760616028115L;
+    
+    public static final String LIST_DELIBERE = "listDelibere";
+    private static final String ID_SESSIONE_SEARCH_DELIBERE = "formSearchDelibere";
 
     private IBandiManager bandiManager;
     private ConfigInterface configManager;
@@ -48,6 +53,10 @@ public class OpenSearchDelibereAction extends EncodedDataAction
     private SearchResult<DeliberaType> listaDelibere;
     @Validate(EParamValidation.STAZIONE_APPALTANTE)
     private String stazioneAppaltante;
+	@Validate(EParamValidation.CODICE)
+	private String codice;
+	@Validate(EParamValidation.CIG)
+	private String cig;
     private String last;
     private InputStream inputStream;
 
@@ -71,6 +80,10 @@ public class OpenSearchDelibereAction extends EncodedDataAction
 
     public void setAppParamManager(IAppParamManager appParamManager) {
         this.appParamManager = appParamManager;
+    }
+
+    public void setConfigManager(ConfigInterface configManager) {
+        this.configManager = configManager;
     }
 
     public SearchResult<DeliberaType> getListaDelibere() {
@@ -105,13 +118,24 @@ public class OpenSearchDelibereAction extends EncodedDataAction
         this.last = last;
     }
 
-    public void setConfigManager(ConfigInterface configManager) {
-        this.configManager = configManager;
-    }
+    public String getCodice() {
+		return codice;
+	}
 
+	public void setCodice(String codice) {
+		this.codice = codice;
+	}
 
-    /**
-     * ...
+	public String getCig() {
+		return cig;
+	}
+
+	public void setCig(String cig) {
+		this.cig = cig;
+	}
+
+	/**
+     * apre la lista delle delibere
      */
     public String openPage() {
         this.setTarget(SUCCESS);
@@ -124,12 +148,21 @@ public class OpenSearchDelibereAction extends EncodedDataAction
         if (this.stazioneAppaltante != null) {
             this.model.setStazioneAppaltante(this.stazioneAppaltante);
         }
+        
+        if(StringUtils.isNotEmpty(codice)) {
+        	model.setCodice(codice);
+        	search(getModel(), 0);
+        }
+        if(StringUtils.isNotEmpty(cig)) {
+        	model.setCig(cig);
+        	search(getModel(), 0);
+        }
 
         return this.getTarget();
     }
 
     /**
-     * Restituisce la lista delle delibere a contrarre
+     * Restituisce la lista delle delibere a contrarre (LIST_DELIBERE)
      */
     public String listDelibere() {
         this.setTarget(SUCCESS);
@@ -137,54 +170,9 @@ public class OpenSearchDelibereAction extends EncodedDataAction
         return this.getTarget();
     }
 
-    public String export() {
-        DelibereSearchBean exportModel = whichModel();
-        exportModel.setiDisplayLength(Integer.MAX_VALUE);
-        search(exportModel, 0);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        PrintStream writer = new PrintStream(stream);
-
-		//intestazione
-       new ArrayList<>(Arrays.asList(
-                        "LABEL_STAZIONE_APPALTANTE",
-                        "LABEL_TITOLO",
-                        "LABEL_CIG",
-                        "LABEL_RIFERIMENTO_PROCEDURA",
-                        "LABEL_DATA_PUBBLICAZIONE_BANDO",
-                        "LABEL_DATA_ATTO",
-                        "LABEL_NUMERO_ATTO",
-                        "LABEL_DESCRIZIONE_DOCUMENTO"
-                )).forEach(campo -> {
-            writer.print(this.getI18nLabel(campo));
-            writer.print(StringUtilities.CSV_DELIMITER);
-        });
-        writer.println();
-
-		//dati
-        listaDelibere.getDati().forEach(deliberaType -> {
-            new ArrayList<>(Arrays.asList(
-                    stringForCsv(deliberaType.getStazioneAppaltante()),
-                    stringForCsv(deliberaType.getOggetto()),
-                    stringForCsv(wrapForExcel(deliberaType.getCig())),
-                    stringForCsv(wrapForExcel(deliberaType.getCodice())),
-                    dateForCsv(deliberaType.getDataPubblicazione()),
-                    dateForCsv(deliberaType.getDataAtto()),
-                    stringForCsv(wrapForExcel(deliberaType.getNumeroAtto())),
-                    stringForCsv(wichUrlDoc(deliberaType))
-            )).forEach(s -> writeElement(writer, s));
-            writer.println();
-        });
-
-        this.inputStream = new ByteArrayInputStream(stream.toByteArray());
-
-        return "export";
-    }
-
-    private void writeElement(PrintStream writer, String element) {
-        writer.print(element);
-        writer.print(StringUtilities.CSV_DELIMITER);
-    }
-
+    /**
+     * restituisce l'elenco delle delibere in base ai filtri
+     */
     private void search(DelibereSearchBean model, int startIndex) {
 
         // se è stata impostata una stazione appaltante nei parametri del portale
@@ -232,20 +220,25 @@ public class OpenSearchDelibereAction extends EncodedDataAction
         // estrazione dell'elenco delle delibere...
         if (SUCCESS.equals(this.getTarget()) && dateOk) {
             try {
-                this.setListaDelibere(this.bandiManager.getDelibere(
+            	// LIST_DELIBERE
+                setListaDelibere(
+                    bandiManager.getDelibere(
                         StringUtils.stripToNull(model.getStazioneAppaltante()),
                         StringUtils.stripToNull(model.getOggetto()),
                         StringUtils.stripToNull(model.getTipoAppalto()),
                         StringUtils.stripToNull(model.getCig()),
                         dtPubblicazioneDa,
                         dtPubblicazioneA,
+                        model.getCodice(),
                         sommaUrgenza,
                         startIndex,
-                        model.getiDisplayLength()));
+                        model.getiDisplayLength()
+                    )
+                );
 
                 model.processResult(this.getListaDelibere().getNumTotaleRecord(),
                         this.getListaDelibere().getNumTotaleRecordFiltrati());
-                this.session.put("formSearchDelibere", model);
+                this.session.put(ID_SESSIONE_SEARCH_DELIBERE, model);
 
             } catch (ApsException e) {
                 ApsSystemUtils.logThrowable(e, this, "listDelibere");
@@ -255,39 +248,88 @@ public class OpenSearchDelibereAction extends EncodedDataAction
         }
     }
 
+    /**
+     * ...
+     */
+    public String export() {
+        DelibereSearchBean exportModel = whichModel();
+        exportModel.setiDisplayLength(Integer.MAX_VALUE);
+        search(exportModel, 0);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        PrintStream writer = new PrintStream(stream);
+
+		// intestazione...
+        writeLine(writer
+        		, getI18nLabel("LABEL_STAZIONE_APPALTANTE")
+        		, getI18nLabel("LABEL_TITOLO")
+        		, getI18nLabel("LABEL_CIG")
+        		, getI18nLabel("LABEL_RIFERIMENTO_PROCEDURA")
+        		, getI18nLabel("LABEL_DATA_PUBBLICAZIONE_BANDO")
+        		, getI18nLabel("LABEL_DATA_ATTO")
+        		, getI18nLabel("LABEL_NUMERO_ATTO")
+        		, getI18nLabel("LABEL_DESCRIZIONE_DOCUMENTO")
+        );
+		// ...dati
+        listaDelibere.getDati().forEach(delibera -> {
+        	if(delibera.getDocumenti() != null) 
+        		for(DocumentoDeliberaType doc : delibera.getDocumenti())
+    		    	writeLine(writer
+    		    			, stringForCsv(delibera.getStazioneAppaltante())
+    		    			, stringForCsv(delibera.getOggetto())
+    		    			, stringForCsv(wrapForExcel(delibera.getCig()))
+    		    			, stringForCsv(wrapForExcel(delibera.getCodice()))
+    						, dateForCsv(doc.getDataPubblicazione())
+    						, dateForCsv(doc.getDataAtto())
+    						, stringForCsv(wrapForExcel(doc.getNumeroAtto()))
+    						, stringForCsv(whichUrlDoc(doc))
+    				);
+        });
+        
+        this.inputStream = new ByteArrayInputStream(stream.toByteArray());
+
+        return "export";
+    }
+    
     DelibereSearchBean whichModel() {
         if ("1".equals(this.last)) {
             // se si richiede il rilancio dell'ultima estrazione effettuata,
             // allora si prendono dalla sessione i filtri applicati e si
             // caricano nel presente oggetto
             return (DelibereSearchBean) this.session
-                    .get("formSearchDelibere");
+                    .get(ID_SESSIONE_SEARCH_DELIBERE);
         } else {
             return getModel();
         }
     }
 
+    private void writeLine(PrintStream writer, String... element) {
+    	if(element != null)
+    		for(int i = 0; i < element.length; i++)
+    			writer.print(element[i] + StringUtilities.CSV_DELIMITER); 
+        writer.println();
+    }
+    
     String stringForCsv(String string) {
         return StringUtilities.escapeCsv(StringUtils.defaultString(string));
     }
 
     String dateForCsv(Calendar cal) {
-        return cal != null ?
-                UtilityDate.convertiData(Date.from(cal.toInstant()), UtilityDate.FORMATO_GG_MM_AAAA)
+        return cal != null 
+        		? UtilityDate.convertiData(Date.from(cal.toInstant()), UtilityDate.FORMATO_GG_MM_AAAA)
                 : "";
     }
 
-    String wichUrlDoc(DeliberaType deliberaType) {
+    String whichUrlDoc(DocumentoDeliberaType documento) {
 		String baseUrl = configManager.getParam(SystemConstants.PAR_APPL_BASE_URL);
-        return !StringUtils.isBlank(deliberaType.getUrlDoc()) ?
-                deliberaType.getUrlDoc() :
-                deliberaType.getFileDoc().toUpperCase().endsWith(".P7M") || deliberaType.getFileDoc().toUpperCase().endsWith(".TSD") ?
-						baseUrl + session.get("WW_TRANS_I18N_LOCALE").toString() + "/ppgare_delibere_contrarre.wp?actionPath=/ExtStr2/do/FrontEnd/DocDig/downloadDocumentoPubblico.action&currentFrame=7&id=" + deliberaType.getIdDoc() + "&idprg="
-						: baseUrl + "do/FrontEnd/DocDig/downloadDocumentoPubblico.action?id=" + deliberaType.getIdDoc();
-
+		String ww_trans = (session.get("WW_TRANS_I18N_LOCALE") != null ? session.get("WW_TRANS_I18N_LOCALE").toString() : ""); 
+        return StringUtils.isNotEmpty(documento.getUrlDoc()) 
+        		? documento.getUrlDoc() 
+        		: documento.getFileDoc().toUpperCase().endsWith(".P7M") || documento.getFileDoc().toUpperCase().endsWith(".TSD") 
+        			? baseUrl + ww_trans + "/ppgare_delibere_contrarre.wp?actionPath=/ExtStr2/do/FrontEnd/DocDig/downloadDocumentoPubblico.action&currentFrame=7&id=" + documento.getIdDoc() + "&idprg="
+					: baseUrl + "do/FrontEnd/DocDig/downloadDocumentoPubblico.action?id=" + documento.getIdDoc();
     }
 
     String wrapForExcel(String s) {
-        return !StringUtils.isEmpty(s) ? "\"" + s + "\"" : "";
+        return StringUtils.isNotEmpty(s) ? "\"" + s + "\"" : "";
     }
 }

@@ -200,12 +200,12 @@
 					<s:url id="urlDownloadImmagine" namespace="/do/FrontEnd/Cataloghi" action="downloadAllegatoImmagine" />
 					<c:choose>
 						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-							<s:a href="%{#urlDownloadImmagine}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaImmagine}">
+							<s:a href="%{#urlDownloadImmagine}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}" title="%{#attr.valueScaricaImmagine}">
 								<wp:i18n key="LABEL_SCARICA_IMMAGINE" />
 							</s:a>
 						</c:when>
 						<c:otherwise>
-								<s:a href="%{#urlDownloadImmagine}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaImmagine}" cssClass="bkg img">
+								<s:a href="%{#urlDownloadImmagine}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}" title="%{#attr.valueScaricaImmagine}" cssClass="bkg img">
 									<s:property value="%{prodotto.documenti.immagineFileName}"/>
 								</s:a>
 						</c:otherwise>
@@ -216,13 +216,13 @@
 				<%-- SIC	<s:url id="urlFileDownload" namespace="/do/FrontEnd/DocDig" action="download" /> --%>
 					<c:choose>
 						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-							<s:a href="%{#urlFileDownload}?id=%{prodotto.dettaglioProdotto.immagine.id}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaImmagine}">
+							<s:a href="%{#urlFileDownload}?id=%{prodotto.dettaglioProdotto.immagine.id}" title="%{#attr.valueScaricaImmagine}">
 								<wp:i18n key="LABEL_SCARICA_IMMAGINE" />
 							</s:a>
 						</c:when>
 						<c:otherwise>
 							<wp:i18n key="LABEL_DOWNLOAD_FILE" var="titleScaricaFile" />
-							<s:a href="%{#urlFileDownload}?id=%{prodotto.dettaglioProdotto.immagine.id}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaFile}" cssClass="bkg img">
+							<s:a href="%{#urlFileDownload}?id=%{prodotto.dettaglioProdotto.immagine.id}" title="%{#attr.titleScaricaFile}" cssClass="bkg img">
 								<s:property value="%{prodotto.dettaglioProdotto.immagine.nomefile}" />
 							</s:a>
 						</c:otherwise>
@@ -256,13 +256,13 @@
 								<li class='<s:if test="%{#statusCert.first}">first</s:if> <s:if test="%{#statusCert.last}">last</s:if>'>
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadCertificazione}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusCert.index}&amp;%{#attr.tokenHrefParams}" 
+											<s:a href="%{#urlDownloadCertificazione}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusCert.index}" 
 												 title="%{#attr.valueScaricaCertificazione}">
 												<wp:i18n key="LABEL_SCARICA_CERTIFICAZIONE_RICH" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadCertificazione}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusCert.index}&amp;%{#attr.tokenHrefParams}" 
+											<s:a href="%{#urlDownloadCertificazione}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusCert.index}" 
 												 cssClass="bkg attachment" title="%{#attr.valueScaricaCertificazione}">
 												<s:property value="%{prodotto.documenti.certificazioniRichiesteFileName.get(#statusCert.index)}"/>
 											</s:a>
@@ -296,13 +296,13 @@
 								<li class='<s:if test="%{#statusScheda.first}">first</s:if> <s:if test="%{#statusScheda.last}">last</s:if>'>
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadSchedaTecnica}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusScheda.index}&amp;%{#attr.tokenHrefParams}" 
+											<s:a href="%{#urlDownloadSchedaTecnica}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusScheda.index}" 
 												 title="%{#attr.valueScaricaSchedaTecnica}">
 												 <wp:i18n key="LABEL_SCARICA_SCHEDA_TECNICA" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadSchedaTecnica}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusScheda.index}&amp;%{#attr.tokenHrefParams}" 
+											<s:a href="%{#urlDownloadSchedaTecnica}?statoProdotto=%{statoProdotto}&amp;prodottoId=%{prodottoId}&amp;id=%{#statusScheda.index}" 
 												 cssClass="bkg attachment" title="%{#attr.valueScaricaSchedaTecnica}">
 												<s:property value="%{prodotto.documenti.schedeTecnicheFileName.get(#statusScheda.index)}"/>
 											</s:a>
@@ -479,12 +479,12 @@
 	
 	<div class="back-link">
 		<s:if test="%{!inCarrello}">
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;ext=${param.ext}&amp;last=1&amp;${tokenHrefParams}" class="bolded">
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchProdottiSistema.action" />&amp;ext=${param.ext}&amp;last=1" class="bolded">
 				 <wp:i18n key="LINK_BACK_TO_MODIFICA_PRODOTTI" />
 			</a>
 		</s:if>
 		<s:else>
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdottiCarrello.action" />&amp;ext=${param.ext}&amp;${tokenHrefParams}" class="bolded">
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdottiCarrello.action" />&amp;ext=${param.ext}" class="bolded">
 				 <wp:i18n key="LINK_BACK_TO_RIEPILOGO_MODIFICHE" />
 			</a>
 		</s:else>

@@ -8,8 +8,7 @@ import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.ActionSupport;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -27,7 +26,7 @@ public class PortalErrorPageAction extends BaseAction implements SessionAware, S
 	private IPageManager pageManager;
 	private IURLManager urlManager;
 
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlRedirect;
 
 	@Override

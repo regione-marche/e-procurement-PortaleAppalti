@@ -2,6 +2,14 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
+<%-- forza il refresh delle librerie js ogni giorno --%>
+<%
+	String file = application.getRealPath("/") + "WEB-INF/PA_VER.TXT";
+	String webappVersion = org.apache.commons.io.FileUtils.readFileToString(new java.io.File(file), "ISO-8859-1");
+%>
+<c:set var="versione"><%=webappVersion%></c:set>
+
+
 <s:if test="%{#session.dettIscrAlbo != null}">
 	<s:set name="sessionIdObj" value="'dettIscrAlbo'" />
 </s:if>
@@ -21,7 +29,7 @@
 
 <%--
 	Gestione blocco di attesa sulla pagina
-	utilizzare le seguenti funzioni per visualizzare o nascondere il pannello di blocco/attesa   		
+	utilizzare le seguenti funzioni per visualizzare o nascondere il pannello di blocco/attesa
 		showBlockUIMessage() 
 		hideBlockUIMessage()
  --%>
@@ -128,9 +136,9 @@
 	
 	<wp:headInfo type="CSS" info="../js/qcompiler/styles.css" />
 	<app-root></app-root>
-	<script src="<wp:resourceURL/>static/js/qcompiler/runtime.js" defer></script>
-	<script src="<wp:resourceURL/>static/js/qcompiler/polyfills.js" defer></script>
-	<script src="<wp:resourceURL/>static/js/qcompiler/main.js" defer></script></body>
+	<script src="<wp:resourceURL/>static/js/qcompiler/runtime.js?v=${versione}" defer></script>
+	<script src="<wp:resourceURL/>static/js/qcompiler/polyfills.js?v=${versione}" defer></script>
+	<script src="<wp:resourceURL/>static/js/qcompiler/main.js?v=${versione}" defer></script></body>
  	
  	<br/>
  	<br/>

@@ -128,7 +128,7 @@
 						</div>
 					</p>
 					<p>
-						(<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB)
+						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp" />
 					</p>
 					<div class="azioni">
 						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_cancel.jsp" />
@@ -162,18 +162,18 @@
 						<wp:i18n key="LABEL_ELIMINA_RIEPILOGO_FIRMATO" var="valueEliminaRiepilogo" />
 						<c:choose>
 							<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-								<s:a href="%{#urlDownloadRiepilogoFirmato}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaRiepilogo}">
+								<s:a href="%{#urlDownloadRiepilogoFirmato}" title="%{#attr.valueScaricaRiepilogo}">
 									${attr.valueScaricaRiepilogo}
 								</s:a>
-								<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteRiepilogo.action"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" title="%{#attr.valueEliminaRiepilogo}">
+								<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteRiepilogo.action"/>&amp;ext=${param.ext}" title="%{#attr.valueEliminaRiepilogo}">
 									${attr.valueEliminaRiepilogo}
 								</a>
 							</c:when>
 							<c:otherwise>
-								<s:a href="%{#urlDownloadRiepilogoFirmato}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaRiepilogo}" cssClass="bkg p7m">
+								<s:a href="%{#urlDownloadRiepilogoFirmato}" title="%{#attr.valueScaricaRiepilogo}" cssClass="bkg p7m">
 									<s:property value="{riepilogoFileName}"/>
 								</s:a>
-								<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteRiepilogo.action"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" title="%{#attr.valueEliminaRiepilogo}" class="bkg delete">
+								<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteRiepilogo.action"/>&amp;ext=${param.ext}" title="%{#attr.valueEliminaRiepilogo}" class="bkg delete">
 								</a>
 							</c:otherwise>
 						</c:choose>

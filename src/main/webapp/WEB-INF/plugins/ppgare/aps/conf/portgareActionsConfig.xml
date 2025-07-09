@@ -6,15 +6,31 @@
 				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
 				http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
 
+
+	<bean id="openPageElencoMeritoAction" class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.OpenPageElencoMeritoAction"
+		  parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="elencoMeritoExportAction" class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.ElencoMeritoExportAction"
+		  parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
 	<bean id="bandiFinderAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiFinderAction"
 		parent="abstractBaseAction" scope="prototype">
 		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
 	</bean>
+	
 	<bean id="downloadDatiImpresaAction"
 		  class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.DownloadDatiImpresaAction"
-		  parent="abstractBaseAction" scope="prototype" />
-
+		  parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
 	<bean id="bandiAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.BandiAction"
 		parent="abstractBaseAction" scope="prototype">
@@ -23,6 +39,15 @@
 		<property name="comunicazioniManager" ref="ComunicazioniManager" />
 		<property name="asteManager" ref="AsteManager" />
 		<property name="customConfigManager" ref="CustomConfigManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="openProceduraAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.OpenProceduraAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="esitiManager" ref="EsitiManager" />
+		<property name="avvisiManager" ref="AvvisiManager" />
 	</bean>
 
 	<bean id="dgueRequestAction"
@@ -32,6 +57,7 @@
 		<property name="appParamManager" ref="AppParamManager" />
 		<property name="documentiDigitaliManager" ref="DocumentiDigitaliManager" />
 		<property name="authenticationProvider" ref="AuthenticationProviderManager"/>
+		<property name="bandiManager" ref="BandiManager" />
 	</bean>
 	<bean id="dgueAction"
 		  class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.DgueAction"
@@ -60,11 +86,12 @@
 		<property name="customConfigManager" ref="CustomConfigManager" />
 		<property name="appParamManager" ref="AppParamManager" />
 		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
 		<property name="stipuleManager" ref="StipuleManager" />
 		<property name="eventManager" ref="EventManager" />
 		<property name="ntpManager" ref="NtpManager" />
 	</bean>
-
+	
 	<bean id="comunicazioniRicevuteAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ComunicazioniRicevuteAction"
 		parent="abstractBaseAction" scope="prototype">
@@ -111,8 +138,7 @@
 
 	<bean id="processPageDocumentiNuovaComunicazioneAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageDocumentiNuovaComunicazioneAction"
-		parent="abstractBaseAction" scope="prototype">
-		<property name="appParamManager" ref="AppParamManager" />
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
 		<property name="eventManager" ref="EventManager" />
 		<property name="customConfigManager" ref="CustomConfigManager" />
 	</bean>
@@ -166,7 +192,7 @@
 	</bean>
 	
 	
-	<!-- SOCCORSO ISTRUTTORIO -->
+	<!-- COMUNICAZIONE SOCCORSO ISTRUTTORIO -->
 	
 	<bean id="nuovoSoccorsoAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageNuovoSoccorsoAction"
@@ -192,8 +218,7 @@
 
 	<bean id="processPageDocumentiNuovoSoccorsoAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageDocumentiNuovoSoccorsoAction"
-		parent="abstractBaseAction" scope="prototype">
-		<property name="appParamManager" ref="AppParamManager" />
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
 		<property name="eventManager" ref="EventManager" />
 		<property name="customConfigManager" ref="CustomConfigManager" />
 	</bean>
@@ -214,6 +239,55 @@
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.CancelNuovoSoccorsoAction"
 		parent="abstractBaseAction" scope="prototype">
 	</bean>
+	
+		
+	<!-- COMUNICAZIONE RETTIFICA -->
+	
+	<bean id="nuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageNuovaRettificaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="openPageDocumentiNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageDocumentiNuovaRettificaAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
+	<bean id="openPageRiepilogoNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.OpenPageRiepilogoNuovaRettificaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>
+	
+	<bean id="processPageNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageNuovaRettificaAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+	</bean>
+
+	<bean id="processPageDocumentiNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageDocumentiNuovaRettificaAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+
+	<bean id="processPageRiepilogoNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.ProcessPageRiepilogoNuovaRettificaAction"
+		parent="abstractProcessPageComunicazioneAction" scope="prototype">
+		<property name="ntpManager" ref="NtpManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="mailManager" ref="jpmailMailManager" />
+		<property name="wsdmManager" ref="WSDMManager" />
+		<property name="eventManager" ref="EventManager" />
+		<property name="stipuleManager" ref="StipuleManager" />
+	</bean>	
+	
+	<bean id="cancelNuovaRettificaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.CancelNuovaRettificaAction"
+		parent="abstractBaseAction" scope="prototype">
+	</bean>	
 	
 	
 	<bean id="tabIndicizzazioneDPCMAction"
@@ -252,6 +326,21 @@
 		<property name="esitiManager" ref="EsitiManager" />
 		<property name="bandiManager" ref="BandiManager" />
 		<property name="pageManager" ref="PageManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+	</bean>
+
+	<bean id="avvisiComunicazioniAttiFinderAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.avvisi.AvvisiComunicazioniAttiFinderAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="avvisiManager" ref="AvvisiManager" />
+	</bean>
+	
+	<bean id="avvisiComunicazioniAttiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.avvisi.AvvisiComunicazioniAttiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="avvisiManager" ref="AvvisiManager" />
+		<property name="pageManager" ref="PageManager" />
+		<property name="bandiManager" ref="BandiManager" />
 	</bean>
 
 	<bean id="avvisiFinderAction"
@@ -759,6 +848,7 @@
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageRTIAction"
 		parent="abstractBaseAction" scope="prototype">
 		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+		<property name="bandiManager" ref="BandiManager"/>
 	</bean>
 
 	<bean id="processPageRTIPartBandoAction"
@@ -766,9 +856,23 @@
 		parent="abstractBaseAction" scope="prototype">
 	</bean>
 
+	<bean id="openPageAvvalimentoPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageAvvalimentoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
+
+	<bean id="processPageAvvalimentoPartBandoAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageAvvalimentoAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="codificheManager" ref="CodificheManager" />
+		<property name="customConfigManager" ref="CustomConfigManager" />
+	</bean>
+	
 	<bean id="openPageComponentiPartBandoAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageComponentiAction"
 		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
 	</bean>
 
 	<bean id="processPageComponentiPartBandoAction"
@@ -841,6 +945,7 @@
  		<property name="leggeTrasparenzaManager" ref="LeggeTrasparenzaManager" />
  		<property name="customConfigManager" ref="CustomConfigManager" />
 		<property name="appParamManager" ref="AppParamManager" />
+		<property name="bandiManager" ref="BandiManager" />
 	</bean>
 	
 	<bean id="anticorruzioneListaAdempimentiAction"
@@ -1031,6 +1136,16 @@
 		<property name="appParamManager" ref="AppParamManager" />
 		<property name="configManager" ref="BaseConfigManager" />
 	</bean>
+	<bean id="redirectSummaryEnvelopeAction"
+		  class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.RedirectSummaryEnvelopeAction"
+		  parent="abstractBaseAction" scope="prototype">
+	</bean>
+	<bean id="resetEnvelopeAction"
+		  class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ResetEnvelopeAction"
+		  parent="abstractBaseAction" scope="prototype">
+		<property name="eventManager" ref="EventManager" />
+	</bean>
+
 
 	<bean id="processPageDocumentiBustaAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageDocumentiBustaAction"
@@ -1719,6 +1834,19 @@
 		parent="abstractBaseAction" scope="prototype">
 		<property name="bandiManager" ref="BandiManager" />
 	</bean>
+
+	<bean id="espletGaraViewAccessoDocumentiLottiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewAccessoDocumentiLottiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="comunicazioniManager" ref="ComunicazioniManager" />
+	</bean>
+	
+	<bean id="espletGaraViewAccessoDocumentiAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.EspletGaraViewAccessoDocumentiAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+	</bean>
 	
 	<bean id="fileUploadAsyncAction" 
 		class="it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.fileupload.FileUploadAsyncAction" 
@@ -1728,6 +1856,14 @@
 		
 	<bean id="openSearchDelibereAction"
 		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.OpenSearchDelibereAction"
+		parent="abstractBaseAction" scope="prototype">
+		<property name="bandiManager" ref="BandiManager" />
+		<property name="appParamManager" ref="AppParamManager" />
+		<property name="configManager" ref="BaseConfigManager"/>
+	</bean>
+		
+	<bean id="deliberaAction"
+		class="it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi.DelibereAction"
 		parent="abstractBaseAction" scope="prototype">
 		<property name="bandiManager" ref="BandiManager" />
 		<property name="appParamManager" ref="AppParamManager" />

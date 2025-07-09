@@ -11,8 +11,6 @@
 
 	<h2><wp:i18n key="LABEL_GRADUATORIA" /></h2>
 
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
-
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_GRADUATORIA_LOTTI"/>
 	</jsp:include>
@@ -33,7 +31,7 @@
 					<s:iterator var="item" value="lotti" status="stat">
 						<tr>
 							<td class="azioni">
-								<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoria.action"/>&amp;codice=${param.codice}&amp;codiceLotto=<s:property value="%{#item.lotto}" />&amp;${tokenHrefParams}"
+								<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewGraduatoria.action"/>&amp;codice=${param.codice}&amp;codiceLotto=<s:property value="%{#item.lotto}" />"
 								   title='<wp:i18n key="TITLE_VISUALIZZA_GRADUATORIA" />' >
 									<s:property value="#item.codiceInterno" /> 
 								</a>
@@ -51,7 +49,7 @@
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 		<wp:i18n key="LINK_BACK" />
 	</a>
 </div>

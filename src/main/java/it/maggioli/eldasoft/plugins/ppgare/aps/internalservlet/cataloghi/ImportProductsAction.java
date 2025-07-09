@@ -14,7 +14,6 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
@@ -25,9 +24,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.P
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ProdottiSearchBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardArticoloHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.ICataloghiManager;
@@ -50,6 +50,7 @@ import java.util.Map;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ImportProductsAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -167,28 +168,23 @@ public class ImportProductsAction extends EncodedDataAction implements SessionAw
 			} else {
 				int allegatoSize = FileUploadUtilities.getFileSize(this.allegato);
 				
-				// traccia l'evento di upload di un file...
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(this.catalogo);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage("Import prodotti catalogo:" 
-								  + " file="+this.allegatoFileName 
-								  + ", dimensione=" + allegatoSize + "KB");
-	
-				boolean controlliOk =
-						checkFileSize(allegato, allegatoFileName, allegatoSize, appParamManager, evento)
-						&& checkFileName(allegatoFileName, evento)
-						&& checkFileFormat(allegato, allegatoFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL, evento, false);
-
-				if (!controlliOk) {
+				
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setActualTotalSize(allegatoSize)
+						.setDocumento(allegato)
+						.setDocumentoFileName(allegatoFileName)
+						.setDocumentoFormato(PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL)
+						.setOnlyP7m(false)
+						.setEventoDestinazione(catalogo)
+						.setEventoMessaggio("Import prodotti catalogo:" 
+								  			+ " file=" + this.allegatoFileName 
+								  			+ ", dimensione=" + allegatoSize + "KB");
+				
+				if ( !getUploadValidator().validate() ) {
 					actionErrorToFieldError();
 					this.setTarget(INPUT);
 				} else {
-	
 					CarrelloProdottiSessione carrelloProdotti = (CarrelloProdottiSessione) this.session
 						.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI);
 					try {
@@ -212,7 +208,8 @@ public class ImportProductsAction extends EncodedDataAction implements SessionAw
 						this.setTarget(INPUT);
 					}
 				}
-				this.eventManager.insertEvent(evento);
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		
 		} catch (Throwable t) {

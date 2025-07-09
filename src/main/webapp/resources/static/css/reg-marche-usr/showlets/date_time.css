@@ -1,0 +1,19 @@
+#date-time {
+	color: #555 !important;
+	margin-top: 12px;
+}
+
+#date-sub-menu {
+	border-right: 1px solid #E5E5E5;
+	margin: 0 !important;
+	padding: 0 !important;
+	text-align: center;
+	vertical-align: middle;
+	text-transform: uppercase;
+	font-size: 0.815em;
+	text-transform: capitalize;
+	font-weight: 700;
+	line-height: 48px;
+	min-height: 48px;
+	vertical-align: middle;
+}

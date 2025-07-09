@@ -36,6 +36,7 @@
 		
 		<action name="dettaglioStipulaContratti" class="stipulaContrattiAction" method="detail">
 			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/dettaglioStipulaContratti.jsp</result>
+			<result type="dispatcher" name="input">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/dettaglioStipulaContratti.jsp</result>
 			<interceptor-ref name="japsFreeValidationStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
 				<param name="types">stazioniAppaltanti, listaFasiStipule, listaStatiStipule</param>
@@ -44,7 +45,7 @@
 		
 		<action name="openPageDocumentiStipule" class="documentiContrattiAction" method="open">
 			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
-			<result name="input" type="redirect">${urlErrori}</result>
+			<result name="input" type="chain">dettaglioStipulaContratti</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
 				<param name="types">stazioniAppaltanti, listaFasiStipule, listaStatiStipule</param>
@@ -96,10 +97,10 @@
 			</interceptor-ref>
 		</action>
 		
-		
 		<action name="confermaDialogInvio" class="documentiContrattiAction" method="confirmInvio">
 			<result type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
 			<result name="input" type="dispatcher">/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/contratti/documentiStipulaContratti.jsp</result>
+			<result name="reopen" type="chain">openPageDocumentiStipule</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 		</action>
 		

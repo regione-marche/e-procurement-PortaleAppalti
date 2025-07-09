@@ -8,7 +8,7 @@
   <groupId>it.maggioli.eldasoft.portal</groupId>
   <artifactId>portale-appalti</artifactId>
   <packaging>war</packaging>
-  <version>3.24.0-regmarche</version>
+  <version>4.8.0-reg-marche</version>
   <name>PortaleAppalti</name>
   <properties>
     <project.build.sourceEncoding>Cp1252</project.build.sourceEncoding>
@@ -20,6 +20,7 @@
     <struts.version>2.1.6</struts.version>
     <spring.version>2.5.3</spring.version>
     <log4j.version>2.17.2</log4j.version>
+    <pdfbox.version>2.0.33</pdfbox.version>
   </properties>
   <dependencies>
     <dependency>
@@ -234,6 +235,7 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2.2</version>
     </dependency>
+    <!-- Jasperreport 6.16.0 -->
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
@@ -280,6 +282,34 @@
       <artifactId>jasperreports-fonts</artifactId>
       <version>${jasper.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>76.1</version>
+    </dependency>
+    <!-- 
+Jasperreport 7.0
+        <dependency>
+    		<groupId>net.sf.jasperreports</groupId>
+    		<artifactId>jasperreports-pdf</artifactId>
+    		<version>${jasper.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>net.sf.jasperreports</groupId>
+    		<artifactId>jasperreports-jaxen</artifactId>
+    		<version>${jasper.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>net.sf.jasperreports</groupId>
+    		<artifactId>jasperreports-json</artifactId>
+    		<version>${jasper.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>net.sf.jasperreports</groupId>
+    		<artifactId>jasperreports-groovy</artifactId>
+    		<version>7.0.0</version>
+		</dependency>
+-->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
@@ -347,7 +377,7 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
-      <version>2.0.17</version>
+      <version>${pdfbox.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -356,14 +386,14 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>xmpbox</artifactId>
+      <version>${pdfbox.version}</version>
+    </dependency>
+    <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
       <version>2.2.11</version>
-    </dependency>
-    <dependency>
-      <groupId>nl.captcha</groupId>
-      <artifactId>simplecaptcha</artifactId>
-      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>commons-validator</groupId>
@@ -559,7 +589,7 @@
       <!-- Non presente su nexus -->
       <groupId>it.maggioli.eldasoft.pagopa</groupId>
       <artifactId>pagopa-ws-client</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>jakarta.activation</groupId>
@@ -605,7 +635,7 @@
     <dependency>
       <groupId>it.maggioli.eldasoft.portoken</groupId>
       <artifactId>portoken-client</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
       <exclusions>
         <exclusion>
           <groupId>commons-codec</groupId>
@@ -619,6 +649,10 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>io.jsonwebtoken</groupId>
+          <artifactId>jjwt</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -628,21 +662,21 @@
       <version>2.1.0</version>
     </dependency>
     <dependency>
-      <!-- Comprende il wsopgene, aggiunta da 3.21.0-SNAPSHOT -->
+      <!-- Comprende il wsopgene, aggiunta da 3.21.0 -->
       <groupId>it.maggioli.eldasoft.sil</groupId>
       <artifactId>eldasoft-wsappalti-client</artifactId>
-      <version>3.24.0</version>
+      <version>4.8.0</version>
     </dependency>
     <dependency>
       <groupId>it.maggioli.eldasoft.sil</groupId>
       <!-- Non era presente su nexus -->
       <artifactId>wsbea-client</artifactId>
-      <version>1.10.0</version>
+      <version>1.12.0</version>
     </dependency>
     <dependency>
       <groupId>it.maggioli.eldasoft.portal</groupId>
       <artifactId>eldasoft-portgare-datatypes</artifactId>
-      <version>3.24.0</version>
+      <version>4.8.0</version>
     </dependency>
     <dependency>
       <groupId>it.maggioli.eldasoft.portal</groupId>
@@ -687,7 +721,7 @@
       <!-- Non era presente su nexus -->
       <groupId>it.maggioli.eldasoft.commons</groupId>
       <artifactId>digitalsignaturecheck-client</artifactId>
-      <version>1.1.1</version>
+      <version>1.3.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.glassfish.jersey.core</groupId>
@@ -767,7 +801,7 @@
       <!-- Non era presente su nexus -->
       <groupId>it.maggioli.eldasoft.digitaltimestamp</groupId>
       <artifactId>digitaltimestamp-client</artifactId>
-      <version>1.0.1</version>
+      <version>1.4.0</version>
       <exclusions>
         <exclusion>
           <groupId>commons-codec</groupId>
@@ -807,6 +841,17 @@
       <groupId>org.verapdf</groupId>
       <artifactId>validation-model</artifactId>
       <version>1.22.2</version>
+    </dependency>
+    <!-- Apache Tika validazione contenuto file/upload -->
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>2.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.7</version>
     </dependency>
   </dependencies>
   <profiles>

@@ -196,13 +196,13 @@ Offerta OEPV se:
 						</div>
 						<div class="element">
 							<div class="contents-group">
-							<s:if test="%{#importoOffertoEditable}">
-								<s:textfield name="importoOfferto" maxlength="16" size="20" aria-required="true" aria-label='<wp:i18n key="LABEL_IMPORTO_OFFERTO" />'/> &euro; (<wp:i18n key="LABEL_INDICARE_MAX" /> 5 <wp:i18n key="LABEL_DECIMALI" />)
-							</s:if>
-							<s:else>
-								<s:text name="format.money5dec"><s:param value="%{#helper.importoOfferto}"/></s:text> &euro;
-								<s:hidden id="importoOfferto" name="importoOfferto" value="%{#helper.importoOffertoNotazioneStandard}"></s:hidden>
-							</s:else>
+								<s:if test="%{#importoOffertoEditable}">
+									<s:textfield name="importoOfferto" maxlength="16" size="20" aria-required="true" aria-label='<wp:i18n key="LABEL_IMPORTO_OFFERTO" />'/> &euro; (<wp:i18n key="LABEL_INDICARE_MAX" /> 5 <wp:i18n key="LABEL_DECIMALI" />)
+								</s:if>
+								<s:else>
+									<s:text name="format.money5dec"><s:param value="%{#helper.importoOfferto}"/></s:text> &euro;
+									<s:hidden id="importoOfferto" name="importoOfferto" value="%{#helper.importoOffertoNotazioneStandard}"></s:hidden>
+								</s:else>
 							</div>
 							<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/notePrezziUnitari.jsp"></jsp:include>
 						</div>
@@ -222,12 +222,14 @@ Offerta OEPV se:
 								<label for="aumento"><wp:i18n key="LABEL_AUMENTO_PERCENTUALE" /> : </label>
 							</div>
 							<div class="element">
-								<s:if test="%{#percentualeAumentoEditable}">
-									<s:textfield id="aumento" name="aumento"  value="%{aumento}" maxlength="13" size="20" readonly="%{!#percentualeAumentoEditable}"/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
-								</s:if>
-								<s:else>
-									<s:hidden id="aumento" name="aumento"  value="%{aumento}"></s:hidden>
-								</s:else>
+								<div class="contents-group">
+									<s:if test="%{#percentualeAumentoEditable}">
+										<s:textfield id="aumento" name="aumento"  value="%{aumento}" maxlength="13" size="20" readonly="%{!#percentualeAumentoEditable}"/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
+									</s:if>
+									<s:else>
+										<s:hidden id="aumento" name="aumento"  value="%{aumento}"></s:hidden>
+									</s:else>
+								</div>
 							</div>
 						</div>
 					</s:if>	
@@ -241,18 +243,20 @@ Offerta OEPV se:
 								</s:if> </label>
 						</div>
 						<div class="element">
-							<s:if test="%{#percentualeRibassoEditable}">
-								<s:textfield id="ribasso" name="ribasso" value="%{ribasso}" maxlength="13" size="20" readonly ="%{!#percentualeRibassoEditable}" aria-required="true" aria-label='<wp:i18n key="LABEL_RIBASSO_PERCENTUALE" />'/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
-							</s:if>
-							<s:else>
-								<s:if test="%{#totaleRibassoVisible}">
-									<s:text name="format.numberdec"><s:param value="%{#totaleRibasso}"/></s:text>
-									<s:hidden id="ribasso" name="ribasso" value="%{totaleRibasso}"></s:hidden>	
+							<div class="contents-group">
+								<s:if test="%{#percentualeRibassoEditable}">
+									<s:textfield id="ribasso" name="ribasso" value="%{ribasso}" maxlength="13" size="20" readonly ="%{!#percentualeRibassoEditable}" aria-required="true" aria-label='<wp:i18n key="LABEL_RIBASSO_PERCENTUALE" />'/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
 								</s:if>
 								<s:else>
-									<s:hidden id="ribasso" name="ribasso" value="%{ribasso}"></s:hidden>
+									<s:if test="%{#totaleRibassoVisible}">
+										<s:text name="format.numberdec"><s:param value="%{#totaleRibasso}"/></s:text>
+										<s:hidden id="ribasso" name="ribasso" value="%{totaleRibasso}"></s:hidden>
+									</s:if>
+									<s:else>
+										<s:hidden id="ribasso" name="ribasso" value="%{ribasso}"></s:hidden>
+									</s:else>
 								</s:else>
-							</s:else>
+							</div>
 						</div>
 					</div>
 				</s:if>
@@ -264,12 +268,14 @@ Offerta OEPV se:
 								<label for="aumento"><wp:i18n key="LABEL_AUMENTO_PERCENTUALE" /> : </label>
 							</div>
 							<div class="element">
-								<s:if test="%{#percentualeAumentoEditable}">
-									<s:textfield id="aumento" name="aumento"  value="%{aumento}" maxlength="13" size="20" readonly="%{!#percentualeAumentoEditable}"/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
-								</s:if>
-								<s:else>
-									<s:hidden id="aumento" name="aumento"  value="%{aumento}"></s:hidden>
-								</s:else>
+								<div class="contents-group">
+									<s:if test="%{#percentualeAumentoEditable}">
+										<s:textfield id="aumento" name="aumento"  value="%{aumento}" maxlength="13" size="20" readonly="%{!#percentualeAumentoEditable}"/> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliRibasso}"/> <wp:i18n key="LABEL_DECIMALI" />)
+									</s:if>
+									<s:else>
+										<s:hidden id="aumento" name="aumento"  value="%{aumento}"></s:hidden>
+									</s:else>
+								</div>
 							</div>
 						</div>
 					</s:if>	
@@ -285,7 +291,9 @@ Offerta OEPV se:
 						<label for="costiSicurezzaAziendali"><wp:i18n key="LABEL_COSTI_SICUREZZA_AZIENDALE" /> : <span class="required-field">*</span></label>
 					</div>
 					<div class="element">
-						<s:textfield name="costiSicurezzaAziendali" value="%{costiSicurezzaAziendali}" maxlength="16" size="20" aria-required="true" /> &euro;
+						<div class="contents-group">
+							<s:textfield name="costiSicurezzaAziendali" value="%{costiSicurezzaAziendali}" maxlength="16" size="20" aria-required="true" /> &euro;
+						</div>
 					</div>
 				</div>
 			</s:if>
@@ -298,8 +306,10 @@ Offerta OEPV se:
 							<label for="percentualeManodopera"><wp:i18n key="LABEL_PERCENTUALE_COSTI_MANODOPERA" /> : <span class="required-field">*</span></label>
 						</div>
 						<div class="element">
-							<input type="text" name="percentualeManodopera" data-parsley-trigger="change" data-parsley-pattern="^\d{0,3}(\.\d{0,<s:property value='%{#numDecimaliManodopera}'/>})?$"
-									value="${percentualeManodopera}" maxlength="13" size="20" aria-required="true" /> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliManodopera}"/> <wp:i18n key="LABEL_DECIMALI" />
+							<div class="contents-group">
+								<input type="text" name="percentualeManodopera" data-parsley-trigger="change" data-parsley-pattern="^\d{0,3}(\.\d{0,<s:property value='%{#numDecimaliManodopera}'/>})?$"
+										value="${percentualeManodopera}" maxlength="13" size="20" aria-required="true" /> (<wp:i18n key="LABEL_INDICARE_MAX" /> <s:property value="%{#numDecimaliManodopera}"/> <wp:i18n key="LABEL_DECIMALI" />
+							</div>
 						</div>
 					</s:if>
 					<s:else>
@@ -307,7 +317,9 @@ Offerta OEPV se:
 							<label for="importoManodopera"><wp:i18n key="LABEL_COSTI_MANODOPERA" /> : <span class="required-field">*</span></label>
 						</div>
 						<div class="element">
-							<s:textfield name="importoManodopera" value="%{importoManodopera}" maxlength="16" size="20" aria-required="true" /> &euro;
+							<div class="contents-group">
+								<s:textfield name="importoManodopera" value="%{importoManodopera}" maxlength="16" size="20" aria-required="true" /> &euro;
+							</div>
 						</div>
 					</s:else>
 				</div>
@@ -320,7 +332,9 @@ Offerta OEPV se:
 						<label for="importoOffertoPerPermuta"><wp:i18n key="LABEL_IMPORTO_OFFERTO_PERMUTA" /> : </label>
 					</div>
 					<div class="element">
-						<s:textfield name="importoOffertoPerPermuta" value="%{importoOffertoPerPermuta}" maxlength="16" size="20"/> &euro;
+						<div class="contents-group">
+							<s:textfield name="importoOffertoPerPermuta" value="%{importoOffertoPerPermuta}" maxlength="16" size="20"/> &euro;
+						</div>
 					</div>
 				</div>
 			</s:if>
@@ -332,7 +346,9 @@ Offerta OEPV se:
 						<label for="importoOffertoCanoneAssistenza"><wp:i18n key="LABEL_IMPORTO_OFFERTO_CANONE_ASSISTENZA" /> : </label>
 					</div>
 					<div class="element">
-						<s:textfield name="importoOffertoCanoneAssistenza" value="%{importoOffertoCanoneAssistenza}" maxlength="16" size="20"/> &euro;
+						<div class="contents-group">
+							<s:textfield name="importoOffertoCanoneAssistenza" value="%{importoOffertoCanoneAssistenza}" maxlength="16" size="20"/> &euro;
+						</div>
 					</div>
 				</div>
 			</s:if>

@@ -7,6 +7,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -21,6 +23,10 @@ import java.util.Map;
  *
  * @author 
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageQuestionarioAction extends BaseAction implements SessionAware {
 	/**
 	 * UID
@@ -121,18 +127,13 @@ public class OpenPageQuestionarioAction extends BaseAction implements SessionAwa
 				this.codice = helper.getIdBando();
 				WizardDocumentiHelper documenti = helper.getDocumenti();
 				
-				if(documenti.getAdditionalDocs() != null) {
-					for(Attachment attachment : documenti.getAdditionalDocs()) {
-						if(WizardDocumentiHelper.QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(attachment.getFileName()))
-						{
-							QCQuestionario questionario = new QCQuestionario(new String(documenti.getContenutoDocUlteriore(attachment), StandardCharsets.UTF_8));
-							questionario.addServerFilesUuids(documenti);
-							logger.debug("Impostati i serverFiles");
-							String json = questionario.getQuestionario();
-							documenti.updateQuestionario(json);
-							break;
-						}
-					}
+				// carica questionario.json ed aggiorna la sezione "serverFilesUuids" per il client angular
+				QCQuestionario questionario = documenti.getQuestionarioElenchi();
+				if(questionario != null) {
+					questionario.addServerFilesUuids(documenti);
+					logger.debug("Impostati i serverFiles");
+					String json = questionario.getQuestionario();
+					documenti.updateQuestionario(json);
 				}
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "openPage");

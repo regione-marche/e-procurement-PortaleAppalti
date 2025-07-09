@@ -6,7 +6,6 @@ import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
-import com.agiletec.aps.system.services.lang.Lang;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
@@ -16,12 +15,16 @@ import com.opensymphony.xwork2.ActionContext;
 import it.cedaf.authservice.service.AuthData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event.Level;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.IAuthServiceSPIDManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.WSAuthServiceSPIDWrapper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringUtils;
@@ -35,24 +38,28 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * ... 
+ * ...
+ * 
  */
 public class BaseResponseAction extends BaseAction implements ServletResponseAware {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -508800390968455151L;
-	protected static final String SESSION_ID_SSO_AUTHID = "ACTION_SSO_AUTHID";
-	protected static final String SPID_AUTHLEVEL_URL = "https://www.spid.gov.it/Spid";
-	protected static final String SPID_AUTHSYSTEM_DEFAULT = "spid";
-	protected static final String CIE_AUTHSYSTEM_DEFAULT = "cieid";
-	protected static final String CNS_AUTHSYSTEM_DEFAULT = "ssl";
-	protected static final String CRS_AUTHSYSTEM_DEFAULT = "idpc";
-	protected static final String MYID_AUTHSYSTEM_DEFAULT = "federa";
-	protected static final String GEL_AUTHSYSTEM_DEFAULT = "gel";
+	
+	private static final String SESSION_ID_SSO_AUTHID 		= "ACTION_SSO_AUTHID";
+	
+	protected static final String SPID_AUTHLEVEL_URL 		= "https://www.spid.gov.it/Spid";
+	protected static final String SPID_AUTHSYSTEM_DEFAULT 	= "spid";
+	protected static final String CIE_AUTHSYSTEM_DEFAULT 	= "cieid";
+	protected static final String CNS_AUTHSYSTEM_DEFAULT 	= "ssl";
+	protected static final String CRS_AUTHSYSTEM_DEFAULT 	= "idpc";
+	protected static final String MYID_AUTHSYSTEM_DEFAULT 	= "federa";
+	protected static final String GEL_AUTHSYSTEM_DEFAULT 	= "gel";
 	protected static final String FEDERA_AUTHSYSTEM_DEFAULT = "federa";
+	protected static final String EIDAS_AUTHSYSTEM_DEFAULT 	= "eidas";
 
-	protected static final String PREPARE_LOGIN = "prepareLogin(): ";
+	protected static final String PREPARE_LOGIN 			= "prepareLogin(): ";
 
 	protected ConfigInterface configManager;
 	protected IAppParamManager appParamManager;
@@ -62,14 +69,21 @@ public class BaseResponseAction extends BaseAction implements ServletResponseAwa
 	protected WSAuthServiceSPIDWrapper wsAuthServiceSPID;
 	protected IEventManager eventManager;
 	protected HttpServletResponse response;
+	
+	@ValidationNotRequired
 	protected String urlRedirect;
+	@Validate(EParamValidation.URL)
 	protected String urlLogin;
+	@Validate(EParamValidation.URL)
 	protected String idp;
+	@Validate(EParamValidation.GENERIC)
 	protected String motivazione;
+	@Validate(EParamValidation.STAZIONE_APPALTANTE)
+	protected String stazioneAppaltante;
 
 	
     public void setConfigManager(ConfigInterface configManager) {
-      this.configManager = configManager;
+    	this.configManager = configManager;
     }
     
     public void setAppParamManager(IAppParamManager appParamManager) {
@@ -125,10 +139,36 @@ public class BaseResponseAction extends BaseAction implements ServletResponseAwa
 		this.motivazione = motivazione;
 	}
 
+	public String getStazioneAppaltante() {
+		return stazioneAppaltante;
+	}
+
+	public void setStazioneAppaltante(String stazioneAppaltante) {
+		this.stazioneAppaltante = stazioneAppaltante;
+	}
+	
 	public String getUrlRedirect() {
 		return urlRedirect;
 	}
+
+	public static String getAuthId() {
+		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+    	return (String) action.getRequest().getSession().getAttribute(SESSION_ID_SSO_AUTHID);
+    }
 	
+    public static void setAuthId(String authId) {
+    	BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+    	action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+    }
+    
+    public String getSASpid() {
+    	return getCodiceStazioneAppaltante();
+    }
+	
+    public void setSASpid(String sa) {
+    	setCodiceStazioneAppaltante(sa);
+    }    
+
 	/**
 	 * gestione della risposta di login
 	 */
@@ -272,6 +312,7 @@ public class BaseResponseAction extends BaseAction implements ServletResponseAwa
 					accountSpid.setNome(isPersonaFisica ? nome : azienda);
 					accountSpid.setCognome(isPersonaFisica ? cognome : null);
 					accountSpid.setLogin(login);
+					accountSpid.setAuthId(authId);
 //						accountSpid.setEmail(email);
 					accountSpid.setTipologiaLogin(PortGareSystemConstants.TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO);
 			
@@ -301,22 +342,43 @@ public class BaseResponseAction extends BaseAction implements ServletResponseAwa
 		if(!SUCCESS.equals(target)) {
 			accountSpid = null;
 		}
-			
+		
 		return accountSpid;
 	}
 
 	/**
 	 * backurl url di ritorno dell'SP authSystem spid (default)
-	 * authId token ottenuto via soap getAuthId (validit� temporale
+	 * authId token ottenuto via soap getAuthId (validita' temporale
 	 * limitata) serviceProvider alias configurato su
 	 * AuthserviceSPID authLevel definisce L1 L2 L3 di SPID
 	 * https://www.spid.gov.it/SpidL1 idp entityID ricavato dai
-	 * metadata dell�IDP
+	 * metadata dell'IDP
 	 */
     protected static String getBackUrl(String callbackAction, ConfigInterface configManager) {
-      String backUrl = configManager.getParam(SystemConstants.PAR_APPL_BASE_URL) + callbackAction;
-      return backUrl;
-    }	
+		String backUrl = configManager.getParam(SystemConstants.PAR_APPL_BASE_URL) + callbackAction;
+		return backUrl;
+    }
+    
+    /**
+     * recupera il service provider associato alla stazione appaltante 
+     * in caso di portale multiente con gestione accessi differenziati per SPID 
+	 */
+    protected static String getSpidServiceProviderPerSA(IAppParamManager appParamManager) {
+    	String serviceProvider = null;
+    	int loginMultiutente = appParamManager.getConfigurationValueIntDef(AppParamManager.SPID_LOGIN_MULTIUTENTE, 0).intValue();
+    	if(loginMultiutente == 1) {
+			try {
+				// recupera il service provider associato alla stazione appaltante "auth.sso.spid.serviceprovider.<codiceSA>"
+				BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+				String codsa = action.getCodiceStazioneAppaltante();
+				serviceProvider = (String) appParamManager
+							.getConfigurationValue(AppParamManager.SPID_STAZIONE_APPALTANTE_SERVICEPROVIDER + "." + codsa);
+			} catch (Exception e) {
+				ApsSystemUtils.logThrowable(e, null, "getSpidServiceProviderPerSA");
+			}
+    	}
+    	return serviceProvider;
+    }
 	
 	/**
 	 * ... 

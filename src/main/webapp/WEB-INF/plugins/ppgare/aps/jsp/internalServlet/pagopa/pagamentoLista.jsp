@@ -1,16 +1,13 @@
 <%@ taglib prefix="wp" uri="aps-core.tld" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
 
-
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 
 <%-- ******************************************************************************** --%>
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
-	
-	
+
 // apertura della pagina...
 $(document).ready(function() {
 	console.log("PagoPA","Pagina caricata correttamente.");
@@ -45,7 +42,7 @@ $(document).ready(function() {
 	</form>
 
 	<div class="back-link">
-		<a href="<wp:url page="ppcommon_area_personale" />?${tokenHrefParams}">
+		<a href="<wp:url page="ppcommon_area_personale" />">
 			<wp:i18n key="LINK_BACK_TO_AREAPERSONALE" />
 		</a>
 	</div>

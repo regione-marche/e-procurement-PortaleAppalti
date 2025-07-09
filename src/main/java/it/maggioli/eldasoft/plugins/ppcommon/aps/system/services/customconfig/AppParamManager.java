@@ -44,161 +44,183 @@ public class AppParamManager extends AbstractService implements
 	private static final String JNDI_ENV_PROTOCOLLAZIONE_MAIL_DESTINATARI = "mailUfficioProtocollo";
 	private static final String JNDI_ENV_PROTOCOLLAZIONE_MAIL_ALLEGA_FILE = "allegaDocMailUfficioProtocollo";
 	
-	// parametri configurati a DB e memorizzati in cache
-	public static final String LAYOUT_STYLE = "layoutStyle";
-	public static final String NTP_SERVER = "ntpServer";
-	public static final String NTP_TIMEOUT = "ntpTimeout";
-	public static final String WS_OPERAZIONI_GENERALI = "wsOperazioniGenerali";
-	public static final String WS_GARE_APPALTO = "wsGareAppalto";
-	public static final String WS_STIPULE_APPALTO = "wsStipuleAppalto";
-	public static final String WS_LFS_APPALTO = "wsLfsAppalto";
-	public static final String WS_ASTE = "wsAste";
-	public static final String WS_BANDI_ESITI_AVVISI = "wsBandiEsitiAvvisi";
-	public static final String WS_REPORT = "wsReport";
-	public static final String WS_PAGO_PA = PortGareSystemConstants.WS_PAGO_PA;
-	public static final String PUBBLICAZIONE_NUM_ANNI = "pubblicazione.numAnni";
-	public static final String PROTOCOLLAZIONE_TIPO = "protocollazione.tipo";
-	public static final String PROTOCOLLAZIONE_MAIL_DESTINATARI = "protocollazione.mail.destinatari";
-	public static final String PROTOCOLLAZIONE_MAIL_ALLEGA_FILE = "protocollazione.mail.allegaFile";
-	public static final String PROTOCOLLAZIONE_WSDM_FASCICOLOPROTOCOLLO_URL = "wsdm.fascicoloprotocollo.url";
-	public static final String PROTOCOLLAZIONE_WSDM_URL = "protocollazione.wsdm.url";
-	public static final String PROTOCOLLAZIONE_WSDM_URL_CONFIG = "wsdmconfigurazione.fascicoloprotocollo.url";
-	public static final String PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA = "protocollazione.wsdm.codiceSistema";
-	public static final String PROTOCOLLAZIONE_WSDM_USERNAME = "protocollazione.wsdm.username";
-	public static final String PROTOCOLLAZIONE_WSDM_PASSWORD = "protocollazione.wsdm.password";
-	public static final String PROTOCOLLAZIONE_WSDM_RUOLO = "protocollazione.wsdm.ruolo";
-	public static final String PROTOCOLLAZIONE_WSDM_COGNOME = "protocollazione.wsdm.cognome";
-	public static final String PROTOCOLLAZIONE_WSDM_NOME = "protocollazione.wsdm.nome";
-	public static final String PROTOCOLLAZIONE_WSDM_CODICEUO = "protocollazione.wsdm.codiceUO";
-	public static final String PROTOCOLLAZIONE_WSDM_STRUTTURA = "protocollazione.wsdm.struttura";
-	public static final String PROTOCOLLAZIONE_WSDM_TIPOASSEGNAZIONE = "protocollazione.wsdm.tipoAssegnazione";	
-	public static final String PROTOCOLLAZIONE_WSDM_MEZZO = "protocollazione.wsdm.mezzo";
-	public static final String PROTOCOLLAZIONE_WSDM_SUPPORTO = "protocollazione.wsdm.supporto";
-	public static final String PROTOCOLLAZIONE_WSDM_MITTENTE_INTERNO = "protocollazione.wsdm.mittenteInterno";
-	public static final String PROTOCOLLAZIONE_WSDM_CODICE_FISCALE_MITTENTE = "protocollazione.wsdm.cfMittente";
-	public static final String PROTOCOLLAZIONE_WSDM_CODICE_CHANNEL_CODE = "protocollazione.wsdm.channelCode";
-	public static final String PROTOCOLLAZIONE_WSDM_IDUTENTE = "protocollazione.wsdm.idUtente";
-	public static final String PROTOCOLLAZIONE_WSDM_IDUNITA_OPERATIVA = "protocollazione.wsdm.idUnitaOperativa";
-	public static final String PROTOCOLLAZIONE_WSDM_ID_UNITA_OPERATIVA_DESTINATARIA = "protocollazione.wsdm.idUnitaOperativaDestinataria";
-	public static final String PROTOCOLLAZIONE_WSDM_DESC_UNITA_OPERATIVA_DESTINATARIA = "protocollazione.wsdm.descUnitaOperativaDestinataria";
-	public static final String PROTOCOLLAZIONE_WSDM_TIPO_FIRMA = "protocollazione.wsdm.tipoFirma";
-	public static final String PROTOCOLLAZIONE_WSDM_SOTTOTIPO_GARA = "protocollazione.wsdm.sottotipoGara";
-	public static final String PROTOCOLLAZIONE_WSDM_SOTTOTIPO_COMUNICAZIONE = "protocollazione.wsdm.sottotipoComunicazione";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_CLASSIFICA = "protocollazione.wsdm.gare.classifica";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_TIPO_DOCUMENTO = "protocollazione.wsdm.gare.tipoDocumento";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_TIPO_DOCUMENTO_PREQUALIFICA = "protocollazione.wsdm.gare.tipoDocumento.prequalifica";
+	// parametri configurati a DB e memorizzati in cache (ppcommon_properties)
+	public static final String LAYOUT_STYLE 												= "layoutStyle";
+	public static final String NTP_SERVER 													= "ntpServer";
+	public static final String NTP_TIMEOUT 													= "ntpTimeout";
+	public static final String WS_OPERAZIONI_GENERALI 										= "wsOperazioniGenerali";
+	public static final String WS_GARE_APPALTO 												= "wsGareAppalto";
+	public static final String WS_STIPULE_APPALTO 											= "wsStipuleAppalto";
+	public static final String WS_LFS_APPALTO 												= "wsLfsAppalto";
+	public static final String WS_ASTE 														= "wsAste";
+	public static final String WS_BANDI_ESITI_AVVISI 										= "wsBandiEsitiAvvisi";
+	public static final String WS_REPORT 													= "wsReport";
+	public static final String WS_PAGO_PA 													= PortGareSystemConstants.WS_PAGO_PA;
+	public static final String WS_BANDI_ESITI_AVVISI_AUTHENTICATION_TOKEN 					= "wsBandiEsitiAvvisiAuthenticationToken";
+	public static final String LIMITE_UPLOAD_FILE 											= "limiteUploadFile";
+	public static final String LIMITE_TOTALE_UPLOAD_FILE 									= "limiteTotaleUploadDocIscrizione";
+	public static final String COMUNICAZIONI_LIMITE_UPLOAD_FILE 							= "comunicazioni.limiteUploadFile";
+	public static final String COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE 						= "comunicazioni.limiteTotaleUpload";
+	public static final String ESTENSIONI_AMMESSE_DOC 										= "estensioniAmmesseDocIscrizione";
+	public static final String ESTENSIONI_AMMESSE_IMMAGINE 									= "estensioniAmmesseImmagineProdotto";
+	public static final String RICERCA_BANDI_STATO_APERTURA									= "ricercaBandi.statoApertura";
+	public static final String SUBFOLDER_TEMPLATE_JASPER 									= "subfolderTemplateJasper";
+	public static final String MAIL_AMMINISTRATORE_SISTEMA 									= "mailAmministratoreSistema";
+	public static final String TIPOLOGIE_ASSISTENZA 										= "assistenza.tipologie";
+	public static final String TIPOLOGIE_COMUNICAZIONI 										= "comunicazioni.tipologie";
+	public static final String MODO_ASSISTENZA 												= "assistenza.modo";
+	public static final String MAIL_ASSISTENZA 												= "assistenza.mail";
+	public static final String TELEFONO_ASSISTENZA 											= "assistenza.telefono";
+	public static final String NOME_CLIENTE 												= "nomeCliente";
+	public static final String URL_SERVIZIO_ASSISTENZA 										= "assistenza.hda.url";
+	public static final String USER_SERVIZIO_ASSISTENZA 									= "assistenza.hda.username";
+	public static final String PASSWORD_SERVIZIO_ASSISTENZA 								= "assistenza.hda.password";
+	public static final String IDPRODOTTO_SERVIZIO_ASSISTENZA 								= "assistenza.hda.productId";
+	public static final String TABELLATI_REFRESH_INTERVAL 									= "tabellatiRefreshInterval";
+	public static final String CATEGORY_AUTH_GATEWAY 										= "autenticazione-gateway";
+	public static final String HOSTS_ALLOWED 												= "httpHeader.host.allowed";
+	public static final String DENOMINAZIONE_STAZIONE_APPALTANTE_UNICA 						= "denominazioneStazioneAppaltanteUnica";
+	public static final String CLAUSOLEPIATTAFORMA_VERSIONE 								= "clausolePiattaforma.versione";
+	public static final String IMPORT_UTENTI_DATA_TERMINE 									= "importMassivoUtenti.dataTermine";
+	public static final String URL_ALBO_FORNITORI_ESTERNI 									= "urlAlboFornitoriEsterni";
+	public static final String CODICE_CLIENTE 												= "codiceCliente";
+	public static final String BDNCP_TEMPLATE_URL											= "bdncp.templateUrl";
+	public static final String BDNCP_SA_TEMPLATE_URL										= "bdncp.sa.templateUrl";
+
+	// parametri protocollazione WSDM
+	public static final String PUBBLICAZIONE_NUM_ANNI 										= "pubblicazione.numAnni";
+	public static final String PROTOCOLLAZIONE_TIPO 										= "protocollazione.tipo";
+	public static final String PROTOCOLLAZIONE_MAIL_DESTINATARI 							= "protocollazione.mail.destinatari";
+	public static final String PROTOCOLLAZIONE_MAIL_ALLEGA_FILE 							= "protocollazione.mail.allegaFile";
+	public static final String PROTOCOLLAZIONE_WSDM_FASCICOLOPROTOCOLLO_URL 				= "wsdm.fascicoloprotocollo.url";
+	public static final String PROTOCOLLAZIONE_WSDM_URL 									= "protocollazione.wsdm.url";
+	public static final String PROTOCOLLAZIONE_WSDM_URL_CONFIG 								= "wsdmconfigurazione.fascicoloprotocollo.url";
+	public static final String PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA 							= "protocollazione.wsdm.codiceSistema";
+	public static final String PROTOCOLLAZIONE_WSDM_USERNAME 								= "protocollazione.wsdm.username";
+	public static final String PROTOCOLLAZIONE_WSDM_PASSWORD 								= "protocollazione.wsdm.password";
+	public static final String PROTOCOLLAZIONE_WSDM_RUOLO 									= "protocollazione.wsdm.ruolo";
+	public static final String PROTOCOLLAZIONE_WSDM_COGNOME 								= "protocollazione.wsdm.cognome";
+	public static final String PROTOCOLLAZIONE_WSDM_NOME 									= "protocollazione.wsdm.nome";
+	public static final String PROTOCOLLAZIONE_WSDM_CODICEUO 								= "protocollazione.wsdm.codiceUO";
+	public static final String PROTOCOLLAZIONE_WSDM_STRUTTURA 								= "protocollazione.wsdm.struttura";
+	public static final String PROTOCOLLAZIONE_WSDM_DIVISIONE                               = "protocollazione.wsdm.divisione";
+	public static final String PROTOCOLLAZIONE_WSDM_TIPOASSEGNAZIONE 						= "protocollazione.wsdm.tipoAssegnazione";	
+	public static final String PROTOCOLLAZIONE_WSDM_MEZZO 									= "protocollazione.wsdm.mezzo";
+	public static final String PROTOCOLLAZIONE_WSDM_SUPPORTO 								= "protocollazione.wsdm.supporto";
+	public static final String PROTOCOLLAZIONE_WSDM_MITTENTE_INTERNO 						= "protocollazione.wsdm.mittenteInterno";
+	public static final String PROTOCOLLAZIONE_WSDM_CODICE_FISCALE_MITTENTE 				= "protocollazione.wsdm.cfMittente";
+	public static final String PROTOCOLLAZIONE_WSDM_CODICE_CHANNEL_CODE 					= "protocollazione.wsdm.channelCode";
+	public static final String PROTOCOLLAZIONE_WSDM_IDUTENTE 								= "protocollazione.wsdm.idUtente";
+	public static final String PROTOCOLLAZIONE_WSDM_IDUNITA_OPERATIVA 						= "protocollazione.wsdm.idUnitaOperativa";
+	public static final String PROTOCOLLAZIONE_WSDM_ID_UNITA_OPERATIVA_DESTINATARIA 		= "protocollazione.wsdm.idUnitaOperativaDestinataria";
+	public static final String PROTOCOLLAZIONE_WSDM_DESC_UNITA_OPERATIVA_DESTINATARIA 		= "protocollazione.wsdm.descUnitaOperativaDestinataria";
+	public static final String PROTOCOLLAZIONE_WSDM_TIPO_FIRMA 								= "protocollazione.wsdm.tipoFirma";
+	public static final String PROTOCOLLAZIONE_WSDM_SOTTOTIPO_GARA 							= "protocollazione.wsdm.sottotipoGara";
+	public static final String PROTOCOLLAZIONE_WSDM_SOTTOTIPO_COMUNICAZIONE 				= "protocollazione.wsdm.sottotipoComunicazione";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_CLASSIFICA 						= "protocollazione.wsdm.gare.classifica";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_TIPO_DOCUMENTO 					= "protocollazione.wsdm.gare.tipoDocumento";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_TIPO_DOCUMENTO_PREQUALIFICA 		= "protocollazione.wsdm.gare.tipoDocumento.prequalifica";
 	public static final String PROTOCOLLAZIONE_WSDM_GARE_TIPO_DOCUMENTO_INVIA_COMUNICAZIONE = "protocollazione.wsdm.tipoDocumento.inviaComunicazione";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_CODICE_REGISTRO = "protocollazione.wsdm.gare.registro";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_INDICE = "protocollazione.wsdm.gare.indice";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_TITOLAZIONE = "protocollazione.wsdm.gare.titolazione";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_LIVELLO_RISERVATEZZA = "protocollazione.wsdm.gare.livelloRiservatezza";
-	public static final String PROTOCOLLAZIONE_WSDM_GARE_STRUTTURA = "protocollazione.wsdm.gare.struttura";	
-	public static final String PROTOCOLLAZIONE_WSDM_MEPA_CLASSIFICA = "protocollazione.wsdm.mepa.classifica";
-	public static final String PROTOCOLLAZIONE_WSDM_MEPA_TIPO_DOCUMENTO = "protocollazione.wsdm.mepa.tipoDocumento";
-	public static final String PROTOCOLLAZIONE_WSDM_MEPA_CODICE_REGISTRO = "protocollazione.wsdm.mepa.registro";
-	public static final String PROTOCOLLAZIONE_WSDM_MEPA_INDICE = "protocollazione.wsdm.mepa.indice";
-	public static final String PROTOCOLLAZIONE_WSDM_MEPA_TITOLAZIONE = "protocollazione.wsdm.mepa.titolazione";
-	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_CLASSIFICA = "protocollazione.wsdm.iscrizione.classifica";
-	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TIPO_DOCUMENTO = "protocollazione.wsdm.iscrizione.tipoDocumento";
-	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_CODICE_REGISTRO = "protocollazione.wsdm.iscrizione.registro";
-	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_INDICE = "protocollazione.wsdm.iscrizione.indice";
-	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TITOLAZIONE = "protocollazione.wsdm.iscrizione.titolazione";
-	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_CLASSIFICA = "protocollazione.wsdm.avvisi.classifica";
-	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_TIPO_DOCUMENTO = "protocollazione.wsdm.avvisi.tipoDocumento";
-	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_CODICE_REGISTRO = "protocollazione.wsdm.avvisi.registro";
-	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_INDICE = "protocollazione.wsdm.avvisi.indice";
-	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_TITOLAZIONE = "protocollazione.wsdm.avvisi.titolazione";
-	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_CLASSIFICA = "protocollazione.wsdm.stipule.classifica";
-	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_TIPO_DOCUMENTO = "protocollazione.wsdm.stipule.tipoDocumento";
-	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_CODICE_REGISTRO = "protocollazione.wsdm.stipule.registro";
-	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_INDICE = "protocollazione.wsdm.stipule.indice";
-	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_TITOLAZIONE = "protocollazione.wsdm.stipule.titolazione";
-	public static final String PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE = "protocollazione.wsdm.posizioneAllegatoComunicazione";
-	public static final String STAZIONE_APPALTANTE_PROTOCOLLANTE = "protocollazione.stazioneAppaltante";
-	public static final String WS_BANDI_ESITI_AVVISI_AUTHENTICATION_TOKEN = "wsBandiEsitiAvvisiAuthenticationToken";
-	public static final String LIMITE_UPLOAD_FILE = "limiteUploadFile";
-	public static final String LIMITE_TOTALE_UPLOAD_FILE = "limiteTotaleUploadDocIscrizione";
-	public static final String COMUNICAZIONI_LIMITE_UPLOAD_FILE = "comunicazioni.limiteUploadFile";
-	public static final String COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE = "comunicazioni.limiteTotaleUpload";
-	public static final String ESTENSIONI_AMMESSE_DOC = "estensioniAmmesseDocIscrizione";
-	public static final String ESTENSIONI_AMMESSE_IMMAGINE = "estensioniAmmesseImmagineProdotto";
-	public static final String SUBFOLDER_TEMPLATE_JASPER = "subfolderTemplateJasper";
-	public static final String MAIL_AMMINISTRATORE_SISTEMA = "mailAmministratoreSistema";
-	public static final String TIPOLOGIE_ASSISTENZA = "assistenza.tipologie";
-	public static final String TIPOLOGIE_COMUNICAZIONI = "comunicazioni.tipologie";
-	public static final String MODO_ASSISTENZA = "assistenza.modo";
-	public static final String MAIL_ASSISTENZA = "assistenza.mail";
-	public static final String TELEFONO_ASSISTENZA = "assistenza.telefono";
-	public static final String NOME_CLIENTE = "nomeCliente";
-	public static final String URL_SERVIZIO_ASSISTENZA = "assistenza.hda.url";
-	public static final String USER_SERVIZIO_ASSISTENZA = "assistenza.hda.username";
-	public static final String PASSWORD_SERVIZIO_ASSISTENZA = "assistenza.hda.password";
-	public static final String IDPRODOTTO_SERVIZIO_ASSISTENZA = "assistenza.hda.productId";
-	public static final String TABELLATI_REFRESH_INTERVAL = "tabellatiRefreshInterval";
-	public static final String SPID_WS_AUTHSERVICESPID_URL = "auth.sso.spid.wsAuthServiceSPID.url";	
-	public static final String SPID_SERVICEPROVIDER = "auth.sso.spid.serviceprovider";
-	public static final String SPID_SERVICEINDEX = "auth.sso.spid.serviceindex";
-	public static final String SPID_AUTHLEVEL = "auth.sso.spid.authlevel";
-	public static final String CIE_WS_AUTHSERVICESPID_URL = "auth.sso.cie.wsAuthServiceCIE.url";	
-	public static final String CIE_SERVICEPROVIDER = "auth.sso.cie.serviceprovider";
-	public static final String CIE_SERVICEINDEX = "auth.sso.cie.serviceindex";
-	public static final String CIE_AUTHLEVEL = "auth.sso.cie.authlevel";
-	public static final String CRS_WS_AUTHSERVICECRS_URL = "auth.sso.crs.wsAuthServiceCRS.url";	
-	public static final String CNS_WS_AUTHSERVICESCNS_URL = "auth.sso.cns.wsAuthServiceCNS.url";
-	public static final String MYID_WS_AUTHSERVICEMYID_URL = "auth.sso.myid.wsAuthServiceMyId.url";
-	public static final String MYID_SERVICEMYID_URL = "auth.sso.myid.serviceMyId.url";
-	public static final String GEL_WS_AUTHSERVICEGEL_URL = "auth.sso.gel.wsAuthServiceGEL.url";
-	public static final String GEL_SERVICEPROVIDER = "auth.sso.gel.serviceprovider";
-	public static final String FEDERA_WS_AUTHSERVICEFEDERA_URL = "auth.sso.federa.wsAuthServiceFedera.url";
-	public static final String FEDERA_SERVICEPROVIDER = "auth.sso.federa.serviceprovider";
-	public static final String SPIDBUSINESS_AUTHPURPOSE = "auth.sso.spidbusiness.authpurpose"; 
-	public static final String CLAUSOLEPIATTAFORMA_VERSIONE = "clausolePiattaforma.versione";
-	public static final String IMPORT_UTENTI_DATA_TERMINE = "importMassivoUtenti.dataTermine";
-	public static final String URL_ALBO_FORNITORI_ESTERNI = "urlAlboFornitoriEsterni";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_CODICE_REGISTRO 					= "protocollazione.wsdm.gare.registro";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_INDICE 							= "protocollazione.wsdm.gare.indice";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_TITOLAZIONE 						= "protocollazione.wsdm.gare.titolazione";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_LIVELLO_RISERVATEZZA 				= "protocollazione.wsdm.gare.livelloRiservatezza";
+	public static final String PROTOCOLLAZIONE_WSDM_GARE_STRUTTURA 							= "protocollazione.wsdm.gare.struttura";	
+	public static final String PROTOCOLLAZIONE_WSDM_MEPA_CLASSIFICA 						= "protocollazione.wsdm.mepa.classifica";
+	public static final String PROTOCOLLAZIONE_WSDM_MEPA_TIPO_DOCUMENTO 					= "protocollazione.wsdm.mepa.tipoDocumento";
+	public static final String PROTOCOLLAZIONE_WSDM_MEPA_CODICE_REGISTRO 					= "protocollazione.wsdm.mepa.registro";
+	public static final String PROTOCOLLAZIONE_WSDM_MEPA_INDICE 							= "protocollazione.wsdm.mepa.indice";
+	public static final String PROTOCOLLAZIONE_WSDM_MEPA_TITOLAZIONE 						= "protocollazione.wsdm.mepa.titolazione";
+	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_CLASSIFICA 					= "protocollazione.wsdm.iscrizione.classifica";
+	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TIPO_DOCUMENTO 				= "protocollazione.wsdm.iscrizione.tipoDocumento";
+	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_CODICE_REGISTRO 				= "protocollazione.wsdm.iscrizione.registro";
+	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_INDICE 						= "protocollazione.wsdm.iscrizione.indice";
+	public static final String PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TITOLAZIONE 					= "protocollazione.wsdm.iscrizione.titolazione";
+	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_CLASSIFICA 						= "protocollazione.wsdm.avvisi.classifica";
+	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_TIPO_DOCUMENTO 					= "protocollazione.wsdm.avvisi.tipoDocumento";
+	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_CODICE_REGISTRO 					= "protocollazione.wsdm.avvisi.registro";
+	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_INDICE 							= "protocollazione.wsdm.avvisi.indice";
+	public static final String PROTOCOLLAZIONE_WSDM_AVVISI_TITOLAZIONE 						= "protocollazione.wsdm.avvisi.titolazione";
+	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_CLASSIFICA 						= "protocollazione.wsdm.stipule.classifica";
+	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_TIPO_DOCUMENTO 					= "protocollazione.wsdm.stipule.tipoDocumento";
+	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_CODICE_REGISTRO 				= "protocollazione.wsdm.stipule.registro";
+	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_INDICE 							= "protocollazione.wsdm.stipule.indice";
+	public static final String PROTOCOLLAZIONE_WSDM_STIPULE_TITOLAZIONE 					= "protocollazione.wsdm.stipule.titolazione";
+	public static final String PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE 		= "protocollazione.wsdm.posizioneAllegatoComunicazione";
+	public static final String STAZIONE_APPALTANTE_PROTOCOLLANTE 							= "protocollazione.stazioneAppaltante";	
+	// parametri sistemi autenticazione SSO
+	public static final String SPID_LOGIN_MULTIUTENTE										= "loginMultiente";
+	public static final String SPID_STAZIONE_APPALTANTE_SERVICEPROVIDER 					= "auth.sso.spid.serviceprovider"; 		// => auth.sso.spid.serviceprovider.<codiceSA>
+	public static final String SPID_WS_AUTHSERVICESPID_URL 									= "auth.sso.spid.wsAuthServiceSPID.url";	
+	public static final String SPID_SERVICEPROVIDER 										= "auth.sso.spid.serviceprovider";
+	public static final String SPID_SERVICEINDEX 											= "auth.sso.spid.serviceindex";
+	public static final String SPID_AUTHLEVEL 												= "auth.sso.spid.authlevel";
+	public static final String CIE_WS_AUTHSERVICESPID_URL 									= "auth.sso.cie.wsAuthServiceCIE.url";	
+	public static final String CIE_SERVICEPROVIDER 											= "auth.sso.cie.serviceprovider";
+	public static final String CIE_SERVICEINDEX 											= "auth.sso.cie.serviceindex";
+	public static final String CIE_AUTHLEVEL 												= "auth.sso.cie.authlevel";
+	public static final String CRS_WS_AUTHSERVICECRS_URL 									= "auth.sso.crs.wsAuthServiceCRS.url";	
+	public static final String CNS_WS_AUTHSERVICESCNS_URL 									= "auth.sso.cns.wsAuthServiceCNS.url";
+	public static final String MYID_WS_AUTHSERVICEMYID_URL 									= "auth.sso.myid.wsAuthServiceMyId.url";
+	public static final String MYID_SERVICEMYID_URL 										= "auth.sso.myid.serviceMyId.url";
+	public static final String GEL_WS_AUTHSERVICEGEL_URL 									= "auth.sso.gel.wsAuthServiceGEL.url";
+	public static final String GEL_SERVICEPROVIDER 											= "auth.sso.gel.serviceprovider";
+	public static final String FEDERA_WS_AUTHSERVICEFEDERA_URL 								= "auth.sso.federa.wsAuthServiceFedera.url";
+	public static final String FEDERA_SERVICEPROVIDER 										= "auth.sso.federa.serviceprovider";
+	public static final String SPIDBUSINESS_AUTHPURPOSE 									= "auth.sso.spidbusiness.authpurpose";
+	public static final String GATEWAY 														= "auth.sso.gateway";
+	public static final String GATEWAY_POSITION 											= "auth.sso.gateway.position";
+	public static final String GATEWAY_URL		 											= "auth.sso.gateway.ws.url";
+	public static final String GATEWAY_ENDPOINT 											= "auth.sso.gateway.endpoint";
+	public static final String GATEWAY_CLIENT_ID 											= "auth.sso.gateway.clientId";
+//	public static final String GATEWAY_AUTH_TYPE 											= "auth.sso.gateway.authtype";
+	public static final String GATEWAY_PASSPHRASE 											= "auth.sso.gateway.passphrase";
+	public static final String SPIDBUSINESS_WS_AUTHSERVICESPID_URL 							= "auth.sso.spidbusiness.wsAuthServiceSPID.url";
+	public static final String SPIDBUSINESS_SERVICEPROVIDER 								= "auth.sso.spidbusiness.serviceprovider";
+	public static final String SPIDBUSINESS_SERVICEINDEX 									= "auth.sso.spidbusiness.serviceindex";
+	public static final String SPIDBUSINESS_AUTHLEVEL 										= "auth.sso.spidbusiness.authlevel";	
+	public static final String EIDAS_WS_AUTHSERVICEEIDAS_URL 								= "auth.sso.eidas.wsAuthServiceEIDAS.url";
+	public static final String EIDAS_AUTHLEVEL												= "auth.sso.eidas.authlevel";
+	public static final String EIDAS_SERVICEINDEX											= "auth.sso.eidas.serviceindex";
+	public static final String EIDAS_SERVICEPROVIDER 										= "auth.sso.eidas.serviceprovider";
+
+
+	// parametri NSO
+	public static final String NSO_URL 														= "nso.baseUrl";
+	public static final String NSO_FATT_URL 												= "nso.baseUrlFatt";
+	public static final String NSO_FATT_AUTH 												= "nso.fatt.auth";
+	// parametri privacy
+	public static final String CATEGORY_PRIVACY 											= "privacy";
+	public static final String SHOW_DEFAULT_TERM_OF_USE 									= "privacy.pubblicaCondizioniUsoStd";
+	public static final String NOME_TITOLARE 												= "privacy.nomeTitolare";
+	public static final String SEDE_TITOLARE 												= "privacy.sedeTitolare";
+	public static final String MAIL_TITOLARE 												= "privacy.mailTitolare";
+	public static final String MAIL_DPO 													= "privacy.mailDPO";
+	public static final String NOME_GESTORE  												= "privacy.nomeGestore";
+	public static final String SEDE_GESTORE 												= "privacy.sedeGestore";
+	public static final String MAIL_GESTORE  												= "privacy.mailGestore";
+	public static final String DURATA_LOG_NAVIGAZIONE 										= "privacy.durataLogNavigazione";
+	public static final String DURATA_CONSERVAZIONE_CONTATTI_MAIL 							= "privacy.durataConservazioneContattiMail";
+	public static final String DURATA_DATI_ELENCO 											= "privacy.durataDatiElenco";
+	public static final String DURATA_DATI_GARE 											= "privacy.durataDatiGare";
+	public static final String DURATA_DATI_NON_TRASMESSI 									= "privacy.durataDatiNonTrasmessi";
+	public static final String DATA_INIZIO_VALIDITA_POLICY 									= "privacy.dataInizioValiditaPolicy";
+	public static final String NOME_PIATTAFORMA 											= "privacy.nomePiattaforma";
+	public static final String LOCALITA_FORO 												= "privacy.localitaForo";
+	// parametri kong
+	public static final String KONG_AUTH_URL 												= "kong.auth.url";
+	public static final String KONG_AUTH_CLIENT_ID											= "kong.auth.clientId"; //"kong.auth.username" deprecato
+	public static final String KONG_AUTH_CLIENT_SECRET										= "kong.auth.secret";	//"kong.auth.password" deprecato
+	// parametri marcatura temporale
+	public static final String MARCATURA_PROVIDER_URL 										= "marcaturaTemp.provider.url";
+	public static final String MARCATURA_PROVIDER_PASSWORD 									= "marcaturaTemp.provider.password";
+	public static final String MARCATURA_PROVIDER_USERNAME 									= "marcaturaTemp.provider.username";
+	public static final String MARCATURA_PROVIDER_TYPE 										= "marcaturaTemp.provider.tipo";
+	public static final String MARCATURA_URL 												= "marcaturaTemp.url";
+	public static final String MARCATURA_TYPE 												= "marcaturaTemp.tipologia";
+	// parametri Michelangelo (SACE) 
+	public static final String MICHELANGELO_BASEURL											= "michelangelo.baseUrl";
 	
-	public static final String NSO_URL = "nso.baseUrl";
-	public static final String NSO_FATT_URL = "nso.baseUrlFatt";
-	public static final String NSO_FATT_AUTH = "nso.fatt.auth";
-
-	public static final String DENOMINAZIONE_STAZIONE_APPALTANTE_UNICA = "denominazioneStazioneAppaltanteUnica";
-	
-	public static final String CATEGORY_PRIVACY = "privacy";
-	
-	public static final String SHOW_DEFAULT_TERM_OF_USE 			= "privacy.pubblicaCondizioniUsoStd";
-	public static final String NOME_TITOLARE 						= "privacy.nomeTitolare";
-	public static final String SEDE_TITOLARE 						= "privacy.sedeTitolare";
-	public static final String MAIL_TITOLARE 						= "privacy.mailTitolare";
-	public static final String MAIL_DPO 							= "privacy.mailDPO";
-	public static final String NOME_GESTORE  						= "privacy.nomeGestore";
-	public static final String SEDE_GESTORE 						= "privacy.sedeGestore";
-	public static final String MAIL_GESTORE  						= "privacy.mailGestore";
-	public static final String DURATA_LOG_NAVIGAZIONE 				= "privacy.durataLogNavigazione";
-	public static final String DURATA_CONSERVAZIONE_CONTATTI_MAIL 	= "privacy.durataConservazioneContattiMail";
-	public static final String DURATA_DATI_ELENCO 					= "privacy.durataDatiElenco";
-	public static final String DURATA_DATI_GARE 					= "privacy.durataDatiGare";
-	public static final String DURATA_DATI_NON_TRASMESSI 			= "privacy.durataDatiNonTrasmessi";
-	public static final String DATA_INIZIO_VALIDITA_POLICY 			= "privacy.dataInizioValiditaPolicy";
-	public static final String NOME_PIATTAFORMA 					= "privacy.nomePiattaforma";
-	public static final String LOCALITA_FORO 						= "privacy.localitaForo";
-
-	public static final String CATEGORY_AUTH_GATEWAY 				= "autenticazione-gateway";
-
-	public static final String GATEWAY 								= "auth.sso.gateway";
-	public static final String GATEWAY_POSITION 					= "auth.sso.gateway.position";
-	public static final String GATEWAY_URL		 					= "auth.sso.gateway.ws.url";
-	public static final String GATEWAY_ENDPOINT 					= "auth.sso.gateway.endpoint";
-	public static final String GATEWAY_CLIENT_ID 					= "auth.sso.gateway.clientId";
-//	public static final String GATEWAY_AUTH_TYPE 					= "auth.sso.gateway.authtype";
-	public static final String GATEWAY_PASSPHRASE 					= "auth.sso.gateway.passphrase";
-
-	public static final String HOSTS_ALLOWED 						= "httpHeader.host.allowed";
-
-	public static final String SPIDBUSINESS_WS_AUTHSERVICESPID_URL = "auth.sso.spidbusiness.wsAuthServiceSPID.url";
-	public static final String SPIDBUSINESS_SERVICEPROVIDER = "auth.sso.spidbusiness.serviceprovider";
-	public static final String SPIDBUSINESS_SERVICEINDEX = "auth.sso.spidbusiness.serviceindex";
-	public static final String SPIDBUSINESS_AUTHLEVEL = "auth.sso.spidbusiness.authlevel";
-
-
 	/**
 	 * UID
 	 */
@@ -572,29 +594,35 @@ public class AppParamManager extends AbstractService implements
 	
 	@Override
 	public Integer getConfigurationValueIntDef(String name, Integer defValue) {
+		Integer value = null;
 		try {
-			return (Integer) getConfigurationValue(name);
+			value = Integer.parseInt((String) getConfigurationValue(name));
 		} catch(Exception e) {
-			return defValue;
+			value = null;
 		}
+		return (value != null ? value : defValue);
 	}
 	
 	@Override
 	public Long getConfigurationValueLong(String name, Long defValue) {
+		Long value = null;
 		try {
-			return (Long) getConfigurationValue(name);
+			value = Long.parseLong((String) getConfigurationValue(name));
 		} catch(Exception e) {
-			return defValue;
+			value = null;
 		}
+		return (value != null ? value : defValue);
 	}
 	
 	@Override
 	public Boolean getConfigurationValueBoolean(String name, Boolean defValue) {
+		Boolean value = null;
 		try {
-			return (Boolean) getConfigurationValue(name);
+			value = Boolean.parseBoolean((String) getConfigurationValue(name));
 		} catch(Exception e) {
-			return defValue;
+			value = null;
 		}
+		return (value != null ? value : defValue);
 	}
 	
 	@Override

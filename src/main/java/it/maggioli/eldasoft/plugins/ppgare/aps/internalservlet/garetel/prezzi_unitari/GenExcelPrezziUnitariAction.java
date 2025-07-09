@@ -8,6 +8,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.excel.export.IWri
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.excel.export.WriterDate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.excel.export.WriterFormula;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.excel.export.WriterValue;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardOffertaEconomicaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,9 +27,14 @@ import java.util.List;
 /**
  * Consente la generazione dei pdf dei prezzi unitari
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class GenExcelPrezziUnitariAction extends GenericExportExcel {
+    /**
+	 * UID
+	 */
+	private static final long serialVersionUID = -6663223791079272337L;
 
-    private static final Logger log = LoggerFactory.getLogger(GenExcelPrezziUnitariAction.class);
+	private static final Logger log = LoggerFactory.getLogger(GenExcelPrezziUnitariAction.class);
 
     public static Integer RIGA_INIZIALE = 1;
 

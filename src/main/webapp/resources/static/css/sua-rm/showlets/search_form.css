@@ -1,0 +1,19 @@
+#search-form label {
+	font-size: 1.2em;
+}
+
+#search-form input.text {
+	background-color: #FFF;
+	border: 2px inset #FFF;
+	color: #222;
+	font-family: sans-serif;
+	font-size: 1em;
+	padding: 1px 3px;
+	text-align: left;
+	vertical-align: unset;
+	width: 12em;
+}
+
+#search-form input.button {
+	font-size: 1em;
+}

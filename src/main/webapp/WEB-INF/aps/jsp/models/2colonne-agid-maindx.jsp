@@ -5,6 +5,7 @@
 
 <wp:contentNegotiation mimeType="text/html" charset="utf-8"/>
 <wp:currentPage param="title" var="currentViewTitle" />
+<es:checkCustomization var="fixed_header" objectId="LAYOUT" attribute="TESTATAFISSA" feature="ACT" />
 
 <!DOCTYPE html>
 
@@ -91,13 +92,12 @@
 		<wp:outputHeadInfo type="RSS.BandiScaduti">
 			<link rel="alternate" type="application/rss+xml" title="Bandi di gara scaduti" href="<wp:printHeadInfo />"/>
 		</wp:outputHeadInfo>
-		
-		<c:if test="${setCss == 'appalti-contratti' || setCss == 'appalti-contratti-v1'}">
+		<c:if test="${setCss == 'appalti-contratti' || setCss == 'appalti-contratti-v1' || fixed_header}">
 			<script src="<wp:resourceURL/>static/js/ScrollHeader.js"></script>
 		</c:if>
+
 		
-		
-		<script src="<wp:resourceURL/>static/js/jquery-3.6.0.min.js"></script>
+		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery.jsp" />
 		<%-- inclusione dei js che filtrano i caratteri inseribili in campi di input e textarea --%>
 		<script src="<wp:resourceURL/>static/js/jquery.alphanum.js"></script>
 		<script src="<wp:resourceURL/>static/js/jquery.character.js"></script>
@@ -136,7 +136,7 @@
 										<hr class="noscreen" />
 										<h2 class="noscreen information"><wp:i18n key="SECTION_MENU"/>:</h2>
 										<p class="noscreen">[ <a id="menu1" href="#mainarea"><wp:i18n key="SKIP_TO_MAIN_CONTENT"/></a> ]</p>
-										<wp:show frame="3" />
+										<jsp:include page="/WEB-INF/aps/jsp/models/inc/frameLogin.jsp" />
 										<wp:show frame="4" />
 										<wp:show frame="5" />
 										<p class="noscreen">[

@@ -46,6 +46,8 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
     private String emailRecapitoConferma;
     private String emailPECRecapitoConferma;
 	private String tipoSocietaCooperativa;
+	
+	private String idAnagraficaEsterna; 		// Michelangelo (SACE)
         
     // campi di controllo per informazioni teoricamente obbligatorie ma che nel
     // caso di backoffice con dati parziali, almeno la prima volta potrebbero
@@ -80,6 +82,8 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
 		this.emailPECRecapito = null;
 		this.emailRecapitoConferma = null;
 		this.emailPECRecapitoConferma = null;
+		
+		this.idAnagraficaEsterna = null;
 	
 		this.readonlyNaturaGiuridica = false;
 		this.readonlyTipoImpresa = false;
@@ -115,6 +119,8 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
 		emailPECRecapitoConferma = emailPECRecapito;
 		tipoSocietaCooperativa = impresa.getTipoSocietaCooperativa();
 	
+		idAnagraficaEsterna = (impresa.isSetIdAnagraficaEsterna() ? impresa.getIdAnagraficaEsterna() : null);
+		
 //		this.readonlyNaturaGiuridica = (StringUtils.stripToNull(impresa
 //			.getNaturaGiuridica()) != null);
 		readonlyNaturaGiuridica = (impresa.getNaturaGiuridica() > 0);
@@ -151,6 +157,8 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
 		emailPECRecapitoConferma = emailPECRecapito;
 		tipoSocietaCooperativa = impresa.getTipoSocietaCooperativa();
 	
+		idAnagraficaEsterna = (impresa.isSetIdAnagraficaEsterna() ? impresa.getIdAnagraficaEsterna() : null); 
+		
 		readonlyNaturaGiuridica = (StringUtils.stripToNull(impresa.getNaturaGiuridica()) != null);
 		readonlyTipoImpresa = (StringUtils.stripToNull(impresa.getTipoImpresa()) != null);
     }
@@ -215,6 +223,16 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
     	this.partitaIVA = partitaIVA;
     }
     
+	@Override
+	public String getIdAnagraficaEsterna() {
+		return idAnagraficaEsterna;
+	}
+
+	@Override
+	public void setIdAnagraficaEsterna(String idAnagraficaEsterna) {
+		this.idAnagraficaEsterna = idAnagraficaEsterna;
+	}
+	
 	@Override
 	public String getMicroPiccolaMediaImpresa() {
 		return this.microPiccolaMediaImpresa;
@@ -365,16 +383,10 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
 		this.emailPECRecapitoConferma = value;
 	}  
 	
-    /**
-     * @return the readonlyNaturaGiuridica
-     */
     public boolean isReadonlyNaturaGiuridica() {
         return readonlyNaturaGiuridica;
     }
 
-    /**
-     * @return the readonlyTipoImpresa
-     */
     public boolean isReadonlyTipoImpresa() {
         return readonlyTipoImpresa;
     }
@@ -398,5 +410,5 @@ public class WizardDatiPrincipaliImpresaHelper implements IDatiPrincipaliImpresa
 	public void setTipoSocietaCooperativa(String tipoSocietaCooperativa) {
 		this.tipoSocietaCooperativa = tipoSocietaCooperativa;
 	}
-	
+
 }

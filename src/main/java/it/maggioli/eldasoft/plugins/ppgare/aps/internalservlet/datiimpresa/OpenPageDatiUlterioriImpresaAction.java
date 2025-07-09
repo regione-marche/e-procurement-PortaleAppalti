@@ -3,8 +3,11 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringUtils;
 
@@ -15,6 +18,11 @@ import org.apache.commons.lang.StringUtils;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 				implements IDatiUlterioriImpresa {
 	/**
@@ -48,6 +56,8 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	private String localitaIscrizioneINPS;
 	@Validate(EParamValidation.POSIZ_CONTRIB_INPS)
 	private String posizContributivaIndividualeINPS;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 	@Validate(EParamValidation.NUM_ISCR_INAIL)
 	private String numIscrizioneINAIL;
 	@Validate(EParamValidation.DATE_DDMMYYYY)
@@ -120,7 +130,7 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	private String altreCertificazioniAttestazioni;
 	@Validate(EParamValidation.GENERIC)
 	private String codiceIBANCCDedicato;
-	@Validate(EParamValidation.BICC)
+	@Validate(value = EParamValidation.BICC, error = @WithError(fieldLabel = "BIC"))
 	private String codiceBICCCDedicato;
 	@Validate(EParamValidation.SOGG_ABILITATI_CC)
 	private String soggettiAbilitatiCCDedicato;
@@ -153,6 +163,10 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	private boolean obblSezCCIAA;
 	@Validate(EParamValidation.TIPO_IMPRESA)
 	private String tipoImpresa;
+	@Validate(EParamValidation.SI_NO)
+	private String withIBAN;
+	@Validate(EParamValidation.NUMERO_CONTO)
+	private String numeroConto;
 		
 	
 	@Override
@@ -283,6 +297,16 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	@Override
 	public void setPosizContributivaIndividualeINPS(String posizContributivaIndividualeINPS) {
 		this.posizContributivaIndividualeINPS = posizContributivaIndividualeINPS;
+	}
+	
+	@Override
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+
+	@Override
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
 	}
 
 	@Override
@@ -641,12 +665,16 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	public String getCodiceIBANCCDedicato() {
 		return codiceIBANCCDedicato;
 	}
-	
+
 	@Override
 //	public void setEstremiCCDedicato(String estremiCCDedicato) {
 //		this.estremiCCDedicato = estremiCCDedicato;
 	public void setCodiceIBANCCDedicato(String codiceIBANCCDedicato) {
 		this.codiceIBANCCDedicato = (codiceIBANCCDedicato != null ? codiceIBANCCDedicato.toUpperCase() : codiceIBANCCDedicato);
+	}
+
+	public void setWithIBAN(String withIBAN) {
+		this.withIBAN = withIBAN;
 	}
 
 	@Override
@@ -816,13 +844,27 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	public String getTipoImpresa() {
 		return tipoImpresa;
 	}
-	
+
+	@Override
+	public String getWithIBAN() {
+		return withIBAN;
+	}
+
+	@Override
+	public String getNumeroConto() {
+		return numeroConto;
+	}
+
+	@Override
+	public void setNumeroConto(String numeroConto) {
+		this.numeroConto = StringUtils.isNotEmpty(numeroConto) ? numeroConto.toUpperCase(): numeroConto;
+	}
+
 	/**
 	 * ... 
 	 */
 	@Override
 	public String openPage() {
-
 		WizardDatiImpresaHelper helper = getSessionHelper();
 
 		if (helper == null) {
@@ -833,10 +875,9 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 			// la sessione non e' scaduta, per cui proseguo regolarmente
 			
 			// aggiorna i dati nel bean a partire da quelli presenti in sessione
-			OpenPageDatiUlterioriImpresaAction.synchronizeDatiUlterioriImpresa(
-							helper.getDatiUlterioriImpresa(), this);
-			if(this.numDipendenti != null){
-				
+			OpenPageDatiUlterioriImpresaAction.synchronizeDatiUlterioriImpresa(helper.getDatiUlterioriImpresa(), this);
+			
+			if(this.numDipendenti != null) {
 				this.strNumDipendenti = new String[this.numDipendenti.length];
 				for (int i = 0; i < this.strNumDipendenti.length; i++) {
 					this.strNumDipendenti[i] = (this.numDipendenti[i] == null ? null
@@ -857,9 +898,13 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
 							 PortGareSystemConstants.WIZARD_AGGIMPRESA_PAGINA_DATI_ULT_IMPRESA);
 		}
+		
 		return this.getTarget();
 	}
 
+	/**
+	 * ... 
+	 */
 	public String openPageAfterError() {
 		WizardDatiImpresaHelper helper = getSessionHelper();
 
@@ -900,8 +945,9 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 	 * @param to oggetto destinazione
 	 */
 	public static void synchronizeDatiUlterioriImpresa(
-					IDatiUlterioriImpresa from, IDatiUlterioriImpresa to) {
-
+			IDatiUlterioriImpresa from
+			, IDatiUlterioriImpresa to 
+	) {
 		to.setIscrittoCCIAA(from.getIscrittoCCIAA());
 		to.setNumRegistroDitteCCIAA(from.getNumRegistroDitteCCIAA());
 		to.setDataDomandaIscrizioneCCIAA(from.getDataDomandaIscrizioneCCIAA());
@@ -912,6 +958,7 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 		to.setSoggettoNormativeDURC(from.getSoggettoNormativeDURC());
 		to.setSettoreProduttivoDURC(from.getSettoreProduttivoDURC());
 		to.setNumIscrizioneINPS(from.getNumIscrizioneINPS());
+		to.setCodiceCNEL(from.getCodiceCNEL());
 		to.setDataIscrizioneINPS(from.getDataIscrizioneINPS());
 		to.setLocalitaIscrizioneINPS(from.getLocalitaIscrizioneINPS());
 		to.setPosizContributivaIndividualeINPS(from.getPosizContributivaIndividualeINPS());
@@ -951,6 +998,8 @@ public class OpenPageDatiUlterioriImpresaAction extends AbstractOpenPageAction
 		to.setAggiornamentoRatingLegalita(from.getAggiornamentoRatingLegalita());
 		to.setAltreCertificazioniAttestazioni(from.getAltreCertificazioniAttestazioni());
 		to.setCodiceIBANCCDedicato(from.getCodiceIBANCCDedicato());
+		to.setWithIBAN(from.getWithIBAN());
+		to.setNumeroConto(from.getNumeroConto());
 		to.setCodiceBICCCDedicato(from.getCodiceBICCCDedicato());
 		to.setSoggettiAbilitatiCCDedicato(from.getSoggettiAbilitatiCCDedicato());
 		to.setSocioUnico(from.getSocioUnico());

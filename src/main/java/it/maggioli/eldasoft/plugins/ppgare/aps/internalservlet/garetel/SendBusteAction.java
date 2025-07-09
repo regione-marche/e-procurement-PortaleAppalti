@@ -1,25 +1,5 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.StrutsConstants;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.xmlbeans.XmlException;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
@@ -29,36 +9,17 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-import com.lowagie.text.DocumentException;
 import com.opensymphony.xwork2.inject.Inject;
-
-import it.eldasoft.sil.portgare.datatypes.BustaEconomicaDocument;
-import it.eldasoft.sil.portgare.datatypes.BustaTecnicaDocument;
-import it.eldasoft.sil.portgare.datatypes.DocumentazioneBustaDocument;
-import it.eldasoft.sil.portgare.datatypes.DocumentoType;
-import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
 import it.eldasoft.utils.utility.UtilityDate;
-import it.eldasoft.utils.utility.UtilityStringhe;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoType;
 import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoTypeVerso;
-import it.eldasoft.www.sil.WSGareAppalto.CriterioValutazioneOffertaType;
-import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
-import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
-import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
-import it.eldasoft.www.sil.WSGareAppalto.LottoDettaglioGaraType;
-import it.eldasoft.www.sil.WSGareAppalto.QuestionarioType;
+import it.eldasoft.www.sil.WSGareAppalto.*;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaAmministrativa;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaDocumenti;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaEconomica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPrequalifica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.*;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -68,13 +29,13 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventMa
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -82,15 +43,20 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import it.maggioli.eldasoft.plugins.utils.ProtocolsUtils;
-import it.maggioli.eldasoft.ws.dm.WSDMFascicoloType;
-import it.maggioli.eldasoft.ws.dm.WSDMInserimentoInFascicoloType;
-import it.maggioli.eldasoft.ws.dm.WSDMLoginAttrType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloAllegatoType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloAnagraficaType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloDocumentoInType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloDocumentoType;
-import it.maggioli.eldasoft.ws.dm.WSDMProtocolloInOutType;
-import it.maggioli.eldasoft.ws.dm.WSDMTipoVoceRubricaType;
+import it.maggioli.eldasoft.ws.dm.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsConstants;
+import org.apache.struts2.interceptor.SessionAware;
+import org.apache.xmlbeans.XmlException;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * Action di gestione dell'invio buste.
@@ -98,6 +64,7 @@ import it.maggioli.eldasoft.ws.dm.WSDMTipoVoceRubricaType;
  * @author Marco.Perazzetta
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class SendBusteAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -377,17 +344,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		this.multipartSaveDir = multipartSaveDir;
 	}
 
-//	/**
-//	 * Ritorna la directory per i file temporanei, prendendola da
-//	 * struts.multipart.saveDir (struts.properties) se valorizzata
-//	 * correttamente, altrimenti da javax.servlet.context.tempdir
-//	 * 
-//	 * @return path alla directory per i file temporanei
-//	 */
-//	private File getTempDir() {
-//		return StrutsUtilities.getTempDir(this.getRequest().getSession().getServletContext(), this.multipartSaveDir);
-//	}
-
 	/**
 	 * ... 
 	 */
@@ -419,12 +375,34 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 				? "Presenta offerta" 
 				: "Presenta domanda di partecipazione");
 	}
+
+	/**
+	 * ... 
+	 */
+	protected String getDescrizioneBusta(int tipoBusta) { 
+		String desc = null;
+		if (tipoBusta == PortGareSystemConstants.BUSTA_PRE_QUALIFICA) {
+			desc = this.getI18nLabel("LABEL_BUSTA_PREQUALIFICA");
+		} else if (tipoBusta == PortGareSystemConstants.BUSTA_AMMINISTRATIVA) {
+			desc = this.getI18nLabel("LABEL_BUSTA_AMMINISTRATIVA");
+		} else if (tipoBusta == PortGareSystemConstants.BUSTA_TECNICA) {
+			desc = this.getI18nLabel("LABEL_BUSTA_TECNICA");
+		} else if (tipoBusta == PortGareSystemConstants.BUSTA_ECONOMICA) {
+			desc = this.getI18nLabel("LABEL_BUSTA_ECONOMICA");
+		}
+		return desc;  
+	}
 	
 	/**
 	 * conferma ed invia  
 	 */
 	public String confirmInvio() {
 		this.setTarget("reopen");
+
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
 
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
@@ -439,7 +417,9 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 				BustaEconomica bustaEconomica = buste.getBustaEconomica();
 				BustaRiepilogo bustaRiepilogo = buste.getBustaRiepilogo();
 				DettaglioGaraType dettGara = buste.getDettaglioGara(true);
-				WizardDatiImpresaHelper impresa = buste.getImpresa();
+				//WizardDatiImpresaHelper impresa = buste.getImpresa();
+
+				boolean handleBustaEconomica = bustaEconomica != null || (!buste.isConcorsoProgettazioneRiservato() && !buste.isConcorsoProgettazionePubblico());
 				
 				boolean costoFisso = (dettGara.getDatiGeneraliGara() != null && dettGara.getDatiGeneraliGara().getCostoFisso() != null
 									  ? dettGara.getDatiGeneraliGara().getCostoFisso() == 1 
@@ -458,8 +438,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 				this.dataInvio = retrieveDataInvio(this.ntpManager, this, nomeOperazione);
 				if (this.dataInvio != null) {
 
-					Date dataTermine = getDataTermine(dettGara, this.operazione);
-					
 					boolean invioOfferta = (this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
 					boolean domandaPartecipazione = (this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA);		
 
@@ -498,31 +476,19 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 							? "domanda di partecipazione" 
 							: "richiesta di presentazione offerta"));
 					
-					//-----------------------------------------------------------------------
 					// traccia i tentativi di accesso alle funzionalita' fuori tempo massimo
-					if (dataTermine != null && this.dataInvio.compareTo(dataTermine) > 0) {
+					if(controlliOk && isFuoriTempoMassimo(dettGara)) {
 						controlliOk = false;
-						this.addActionError(this.getText("Errors.invioRichiestaFuoriTempoMassimo", new String[] { nomeOperazione }));
-						
-						Event fuoriTempo = new Event();
-						fuoriTempo.setUsername(this.getCurrentUser().getUsername());
-						fuoriTempo.setDestination(dettGara.getDatiGeneraliGara().getCodice());
-						fuoriTempo.setLevel(Event.Level.ERROR);
-						fuoriTempo.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
-						fuoriTempo.setIpAddress(this.getCurrentUser().getIpAddress());
-						fuoriTempo.setSessionId(this.getRequest().getSession().getId());
-						fuoriTempo.setMessage("Accesso alla funzione " + this.getDescTipoEvento());
-						fuoriTempo.setDetailMessage(PortGareEventsConstants.DETAIL_MESSAGE_ERRORE_FUORI_TEMPO_MASSIMO + " (" + UtilityDate.convertiData(this.dataInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS) + ")");
-						this.getEventManager().insertEvent(fuoriTempo);
-					}  
-
+					}
+					
 					// verifica se la gara e' sospesa...
-					boolean sospesa = ("4".equals(dettGara.getDatiGeneraliGara().getStato()));
-					if(sospesa) {
+					if(controlliOk && isGaraSospesa(dettGara, evento)) {
 						controlliOk = false;
-						evento.setDetailMessage(this.getText("Errors.invioBuste.proceduraSospesa"));
-						evento.setLevel(Event.Level.ERROR);
-						this.addActionError(this.getText("Errors.invioBuste.proceduraSospesa"));
+					}
+					
+					// verifica se codice CNEL e' valorizzato
+					if(controlliOk && isCodiceCNELMancante(buste.getBustaPartecipazione(), evento)) {
+						controlliOk = false; 
 					}
 
 					if (controlliOk) {	
@@ -550,208 +516,49 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 									this.addActionError(this.getText("Errors.invioBuste.changesNotSent",
 																	 new String[] { PortGareSystemConstants.BUSTA_TEC }));
 								}
-								
-								if (dettGara.getDatiGeneraliGara().isOffertaTelematica()) {
-									// si usa il getInstance per ovviare al problema di
-									// accesso al Presenta offerta per andare
-									// direttamente alla funzione di Invia senza passare
-									// per l'edit della busta economica gestita
-									// telematicamente
-									WizardOffertaEconomicaHelper wizardBustaEco = bustaEconomica.getHelper();
-									if (wizardBustaEco != null && wizardBustaEco.isDatiModificati()) {
-										controlliOk = false;
-										this.addActionError(this.getText("Errors.invioBuste.changesNotSent",
-																		 new String[] { PortGareSystemConstants.BUSTA_ECO }));
-									}
-								} else {
-									WizardDocumentiBustaHelper wizardBustaEco = bustaEconomica.getHelperDocumenti();
-									if (wizardBustaEco != null && wizardBustaEco.isDatiModificati()) {
-										controlliOk = false;
-										this.addActionError(this.getText("Errors.invioBuste.changesNotSent",
-																		 new String[] { PortGareSystemConstants.BUSTA_ECO }));
+
+								if (handleBustaEconomica) {
+									if (dettGara.getDatiGeneraliGara().isOffertaTelematica()) {
+										// si usa il getInstance per ovviare al problema di
+										// accesso al Presenta offerta per andare
+										// direttamente alla funzione di Invia senza passare
+										// per l'edit della busta economica gestita
+										// telematicamente
+										WizardOffertaEconomicaHelper wizardBustaEco = bustaEconomica.getHelper();
+										if (wizardBustaEco != null && wizardBustaEco.isDatiModificati()) {
+											controlliOk = false;
+											this.addActionError(this.getText("Errors.invioBuste.changesNotSent",
+													new String[]{PortGareSystemConstants.BUSTA_ECO}));
+										}
+									} else {
+										WizardDocumentiBustaHelper wizardBustaEco = bustaEconomica.getHelperDocumenti();
+										if (wizardBustaEco != null && wizardBustaEco.isDatiModificati()) {
+											controlliOk = false;
+											this.addActionError(this.getText("Errors.invioBuste.changesNotSent",
+													new String[]{PortGareSystemConstants.BUSTA_ECO}));
+										}
 									}
 								}
 							}
 						}
 					}
 
-					BustaPartecipazione bustaPartecipazione = buste.getBustaPartecipazione();
-					WizardPartecipazioneHelper partecipazioneHelper = bustaPartecipazione.getHelper();
 					BustaRiepilogo riepilogo = buste.getBustaRiepilogo();
-					RiepilogoBusteHelper bustaRiepilogativa = riepilogo.getHelper();
 					// tramite servizio controllo che non siano stati inseriti 
 					// nuovi documenti obbligatori comuni per le buste tecniche via BO
 					riepilogo.integraBusteFromBO();
-					
-					if (controlliOk) {	
-						if(domandaPartecipazione) {
-							// busta prequalifica
-							controlliOk = checkBusta(
-									impresa,
-									dettGara,
-									PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_PRE_QUALIFICA,
-									PortGareSystemConstants.BUSTA_PRE,
-									PortGareSystemConstants.BUSTA_PRE_QUALIFICA);
-							
-							// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-							if( controlliOk && !bustaRiepilogativa.getPrimoAccessoPrequalificaEffettuato() ) {
-								this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-																 new String[] { "Busta prequalifica" }));
-								controlliOk = false;
-							}
-						}  
-
-						if(invioOfferta) {
-							// busta amministrativa
-							if( !dettGara.getDatiGeneraliGara().isNoBustaAmministrativa() ) {
-								controlliOk = checkBusta(
-										impresa,
-										dettGara,
-										PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_AMMINISTRATIVA,
-										PortGareSystemConstants.BUSTA_AMM,
-										PortGareSystemConstants.BUSTA_AMMINISTRATIVA);
-								
-								// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-								if( controlliOk && !bustaRiepilogativa.getPrimoAccessoAmministrativaEffettuato() ) {
-									this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-																	 new String[] { "Busta amministrativa" }));
-									controlliOk = false;
-								}
-							}
-
-							// busta tecnica
-							if (this.bandiManager.isGaraConOffertaTecnica(this.codice)) {
-								// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-								if( !bustaRiepilogativa.getPrimoAccessoTecnicaEffettuato() ) {
-									this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-																	 new String[] { "Busta tecnica" }));
-									controlliOk = false;
-								}
-								
-								if (controlliOk) {
-									if (apriOEPVBustaTecnica) {
-										controlliOk = controlliOk && checkBustaTecnica(
-												dettGara,
-												impresa.getDatiPrincipaliImpresa().getTipoImpresa(),
-												PortGareSystemConstants.BUSTA_TEC);
-									} else {
-										controlliOk = controlliOk && checkBusta(
-												impresa,
-												dettGara,
-												PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_TECNICA,
-												PortGareSystemConstants.BUSTA_TEC,
-												PortGareSystemConstants.BUSTA_TECNICA);
-									}
-								}
-							}
-
-							// busta economica
-							// in caso di OEPV a costo fisso non va controllata
-							// la parte economica...
-							if(!costoFisso) {
-								// per prima cosa si controlla se e' stato effettuato un accesso di presa visione documenti
-								if( !bustaRiepilogativa.getPrimoAccessoEconomicaEffettuato() ) {
-									this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-																	 new String[] { "Busta economica" }));
-									controlliOk = false;
-								}
-								
-								if (controlliOk) {
-									if (dettGara.getDatiGeneraliGara().isOffertaTelematica()) {
-										controlliOk = controlliOk && checkBustaEconomica(
-												dettGara,
-												impresa.getDatiPrincipaliImpresa().getTipoImpresa(),
-												PortGareSystemConstants.BUSTA_ECO);
-									} else {
-										controlliOk = controlliOk && checkBusta(
-												impresa,
-												dettGara,
-												PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_ECONOMICA,
-												PortGareSystemConstants.BUSTA_ECO,
-												PortGareSystemConstants.BUSTA_ECONOMICA);
-									}
-								}
-							}
-						}
-					}
-					
-					if( !controlliOk && !sospesa ) {
-						String documentiMancanti = this.getListaDocumentiMancanti(bustaRiepilogativa, domandaPartecipazione);
-						if(StringUtils.isNotEmpty(documentiMancanti)) {
-							evento.setDetailMessage(documentiMancanti);
-							evento.setLevel(Event.Level.ERROR);
-						}
-					}
-					
-					// per gare ristrette in fase di domanda di partecipazione
-					// controlla se i lotti dell'offerta sono utilizzati anche in altre offerte...
-					if(controlliOk && domandaPartecipazione) {
-						boolean lottiInAltreOfferte = this.isLottiPresentiInAltreOfferte(bustaPartecipazione); 
-						if (lottiInAltreOfferte) {
-							// alcuni lotti dell'offerta sono presenti in altre offerte...
-							evento.setDetailMessage("Lotti presenti in altre offerte");
-							evento.setLevel(Event.Level.ERROR);
-							controlliOk = false;
-						}
-					}
 
 					// controlla se esistono documenti senza contenuto nelle buste...
 					// o se esistono documenti nelle buste, con dimensione del contenuto inviato 
 					// diversa dall'originale ...
-					VerificaDocumentiCorrotti documentiCorrotti = new VerificaDocumentiCorrotti(bustaRiepilogo); 
 					if (controlliOk) {
-						controlliOk = controlliOk & !documentiCorrotti.isDocumentiCorrottiPresenti();
+						VerificaDocumentiCorrotti validazioneDocumenti = new VerificaDocumentiCorrotti(evento);
 						
-						if(documentiCorrotti.size() > 0) {
-							// visualizza la lista dei documenti nulli o corrotti
-							documentiCorrotti.addActionErrors(this);
-							evento.setDetailMessage(documentiCorrotti.getEventDetailMessage());
-							evento.setLevel(Event.Level.ERROR);
-						}
-					}
-					
-					// (Questionari - QFORM) 
-					// 1) controlla se e' presente un questionario e se lo stato e' "completato"
-					// 2) verifica se e' cambiata la modulistica dei questionari 
-					if (controlliOk) {
-						if(domandaPartecipazione) {
-							if(bustaRiepilogativa.getBustaPrequalifica() != null) {
-								controlliOk = controlliOk & this.verificaQuestionario( 
-										this.codice,
-										null,
-										null,
-										PortGareSystemConstants.BUSTA_PRE_QUALIFICA, 
-										bustaRiepilogativa.getBustaPrequalifica(),
-										evento);
-							}	
-						} else {
-							if(bustaRiepilogativa.getBustaAmministrativa() != null) {
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.codice,
-										null,
-										null,
-										PortGareSystemConstants.BUSTA_AMMINISTRATIVA, 
-										bustaRiepilogativa.getBustaAmministrativa(),
-										evento);
-							}
-							if(bustaRiepilogativa.getBustaTecnica() != null) {
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.codice,
-										null,
-										null,
-										PortGareSystemConstants.BUSTA_TECNICA, 
-										bustaRiepilogativa.getBustaTecnica(),
-										evento);
-							}
-							if(bustaRiepilogativa.getBustaEconomica() != null) {
-								controlliOk = controlliOk & this.verificaQuestionario(
-										this.codice,
-										null,
-										null,
-										PortGareSystemConstants.BUSTA_ECONOMICA, 
-										bustaRiepilogativa.getBustaEconomica(),
-										evento);
-							}
+						// verifica presa vissione, documenti obbligatori, documenti "corrotti" e QForm...						
+						controlliOk = controlliOk && validazioneDocumenti.validate();
+						
+						if(validazioneDocumenti.isErroriPresenti()) {
+							validazioneDocumenti.addActionErrors(this, evento);
 						}
 					}
 					
@@ -763,12 +570,12 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 						this.setTarget(SUCCESS);
 					}
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				ApsSystemUtils.logThrowable(e, this, "confirm");
 				this.addActionError(this.getText("Errors.cannotLoadAttachments"));
-			} catch (Throwable e) {
-				ApsSystemUtils.logThrowable(e, this, "confirm");
-				ExceptionUtils.manageExceptionError(e, this);
+			} catch (Throwable t) {
+				ApsSystemUtils.logThrowable(t, this, "confirm");
+				ExceptionUtils.manageExceptionError(t, this);
 			}
 		} else {
 			// la sessione e' scaduta, occorre riconnettersi
@@ -783,6 +590,11 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 	 */
 	public String invio() {
 		this.setTarget("reopen");
+
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
 
 		this.codiceSistema = (String) this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA);
 		this.tipoProtocollazione = new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA);
@@ -804,7 +616,9 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 			BustaAmministrativa bustaAmministrativa = buste.getBustaAmministrativa();
 			BustaTecnica bustaTecnica = buste.getBustaTecnica();
 			BustaEconomica bustaEconomica = buste.getBustaEconomica();
-			
+
+			boolean handleBustaEconomica = bustaEconomica != null || (!buste.isConcorsoProgettazioneRiservato() && !buste.isConcorsoProgettazionePubblico());
+
 			WizardDatiImpresaHelper datiImpresa = null;
 			DettaglioGaraType dettGara = null;
 			
@@ -825,9 +639,13 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 
 				// NB: il tipoProtocollazione va inizializzato dopo la chiamata a setStazioneAppaltanteProtocollazione() !!! 
 				this.tipoProtocollazione = this.appParamManager.getTipoProtocollazione(stazioneAppaltanteProcedura);
+				
+				// per i concorsi di progettazione la protocollazione NON e' prevista e viene disabilitata
+				if (buste.isConcorsoProgettazionePubblico() || buste.isConcorsoProgettazioneRiservato())
+					tipoProtocollazione = new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA);
 
 				// in caso di protocollazione WSDM se non esiste una configurazione segnala un errore
-				if(this.appParamManager.isConfigWSDMNonDisponibile()) {
+				if (this.appParamManager.isConfigWSDMNonDisponibile()) {
 					controlliOk = false;
 					String msgerr = this.getText("Errors.wsdm.configNotAvailable");
 					this.addActionError(msgerr);
@@ -843,33 +661,14 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 					this.eventManager.insertEvent(evento);
 				}
 
-				this.dataInvio = retrieveDataInvio(
-						this.ntpManager, 
-						this, 
-						GestioneBuste.getNomeOperazione(this.operazione));
-
-				if (this.dataInvio != null) {
-					Date dataTermine = getDataTermine(dettGara, this.operazione);
-					boolean invioScaduto = (dataTermine != null && this.dataInvio.compareTo(dataTermine) > 0);					
-					if(invioScaduto) {
-						controlliOk = false;
-						this.addActionError(this.getText("Errors.richiestaFuoriTempoMassimo"));
-						this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-						
-						// si tracciano solo i tentativi di accesso alle funzionalita' fuori tempo massimo
-						Event evento = new Event();
-						evento.setUsername(this.getCurrentUser().getUsername());
-						evento.setDestination(dettGara.getDatiGeneraliGara().getCodice());
-						evento.setLevel(Event.Level.ERROR);
-						evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
-						evento.setIpAddress(this.getCurrentUser().getIpAddress());
-						evento.setSessionId(this.getRequest().getSession().getId());
-						evento.setMessage("Accesso alla funzione " + this.getDescTipoEvento());
-						evento.setDetailMessage(PortGareEventsConstants.DETAIL_MESSAGE_ERRORE_FUORI_TEMPO_MASSIMO + 
-									" (" + UtilityDate.convertiData(this.dataInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS) + ")");
-						this.getEventManager().insertEvent(evento);
-					}
-					
+				// calcola la data di invio e verifica se fuori tempo massimo...
+				if(controlliOk && isAccessoFuoriTempoMassimo(dettGara)) {
+					controlliOk = false;
+					this.addActionError(getText("Errors.invioRichiestaFuoriTempoMassimo", new String[] { nomeOperazione }));
+					this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+				}
+				
+				if (controlliOk) {
 					// verifica se la gara e' sospesa...
 					boolean sospesa = ("4".equals(dettGara.getDatiGeneraliGara().getStato())); 
 					if(sospesa) {
@@ -908,7 +707,7 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 								}
 							}
 	
-							if(bustaEconomica.getId() > 0) {
+							if(handleBustaEconomica && bustaEconomica.getId() > 0) {
 								controlliOk = controlliOk && bustaEconomica.sendConfirm(CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE);
 							}
 						}
@@ -916,13 +715,13 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 						bustaPartecipazione.get();
 						if(controlliOk && bustaPartecipazione.getId() > 0) {
 							bustaPartecipazione.getHelper().setDataPresentazione(this.dataInvio);
-							inviataComunicazione = bustaPartecipazione.sendConfirm();
+							inviataComunicazione = bustaPartecipazione.sendConfirm(new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH)));
 						}
 					}
 
 					// se qualcosa va in errore imposta il target a CommonSystemConstants.PORTAL_ERROR
 					// senza un messaggio di errore viene restituita ad una pagina vuota...
-					if(!controlliOk && !invioScaduto && !sospesa) {
+					if(!controlliOk) {
 						this.addActionError(this.getText("Errors.unexpected"));
 						this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 					}
@@ -1232,6 +1031,8 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		// concludi la protocollazione
 		this.appParamManager.setStazioneAppaltanteProtocollazione(null);
 
+		unlockAccessoFunzione();
+		
 		return this.getTarget();
 	}
 
@@ -1326,7 +1127,11 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		wsdmProtocolloDocumentoIn.setIdTitolazione(idTitolazione);
 		wsdmProtocolloDocumentoIn.setClassifica(classificaFascicolo);
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-				
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -1447,6 +1252,7 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -1454,14 +1260,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 						mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(impresa.getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1515,19 +1313,22 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 	    
-		WSDMProtocolloAllegatoType[] allegati = createAttachents(datiImpresaHelper, dettGara, bustaRiepilogativa,
-				comunicazionePartecipazione, nomeOperazione, fileRiepilogo, ragioneSociale, codiceFiscale, indirizzo,
-				inTesta);
-		
+		WSDMProtocolloAllegatoType[] allegati = createAttachments(
+				datiImpresaHelper
+				, dettGara
+				, bustaRiepilogativa
+				, comunicazionePartecipazione
+				, nomeOperazione
+				, fileRiepilogo
+				, ragioneSociale
+				, codiceFiscale
+				, indirizzo
+				, inTesta
+		);		
 		wsdmProtocolloDocumentoIn.setAllegati(allegati);
 				
 		// INTERVENTI ARCHIFLOW
@@ -1572,25 +1373,34 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		return wsdmProtocolloDocumentoIn;
 	}
 
-	private WSDMProtocolloAllegatoType[] createAttachents(WizardDatiImpresaHelper datiImpresaHelper,
-			DettaglioGaraType dettGara, RiepilogoBusteHelper bustaRiepilogativa,
-			ComunicazioneType comunicazionePartecipazione, String nomeOperazione, byte[] fileRiepilogo,
-			String ragioneSociale, String codiceFiscale, String indirizzo, boolean inTesta)
-			throws Exception 
-	{
+	private WSDMProtocolloAllegatoType[] createAttachments(
+			WizardDatiImpresaHelper datiImpresaHelper
+			, DettaglioGaraType dettGara
+			, RiepilogoBusteHelper bustaRiepilogativa
+			, ComunicazioneType comunicazionePartecipazione
+			, String nomeOperazione
+			, byte[] fileRiepilogo
+			, String ragioneSociale
+			, String codiceFiscale
+			, String indirizzo
+			, boolean inTesta
+	) throws Exception {
 		WSDMProtocolloAllegatoType[] allegati = new WSDMProtocolloAllegatoType[2];
 
-		int n2 = allegati.length - 1;
-		if(inTesta) {
-			n2 = 0;
+		String titolo = MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_RICEVUTA_OGGETTO"), 
+											 new Object[] {this.getCodice(), nomeOperazione});
+		// PDF-A
+		boolean isActiveFunctionPdfA; 
+		try {
+			isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
+		} catch (Exception ex) {
+			throw new ApsException(ex.getMessage(),ex);
 		}
-		allegati[n2] = new WSDMProtocolloAllegatoType();
-		allegati[n2].setTitolo(MessageFormat.format(this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_RICEVUTA_OGGETTO"), 
-												   new Object[] {this.getCodice(), nomeOperazione}));
-		allegati[n2].setTipo("pdf");
-		allegati[n2].setNome("comunicazione.pdf");
-
-		String contenuto = MessageFormat.format(
+		
+		InputStream iccFilePath = new FileInputStream(getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
+		
+		// prepara il testo per "comunicazione.pdf"
+		String comunicazioneTxt = MessageFormat.format(
 				this.getI18nLabelFromDefaultLocale("MAIL_GARETEL_PROTOCOLLO_TESTOCONALLEGATI"),
 				new Object[] {
 					ragioneSociale,
@@ -1598,56 +1408,51 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 					datiImpresaHelper.getDatiPrincipaliImpresa().getPartitaIVA(),
 					this.usernameEmail,
 					indirizzo,
-					UtilityDate.convertiData(this.getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
-					(this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA
-							? this.getI18nLabelFromDefaultLocale("LABEL_OFFERTA") 
-							: this.getI18nLabelFromDefaultLocale("LABEL_PARTECIPAZIONE")),
-					dettGara.getDatiGeneraliGara().getOggetto() });
+					UtilityDate.convertiData(getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
+					(operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA
+							? getI18nLabelFromDefaultLocale("LABEL_OFFERTA") 
+							: getI18nLabelFromDefaultLocale("LABEL_PARTECIPAZIONE")),
+					dettGara.getDatiGeneraliGara().getOggetto() }
+		);
 		
-		boolean isActiveFunctionPdfA;
-		try {
-			isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-		} catch (Exception e1) {
-			throw new ApsException(e1.getMessage(),e1);
+		byte[] comunicazionePdf = JRPdfExporterEldasoft.textToPdf(
+				comunicazioneTxt
+				, "Riepilogo comunicazione"
+				, this
+		);
+		
+		// aggiungi l'allegato "comunicazione.pdf"
+		//
+		int n2 = allegati.length - 1;
+		if(inTesta) {
+			n2 = 0;
 		}
-		
-		byte[] contenutoPdf = null;
-		if(isActiveFunctionPdfA) {
-			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-				InputStream iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-				contenutoPdf = UtilityStringhe.string2PdfA(contenuto, iccFilePath);
-			} catch (com.itextpdf.text.DocumentException e) {
-				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-				de.initCause(e);
-				throw de;
-			}
-		} else {
-			contenutoPdf = UtilityStringhe.string2Pdf(contenuto);
-		}
-		allegati[n2].setContenuto(contenutoPdf);
-		
+		allegati[n2] = new WSDMProtocolloAllegatoType();
+		allegati[n2].setTitolo(titolo);
+		allegati[n2].setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
+		allegati[n2].setNome("comunicazione.pdf");
+		allegati[n2].setContenuto(comunicazionePdf);
 		// serve per Titulus
 		allegati[n2].setIdAllegato("W_INVCOM/"
 				+ CommonSystemConstants.ID_APPLICATIVO + "/"
 				+ comunicazionePartecipazione.getDettaglioComunicazione().getId() + "/" + n2);
-
 		int i = 0;
 		if(inTesta)
 			i = 1;
-				
+		
 		// aggiungi il "riepilogo_buste.pdf"
+		//
 		boolean hasMarcaturaTemporale = false;
 		try {
 			hasMarcaturaTemporale = this.customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE");
 		} catch (Exception e) {
 			throw new ApsException("Non e' stato possibile leggere la configurazione ACT per l'objectId INVIOFLUSSI feature MARCATEMPORALE");
-		}				
+		}
 		
-		// recupera il pdf di riepilogo delle buste (pdf/tsd) ed aggiungilo agli allegati del WSDM...		
+		// recupera il pdf di riepilogo delle buste (pdf/tsd) ed aggiungilo agli allegati del WSDM...
 		if(fileRiepilogo == null) {
 			BustaRiepilogo bustaRiepilogo = GestioneBuste.getBustaRiepilogoFromSession();
-			fileRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste();
+			fileRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste(iccFilePath);
 		}
 
 		allegati[i] = new WSDMProtocolloAllegatoType();
@@ -1676,8 +1481,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 	 * 
 	 * @param comunicazione
 	 *            comunicazione a cui annullare l'invio
-	 * @param datiImpresaHelper
-	 *            dati dell'impresa
 	 */
 	protected void annullaComunicazioneInviata(ComunicazioneType comunicazione) {
 		// traccia l'evento
@@ -1707,90 +1510,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 			this.eventManager.insertEvent(evento);
 		}
 	}
-	
-	/**
-	 * verifica se esistono documenti richiesti mancanti in una busta
-	 */
-	private String getCountDocumentiMancanti(RiepilogoBustaBean busta) {
-		String msg = null;
-		String ids = "";
-		int n = 0;
-		if(busta != null && busta.getDocumentiMancanti() != null && busta.getDocRichiesti() != null) {
-			for(int j = 0; j < busta.getDocRichiesti().size(); j++) {
-				boolean trovato = false;
-				for(int i = 0; i < busta.getDocumentiMancanti().size() && !trovato; i++) {
-					trovato = (busta.getDocRichiesti().get(j).isObbligatorio() &&
-							   busta.getDocumentiMancanti().get(i).getId() == busta.getDocRichiesti().get(j).getId());
-				}
-				if( trovato ) {
-					n++;
-					ids = ids + (StringUtils.isNotEmpty(ids) ? ", " : "") + busta.getDocRichiesti().get(j).getId();
-				}
-			}
-		}
-		if(n > 0) {
-			msg = n + " (id's: " + ids + ")";
-		}
-		return msg;
-	}
-		
-	/**
-	 * restituisce la lista dei documenti presenti in una richiesta di partecipazione/offerta
-	 */
-	protected String getListaDocumentiMancanti(
-			RiepilogoBusteHelper riepilogo,
-			boolean domandaPartecipazione) 
-	{
-		String documenti = "";
-		String s;
-		
-		if(domandaPartecipazione) {
-			s = getCountDocumentiMancanti(riepilogo.getBustaPrequalifica());
-			if(s != null) {
-				documenti += "- prequalifica: " + s + "\n";
-			}
-		} else {
-			s = getCountDocumentiMancanti(riepilogo.getBustaAmministrativa());
-			if(s != null) {
-				documenti += "- amministrativa: " + s + "\n";
-			}
-			
-			boolean garaLotti = riepilogo.getListaCompletaLotti() != null && 
-			                    riepilogo.getListaCompletaLotti().size() > 0;
-			if(garaLotti) {
-				// GARA A LOTTI
-				for(int i = 0; i < riepilogo.getListaCompletaLotti().size(); i++){
-					String lotto = riepilogo.getListaCompletaLotti().get(i);
-					
-					s = getCountDocumentiMancanti(riepilogo.getBusteTecnicheLotti().get(lotto));
-					if(s != null) {
-						documenti += "- lotto " + lotto + " tecnica: " + s + "\n";
-					}
-					s = getCountDocumentiMancanti(riepilogo.getBusteEconomicheLotti().get(lotto));
-					if(s != null) {
-						documenti += "- lotto " + lotto + " economica: " + s + "\n";
-					}
-				}
-			} else {
-				// GARA LOTTO UNICO
-				s = getCountDocumentiMancanti(riepilogo.getBustaTecnica());
-				if(s != null) {
-					documenti += "- tecnica: " + s + "\n";
-				}
-				
-				s = getCountDocumentiMancanti(riepilogo.getBustaEconomica());
-				if(s != null) {
-					documenti += "- economica: " + s + "\n";
-				}
-			}
-		}	
-		
-		if(StringUtils.isNotEmpty(documenti)) {
-			documenti = "Alcuni documenti richiesti risultano mancanti nelle seguenti buste: \n" + documenti;
-		}
-		
-		return documenti;
-	}	
 
 	/**
 	 * ... 
@@ -1843,147 +1562,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 		}
 		return data;
 	}
-
-	/**
-	 * ... 
-	 */
-	private boolean checkDocumentiBusta(
-			String nomeBusta,
-			ListaDocumentiType documenti,
-			List<DocumentazioneRichiestaType> documentiRichiesti)
-		throws ApsException 
-	{
-		boolean controlliOk = true;
-
-		DocumentoType documento;
-		boolean docFound;
-
-		for (int i = 0; i < documentiRichiesti.size(); i++) {
-			docFound = false;
-			if (!controlliOk) {
-				break;
-			}
-			if (documentiRichiesti.get(i).isObbligatorio()) {
-				for (int j = 0; j < documenti.sizeOfDocumentoArray(); j++) {
-					documento = documenti.getDocumentoArray(j);
-					if (documento.getId() != 0 && documento.getId() == documentiRichiesti.get(i).getId()) {
-						docFound = true;
-						break;
-					}
-				}
-				if (!docFound) {
-					controlliOk = false;
-					this.addActionError(this.getText("Errors.docRichiestoObbligatorioNotFound",
-										new String[] { nomeBusta, documentiRichiesti.get(i).getNome() }));
-				}
-			}
-		}
-
-		for (int j = 0; j < documenti.sizeOfDocumentoArray(); j++) {
-			documento = documenti.getDocumentoArray(j);
-			if (documento.getNomeFile().length() > FileUploadUtilities.MAX_LUNGHEZZA_NOME_FILE) {
-				controlliOk = false;
-				if (documento.getId() != 0) {
-					this.addActionError(this.getText("Errors.docRichiestoOverflowFileNameLength",
-										new String[] { nomeBusta, documento.getNomeFile() }));
-				} else {
-					this.addActionError(this.getText("Errors.docUlterioreOverflowFileNameLength",
-										new String[] { nomeBusta, documento.getNomeFile() }));
-				}
-			}
-		}
-		return controlliOk;
-	}
-
-	/**
-	 * ... 
-	 */
-	private boolean checkDocumenti(
-			ComunicazioneType comunicazioneBusta,
-			String nomeBusta,
-			List<DocumentazioneRichiestaType> documentiRichiesti) throws XmlException, IOException 
-	{
-		boolean controlliOk = true;
-		DocumentazioneBustaDocument bustaDocument;
-		try {						
-			bustaDocument = BustaDocumenti.getBustaDocument(comunicazioneBusta);
-			ListaDocumentiType documenti = bustaDocument.getDocumentazioneBusta().getDocumenti();
-			controlliOk = checkDocumentiBusta(
-					nomeBusta, 
-					documenti, 
-					documentiRichiesti);
-		} catch (Throwable ex) {
-			if (ex.getMessage() != null && ex.getMessage().equals("Errors.invioBuste.xmlBustaNotFound")) {
-				this.addActionError(this.getText("Errors.invioBuste.xmlBustaNotFound", new String[] { nomeBusta }));
-			} else {
-				this.addActionError(ex.getMessage());
-			}
-			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-			controlliOk = false;
-		}
-		return controlliOk;
-	}
-	
-	/**
-	 * ... 
-	 */
-	private boolean checkDocumentiOfferta(
-			ComunicazioneType comunicazioneBusta,
-			String nomeBusta,
-			List<DocumentazioneRichiestaType> documentiRichiesti) 
-		throws XmlException, IOException 
-	{
-		boolean controlliOk = true;
-		BustaEconomicaDocument bustaDocument;
-		try {			
-			BustaEconomica bustaEco = GestioneBuste.getBustaEconomicaFromSession();
-			bustaDocument = (BustaEconomicaDocument)bustaEco.getBustaDocument(); //getBustaEconomicaDocument();
-			ListaDocumentiType documenti = bustaDocument.getBustaEconomica().getDocumenti();
-		
-			controlliOk = controlliOk && 
-				checkDocumentiBusta(nomeBusta, documenti, documentiRichiesti);
-		
-		} catch (Throwable ex) {
-			if (ex.getMessage() != null && ex.getMessage().equals("Errors.invioBuste.xmlBustaNotFound")) {
-				this.addActionError(this.getText("Errors.invioBuste.xmlBustaNotFound", new String[] { nomeBusta }));
-			} else {
-				this.addActionError(ex.getMessage());
-			}
-			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-			controlliOk = false;
-		}
-		return controlliOk;
-	}
-	
-	/**
-	 * ... 
-	 */
-	private boolean checkDocumentiOffertaTecnica(
-			ComunicazioneType comunicazioneBusta,
-			String nomeBusta,
-			List<DocumentazioneRichiestaType> documentiRichiesti) throws XmlException, IOException 
-	{
-		boolean controlliOk = true;
-		BustaTecnicaDocument bustaDocument;
-		try {			
-			BustaTecnica bustaTec = GestioneBuste.getBustaTecnicaFromSession();
-			bustaDocument = (BustaTecnicaDocument)bustaTec.getBustaDocument();
-			ListaDocumentiType documenti = bustaDocument.getBustaTecnica().getDocumenti();
-			
-			controlliOk = controlliOk && 
-				checkDocumentiBusta(nomeBusta, documenti, documentiRichiesti);
-			
-		} catch (Throwable ex) {
-			if (ex.getMessage() != null && ex.getMessage().equals("Errors.invioBuste.xmlBustaNotFound")) {
-				this.addActionError(this.getText("Errors.invioBuste.xmlBustaNotFound", new String[] { nomeBusta }));
-			} else {
-				this.addActionError(ex.getMessage());
-			}
-			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-			controlliOk = false;
-		}
-		return controlliOk;
-	}
 	
 	/**
 	 * invia la mail della ricevuta  
@@ -2018,235 +1596,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 				CommonSystemConstants.SENDER_CODE);
 	}
 	
-	/**
-	 * ... 
-	 */
-	private static boolean hasDocObbligatori(List<DocumentazioneRichiestaType> documentiRichiesti) {
-		boolean found = false;
-		for (DocumentazioneRichiestaType documentoRichiesto : documentiRichiesti) {
-			if (documentoRichiesto.isObbligatorio()) {
-				found = true;
-				break;
-			}
-		}
-		return found;
-	}
-
-	/**
-	 * ... 
-	 */
-	public boolean checkBusta(
-			WizardDatiImpresaHelper datiImpresa,
-			DettaglioGaraType dettGara, 
-			String tipoBustaRichiesta,
-			String nomeBusta, 
-			int codiceBusta) 
-		throws ApsException, XmlException, IOException 
-	{
-		boolean bustaOk = true;
-		List<DocumentazioneRichiestaType> documentiRichiesti;
-		DettaglioComunicazioneType dettComunicazioneBustaInviata = ComunicazioniUtilities
-				.retrieveComunicazione(
-						this.comunicazioniManager,
-						this.getCurrentUser().getUsername(),
-						this.codice,
-						this.progressivoOfferta,
-						CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE,
-						tipoBustaRichiesta);
-
-		if (dettComunicazioneBustaInviata != null) {
-			this.addActionMessage(this.getText("Errors.send.alreadySent", new String[] { nomeBusta }));
-		} else {
-			// verifico se l'ente ha specificato dei documenti obbligatori
-			// da inserire nella busta, altrimenti bypasso il check su
-			// questa busta
-			WizardPartecipazioneHelper partecipazioneHelper = GestioneBuste.getPartecipazioneFromSession().getHelper();
-
-			String codiceLotto = null;
-			// nella gara a lotto unico i documenti stanno nel lotto, nella gara
-			// ad offerta unica stanno nella gara
-			if (dettGara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_LOTTO_UNICO) {
-				codiceLotto = dettGara.getDatiGeneraliGara().getCodice();
-			}
-			documentiRichiesti = this.bandiManager
-					.getDocumentiRichiestiBandoGara(
-							this.codice, 
-							codiceLotto,
-							datiImpresa.getDatiPrincipaliImpresa().getTipoImpresa(), 
-							partecipazioneHelper.isRti(), 
-							codiceBusta + "");
-
-			if (hasDocObbligatori(documentiRichiesti)) {
-
-				// verifico che ci siano i documenti richiesti per la busta
-				DettaglioComunicazioneType dettComunicazioneBusta = ComunicazioniUtilities
-						.retrieveComunicazione(
-								this.comunicazioniManager,
-								this.getCurrentUser().getUsername(),
-								this.codice,
-								this.progressivoOfferta,
-								CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA,
-								tipoBustaRichiesta);
-
-				if (dettComunicazioneBusta != null) {
-					ComunicazioneType comunicazioneBusta = this.comunicazioniManager
-							.getComunicazione(CommonSystemConstants.ID_APPLICATIVO,
-											  dettComunicazioneBusta.getId());
-					bustaOk = checkDocumenti(comunicazioneBusta, nomeBusta, documentiRichiesti);
-				} else {
-					bustaOk = false;
-					this.addActionError(this.getText("Errors.invioBuste.dataNotSent",
-													 new String[] { nomeBusta }));
-				}
-			}
-		}
-		return bustaOk;
-	}
-
-	/**
-	 * ... 
-	 */
-	public boolean checkBustaEconomica(
-			DettaglioGaraType dettGara,
-			String tipoImpresa, 
-			String nomeBusta) throws ApsException, XmlException, IOException 
-	{
-		boolean bustaOk = true;
-
-		String tipoBustaRichiesta = PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_ECONOMICA;
-		int codiceBusta = PortGareSystemConstants.BUSTA_ECONOMICA;
-
-		List<DocumentazioneRichiestaType> documentiRichiesti;
-		DettaglioComunicazioneType dettComunicazioneBustaInviata = ComunicazioniUtilities
-				.retrieveComunicazione(
-						this.comunicazioniManager,
-						this.getCurrentUser().getUsername(),
-						this.codice,
-						this.progressivoOfferta,
-						CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE,
-						tipoBustaRichiesta);
-
-		if (dettComunicazioneBustaInviata != null) {
-			this.addActionMessage(this.getText("Errors.send.alreadySent", new String[] { nomeBusta }));
-		} else {
-
-			// verifico se l'ente ha specificato dei documenti obbligatori
-			// da inserire nella busta, altrimenti bypasso il check su
-			// questa busta
-			WizardPartecipazioneHelper partecipazioneHelper = GestioneBuste.getPartecipazioneFromSession().getHelper();
-
-			String codiceLotto = null;
-			// nella gara a lotto unico i documenti stanno nel lotto, nella gara
-			// ad offerta unica stanno nella gara
-			if (dettGara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_LOTTO_UNICO) {
-				codiceLotto = dettGara.getDatiGeneraliGara().getCodice();
-			}
-			documentiRichiesti = this.bandiManager.getDocumentiRichiestiBandoGara(
-					this.codice, 
-					codiceLotto,
-					tipoImpresa, 
-					partecipazioneHelper.isRti(),
-					codiceBusta + "");
-
-			// verifico che ci siano i documenti richiesti per la busta
-			DettaglioComunicazioneType dettComunicazioneBusta = ComunicazioniUtilities
-					.retrieveComunicazione(
-							this.comunicazioniManager, 
-							this.getCurrentUser().getUsername(), 
-							this.codice,
-							this.progressivoOfferta,
-							CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA,
-							tipoBustaRichiesta);
-
-			if (dettComunicazioneBusta != null) {
-				ComunicazioneType comunicazioneBusta = this.comunicazioniManager
-						.getComunicazione(CommonSystemConstants.ID_APPLICATIVO,
-										  dettComunicazioneBusta.getId());
-				bustaOk = checkDocumentiOfferta(
-						comunicazioneBusta, 
-						nomeBusta,
-						documentiRichiesti);
-			} else {
-				bustaOk = false;
-				this.addActionError(this.getText("Errors.invioBuste.dataNotSent", new String[] { nomeBusta }));
-			}
-		}
-		return bustaOk;
-	}
-	
-	/**
-	 * ... 
-	 */
-	public boolean checkBustaTecnica(
-			DettaglioGaraType dettGara,
-			String tipoImpresa, 
-			String nomeBusta) throws ApsException, XmlException, IOException 
-	{
-		boolean bustaOk = true;
-
-		String tipoBustaRichiesta = PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_TECNICA;
-		int codiceBusta = PortGareSystemConstants.BUSTA_TECNICA;
-
-		List<DocumentazioneRichiestaType> documentiRichiesti;
-		DettaglioComunicazioneType dettComunicazioneBustaInviata = ComunicazioniUtilities
-				.retrieveComunicazione(
-						this.comunicazioniManager,
-						this.getCurrentUser().getUsername(),
-						this.codice,
-						this.progressivoOfferta,
-						CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE,
-						tipoBustaRichiesta);
-
-		if (dettComunicazioneBustaInviata != null) {
-			this.addActionMessage(this.getText("Errors.send.alreadySent", new String[] { nomeBusta }));
-		} else {
-
-			// verifico se l'ente ha specificato dei documenti obbligatori
-			// da inserire nella busta, altrimenti bypasso il check su
-			// questa busta
-			WizardPartecipazioneHelper partecipazioneHelper = GestioneBuste.getPartecipazioneFromSession().getHelper();
-
-			String codiceLotto = null;
-			// nella gara a lotto unico i documenti stanno nel lotto, nella gara
-			// ad offerta unica stanno nella gara
-			if (dettGara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_LOTTO_UNICO) {
-				codiceLotto = dettGara.getDatiGeneraliGara().getCodice();
-			}
-			documentiRichiesti = this.bandiManager.getDocumentiRichiestiBandoGara(
-					this.codice, 
-					codiceLotto,
-					tipoImpresa, 
-					partecipazioneHelper.isRti(),
-					codiceBusta + "");
-
-			// verifico che ci siano i documenti richiesti per la busta
-			DettaglioComunicazioneType dettComunicazioneBusta = ComunicazioniUtilities
-					.retrieveComunicazione(
-							this.comunicazioniManager, 
-							this.getCurrentUser().getUsername(), 
-							this.codice,
-							this.progressivoOfferta,
-							CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA,
-							tipoBustaRichiesta);
-
-			if (dettComunicazioneBusta != null) {
-
-				ComunicazioneType comunicazioneBusta = this.comunicazioniManager
-						.getComunicazione(CommonSystemConstants.ID_APPLICATIVO,
-										  dettComunicazioneBusta.getId());
-
-				bustaOk = checkDocumentiOffertaTecnica(
-						comunicazioneBusta, 
-						nomeBusta,
-						documentiRichiesti);
-			} else {
-				bustaOk = false;
-				this.addActionError(this.getText("Errors.invioBuste.dataNotSent", new String[] { nomeBusta }));
-			}
-		}
-		return bustaOk;
-	}
-
 	/**
 	 * ... 
 	 */
@@ -2342,178 +1691,6 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 					CommonSystemConstants.SENDER_CODE);
 		}
 	}
-
-	/**
-	 * per le gare a lotti, verifica se i lotti dell'offerta sono utilizzati in altre offerte 
-	 * @throws ApsException 
-	 * @throws XmlException 
-	 */
-	protected boolean isLottiPresentiInAltreOfferte(BustaPartecipazione bustaPartecipazione) 
-		throws ApsException, XmlException 
-	{		 
-		boolean lottiDuplicati = false;
-		
-		WizardPartecipazioneHelper partecipazione = bustaPartecipazione.getHelper();
-		DettaglioGaraType gara = bustaPartecipazione.getGestioneBuste().getDettaglioGara();
-		
-		if(partecipazione.getLotti() != null) {
-			// recupera l'elenco dei lotti dalla gara per evitare la rilettura dal servizio...
-			//LottoDettaglioGaraType[] listaLotti = gara.getLotto();
-			HashMap<String, LottoDettaglioGaraType> listaLotti = new HashMap<String, LottoDettaglioGaraType>(); 
-			for(int i = 0; i < gara.getLotto().length; i++) {
-				listaLotti.put(gara.getLotto()[i].getCodiceLotto(), gara.getLotto()[i]);
-			}
-			
-			boolean invioOfferta = (this.getOperazione() == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
-				 
-			String tipoComunicazione = (invioOfferta
-				? PortGareSystemConstants.RICHIESTA_TIPO_INVIO_OFFERTA_GT
-				: PortGareSystemConstants.RICHIESTA_TIPO_PARTECIPAZIONE_GT);
-	
-			String progressivoOfferta = (partecipazione.getProgressivoOfferta() != null ? partecipazione.getProgressivoOfferta() : "");
-	 
-			// recupera l'elenco delle comunicazioni FS11/FS10...
-			DettaglioComunicazioneType criteriRicerca = new DettaglioComunicazioneType();
-			criteriRicerca.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
-			criteriRicerca.setChiave1(this.getCurrentUser().getUsername());
-			criteriRicerca.setChiave2(partecipazione.getIdBando());
-			//criteriRicerca.setChiave3(*);
-			//criteriRicerca.setStato(*);
-			criteriRicerca.setTipoComunicazione(tipoComunicazione);
-			List<DettaglioComunicazioneType> comunicazioni = this.getComunicazioniManager().getElencoComunicazioni(criteriRicerca);
-			
-			if(comunicazioni != null && comunicazioni.size() > 0) {
-				
-				// NB: in caso di gara ristretta in fase di domanda di partecipazione
-				// recupera i dati della partecipazione dalla comunicazione...
-				if(bustaPartecipazione.getGestioneBuste().isRistretta() &&
-				   bustaPartecipazione.getGestioneBuste().isDomandaPartecipazione()) 
-				{
-					ApsSystemUtils.getLogger().debug("Gara ristretta in fase di prequalifica, " + 
-													 "recupera partecipazione (IdComunicazioneTipoPartecipazione=?)... UNDEFINED");					
-				}
-				
-				// controlla se ci sono lotti duplicati nelle altre domande/offerte...
-				for(int i = 0; i < comunicazioni.size(); i++) {
-					String progOfferta = comunicazioni.get(i).getChiave3();
-					String prog = Integer.toString(i + 1);
-					
-					if( !progressivoOfferta.equals(progOfferta) ) {
-					
-						ComunicazioneType comunicazione = this.getComunicazioniManager()
-							.getComunicazione(CommonSystemConstants.ID_APPLICATIVO,
-										  	  comunicazioni.get(i).getId());
-						
-						WizardPartecipazioneHelper p = new WizardPartecipazioneHelper(comunicazione);
-						if(p != null && p.getLotti() != null) {
-							// verifica se ci sono lotti presenti in un'altra offerta
-							Iterator<String> lotti = p.getLotti().iterator();
-							while(lotti.hasNext()) {
-								String codLotto = lotti.next();
-								if(partecipazione.getLotti().contains(codLotto)) {
-									lottiDuplicati = true;
-									
-									// trova le informazioni del lotto... 
-									// NB: il lotto dovrebbe SEMPRE esistere nella lista !!!
-									LottoDettaglioGaraType info = listaLotti.get(codLotto);
-									String lotto = (info != null ? info.getCodiceInterno() : "");
-									String keyMsg = (invioOfferta
-													 ? "Errors.invioBusteLotti.lottoDuplicatoInAltraOfferta"
-													 : "Errors.invioBusteLotti.lottoDuplicatoInAltraDomanda");
-									this.addActionError(this.getText(keyMsg, new String[] { lotto, "#" + prog }));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		return lottiDuplicati;
-	}
-
-	/**
-	 * verifica se una data busta ha un questionario associato e completato
-	 * e se la modulistica e' stata cambiata dall'ultima compilazione
-	 */
-	protected boolean verificaQuestionario(
-			String codiceGara,
-			String codiceLotto,
-			String codiceInternoLotto,
-			int tipoBusta, 
-			RiepilogoBustaBean busta, 
-			Event evento) 
-	{
-		boolean controlliOk = true;
-		boolean modulisticaCambiata = false;
-		if(busta != null) {
-			try {
-              String descBusta = null;
-              if (tipoBusta == PortGareSystemConstants.BUSTA_PRE_QUALIFICA) {
-                descBusta = this.getI18nLabel("LABEL_BUSTA_PREQUALIFICA");
-              } else if (tipoBusta == PortGareSystemConstants.BUSTA_AMMINISTRATIVA) {
-                descBusta = this.getI18nLabel("LABEL_BUSTA_AMMINISTRATIVA");
-              } else if (tipoBusta == PortGareSystemConstants.BUSTA_TECNICA) {
-                descBusta = this.getI18nLabel("LABEL_BUSTA_TECNICA");
-                if (StringUtils.isNotEmpty(codiceInternoLotto)) {
-                  // si esplicita il lotto non completo
-                  descBusta += " (" + this.getI18nLabel("LABEL_LOTTO") + " " + codiceInternoLotto + ")";
-                }
-              } else if (tipoBusta == PortGareSystemConstants.BUSTA_ECONOMICA) {
-                descBusta = this.getI18nLabel("LABEL_BUSTA_ECONOMICA");
-                if (StringUtils.isNotEmpty(codiceInternoLotto)) {
-                  // si esplicita il lotto non completo
-                  descBusta += " (" + this.getI18nLabel("LABEL_LOTTO") + " " + codiceInternoLotto + ")";
-                }
-              }
-
-				codiceLotto = (StringUtils.isNotEmpty(codiceLotto) ? codiceLotto : codiceGara);
-				
-				// verifica se e' attiva la gestione del questionario per la gara
-				QuestionarioType q = WizardDocumentiBustaHelper.getQuestionarioAssociatoBO(
-						codiceLotto,
-						codiceGara, 
-						null, 
-						tipoBusta);
-				
-				if(busta.isQuestionarioPresente()) {
-					// verifica se e' cambiata la modulistica del questionario...
-					long idModello = (q != null ? q.getId() : 0);
-					long idBusta = busta.getQuestionarioId();
-					if( idModello != idBusta ) {
-						modulisticaCambiata = true;
-					}
-					
-					// verifica se il questionario non e' variato ed e' completo...
-					if(!modulisticaCambiata && busta.isQuestionarioCompletato()) {
-						// questionario completato
-						controlliOk = true;
-					} else {
-						// questionario incompleto o modulistica cambiata...
-						controlliOk = false;
-						String msg = this.getText("Errors.invioBuste.nullSurvey", new String[] {descBusta});
-						this.addActionError(msg);
-						if(StringUtils.isNotEmpty(evento.getDetailMessage())) {
-							msg = evento.getDetailMessage() + "\n" + msg;
-						}
-						evento.setDetailMessage(msg);
-						evento.setLevel(Event.Level.ERROR);
-					}
-				}
-			} catch (Throwable t) {
-				ApsSystemUtils.logThrowable(t, this, "isQuestionarioCompleto");
-				evento.setLevel(Event.Level.ERROR);
-				evento.setError(t);
-			}
-		}
-		
-		//if(modulisticaCambiata) {
-		//	//...
-		//}
-		
-		return controlliOk;
-	}
-
 	
 	/**
 	 * correggi eventuali invii senza protocollazione che prevedevano la protocollazione  
@@ -2527,7 +1704,7 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 			return this.getTarget(); 
 		}
 		
-		ApsSystemUtils.getLogger().info("fixProtocollazione BEGIN id=" + this.idComunicazione);
+		ApsSystemUtils.getLogger().debug("fixProtocollazione BEGIN id=" + this.idComunicazione);
 
 		ComunicazioneType comunicazione = null;
 		String statoComunicazione = null;
@@ -2684,33 +1861,9 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 					
 					switch (this.tipoProtocollazione) {
 					case PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_MAIL:
+						// ************************************************************
 						// NB: LA RI-PROTOCOLLAZIONE VIA MAIL, PER ORA NON E' PREVISTA!
-//						// PROTOCOLLAZIONE MAIL
-//						evento.setMessage("Protocollazione via mail a " + this.mailUfficioProtocollo);
-//						
-//						try {
-//							// si aggiorna lo stato a 5 tutte le comunicazioni relativa alle buste (FS11/FS10)
-//							evento.setEventType(PortGareEventsConstants.CAMBIO_STATO_COMUNICAZIONE);
-//							evento.setMessage(
-//									"Aggiornamento comunicazione con id " + comunicazione.getDettaglioComunicazione().getId() + 
-//									" allo stato " + CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE);
-//							this.getComunicazioniManager().updateStatoComunicazioni(
-//									new DettaglioComunicazioneType[] {comunicazione.getDettaglioComunicazione()}, 
-//									CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE);
-//							this.eventManager.insertEvent(evento);
-//							this.dataProtocollo = UtilityDate.convertiData(this.dataInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS);
-//							
-//							protocollazioneOk = true;
-//							
-//						} catch (Throwable t) {
-//							evento.setError(t);
-//							this.eventManager.insertEvent(evento);
-//							ApsSystemUtils.logThrowable(t, this, "send", "Per errori durante la connessione al server di posta, non e' stato possibile inviare la richiesta all''ufficio protocollo");
-//							ExceptionUtils.manageExceptionError(t, this);
-//							this.addActionError(this.getText("Per errori durante la connessione al server di posta, non e' stato possibile inviare la richiesta all''ufficio protocollo"));
-//							this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-//							protocollazioneOk = false;
-//						}
+						// ************************************************************
 						break;
 					
 					case PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_WSDM:
@@ -2870,7 +2023,7 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 					comunicazioni[0] = comunicazione.getDettaglioComunicazione();
 					this.comunicazioniManager.updateStatoComunicazioni(comunicazioni, statoComunicazione);
 					
-					ApsSystemUtils.getLogger().info("comunicazione id=" + comunicazione.getDettaglioComunicazione().getId() + " protocollata.");					
+					ApsSystemUtils.getLogger().debug("comunicazione id=" + comunicazione.getDettaglioComunicazione().getId() + " protocollata.");					
 				} catch (Throwable t) {
 					ApsSystemUtils.getLogger().error("fixProtocollazione", t);
 					this.addActionError(this.getText("Errors.unexpected"));
@@ -2879,9 +2032,114 @@ public class SendBusteAction extends EncodedDataAction implements SessionAware {
 			}
 		}
 		
-		ApsSystemUtils.getLogger().info("fixProtocollazione END id=" + this.idComunicazione);
+		ApsSystemUtils.getLogger().debug("fixProtocollazione END id=" + this.idComunicazione);
 		
 		return this.getTarget();
 	}
 	
+	/**
+	 * verifica se l'invio dell'offerta e' fuori tempo massimo oppure in tempo  
+	 */
+	protected boolean isAccessoFuoriTempoMassimo(DettaglioGaraType dettGara) {
+		boolean fuoriTempo = true;
+		
+		Date dtInvio = retrieveDataInvio(
+				this.getNtpManager(), 
+				this, 
+				GestioneBuste.getNomeOperazione(this.getOperazione()));
+		this.setDataInvio(dtInvio);
+		
+		if(dtInvio != null) {
+			Date dataTermine = getDataTermine(dettGara, this.operazione);
+			boolean invioScaduto = (dataTermine != null && dtInvio.compareTo(dataTermine) > 0);
+			if(invioScaduto) {
+				fuoriTempo = true;
+				// traccia solo i tentativi di accesso alle funzionalita' fuori tempo massimo
+				Event evento = new Event();
+				evento.setUsername(getCurrentUser().getUsername());
+				evento.setDestination(dettGara.getDatiGeneraliGara().getCodice());
+				evento.setLevel(Event.Level.ERROR);
+				evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
+				evento.setIpAddress(getCurrentUser().getIpAddress());
+				evento.setSessionId(getRequest().getSession().getId());
+				evento.setMessage("Accesso alla funzione " + getDescTipoEvento());
+				evento.setDetailMessage(PortGareEventsConstants.DETAIL_MESSAGE_ERRORE_FUORI_TEMPO_MASSIMO + 
+							" (" + UtilityDate.convertiData(dtInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS) + ")");
+				eventManager.insertEvent(evento);
+			} else {
+				fuoriTempo = false;
+				// traccia la data/ora di inizio di invio dell'offerta
+				Event evento = new Event();
+				evento.setUsername(getCurrentUser().getUsername());
+				evento.setDestination(dettGara.getDatiGeneraliGara().getCodice());
+				evento.setLevel(Event.Level.INFO);
+				evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
+				evento.setIpAddress(getCurrentUser().getIpAddress());
+				evento.setSessionId(getRequest().getSession().getId());
+				evento.setMessage("Accesso alla funzione " + getDescTipoEvento());
+				evento.setDetailMessage("Invio in data " + 
+							UtilityDate.convertiData(dtInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS));
+				eventManager.insertEvent(evento);
+			}
+		}
+		return fuoriTempo;
+	}
+
+	/**
+	 * verifica se la richiesta di invio e' fuori tempo massimo 
+	 */
+	protected boolean isFuoriTempoMassimo(DettaglioGaraType dettGara) {
+		boolean fuoriTempo = false;
+		Date dataTermine = getDataTermine(dettGara, operazione);
+		if (dataTermine != null && dataInvio.compareTo(dataTermine) > 0) {
+			fuoriTempo = true;
+			setTarget(CommonSystemConstants.PORTAL_ERROR);
+			addActionError(getText("Errors.invioRichiestaFuoriTempoMassimo", 
+											 new String[] { GestioneBuste.getNomeOperazione(operazione) }));
+			
+			Event evento = new Event();
+			evento.setUsername(getCurrentUser().getUsername());
+			evento.setDestination(dettGara.getDatiGeneraliGara().getCodice());
+			evento.setLevel(Event.Level.ERROR);
+			evento.setEventType(PortGareEventsConstants.ACCESSO_FUNZIONE);
+			evento.setIpAddress(getCurrentUser().getIpAddress());
+			evento.setSessionId(getRequest().getSession().getId());
+			evento.setMessage("Accesso alla funzione " + getDescTipoEvento());
+			evento.setDetailMessage(PortGareEventsConstants.DETAIL_MESSAGE_ERRORE_FUORI_TEMPO_MASSIMO 
+									+ " (" + UtilityDate.convertiData(dataInvio, UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS) + ")");
+			this.getEventManager().insertEvent(evento);
+		}	
+		return fuoriTempo;
+	}
+	
+	/**
+	 * verifica se la gara e' sospesa 
+	 */
+	protected boolean isGaraSospesa(DettaglioGaraType dettGara, Event evento) {
+		boolean sospesa = ("4".equals(dettGara.getDatiGeneraliGara().getStato()));
+		if(sospesa) {
+			evento.setDetailMessage(this.getText("Errors.invioBuste.proceduraSospesa"));
+			evento.setLevel(Event.Level.ERROR);
+			this.addActionError(this.getText("Errors.invioBuste.proceduraSospesa"));
+		}
+		return sospesa;
+	}
+
+	/**
+	 * verifica se il codice CNEL della partecipazione e' valorizzato (solo in fase di offerta) 
+	 */
+	protected boolean isCodiceCNELMancante(BustaPartecipazione partecipazione, Event evento) {
+		boolean CNELMancante = false;
+		if(this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA) {
+			CNELMancante = StringUtils.isEmpty(partecipazione.getHelper().getCodiceCNEL());
+			if(CNELMancante) {
+				evento.setDetailMessage(this.getText("Errors.invioBuste.CNELMancante"));
+				evento.setLevel(Event.Level.ERROR);
+				this.addActionError(this.getText("Errors.invioBuste.CNELMancante"));
+			}
+		}
+		return CNELMancante;
+	}
+	
+
 }

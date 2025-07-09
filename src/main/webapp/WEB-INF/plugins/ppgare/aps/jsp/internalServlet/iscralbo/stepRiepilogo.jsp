@@ -9,7 +9,7 @@
 	<s:param name="urlPage">${currentPageUrl}</s:param>
 	<s:param name="currentFrame">${param.currentFrame}</s:param>
 </s:url>
-<c:set var="urlPdf">${urlPdf}&amp;${tokenHrefParams}</c:set>
+<%-- <c:set var="urlPdf">${urlPdf}&amp;${tokenHrefParams}</c:set> --%>
 
 <s:if test="%{#session.dettIscrAlbo != null}">
 	<s:set name="sessionIdObj" value="'dettIscrAlbo'" />
@@ -84,7 +84,7 @@
 		<jsp:param name="keyMsg" value="${codiceBalloon}" />
 	</jsp:include>
 
-	<form action="<wp:action path="${nextAction}" />" method="post">
+	<form action='<wp:action path="${nextAction}"/>' method="post">
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 		
 		<fieldset>
@@ -342,17 +342,16 @@
 			<p id="linkCreatePdf">
 				<wp:i18n key="BUTTON_WIZARD_PRINT_DATA" var="valueScaricaPdf" />
 				<wp:i18n key="LABEL_ISCRALBO_SCARICA_PDF_RIEPILOGO" var="titleScaricaPdf" />
-				<c:choose>
-					<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-						<s:a href="%{#urlPdf}" title="%{#attr.titleScaricaPdf}">
-							<s:property value="%{#attr.valueScaricaPdf}" />
-						</s:a>
-					</c:when>
-					<c:otherwise>
-						<a href="${urlPdf}" class="bkg download" title="<s:property value='%{#attr.titleScaricaPdf}'/>"> 
-						</a>
-					</c:otherwise>
-				</c:choose>
+				<a href="${urlPdf}" title="${attr.titleScaricaPdf}" class="bkg download">
+					<c:choose>
+						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+							${attr.titleScaricaPdf}
+						</c:when>
+						<c:otherwise>
+						
+						</c:otherwise>
+					</c:choose>
+				</a>
 				<wp:i18n key="LABEL_ISCRALBO_SCARICA_PDF_RIEPILOGO"/>.
 			</p>
 		</s:if>

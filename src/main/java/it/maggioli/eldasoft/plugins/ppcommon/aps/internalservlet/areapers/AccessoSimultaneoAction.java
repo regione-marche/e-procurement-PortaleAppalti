@@ -3,29 +3,31 @@ package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.controller.control.Authenticator;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
+import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AccessoSimultaneoBean.TipoAutenticazione;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti.LoggedUserInfo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event.Level;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.bouncycastle.asn1.cms.AuthenticatedData;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -52,10 +54,11 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 	private IPageManager pageManager;
 	private IURLManager urlManager;
 	private IEventManager eventManager;
+	private IUserManager userManager;
+	private IAuthenticationProviderManager authenticationProvider;
 
-	@Validate(EParamValidation.GENERIC)
-	private String[] sessioneSimultanea;
-	@Validate(EParamValidation.URL)
+	private LoggedUserInfo sessioneSimultanea;
+	@ValidationNotRequired
 	private String urlRedirect;
 	
 
@@ -81,14 +84,23 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 		this.eventManager = eventManager;
 	}
 	
-	/**
-	 * @return the urlRedirect
-	 */
+	public IUserManager getUserManager() {
+		return userManager;
+	}
+
+	public void setUserManager(IUserManager userManager) {
+		this.userManager = userManager;
+	}
+	
+	public void setAuthenticationProvider(IAuthenticationProviderManager authenticationProvider) {
+		this.authenticationProvider = authenticationProvider;
+	}
+
 	public String getUrlRedirect() {
 		return urlRedirect;
 	}
 
-	public String[] getSessioneSimultanea() {
+	public LoggedUserInfo getSessioneSimultanea() {
 		return this.sessioneSimultanea;
 	}
 
@@ -102,7 +114,8 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 	public String view() {
 		AccessoSimultaneoBean accessoSimultaneo = (AccessoSimultaneoBean)session.get(AccessoSimultaneoBean.SESSION_CUNCURRENT_OBJECT_ID);
 		String sessionIdUserLogged = accessoSimultaneo.getSessionIdUtenteConnesso();
-		this.sessioneSimultanea = TrackerSessioniUtenti.getInstance(this.getRequest().getSession().getServletContext()).getDatiSessioniUtentiConnessi().get(sessionIdUserLogged);
+		this.sessioneSimultanea = TrackerSessioniUtenti.getInstance(this.getRequest().getSession().getServletContext())
+				.getDatiSessioniUtentiConnessi().get(sessionIdUserLogged);
 		return SUCCESS;
 	}
 	
@@ -146,52 +159,56 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 		return "redirect";
 	}
 	
+	/**
+	 * forza l'accesso ed invalida la sessione dell'utente precedentemente loggato in un'altra postazione 
+	 */
 	public String force() {
 		String target = "redirect";
-		// si rimuovono i dati inseriti in sessione per la gestione della concorrenza
-		AccessoSimultaneoBean accessoSimultaneo = (AccessoSimultaneoBean)session.remove(AccessoSimultaneoBean.SESSION_CUNCURRENT_OBJECT_ID);
-		String sessionIdUserLogged = accessoSimultaneo.getSessionIdUtenteConnesso();
 		
-		// si invalida la sessione correntemente operativa
+		// recupera e rimuovi i dati inseriti in sessione per la gestione della concorrenza
+		AccessoSimultaneoBean accessoSimultaneo = (AccessoSimultaneoBean)session.remove(AccessoSimultaneoBean.SESSION_CUNCURRENT_OBJECT_ID);
+		
+		// si invalida la sessione attualmente attiva (su un altro browse/pc/nodo)
 		ServletContext context = this.getRequest().getSession().getServletContext();
 		TrackerSessioniUtenti tracker = TrackerSessioniUtenti.getInstance(context);
+		AccountSSO soggettoImpresa = null;
 		
-		HttpSession httpSession = null;
-		String[] dati = null;
-		if(StringUtils.isNotEmpty(sessionIdUserLogged)) {
-			httpSession = tracker.getSessioniUtentiConnessi().get(sessionIdUserLogged);
-			dati = tracker.getDatiSessioniUtentiConnessi().get(sessionIdUserLogged);
+		// recupera i dati dell'utente attualmente connesso, che andra' invalidato...  
+		String sessionIdDaInvalidare = accessoSimultaneo.getSessionIdUtenteConnesso();
+		HttpSession sessionDaInvalidare = null;
+		LoggedUserInfo infoDaInvalidare = null;
+		if(StringUtils.isNotEmpty(sessionIdDaInvalidare)) {
+			sessionDaInvalidare = tracker.getSessioniUtentiConnessi().get(sessionIdDaInvalidare);
+			infoDaInvalidare = tracker.getDatiSessioniUtentiConnessi().get(sessionIdDaInvalidare); 
 		}
 		
 		// invalida la sessione associata all'utente che attualmente ha effettuato il login...
-		if (dati != null) {
+		if (infoDaInvalidare != null) {
 			try {
-				String sessionId = null;
-				if(httpSession != null) {
-					// in caso di CLUSTER l'oggetto sessione non esite se risiede su un altro nodo
-					sessionId = httpSession.getId();
-					httpSession.invalidate();
+				// in caso di CLUSTER l'oggetto sessione non esite se risiede su un altro nodo
+				if(sessionDaInvalidare != null) {
+					//lastUserId = sessionDaInvalidare.getId();
+					sessionDaInvalidare.invalidate();
 				}
 				
-				// chiudi la session dell'utente su db... 	
-				String username = dati[1];
-				if(accessoSimultaneo.getTipoAutenticazione() == TipoAutenticazione.SINGLE_SIGN_ON) {
-					// se l'utente SSO ha un delegate user allora si recupera l'utente
-					if(StringUtils.isNotEmpty(dati[4])) {
-						username = dati[4];
-					}
+				// chiudi la sessione dell'utente su db...
+				soggettoImpresa = AccountSSO.getFromSession();
+				String username = infoDaInvalidare.getLogin();
+				String delegateUser = null;
+				// se esiste recupera il delegate user (per l'utente SSO)
+				if(soggettoImpresa != null) {
+					username = (StringUtils.isNotEmpty(infoDaInvalidare.getUsername()) ? infoDaInvalidare.getUsername() : username);
+					delegateUser = (soggettoImpresa != null ? soggettoImpresa.getLogin() : null);
 				}
 				
 				// esegui il logout dell'utente per poter forzare il nuovo login
-				ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
-				IAuthenticationProviderManager authenticationProvider = (IAuthenticationProviderManager) ctx
-						.getBean("AuthenticationProviderManager");
-				authenticationProvider.logLogout(username, "*", "*");
-			    if(sessionId != null) {
-			    	tracker.removeSessioneUtente(sessionId);
+				// ed invalida la sessione precedente
+				authenticationProvider.logLogout(username, delegateUser, "*", "*");
+			    if(sessionIdDaInvalidare != null) {
+			    	tracker.removeSessioneUtente(sessionIdDaInvalidare);
 			    }
 				
-				ApsSystemUtils.getLogger().info("Forzata disconnessione per utente " + dati[1]);
+				ApsSystemUtils.getLogger().debug("Forzata disconnessione per utente " + infoDaInvalidare.getLogin());
 			} catch (Exception e) {
 				// si sono verificati dei casi con SSO per cui rimangono i
 				// riferimenti ad una sessione "morta" di un precedente accesso
@@ -201,38 +218,44 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 				// invalidazione della sessione in quanto gia' rimossa dal
 				// context applicativo e ripulire i dati della cache applicativa
 				// per la gestione delle sessioni
-				tracker.removeSessioneUtente(sessionIdUserLogged);
-				ApsSystemUtils.getLogger().warn("Rimossa dalla cache applicativa la sessione " + sessionIdUserLogged + 
-												" gia' invalidata in precedenza ma erroneamente rimasta nella cache per l'utente " + dati[1]);
+				tracker.removeSessioneUtente(sessionIdDaInvalidare);
+				ApsSystemUtils.getLogger().warn("Rimossa dalla cache applicativa la sessione " + sessionIdDaInvalidare + 
+												" gia' invalidata in precedenza ma erroneamente rimasta nella cache per l'utente " + infoDaInvalidare.getLogin());
 			}
 		}
+
+		// tracciatura dell'evento di disconnessione forzata per far accedere il nuovo utente connesso
+		Event evento = new Event();
+		evento.setLevel(Level.WARNING);
+		evento.setEventType(PortGareEventsConstants.LOGIN_AS);
+		evento.setSessionId(getRequest().getSession().getId());
+
+		// segnala alla classe Authenticator che e' in corso un login forzato !!!
+		session.put("forceLogin", "1");
 
 		String username = null;
 		String password = null;
 		String ipAddress = null;
-
-		Event evento = new Event();
-		evento.setLevel(Level.WARNING);
-		evento.setEventType(PortGareEventsConstants.LOGIN_AS);
 		switch (accessoSimultaneo.getTipoAutenticazione()) {
 		case DB:
+			// NB: in caso di login con SSO (SPID, Cohesion, etc.) l'autenticazione fine garantita
+			// dal sistema di autenticazione remoto, perciò quando si seleziona l'impresa per
+			// cui operare, il login diventa un loginAs e quindi la password associata 
+			// all'account dell'impresa non e' necessaria per effettuare il login
+			// si utilizza l'account dell'impresa ma con la password PASSE_PARTOUT!!!
 			UserDetails user = accessoSimultaneo.getUtenteCandidatoPortale();
 			username = user.getUsername();
-			password = user.getPassword();
+			password = (soggettoImpresa != null ? Authenticator.PASSE_PARTOUT : user.getPassword());
 			ipAddress = user.getIpAddress();
 
 			// si predispongono i dati per l'accesso
 			session.put("username", username);
 			session.put("password", password);
-			session.put("forceLogin", "1");
 			
-			this.urlRedirect = getPageURL("ppcommon_area_personale");
-			
-			// tracciatura dell'evento di disconnessione forzata per far accedere il nuovo utente connesso
 			evento.setUsername(username);
 			evento.setIpAddress(ipAddress);
-			evento.setSessionId(this.getRequest().getSession().getId());
 
+			this.urlRedirect = getPageURL("ppcommon_area_personale");
 			break;
 		case SINGLE_SIGN_ON:
 			AccountSSO accountSSO = accessoSimultaneo.getUtenteCandidatoSingleSignOn();
@@ -242,12 +265,9 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 			break;
 		}
 		
-		String msg = "Forzata la disconnessione della sessione di lavoro aperta da un'altra postazione per l'utente ";
-		if (httpSession != null && dati != null) {
-			msg = msg + dati[1] + " con id sessione " + sessionIdUserLogged + " a favore della sessione corrente";
-		} else {
-			msg = msg + username + " a favore della sessione corrente";
-		}
+		String msg = "Forzata la disconnessione della sessione di lavoro aperta da un'altra postazione per l'utente " 
+					 + (sessionDaInvalidare != null && infoDaInvalidare != null ? infoDaInvalidare.getLogin() : username)
+					 + " a favore della sessione corrente";
 		evento.setMessage(msg);
 		eventManager.insertEvent(evento);
 		
@@ -270,4 +290,5 @@ public class AccessoSimultaneoAction extends BaseAction implements SessionAware,
 		PageURL url = this.urlManager.createURL(reqCtx);
 		return url.getURL();
 	}
+
 }

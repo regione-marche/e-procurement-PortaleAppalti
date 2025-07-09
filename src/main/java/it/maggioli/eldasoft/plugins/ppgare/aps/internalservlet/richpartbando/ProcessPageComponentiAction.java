@@ -1,24 +1,21 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando;
 
 import com.agiletec.aps.system.SystemConstants;
-import it.eldasoft.utils.utility.UtilityFiscali;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.codifiche.ICodificheManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardIscrizioneHelper;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardRinnovoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Action di gestione delle operazioni nella pagina dei componenti di una RTI o
@@ -26,6 +23,11 @@ import java.util.Set;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageComponentiAction extends AbstractProcessPageAction implements IComponente {
 	/**
 	 * UID
@@ -35,7 +37,6 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	public static final int QUOTA_MAX_DECIMALS = 3;
 	
 	private ICodificheManager _codificheManager;
-
 	private ICustomConfigManager customConfigManager;
 
 	@Validate(EParamValidation.DIGIT)
@@ -76,6 +77,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	
 	private boolean quotaVisibile;			// campi nascosti per la validazione di quota e quotaRTI
 	private boolean quotaRTIVisibile;		// campi nascosti per la validazione di quota e quotaRTI
+	private boolean readOnly;				//Caso: Concorso di progettazione, i dati vengono inseriti dalla FS11 del concorso di primo grado
 	
 
 	public void setCodificheManager(ICodificheManager manager) {
@@ -249,6 +251,65 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	public void setQuotaRTIVisibile(boolean quotaRTIVisibile) {
 		this.quotaRTIVisibile = quotaRTIVisibile;
 	}
+	
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+	
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	/**
+	 * Ritorna l'helper in sessione utilizzato per la memorizzazione dei dati
+	 * sulla partecipazione in RTI per le offerte di gara
+	 */
+	protected IRaggruppamenti getSessionHelper() {
+		return GestioneBuste.getPartecipazioneFromSession().getHelper();
+	}
+
+	/**
+	 * inserisci/aggiorna un componente del raggruppamento RTI 
+	 */
+	private boolean addComponente(String id) {
+		if (this.ragioneSociale.length() <= 0) {
+			return false;
+		}
+		
+		boolean insert = (StringUtils.isEmpty(this.id));
+		
+		WizardPartecipazioneHelper helper = (WizardPartecipazioneHelper) getSessionHelper();
+		ComponentiValidator validator = new ComponentiValidator(
+				helper, 
+				helper.getDatiPrincipaliImpresa(),
+				this);
+				
+		// dati del componente inserito/modificato
+		IComponente componente = (insert
+				? new ComponenteHelper(this)
+				: helper.getComponenti().get(Integer.parseInt(this.id))
+		);
+		
+		// per le offerte, verifica che le imprese ausiliarie non compaiano gia' nell'RTI
+		IImpresa impresa = null;
+		if(componente != null) {
+			impresa = validator.isComponentiPresentiInImpreseAusiliarie(componente);
+			if(impresa != null) {
+				String cf = "2".equals(impresa.getAmbitoTerritoriale()) 
+									   ? impresa.getIdFiscaleEstero()
+									   : impresa.getCodiceFiscale();
+				this.addActionError(this.getText("Errors.impreseAusiliarie.duplicatedCodiceFiscale", new String[] { cf }));
+			} else { 
+				if(insert) {
+					helper.getComponenti().add(componente);
+				} else {
+					ComponenteHelper.copyTo(this, componente);
+				}
+			}
+		}
+
+		return (impresa == null);
+	}
 
 	/**
 	 * ... 
@@ -257,429 +318,79 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	@Override
 	public void validate() {
 		super.validate();
-
-		// VALIDAZIONE E CONTROLLI CAMPI
-
-		// controllo la partita iva, che puo' essere facoltativa per il
-		// libero professionista ed impresa sociale se previsto da configurazione, mentre per
-		// tutti gli altri casi risulta obbligatoria
-		boolean isLiberoProfessionista = this.getCodificheManager()
-				.getCodifiche()
-				.get(InterceptorEncodedData.LISTA_TIPI_IMPRESA_LIBERO_PROFESSIONISTA)
-				.containsKey(this.getTipoImpresa());
-		boolean isImpresaSociale = this.getCodificheManager()
-				.getCodifiche()
-				.get(InterceptorEncodedData.LISTA_TIPI_IMPRESA_SOCIALE)
-				.containsKey(this.getTipoImpresa());
-		boolean isPartitaIVAObbligatoriaLiberoProfessionista = !this
-				.getCodificheManager().getCodifiche()
-				.get(InterceptorEncodedData.CHECK_PARTITA_IVA_FACOLTATIVA_LIBERO_PROFESSIONISTA)
-				.containsValue("1");
-		boolean isPartitaIVAObbligatoriaImpresaSociale = !this
-				.getCodificheManager().getCodifiche()
-				.get(InterceptorEncodedData.CHECK_PARTITA_IVA_FACOLTATIVA_IMPRESA_SOCIALE)
-				.containsValue("1");
-		boolean OEItaliano = !"2".equalsIgnoreCase(this.ambitoTerritoriale);
 		
-		if (StringUtils.isBlank(this.id)) {
-			if ((StringUtils.isNotBlank(this.ragioneSociale)
-					 || StringUtils.isNotBlank(this.codiceFiscale)
-					 || StringUtils.isNotBlank(this.strQuota)
-					 || StringUtils.isNotBlank(this.tipoImpresa))) 
-			{
-				if(OEItaliano) {
-					if (StringUtils.isBlank(this.partitaIVA) 
-						&& ((!isLiberoProfessionista && !isImpresaSociale)
-							  || (isLiberoProfessionista && isPartitaIVAObbligatoriaLiberoProfessionista)
-							  || (isImpresaSociale && isPartitaIVAObbligatoriaImpresaSociale)))
-					{
-						this.addFieldError("partitaIVA", this.getText(
-								"Errors.requiredstring",
-								new String[] {this.getTextFromDB("partitaIVA")}));
-					}
-				}
-			}
-		}
-
-		if (StringUtils.isNotBlank(this.id)) {
-			if (StringUtils.isBlank(this.ragioneSociale)) {
-				this.addFieldError("ragioneSociale", this.getText(
-						"Errors.requiredstring",
-						new String[] {this.getTextFromDB("ragioneSociale")}));
-			}
-			
-			// controllo la partita iva, che puo' essere facoltativa per il
-			// libero professionista e impresa sociale se previsto da
-			// configurazione, mentre per tutti gli altri casi risulta
-			// obbligatoria. 
-			// si ripete il controllo perche' esiste il campo
-			// Nazione sempre fillato che va trascurato, e bisogna capire se il
-			// form e' di un record esistente che e' stato svuotato di tutti i dati
-			if(OEItaliano) {
-				if (StringUtils.isBlank(this.partitaIVA) 
-						&& ((!isLiberoProfessionista && !isImpresaSociale)
-								|| (isLiberoProfessionista && isPartitaIVAObbligatoriaLiberoProfessionista)
-								|| (isImpresaSociale && isPartitaIVAObbligatoriaImpresaSociale))) 
-				{
-					this.addFieldError("partitaIVA", this.getText(
-							"Errors.requiredstring",
-							new String[] {this.getTextFromDB("partitaIVA")}));
-				}
-				if (StringUtils.isBlank(this.codiceFiscale)) {
-					this.addFieldError("codiceFiscale", this.getText(
-							"Errors.requiredstring",
-							new String[]{this.getTextFromDB("codiceFiscale")}));
-				}
-			}
-			
-			if (StringUtils.isBlank(this.tipoImpresa)) {
-				this.addFieldError("tipoImpresa", this.getText(
-						"Errors.requiredstring",
-						new String[]{this.getTextFromDB("tipoImpresa")}));
-			}
-		}
-
-		if (this.getFieldErrors().size() > 0) {
-			return;
-		}
-
-		// CONTROLLI APPLICATIVI SUI DATI
-		try {
-			boolean impresaItaliana = "ITALIA".equalsIgnoreCase(this.getNazione());
-			
-			if(OEItaliano) {
-				// verifica del formato del codice fiscale
-				if (!"".equals(this.getCodiceFiscale())
-					&& !(UtilityFiscali.isValidCodiceFiscale(this.getCodiceFiscale(), impresaItaliana) || 
-						 UtilityFiscali.isValidPartitaIVA(this.getCodiceFiscale(), impresaItaliana))) 
-				{
-					if (impresaItaliana) {
-						this.addFieldError("codiceFiscale",
-								this.getText("Errors.wrongField",
-										new String[]{this.getTextFromDB("codiceFiscale")}));
-					} else {
-						this.addFieldError("codiceFiscale",
-								this.getText("Errors.wrongForeignFiscalField",
-										new String[]{this.getTextFromDB("codiceFiscale")}));
-					}
-				}
+		if (readOnly) {
+			// Caso readOnly, quindi, l'utente si ritrova gia' con i dati valorizzati
+			clearFieldErrors();
+		} else {
+			try {
+				// VALIDAZIONE E CONTROLLI CAMPI
+				boolean controlliOK = true;
+				
+				IRaggruppamenti helper = getSessionHelper();
+				IDatiPrincipaliImpresa datiImpresa = (helper instanceof WizardIscrizioneHelper
+						? ((WizardIscrizioneHelper) helper).getDatiPrincipaliImpresa()
+						: ((WizardPartecipazioneHelper) helper).getDatiPrincipaliImpresa()
+				);
+				
+				ComponentiValidator validator = new ComponentiValidator(
+						helper,
+						datiImpresa,
+						this);
+				
+				// controllo la partita iva, che puo' essere facoltativa per il
+				// libero professionista ed impresa sociale se previsto da configurazione, mentre per
+				// tutti gli altri casi risulta obbligatoria
+				controlliOK = controlliOK && validator.validateRequiredInputField(this, id); 
 	
-				// verifica del formato della partita iva
-				if (!"".equals(this.getPartitaIVA())
-					&& !UtilityFiscali.isValidPartitaIVA(this.getPartitaIVA(), impresaItaliana)) {
-					if (impresaItaliana) {
-						this.addFieldError("partitaIVA", this.getText(
-								"Errors.wrongField",
-								new String[] {this.getTextFromDB("partitaIVA")}));
-					} else {
-						this.addFieldError("partitaIVA", this.getText(
-								"Errors.wrongForeignFiscalField",
-								new String[] {this.getTextFromDB("partitaIVA")}));
-					}
-				}
-			}
-
-			IRaggruppamenti helper = getSessionHelper();
-
-			if (helper != null) {
-
-				if (helper.checkQuota()) {
-					if ((helper.isRti() && StringUtils.isBlank(this.strQuota))
-						&& (StringUtils.isNotBlank(this.ragioneSociale)
-						    || StringUtils.isNotBlank(this.codiceFiscale)
-						    || StringUtils.isNotBlank(this.partitaIVA))) 
-					{
-						this.addFieldError("strQuota", this.getText(
-								"Errors.requiredstring",
-								new String[] {this.getTextFromDB("strQuota")}));
-					} else if (!helper.isRti() && StringUtils.isNotBlank(this.strQuota)) {
-						this.addActionError(this.getText("Errors.wrongQuota"));
-					} else if (helper.isRti() && StringUtils.isNotBlank(this.strQuota)) {
-						try {
-							this.quota = Double.parseDouble(this.strQuota);
-						} catch (NumberFormatException ex) {
-							this.quota = -1.0;
-						}
-						if (this.quota < 0) {
-							this.addFieldError("strQuota", this.getTextFromDB("quotarange"));
-						}
-					}
-					
-					// verifica il numero massimo di decimali ammessi
-					if( !checkNumeroDecimali(this.strQuota, QUOTA_MAX_DECIMALS) ) {
-						this.addFieldError("strQuota", this.getText("quotamaxdecimals", 
-								new String[] {Integer.toString(QUOTA_MAX_DECIMALS), this.strQuota}));
-					}
-				}
-
-				if(OEItaliano) {
-					if (StringUtils.isNotBlank(this.codiceFiscale)) {
-						if (helper.getDatiPrincipaliImpresa().getCodiceFiscale()
-								.equalsIgnoreCase(this.codiceFiscale)) 
-						{
-							this.addFieldError("codiceFiscale", this.getText(
-									"Errors.sameCodiceFiscale",
-									new String[] {this.codiceFiscale }));
-						}
-					}
-					if (StringUtils.isNotBlank(this.partitaIVA) && StringUtils.isNotBlank(helper.getDatiPrincipaliImpresa().getPartitaIVA())) {
-						if (helper.getDatiPrincipaliImpresa().getPartitaIVA()
-								.equalsIgnoreCase(this.partitaIVA)) {
-							this.addFieldError("partitaIVA", this.getText(
-									"Errors.samePartitaIVA",
-									new String[] {this.partitaIVA }));
-						}
-					}
-				}
-				
-				// si garantisce che non esistano duplicazioni di codice
-				// fiscale/partita iva, e di ragioni sociali tra tutti i 
-				// componenti inseriti
-
-				// NB: WizardRinnovoHelper eredita WizardIscrizioneHelper  
-				//     ed eredita anche ComponentiRTI, Componenti!!!
-				boolean isIscrizioneRinnovo = (helper instanceof WizardIscrizioneHelper ||
-						                       helper instanceof WizardRinnovoHelper);
-				
-				List<IComponente> componenti = null;
-				if(isIscrizioneRinnovo && helper.isRti()) {
-					componenti = ((WizardIscrizioneHelper) helper).getComponentiRTI();
-				} else {
-					componenti = helper.getComponenti();
-				}
-				
-				//String msgComponenteConsorziata = (helper.isRti() ? "un componente" : "una consorziata");
-				//String msgPiuComponentiPiuConsorziate = (helper.isRti() ? "Uno o piu' componenti" : "Una o piu' consorziate");
-				//String msgMandanteConsorziata = (helper.isRti() ? "una mandante" : "una consorziata");
-
-				Set<String> listaRagioniSociali = new HashSet<String>();
-				Set<String> listaCodiciFiscali = new HashSet<String>();
-//				Set<String> listaPartiteIVA = new HashSet<String>();
-				Set<String> listaIdFiscaleEstero = new HashSet<String>();
-
-				// validazione delle mandanti di un raggruppamento o delle consorziate...
-				for(int i = 0; i < componenti.size(); i++) {
-					IComponente componente = componenti.get(i);
-					
-					// 1 o NULL indica operatore italiano
-					boolean operItaliano = !"2".equals(componente.getAmbitoTerritoriale()); 
-
-					if(isIscrizioneRinnovo && helper.isRti() && i == 0) {
-						// in caso di RTI il I elemento e' sempre la mandataria...
-						// ...salta i controlli sulla mandataria
-						continue;
-					}
-
-					// verifica se uno dei componenti ha la ragione sociale duplicata
-					if ( !listaRagioniSociali.contains(componente.getRagioneSociale().toUpperCase()) ) {
-						if (StringUtils.isNotBlank(componente.getRagioneSociale())) {
-							listaRagioniSociali.add(componente.getRagioneSociale().toUpperCase());
-						}
-					} else {
-						String errMsg = null;
-						if (helper.isRti()) {
-							errMsg = this.getText("Errors.rti.moreDuplicatedRagioneSociale",
-												  new String[] {componente.getRagioneSociale() });
-						} else {
-							errMsg = this.getText("Errors.consorzio.moreDuplicatedRagioneSociale",
-												  new String[] {componente.getRagioneSociale() });
-						}
-						this.addFieldError("ragioneSociale", errMsg);
-						return;
-					}
-
-					// controlla l'univocita' del codice fiscale
-				    // 1) nessuna mandante italiana oppure estera puo' avere il medesimo codice fiscale della mandataria
-				    // 2) nessuna mandante italiana puo' avere codice fiscale di altra mandante italiana
-				    // 3) nessuna mandante estera puo' avere identificativo fiscale di altra mandante estera
-					String cfMandataria = helper.getDatiPrincipaliImpresa().getCodiceFiscale().toUpperCase();	// + "|" + nazionalita ???
-					String cfMandante = this.getChiaveCF(componente);
-					String idFiscaleMandante = this.getChiaveCF(componente);
-					
-					// 1) nessuna mandante italiana oppure estera puo' avere il medesimo codice fiscale della mandataria
-					if(cfMandante.equalsIgnoreCase(cfMandataria) || idFiscaleMandante.equalsIgnoreCase(cfMandataria) ) {
-						if(cfMandante.equalsIgnoreCase(cfMandataria)) {
-							this.addFieldError("codiceFiscale",
-											   this.getText("Errors.sameCodiceFiscaleOperatore",
-													   		new String[] {componente.getCodiceFiscale()}));
-						} else {
-							this.addFieldError("idFiscaleEstero",
-									   		   this.getText("Errors.sameCodiceFiscaleOperatore",
-									   				   		new String[] {componente.getIdFiscaleEstero()}));
-						}
-						return;
-					}
-					
-					if(operItaliano) {
-						// 2) nessuna mandante italiana puo' avere codice fiscale di altra mandante italiana
-						// operatore italiano
-						if ( !listaCodiciFiscali.contains(cfMandante) ) {
-							if (StringUtils.isNotBlank(componente.getCodiceFiscale())) {
-								listaCodiciFiscali.add(cfMandante);
-							}
-						} else {
-							String msgErr = null;
-							if (helper.isRti()) {
-								msgErr = this.getText("Errors.rti.moreDuplicatedCodiceFiscale",
-					 					 			  new String[] {componente.getCodiceFiscale()});
-							} else {
-								msgErr = this.getText("Errors.consorzio.moreDuplicatedCodiceFiscale",
-													  new String[] {componente.getCodiceFiscale()});
-							}
-							this.addFieldError("codiceFiscale", msgErr);
-							return;
-						}
-						
-					} else {
-						// 3) nessuna mandante estera puo' avere identificativo fiscale di altra mandante estera
-						// operatore UE o extra UE
-						if ( !listaIdFiscaleEstero.contains(idFiscaleMandante) ) {
-							if (StringUtils.isNotBlank(componente.getIdFiscaleEstero())) {
-								listaIdFiscaleEstero.add(idFiscaleMandante);
-							}
-						} else {
-							String msgErr = null;
-							if (helper.isRti()) {
-								msgErr = this.getText("Errors.rti.moreDuplicatedCodiceFiscale",
-													  new String[] {componente.getIdFiscaleEstero()});
-							} else {
-								msgErr = this.getText("Errors.consorzio.moreDuplicatedCodiceFiscale",
-										  			  new String[] {componente.getIdFiscaleEstero()});
-							}
-							this.addFieldError("idFiscaleEstero", msgErr);
-							return;
-						}
-					}
-					
-					// verifica se il componente e' in aggiornamento o inserimento...
-					if (StringUtils.isNotBlank(this.id)) {
-						IComponente oggettoInAggiornamento = componenti.get(new Integer(this.id));
-						listaRagioniSociali.remove(oggettoInAggiornamento.getRagioneSociale().toUpperCase());
-						if(StringUtils.isNotEmpty(oggettoInAggiornamento.getIdFiscaleEstero())) {
-							listaIdFiscaleEstero.remove( this.getChiaveCF(oggettoInAggiornamento) );
-						} else {
-							listaCodiciFiscali.remove( this.getChiaveCF(oggettoInAggiornamento) );
-//							listaPartiteIVA.remove(oggettoInAggiornamento.getPartitaIVA().toUpperCase());
-						}	
-					}
-					
-				}
-				
-				// verifica se il nuovo operatore inserito in editing e' duplicato
-				// verifica se la ragione sociale e' duplicata
-				if (StringUtils.isNotBlank(this.ragioneSociale)
-					&& listaRagioniSociali.contains(this.ragioneSociale.toUpperCase())) 
-				{
-					String errMsg = null;
-					if (helper.isRti()) {
-						errMsg = this.getText("Errors.rti.duplicatedRagioneSociale",
-											  new String[] {this.ragioneSociale});
-					} else {
-						errMsg = this.getText("Errors.consorzio.duplicatedRagioneSociale",
-											  new String[] {this.ragioneSociale});
-					}
-					this.addFieldError("ragioneSociale", errMsg);
-				}
-				
-				// 1) nessuna mandante italiana oppure estera puo' avere il medesimo codice fiscale della mandataria
-				String cfMandataria = helper.getDatiPrincipaliImpresa().getCodiceFiscale().toUpperCase();		// + "|" + nazionalita ???
-				String cfMandante = (StringUtils.isNotEmpty(this.codiceFiscale) ? this.codiceFiscale : "");		// + "|" + nazionalita ???
-				String idFiscale = (StringUtils.isNotEmpty(this.idFiscaleEstero) ? this.idFiscaleEstero : "");	// + "|" + nazionalita ???				
-				if(cfMandante.equalsIgnoreCase(cfMandataria) || idFiscale.equalsIgnoreCase(cfMandataria) ) {
-					if(cfMandante.equalsIgnoreCase(cfMandataria)) {
-						this.addFieldError("codiceFiscale",
-										   this.getText("Errors.sameCodiceFiscaleOperatore",
-												   		new String[] {this.codiceFiscale}));
-					} else {
-						this.addFieldError("idFiscaleEstero",
-								   		   this.getText("Errors.sameCodiceFiscaleOperatore",
-								   				   		new String[] {this.idFiscaleEstero}));
-					}
+				if (this.getFieldErrors().size() > 0) {
 					return;
 				}
 
-				// verifica se il codice fiscale  e' duplicato
-				if (StringUtils.isNotBlank(this.codiceFiscale)) {
-					if (listaCodiciFiscali.contains(this.codiceFiscale.toUpperCase())) {
-						String msgErr = null;
-						if (helper.isRti()) {
-							msgErr = this.getText("Errors.rti.duplicatedCodiceFiscale",
-												  new String[] {this.codiceFiscale});
-						} else {
-							msgErr = this.getText("Errors.consorzio.duplicatedCodiceFiscale",
-												  new String[] {this.codiceFiscale});
-						}
-						this.addFieldError("codiceFiscale", msgErr);
-					}
+				// CONTROLLI APPLICATIVI SUI DATI
+				controlliOK = controlliOK && validator.validateInputRagioneSociale(this, id);
+				controlliOK = controlliOK && validator.validateInputCodiceFiscale(this, id); 
+				controlliOK = controlliOK && validator.validateInputPartitaIVA(this, id);
+				controlliOK = controlliOK && validateInputQuota(this, helper);
+				if( !controlliOK ) {
+					return;
 				}
 
-				// verifica se l'id fiscale estero e' duplicato
-				if (StringUtils.isNotBlank(this.idFiscaleEstero)) {
-					if (listaIdFiscaleEstero.contains(this.idFiscaleEstero.toUpperCase())) {
-						String msgErr = null;
-						if (helper.isRti()) {
-							msgErr = this.getText("Errors.rti.duplicatedCodiceFiscale",
-												  new String[] {this.idFiscaleEstero});
-						} else {
-							msgErr = this.getText("Errors.consorzio.duplicatedCodiceFiscale",
-												  new String[] {this.idFiscaleEstero});
-						}
-						this.addFieldError("idFiscaleEstero", msgErr);
-					}
+				// per le offerte, verifica che le imprese ausiliarie non compaiano gia' nell'RTI
+				IImpresa impresa = validator.isComponentiPresentiInImpreseAusiliarie();
+				if(impresa != null) {
+					String cf = "2".equals(impresa.getAmbitoTerritoriale()) 
+										   ? impresa.getIdFiscaleEstero()
+										   : impresa.getCodiceFiscale();
+					this.addActionError(this.getText("Errors.impreseAusiliarie.duplicatedCodiceFiscale",
+													 new String[] { cf }));
+					return;
 				}
+				
+			} catch (Throwable t) {
+				throw new RuntimeException("Errore durante la verifica dei dati richiesti per l'impresa "
+						+ this.getRagioneSociale(), t);
 			}
-		} catch (Throwable t) {
-			throw new RuntimeException("Errore durante la verifica dei dati richiesti per l'impresa "
-					+ this.getRagioneSociale(), t);
 		}
-	}
+	}	
 	
 	/**
-	 * restituisce una chiave per la mandatante CF [+nazionalita] o id fiscale estero [+nazionalita] 
-	 */
-	private String getChiaveCF(IComponente componente) {
-		String key = "";
-		// 1 o NULL indica operatore italiano
-		if( !"2".equals(componente.getAmbitoTerritoriale()) ) {
-			// operatore italiano
-			key = (StringUtils.isNotEmpty(componente.getCodiceFiscale())
-				   ? componente.getCodiceFiscale().toUpperCase()
-				   : "");
-		} else {
-			// operatore UE o extra UE
-			key = (StringUtils.isNotEmpty(componente.getIdFiscaleEstero()) 
-				   ? componente.getIdFiscaleEstero().toUpperCase()
-				   : "");
-		}
-		return key; // + "|" + nazionalita ???
-	}
-	
-	/**
-	 * ... 
+	 * passa al prossimo step del wizard 
 	 */
 	@Override
 	public String next() {
 		String target = SUCCESS;
 		
 		IRaggruppamenti helper = getSessionHelper();
-		
 		WizardPartecipazioneHelper partecipazioneHelper = (WizardPartecipazioneHelper) helper;
 	
 		if(helper != null 
-		   && (null != this.getCurrentUser() 
-			   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME))) 
+		   && (null != this.getCurrentUser() && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) ) 
 		{
-			if (this.ragioneSociale.length() > 0) {
-				// sono stati inseriti dei dati, si procede al salvataggio
-				if (StringUtils.isNotBlank(this.id)) {
-					// aggiorna i dati in sessione (codice preso da modify)
-					IComponente componente = helper.getComponenti().get(Integer.parseInt(this.id));
-					ProcessPageComponentiAction.synchronizeComponente(this, componente);
-				} else {
-					// aggiunge i dati in sessione (codice preso da insert)
-					ComponenteHelper componente = new ComponenteHelper();
-					ProcessPageComponentiAction.synchronizeComponente(this, componente);
-					helper.getComponenti().add(componente);
+			// sono stati inseriti dei dati per una mandante, si procede al salvataggio
+			if (!readOnly && this.ragioneSociale.length() > 0) {
+				if( !addComponente(this.id) ) {
+					target = INPUT; 
 				}
 			}
 	
@@ -707,7 +418,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 				}
 				
 				// verifica il numero massimo di decimali ammessi
-				if( !checkNumeroDecimali(this.strQuotaRTI, QUOTA_MAX_DECIMALS) ) {
+				if(!readOnly && !checkNumeroDecimali(this.strQuotaRTI, QUOTA_MAX_DECIMALS) ) {
 					this.addActionError(this.getText("quotamaxdecimals", 
 							new String[] {Integer.toString(QUOTA_MAX_DECIMALS), this.strQuotaRTI}));
 					target = "refresh";
@@ -777,6 +488,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 					this.addActionError(this.getText("Errors.quotaComponentiNonRaggiunta"));
 					target = "refresh";
 				} else if(sommaQuote > 100) {
+					// procedi comunque allo step successivo ma visualizza nel nuovo step un messaggio informativo 
 					this.addActionMessage(this.getText("Warnings.quotaComponentiSuperiore100"));
 				}
 			}
@@ -793,7 +505,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	}
 
 	/**
-	 * ... 
+	 * ...
 	 */
 	@SkipValidation
 	public String editConsorziate() {
@@ -801,7 +513,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	}
 	
 	/**
-	 * ... 
+	 * passa allo step precedente del wizard 
 	 */
 	@Override
 	public String back() {
@@ -843,42 +555,15 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			// aggiorna i dati in sessione
-			if (this.ragioneSociale.length() > 0) {
-				ComponenteHelper componente = new ComponenteHelper();
-				ProcessPageComponentiAction.synchronizeComponente(this, componente);
-				helper.getComponenti().add(componente);
+			if( !addComponente(null) ) {
+				target = INPUT; 
 			}
 		}
 		return target;
 	}
 
 	/**
-	 * ... 
-	 */
-	public String save() {
-		String target = "refresh";
-		
-		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) getSessionHelper();
-		if (helper == null) {
-			// la sessione e' scaduta, occorre riconnettersi
-			this.addActionError(this.getText("Errors.sessionExpired"));
-			target = CommonSystemConstants.PORTAL_ERROR;
-		} else {
-			// aggiorna i dati in sessione
-			IComponente componente = null;
-			int id = Integer.parseInt(this.id);
-			if(!helper.isRti()) {
-				componente = helper.getComponenti().get(id);
-			} else {
-				componente = helper.getComponentiRTI().get(id);
-			}
-			ProcessPageComponentiAction.synchronizeComponente(this, componente);
-		}
-		return target;
-	}
-
-	/**
-	 * ... 
+	 * aggiorna i dati di un componente del raggruppamento RTI
 	 */
 	public String savePartecipazione() {
 		String target = "refresh";
@@ -890,15 +575,35 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			// aggiorna i dati in sessione
-			IComponente componente = null;
-			componente = helper.getComponenti().get(Integer.parseInt(this.id));
-			if(!helper.isRti()) {
-				ProcessPageComponentiAction.synchronizeComponente(this, componente);
-			} else {
-				ProcessPageComponentiAction.synchronizeComponente(this, componente);
-			}
+			IComponente componente = helper.getComponenti().get(Integer.parseInt(this.id));
+			ComponenteHelper.copyTo(this, componente);
 		}
+		
 		return target;
+	}
+
+	/**
+	 * ...
+	 */
+	public String save() {
+		/*
+		 * QUI NON DOVREI MAI ARRIVARCI !!!
+		 * IL "save" E' FATTO NELLA ProcessPageComponentiAction.save() !!!
+		 */
+//		String target = "refresh";
+//		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) getSessionHelper();
+//		if (helper == null) {
+//			// la sessione e' scaduta, occorre riconnettersi
+//			this.addActionError(this.getText("Errors.sessionExpired"));
+//			target = CommonSystemConstants.PORTAL_ERROR;
+//		} else {
+//			// aggiorna i dati in sessione
+//			if( !addComponente(this.id) ) {
+//				target = INPUT; 
+//			}
+//		}
+//		return target;
+		return "refresh";
 	}
 
 	/**
@@ -917,6 +622,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 	@SkipValidation
 	public String delete() {
 		String target = "refresh";
+		
 		IRaggruppamenti helper = getSessionHelper();
 		if (helper == null) {
 			// la sessione e' scaduta, occorre riconnettersi
@@ -928,6 +634,7 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 				helper.getComponenti().remove(Integer.parseInt(this.idDelete));
 			}
 		}
+		
 		return target;
 	}
 
@@ -939,44 +646,6 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 		return "modify";
 	}
 
-	/**
-	 * Ritorna l'helper in sessione utilizzato per la memorizzazione dei dati
-	 * sulla partecipazione in RTI.
-	 * 
-	 * @return helper contenente i dati per la gestione di RTI e componenti
-	 */
-	protected IRaggruppamenti getSessionHelper() {
-		return GestioneBuste.getPartecipazioneFromSession().getHelper();
-	}
-
-	/**
-	 * ... 
-	 */
-	public static void resetComponente(IComponente componente) {
-		componente.setRagioneSociale(null);
-		componente.setTipoImpresa(null);
-		componente.setAmbitoTerritoriale(null);
-		componente.setNazione("Italia");
-		componente.setCodiceFiscale(null);
-		componente.setPartitaIVA(null);
-		componente.setIdFiscaleEstero(null);
-		componente.setQuota(null);
-	}
-
-	/**
-	 * ... 
-	 */
-	public static void synchronizeComponente(IComponente from, IComponente to) {
-		to.setRagioneSociale(from.getRagioneSociale());
-		to.setTipoImpresa(from.getTipoImpresa());
-		to.setAmbitoTerritoriale(from.getAmbitoTerritoriale());
-		to.setNazione(from.getNazione());
-		to.setCodiceFiscale(from.getCodiceFiscale());
-		to.setPartitaIVA(from.getPartitaIVA());
-		to.setIdFiscaleEstero(from.getIdFiscaleEstero());
-		to.setQuota(from.getQuota());
-	}
-	
 	/**
 	 * verifica se il numero di decimali di un double eccede il massimo consentito  
 	 */
@@ -990,6 +659,49 @@ public class ProcessPageComponentiAction extends AbstractProcessPageAction imple
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * valida il campo quota 
+	 */
+	private boolean validateInputQuota(IComponente form, IRaggruppamenti raggruppamento) {
+		// valida il campo quota
+		if (raggruppamento.checkQuota()) {
+			if(StringUtils.isBlank(this.strQuota)) {
+				// quota e' vuoto
+				if (raggruppamento.isRti()
+					&& (StringUtils.isNotBlank(this.ragioneSociale)
+						|| StringUtils.isNotBlank(this.codiceFiscale)
+						|| StringUtils.isNotBlank(this.partitaIVA))) 
+				{
+					this.addFieldError("strQuota", 
+							this.getText("Errors.requiredstring", 
+										 new String[]{this.getTextFromDB("strQuota")}));
+				}
+			} else {
+				// quota ha un valore
+				if(!raggruppamento.isRti()) {
+					this.addActionError(this.getText("Errors.wrongQuota"));
+				} else if (raggruppamento.isRti()) {
+					try {
+						this.quota = Double.parseDouble(this.strQuota);
+					} catch (NumberFormatException ex) {
+						this.quota = -1.0;
+					}
+					if (this.quota < 0) {
+						this.addFieldError("strQuota", this.getTextFromDB("quotarange"));
+					}
+				}
+				
+				// verifica il numero massimo di decimali ammessi
+				if (!checkNumeroDecimali(this.strQuota, QUOTA_MAX_DECIMALS)) {
+					this.addFieldError("strQuota", 
+							this.getText("quotamaxdecimals", 
+										 new String[]{Integer.toString(QUOTA_MAX_DECIMALS), this.strQuota}));
+				}
+			}
+		}
+		return (this.getFieldErrors().size() <= 0);
 	}
 	
 }

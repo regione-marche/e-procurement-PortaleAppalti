@@ -41,10 +41,12 @@ public interface IEventManager {
 	 * 			livello per cui filtrare la ricerca
 	 * @param message
 	 * 			messaggio per cui filtrare la ricerca
+	 * @param delegate
+	 * 			in caso di SSO e' il soggetto impresa per cui filtrare la ricerca
 	 * 
 	 * @return int numero di eventi trovati a db in base ai filtri di ricerca impostati
 	 */
-	int countEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message);
+	int countEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, String delegate);
 	
 	/**
 	 * Ricerca paginata degli eventi presenti a db.
@@ -63,6 +65,8 @@ public interface IEventManager {
 	 * 			livello per cui filtrare la ricerca
 	 * @param message
 	 * 			messaggio per cui filtrare la ricerca
+	 * @param delegate
+	 * 			in caso di SSO e' il soggetto impresa per cui filtrare la ricerca
 	 * @param startRow
 	 * 			riga iniziale
 	 * @param pageSize
@@ -70,8 +74,7 @@ public interface IEventManager {
 	 * 
 	 * @return List<Event> lista degli eventi per la pagina selezionata.
 	 */
-	List<Event> searchEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, final int startRow, final int pageSize);
-	
+	List<Event> searchEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, String delegate, final int startRow, final int pageSize);	
 	
 	/**
 	 * Estrae il dettaglio di un evento.
@@ -82,4 +85,5 @@ public interface IEventManager {
 	 * @return dettaglio evento
 	 */
 	Event getEvent(Long eventId);
+	
 }

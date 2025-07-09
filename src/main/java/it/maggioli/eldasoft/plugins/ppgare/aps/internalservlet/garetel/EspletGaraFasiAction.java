@@ -1,15 +1,17 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.exception.ApsException;
 
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.EspletGaraLottoType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaGara;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
@@ -20,12 +22,19 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Valida
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * 
+ */
 public class EspletGaraFasiAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -53,6 +62,9 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 	private int tipologiaGara;
 	private Integer tipoOffertaTelematica;
 	private boolean costoFisso;
+	private boolean isConcorsoPrimoGrado;
+	private boolean with2Phase;
+	private boolean canShowRankingFirstGradeCompetition;
 
 	@Override
 	public void setSession(Map<String, Object> arg0) {
@@ -127,6 +139,7 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 		this.abilitaGraduatoria = abilitaGraduatoria;
 	}
 
+
 	public Boolean getVisibileValTec() {
 		return visibileValTec;
 	}	
@@ -149,6 +162,19 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 
 	public void setVisibileGraduatoria(Boolean visibileGraduatoria) {
 		this.visibileGraduatoria = visibileGraduatoria;
+	}
+	
+
+	public boolean isConcorsoPrimoGrado() {
+		return isConcorsoPrimoGrado;
+	}
+	
+	public boolean isWith2Phase() {
+		return with2Phase;
+	}
+
+	public boolean isCanShowRankingFirstGradeCompetition() {
+		return canShowRankingFirstGradeCompetition;
 	}
 
 	/**
@@ -174,9 +200,6 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 
 				DettaglioGaraType dettGara = this.bandiManager.getDettaglioGara(this.codice);
 				
-				this.tipoOffertaTelematica = dettGara.getDatiGeneraliGara().getTipoOffertaTelematica();
-				boolean visualizzaEspletamento = dettGara.getDatiGeneraliGara().isVisualizzaEspletamento();
-				
 				this.lotti = false;
 				this.tipologiaGara = 0;
 				if(dettGara != null && dettGara.getDatiGeneraliGara() != null) {
@@ -187,13 +210,18 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 					this.tipologiaGara = dettGara.getDatiGeneraliGara().getTipologia();
 				}
 
+				boolean visualizzaEspletamento = dettGara.getDatiGeneraliGara().isVisualizzaEspletamento();
+				this.tipoOffertaTelematica = dettGara.getDatiGeneraliGara().getTipoOffertaTelematica();
+				
+				// concorsi di progettazione
+				isConcorsoPrimoGrado = StringUtils.equals("9", dettGara.getDatiGeneraliGara().getIterGara());
+				with2Phase = dettGara.getDatiGeneraliGara().getTipoConcorso() != null
+							 && dettGara.getDatiGeneraliGara().getTipoConcorso() == 2;
+				canShowRankingFirstGradeCompetition =  bandiManager.canShowRankingFirstGradeCompetition(codice);
+
 				// una OEPV a costo fisso non ha offerta economica!!! 
 				this.costoFisso = (boolean)(dettGara.getDatiGeneraliGara().getCostoFisso() == 1);
-				List<EspletGaraLottoType> listaLotti = null;
-				if(this.lotti) {
-					listaLotti = EspletGaraViewOffEcoLottiAction
-						.getLottiAbilitatiGara(dettGara, this.bandiManager);
-				}
+				int numLottiEco = getNumeroLottiBustaEconomica(dettGara); 
 				
 				boolean conOffertaTecnica = this.bandiManager.isGaraConOffertaTecnica(this.codice);
 				
@@ -205,9 +233,7 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 					
 					proceduraTelematica = dettGara.getDatiGeneraliGara().isProceduraTelematica();
 					
-					if(dettGara.getDatiGeneraliGara().getFaseGara() != null) {
-						faseGara = dettGara.getDatiGeneraliGara().getFaseGara();
-					}
+					faseGara = calcolaFaseGara(dettGara);
 					
 					// RICHIESTA D'OFFERTA
 					if (dettGara.getDatiGeneraliGara().getDataTerminePresentazioneOfferta() != null
@@ -244,8 +270,7 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 				this.setAbilitaOffEco(false);
 				this.setAbilitaGraduatoria(false);
 				this.setVisibileValTec(conOffertaTecnica);
-				this.setVisibileOffEco((!this.lotti && !this.costoFisso)
-									    || (this.lotti && listaLotti != null && listaLotti.size() > 0));
+				this.setVisibileOffEco((!this.lotti && !this.costoFisso) || (this.lotti && numLottiEco > 0));
 				this.setVisibileGraduatoria(true);
 				if("8".equals(dettGara.getDatiGeneraliGara().getIterGara())) {
 					this.setVisibileGraduatoria(false);
@@ -260,15 +285,14 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 					
 					this.setAbilitaAperturaDocAmm( faseGara >= 2 );
 					
-					this.setAbilitaValTec(
-							(!this.lotti && faseGara >= 5 && conOffertaTecnica) 
-							|| (this.lotti && conOffertaTecnica) 
-					);
+					this.setAbilitaValTec( faseGara >= 5 && conOffertaTecnica ); 
 					
 					this.setAbilitaOffEco( faseGara >= 6 );
 					
-					this.setAbilitaGraduatoria( faseGara > 6 );
-					
+					this.setAbilitaGraduatoria(
+						(faseGara > 6 && !with2Phase)
+							|| (with2Phase && canShowRankingFirstGradeCompetition)
+					);
 				} else {
 					this.addActionError(this.getText("Errors.espletamento.nonDisponibile"));
 					evento.setLevel(Event.Level.ERROR);
@@ -298,8 +322,73 @@ public class EspletGaraFasiAction extends EncodedDataAction implements SessionAw
 		
 		return this.getTarget(); 
 	}
+
+	/**
+	 * ...
+	 */
+	private int getNumeroLottiBustaEconomica(DettaglioGaraType dettaglioGara) {
+		// NB: una OEPV a costo fisso non ha offerta economica!!!
+		int numLottiEco = 0;
 		
+		for(int i = 0; i < dettaglioGara.getLotto().length; i++) {
+			// una OEPV a costo fisso non ha offerta economica!!! ==> NO LOTTO !!!
+			int costoFisso = (dettaglioGara.getLotto(i).getCostoFisso() != null 
+				? dettaglioGara.getLotto(i).getCostoFisso().intValue() 
+				: 0
+			);
+			if(costoFisso != 1)
+				numLottiEco++; 
+		}
+		
+		return numLottiEco;
+	}
 	
+	/**
+	 * @throws ApsException 
+	 * 
+	 */
+	private long calcolaFaseGara(DettaglioGaraType dettaglioGara) throws ApsException {
+		long fasgar = -1;
+		
+	 	if(dettaglioGara.getDatiGeneraliGara().getFaseGara() != null) {
+	 		fasgar = dettaglioGara.getDatiGeneraliGara().getFaseGara().longValue();
+		}
+		
+		// in caso di gara a LOTTI il fasgar e' presente su ogni lotto e va controllato per lotto...
+		if(lotti) {
+			List<EspletGaraOperatoreType> fasiLotti = bandiManager
+					.getEspletamentoGaraValTecElencoOperatoriLotto(codice, getCurrentUser().getUsername());
+			long faseGaraTec = getMaxFaseGara(fasiLotti);
+			
+			fasiLotti = bandiManager
+					.getEspletamentoGaraOffEcoElencoOperatoriLotto(codice, getCurrentUser().getUsername());
+			long faseGaraEco = getMaxFaseGara(fasiLotti);
+		
+			// basta 1 lotto della busta tec/eco per abilitare il relativo menu
+			fasgar = Math.max(fasgar, Math.max(faseGaraTec, faseGaraEco));
+		}
+		
+		return fasgar;
+	}
+		
+	/**
+	 * ...
+	 */
+	private long getMaxFaseGara(List<EspletGaraOperatoreType> fasiLotti) {
+		long fasgar = -1;
+		if(fasiLotti != null)
+			fasgar = fasiLotti.stream()
+				.filter(oper -> oper.getLotti() != null && oper.getLotti().length > 0)
+				.map(oper -> Arrays.asList(oper.getLotti()).stream()
+						.filter(l -> l.getFaseGara() != null)
+						.map(l -> l.getFaseGara())
+						.max(Long::compare)
+						.orElse(-1L))
+				.max(Long::compare)
+				.orElse(-1L);
+		return fasgar;
+	}
+		
 	/**
 	 * memorizza in sessione le abilitazioni della gara
 	 */

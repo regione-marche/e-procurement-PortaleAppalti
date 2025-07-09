@@ -16,6 +16,7 @@
 NB: per le seguenti variabili, indicativamente si utilizza lo stesso valore di "fromPage" 
 	che contiene il nome del metodo relativo alla chiamata presente nella action BandiFinderAction!!!
 --%>
+<c:set var="listAllBandi" value="false"/>
 <c:set var="listAllInCorso" value="false"/>
 <c:set var="listAllScaduti" value="false"/>
 <c:set var="listAllRichiesteOfferta" value="false"/>
@@ -32,12 +33,23 @@ NB: per le seguenti variabili, indicativamente si utilizza lo stesso valore di "
 <c:set var="searchProcedureVendRegimePriv" value="false"/>
 <c:set var="listAllVendRegimePrivInCorso" value="false"/> 
 <c:choose>
+	<c:when test="${sessionScope.fromPage eq 'listAllBandi'}">
+		<c:set var="codiceTitolo" value="TITLE_PAGE_LISTA_BANDI"/>
+		<c:set var="codiceBalloon" value="BALLOON_LISTA_BANDI"/>
+		<c:if test="${visRSS}">
+			<wp:headInfo type="DC.Description" info="Bandi di gara" />
+			<c:set var="rss" value="bandi.xml" />
+			<wp:headInfo type="RSS.Bandi" var="rss" />
+		</c:if>
+		<s:set var="searchForm" value="%{#session.formSearchBandi}" />
+		<c:set var="listAllBandi" value="true"/>
+	</c:when>
 	<c:when test="${sessionScope.fromPage eq 'listAllInCorso'}">
 		<c:set var="codiceTitolo" value="TITLE_PAGE_LISTA_BANDI_IN_CORSO"/>
 		<c:set var="codiceBalloon" value="BALLOON_LISTA_BANDI_IN_CORSO"/>
 		<c:if test="${visRSS}">
 			<wp:headInfo type="DC.Description" info="Bandi di gara" />
-				<c:set var="rss" value="bandi.xml" />
+			<c:set var="rss" value="bandi.xml" />
 			<wp:headInfo type="RSS.Bandi" var="rss" />
 		</c:if>
 		<s:set var="searchForm" value="%{#session.formListAllInCorsoBandi}" />
@@ -69,19 +81,19 @@ NB: per le seguenti variabili, indicativamente si utilizza lo stesso valore di "
 	<c:when test="${sessionScope.fromPage eq 'listAllAsteInCorso'}">
 		<c:set var="codiceTitolo" value="TITLE_PAGE_LISTA_ASTE_IN_CORSO"/>
 		<c:set var="codiceBalloon" value="BALLOON_LISTA_ASTE_IN_CORSO"/>
-		<s:set var="searchForm" value="%{#session.formListAllAsteInCorsoBandi}" />		
+		<s:set var="searchForm" value="%{#session.formListAllAsteInCorsoBandi}" />
 		<c:set var="listAllAsteInCorso" value="true"/>
 	</c:when>
 	<c:when test="${sessionScope.fromPage eq 'searchProcedure'}">
 		<c:set var="codiceTitolo" value="TITLE_PAGE_LISTA_PROC_AGGIUDICAZIONE_CONCLUSE"/>
 		<c:set var="codiceBalloon" value="BALLOON_RICERCA_BANDI_PROC_AGG"/>
-		<s:set var="searchForm" value="%{#session.formSearchBandiProcAgg}" />		
+		<s:set var="searchForm" value="%{#session.formSearchBandiProcAgg}" />
 		<c:set var="listAllProcInAggiudicazione" value="true"/>
 	</c:when>
 	<c:when test="${sessionScope.fromPage eq 'searchBandiConEsito'}">
 		<c:set var="codiceTitolo" value="TITLE_PAGE_RICERCA_BANDI"/>
 		<c:set var="codiceBalloon" value="BALLOON_LISTA_BANDI_CON_ESITO"/>
-		<s:set var="searchForm" value="%{#session.formSearchBandiConEsito}" />		
+		<s:set var="searchForm" value="%{#session.formSearchBandiConEsito}" />
 		<c:set var="searchBandiConEsito" value="true"/>
 	</c:when>
 		
@@ -138,8 +150,9 @@ NB: per le seguenti variabili, indicativamente si utilizza lo stesso valore di "
 
 <%-- calcola la visibilita' di alcuni campi di filtro in base alla form di ricerca --%>
 <c:set var="proceduraTelematicaVisibile" value="${
-				listAllInCorso || listAllScaduti || listAllRichiesteOfferta || listAllRichiesteDocumenti || listAllProcInAggiudicazione || searchBandiConEsito}"/>
-<c:set var="statoVisibile" value="${listAllScaduti || listAllProcInAggiudicazione || searchBandiConEsito}"/>
+				listAllBandi || listAllInCorso || listAllScaduti || listAllRichiesteOfferta || listAllRichiesteDocumenti 
+				|| listAllProcInAggiudicazione || searchBandiConEsito}"/>
+<c:set var="statoVisibile" value="${listAllBandi || listAllScaduti || listAllProcInAggiudicazione || searchBandiConEsito}"/>
 <c:set var="esitoVisibile" value="${searchBandiConEsito}"/>
 <c:set var="cigVisibile" value="${ 
 		   not (listAllAcqRegimePrivInCorso || listAllAcqRegimePrivScaduti || listAllRichiesteOffertaAcqRegimePriv || searchProcedureAcqRegimePriv ||
@@ -183,7 +196,7 @@ model.iTotalRecords=${model.iTotalRecords}<br/>
 
 	<h2><wp:i18n key="${codiceTitolo}"/></h2>
 
-	<c:if test="${visRSS && (listAllInCorso || listAllScaduti)}"> 
+	<c:if test="${visRSS && (listAllInCorso || listAllScaduti || listAllBandi)}"> 
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_rss.jsp" >
 			<jsp:param name="rss" value="${rss}" />
 		</jsp:include>

@@ -1,23 +1,23 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.struts2.interceptor.SessionAware;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
-
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletamentoElencoOperatoriSearch;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.util.EspletamentoUtil;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+import org.apache.struts2.interceptor.SessionAware;
+
+import java.util.List;
+import java.util.Map;
 
 public class EspletGaraViewDocAmmAction extends EncodedDataAction implements SessionAware {
 	/**
@@ -34,6 +34,7 @@ public class EspletGaraViewDocAmmAction extends EncodedDataAction implements Ses
 	private Long faseGara;
 	private List<EspletGaraOperatoreType> elencoOperatori;
 	private Boolean proceduraInversa;
+	private boolean hideFiscalCode = false;
 		
 	@Override
 	public void setSession(Map<String, Object> arg0) {
@@ -89,12 +90,16 @@ public class EspletGaraViewDocAmmAction extends EncodedDataAction implements Ses
 			try {
 				this.proceduraInversa = false;
 				DettaglioGaraType dettGara = this.bandiManager.getDettaglioGara(this.codice);
+				hideFiscalCode = EspletamentoUtil.hasToHideFiscalCode(dettGara);
 				if(dettGara != null) {
 					this.proceduraInversa = dettGara.getDatiGeneraliGara().isProceduraInversa();
 				}
-				
-				this.elencoOperatori = this.bandiManager
-					.getEspletamentoGaraDocAmmElencoOperatori(this.codice, null);
+
+				EspletamentoElencoOperatoriSearch search = new EspletamentoElencoOperatoriSearch();
+				search.setCodice(codice);
+				search.setCodiceOperatore(null);
+				search.setUsername(getCurrentUser().getUsername());
+				this.elencoOperatori = bandiManager.getEspletamentoGaraDocAmmElencoOperatori(search);
 				
 				// NB: 
 				//	per le gare plico unico offerta unica
@@ -145,5 +150,8 @@ public class EspletGaraViewDocAmmAction extends EncodedDataAction implements Ses
 			}		
 		}
 	}
-	
+
+	public boolean getHideFiscalCode() {
+		return hideFiscalCode;
+	}
 }

@@ -116,10 +116,10 @@ public class WSOrdiniNSOWrapper {
 		this.client = new ApiClient();
 		this.endpoint = (String)this.appParamManager.getConfigurationValue(AppParamManager.NSO_URL);
 		logger.debug("this.endpoint: {}",this.endpoint);
-		String auth = new String(Base64.decodeBase64(basicAuthenticaton.getBytes()));			
+		String auth = new String(Base64.decodeBase64(basicAuthenticaton.getBytes()));
 		if(StringUtils.isNotEmpty(auth)) {
 			String v[] = auth.split(":");
-			this.client.setUsername(v[0]);			
+			this.client.setUsername(v[0]);
 			this.client.setPassword(v[1]);
 			this.client.setBasePath(this.endpoint);
 		}
@@ -135,7 +135,7 @@ public class WSOrdiniNSOWrapper {
 	public NsoIntegrationControllerApi getNso() {
 		if(this.client == null) {
 			this.initClient();
-		}		
+		}
 		return nso;
 	}
 	/**
@@ -144,7 +144,7 @@ public class WSOrdiniNSOWrapper {
 	public NsoIntegrationControllerV11Api getNsoV11() {
 		if(this.client == null) {
 			this.initClient();
-		}		
+		}
 		return nsov11;
 	}
 	
@@ -162,7 +162,7 @@ public class WSOrdiniNSOWrapper {
 	 * Fatture API
 	 */
 	public V10Api getApiFatture() {
-		logger.info("Called getApiFatture");
+		logger.debug("Called getApiFatture");
 		if(this.clientFatt==null) this.initClientFatt();
 		return this.nsoFattApi;
 	}

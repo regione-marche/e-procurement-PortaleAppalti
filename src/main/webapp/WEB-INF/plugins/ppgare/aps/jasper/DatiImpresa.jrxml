@@ -47,7 +47,9 @@
 	<title>
 		<band height="51" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="11" width="555" height="20" uuid="0744da3e-932a-478f-aa11-a2e63be1f322"/>
+				<reportElement x="0" y="11" width="555" height="20" uuid="0744da3e-932a-478f-aa11-a2e63be1f322">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
+				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="14" isBold="true"/>
 				</textElement>

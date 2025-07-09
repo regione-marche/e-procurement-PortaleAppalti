@@ -36,7 +36,7 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 					<span class="active" title='<c:out value="${currentTarget.title}" />'><c:out value="${label}" /></span>
 				</c:when>
 				<c:otherwise>
-					<span><a href="<c:out value="${currentTarget.url}?${tokenHrefParams}" />" title='<c:out value="${currentTarget.title}" />'><c:out value="${label}" /></a></span>
+					<span><a href="<c:out value="${currentTarget.url}" />" title='<c:out value="${currentTarget.title}" />'><c:out value="${label}" /></a></span>
 				</c:otherwise>
 			</c:choose>
 		</c:when>

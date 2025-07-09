@@ -7,33 +7,27 @@ import it.eldasoft.utils.sicurezza.ICriptazioneByte;
 import it.eldasoft.www.sil.WSGareAppalto.LottoGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.barcode.IBarcodeManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StrutsUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRXmlDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.agiletec.aps.system.ApsSystemUtils;
@@ -44,6 +38,11 @@ import com.agiletec.apsadmin.system.BaseAction;
  * @author stefano.sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageEsitoAction extends BaseAction implements SessionAware {
     /**
      * UID
@@ -137,33 +136,16 @@ public class ProcessPageEsitoAction extends BaseAction implements SessionAware {
     						partecipazioneHelper);
     			}
 
-    			// si determina il nome del file di destinazione nell'area
-    			// temporanea
-    			String nomePdf = FileUploadUtilities.generateFileName() + ".pdf";
-    			File filePdf = new File(this.getTempDir().getAbsolutePath() + File.separatorChar + nomePdf);
-    			
+    			// crea l'xml da passare al report
     			StringBuilder xml = genBarcodeXml(partecipazioneHelper);
 
-    			// si carica il report jasper, lo si filla con i dati e si
-    			// genera il pdf
-    			InputStream isJasper = this.getRequest().getSession().getServletContext()
-    				.getResourceAsStream(PortGareSystemConstants.GARE_JASPER_FOLDER + "Barcode.jasper");
-    			
-    			JRXmlDataSource jrxmlds = new JRXmlDataSource(
-    				new ByteArrayInputStream(xml.toString().getBytes("UTF-8")), "/rich_partecipazione/lotto");
-    			
-    			JasperPrint print = JasperFillManager.fillReport(isJasper, new HashMap<String, Object>(), jrxmlds);
-    			JRExporter exporter = new JRPdfExporter();
-    			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, filePdf.getAbsolutePath());
-    			exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-    			exporter.exportReport();
-
-    			// generato il report con JasperReport, si memorizza lo stream
-    			// per il download e si inserisce una referenza nel bean in
-    			// sessione per la rimozione alla rimozione del bean dalla
-    			// sessione
-    			this.inputStream = new FileInputStream(filePdf);
-    			partecipazioneHelper.getTempFiles().add(filePdf);
+		    	this.inputStream = new ByteArrayInputStream(
+		    			GenPDFAction.createPdf(
+			    			getRequest().getSession().getServletContext().getResourceAsStream(PortGareSystemConstants.GARE_JASPER_FOLDER + "Barcode.jasper") 
+			    			, xml.toString() 
+			    			, "/rich_partecipazione/lotto"
+		    			)
+		    	);
 
     		} catch (FileNotFoundException e) {
     			// non dovrebbe mai verificarsi in quanto il file va scritto per

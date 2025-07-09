@@ -25,6 +25,11 @@ public class ComunicazioniInviateAction extends AbstractOpenPageAction implement
 	 */
 	private static final long serialVersionUID = -1479643031996378000L;
 	
+	// tipi di comunicazioni (inviate) 
+	private static final String COMUNICAZIONI_INVIATE		= "inviate";
+
+	private static final int MAX_NUM_RECORD = 10;
+	
 	private Map<String, Object> session;
 	private IBandiManager bandiManager;
 	@Validate(EParamValidation.CODICE)
@@ -177,15 +182,7 @@ public class ComunicazioniInviateAction extends AbstractOpenPageAction implement
 	 */
 	@Override
 	public String openPage() {
-
-		UserDetails userDetails = this.getCurrentUser();
-		int startIndex = 0;
-		
 		// gestione del ritorno alla pagina aperta partendo dal dettaglio
-		if(this.getPagina() > 0) {
-			this.model.setCurrentPage(this.getPagina());
-		}
-
 		try {
 			// in caso si torni dal Dettaglio Comunicazioni premendo il link "Torna alla lista"...
 			// i seguenti parametri non vengono passati tra i parametri delle request e response...
@@ -193,29 +190,40 @@ public class ComunicazioniInviateAction extends AbstractOpenPageAction implement
 				this.actionName = (String) this.session.get(ComunicazioniConstants.SESSION_ID_ACTION_NAME);
 				this.namespace = (String) this.session.get(ComunicazioniConstants.SESSION_ID_NAMESPACE);
 			}
-
-			if(this.model.getCurrentPage() > 0) {
-				startIndex = 10 * (this.model.getCurrentPage() - 1);
+			
+			this.setTipoComunicazione(COMUNICAZIONI_INVIATE);
+			
+			if(this.getPagina() > 0) {
+				this.model.setCurrentPage(this.getPagina());
 			}
+
+			int startIndex = (this.model.getCurrentPage() > 0
+							  ? MAX_NUM_RECORD * (this.model.getCurrentPage() - 1)
+							  : 0);
+
+			// recupera i dati dalla sessione
 			this.entita = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);
 			this.comunicazioniCodiceProcedura = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA);
 			this.codice2 = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE2_PROCEDURA);
 			this.genere = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);
 			
+			// recupera l'elenco delle comunicazioni inviate
 			this.setComunicazioni(this.getBandiManager().getComunicazioniPersonaliInviate(
-					userDetails.getUsername(), 
+					this.getCurrentUser().getUsername(), 
 					StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
 					null,
 					null,
 					startIndex, 
-					10));
-			this.model.processResult(this.getComunicazioni().getNumTotaleRecord(), this.getComunicazioni().getNumTotaleRecordFiltrati());
-			this.setTipoComunicazione("inviate");
+					MAX_NUM_RECORD));
 			
+			// aggiorna i dati in sessione
+			this.model.processResult(this.getComunicazioni().getNumTotaleRecord(), this.getComunicazioni().getNumTotaleRecordFiltrati());					
 			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO, this.tipoComunicazione);
 			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA, this.model.getCurrentPage());
 			this.session.put(ComunicazioniConstants.SESSION_ID_ACTION_NAME, this.actionName);
 			this.session.put(ComunicazioniConstants.SESSION_ID_NAMESPACE, this.namespace);
+						
+			// elimina dalla sessione i dati che non sono piu' utili
 			if(this.genere != null) {
 				this.entita = null;
 				this.session.remove(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);

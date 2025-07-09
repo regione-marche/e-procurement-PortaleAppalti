@@ -38,16 +38,35 @@
 							<s:if test="%{#session.aperturaLotto.get(#lotto)}">
 								<s:if test="%{#session.wizardOfferta.get(#lotto)}">
 									<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/initOffTel.action"/>
-									<a href='<wp:action path="${href}"/>&amp;tipoBusta=3&amp;operazione=${operazione}&amp;codice=<s:property value="%{#lotto}"/>&amp;codiceGara=${codiceGara}&amp;progressivoOfferta=${progressivoOfferta}&amp;${tokenHrefParams}'>
-										<wp:i18n key="LABEL_LOTTO" /> <s:property value="%{#riepilogoBuste.listaCodiciInterniLotti.get(#lotto)}" /> - 
-										<s:property value="%{#riepilogoBuste.busteEconomicheLotti.get(#lotto).oggetto}"/>
-									</a>
+									<form action='<wp:action path="${href}"/>' method="post">
+							    		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+						 				<input type="hidden" name="tipoBusta" value="3" />
+						 				<input type="hidden" name="operazione=" value="${operazione}" />
+						 				<input type="hidden" name="codice" value='<s:property value="%{#lotto}"/>' />
+						 				<input type="hidden" name="codiceGara" value="${codiceGara}" />
+						 				<input type="hidden" name="progressivoOfferta" value="${progressivoOfferta}" />
+						 				
+							 			<a href="javascript:;" onclick="parentNode.submit();" >
+											<wp:i18n key="LABEL_LOTTO" /> <s:property value="%{#riepilogoBuste.listaCodiciInterniLotti.get(#lotto)}" /> 
+											&nbsp;-&nbsp;<s:property value="%{#riepilogoBuste.busteEconomicheLotti.get(#lotto).oggetto}"/>
+										</a>
+									</form>
 								</s:if>
 								<s:else>
 									<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/openPageDocumenti.action"/>
-									<a href='<wp:action path="${href}" />&amp;tipoBusta=3&amp;operazione=${operazione}&amp;codice=<s:property value="%{#lotto}"/>&amp;codiceGara=${codiceGara}&amp;progressivoOfferta=${progressivoOfferta}&amp;${tokenHrefParams}'>
-										<wp:i18n key="LABEL_LOTTO" /> <s:property value="%{#riepilogoBuste.listaCodiciInterniLotti.get(#lotto)}" />&nbsp;-&nbsp;<s:property value="%{#riepilogoBuste.busteEconomicheLotti.get(#lotto).oggetto}"/>
-									</a>
+									<form action='<wp:action path="${href}"/>' method="post">
+							    		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+						 				<input type="hidden" name="tipoBusta" value="3" />
+						 				<input type="hidden" name="operazione=" value="${operazione}" />
+						 				<input type="hidden" name="codice" value='<s:property value="%{#lotto}"/>' />
+						 				<input type="hidden" name="codiceGara" value="${codiceGara}" />
+						 				<input type="hidden" name="progressivoOfferta" value="${progressivoOfferta}" />
+						 				
+							 			<a href="javascript:;" onclick="parentNode.submit();" >
+											<wp:i18n key="LABEL_LOTTO" /> <s:property value="%{#riepilogoBuste.listaCodiciInterniLotti.get(#lotto)}" />
+											&nbsp;-&nbsp;<s:property value="%{#riepilogoBuste.busteEconomicheLotti.get(#lotto).oggetto}"/>
+										</a>
+									</form>
 								</s:else>
 							</s:if>
 							<s:else>
@@ -68,7 +87,7 @@
 	
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBusteDistinte.action" />&amp;codiceGara=${codiceGara}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBusteDistinte.action" />&amp;codiceGara=${codiceGara}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}">
 			<wp:i18n key="BUTTON_WIZARD_BACK_TO_MENU" />
 		</a>
 	</div>

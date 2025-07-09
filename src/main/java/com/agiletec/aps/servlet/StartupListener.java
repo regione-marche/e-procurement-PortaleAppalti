@@ -40,8 +40,8 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
 		// inizializzazione del tracker delle sessioni nel contesto
 		TrackerSessioniUtenti tracker = new TrackerSessioniUtenti();
 		svCtx.setAttribute(TrackerSessioniUtenti.UTENTI_CONNESSI, tracker);
-		msg = this.getClass().getName() + ": INIT DONE "+ svCtx.getServletContextName();
-		System.out.println(msg);
+		//msg = this.getClass().getName() + ": INIT DONE "+ svCtx.getServletContextName();
+		//System.out.println(msg);
 	}
 	
 }

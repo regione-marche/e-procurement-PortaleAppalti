@@ -36,7 +36,6 @@ public class CieLoginResponseAction extends BaseResponseAction implements Servle
 		return target;
 	}
 
-
 	/**
 	 * ...
 	 * @param configManager 
@@ -54,15 +53,14 @@ public class CieLoginResponseAction extends BaseResponseAction implements Servle
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
 		try {
 			String url = (String) appParamManager
-			.getConfigurationValue(AppParamManager.CIE_WS_AUTHSERVICESPID_URL);
+					.getConfigurationValue(AppParamManager.CIE_WS_AUTHSERVICESPID_URL);
 			String authSystem = CIE_AUTHSYSTEM_DEFAULT;
 			String serviceProvider = (String) appParamManager
-			.getConfigurationValue(AppParamManager.CIE_SERVICEPROVIDER);
+					.getConfigurationValue(AppParamManager.CIE_SERVICEPROVIDER);
 			Integer serviceIndex = (Integer) appParamManager
-			.getConfigurationValue(AppParamManager.CIE_SERVICEINDEX);
+					.getConfigurationValue(AppParamManager.CIE_SERVICEINDEX);
 			String authLevel = (String) appParamManager
-			.getConfigurationValue(AppParamManager.CIE_AUTHLEVEL);
-
+					.getConfigurationValue(AppParamManager.CIE_AUTHLEVEL);
 			
 			// valida i parametri...
 			if (StringUtils.isEmpty(url)) {
@@ -113,8 +111,7 @@ public class CieLoginResponseAction extends BaseResponseAction implements Servle
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");

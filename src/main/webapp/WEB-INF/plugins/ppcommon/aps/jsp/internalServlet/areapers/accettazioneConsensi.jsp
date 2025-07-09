@@ -48,7 +48,8 @@
 	</s:else>
  --%>
  
- 		<form action="<wp:action path='/ExtStr2/do/FrontEnd/AreaPers/accettazioneConsensi.action' />" method="post" >
+	 <s:if test="#session.accettazioneConsensi != null">
+	 	<form action="<wp:action path='/ExtStr2/do/FrontEnd/AreaPers/accettazioneConsensi.action' />" method="post" >
 			<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/regimpresa/inc/accettazioneConsensi.jsp" />
 				
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
@@ -59,5 +60,5 @@
 				<s:submit value="%{#attr.valueButtonAccetta}" title="%{#attr.valueButtonAccetta}" cssClass="button block-ui"></s:submit>
 			</div>
 		</form>
- 	
+	 </s:if>
 </div>

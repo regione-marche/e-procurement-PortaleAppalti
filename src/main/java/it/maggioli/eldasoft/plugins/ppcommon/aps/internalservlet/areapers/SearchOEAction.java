@@ -101,6 +101,20 @@ public class SearchOEAction extends EncodedDataAction implements SessionAware {
 	}
 
 	/**
+	 * validate 
+	 */
+	@Override
+	public void validate() {
+		// funzionalità accessibile sono da amministratore!!!
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
+			redirectToHome();
+			return;
+		} 
+		
+		super.validate();
+	}
+	
+	/**
 	 * Predispone l'apertura della pagina previo controllo autorizzazione 
 	 * (si deve essere un utente amministratore).
 	 * 
@@ -112,14 +126,14 @@ public class SearchOEAction extends EncodedDataAction implements SessionAware {
 
 		// funzionalita' disponibile solo per l'utente con il ruolo di
 		// amministratore
-		if (this.getCurrentUser() == null
-				|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			// alla prima apertura della pagina in automatico si scatena una ricerca senza filtri
 			target = this.search();
 		}
+		
 		return target;
 	}
 
@@ -135,7 +149,7 @@ public class SearchOEAction extends EncodedDataAction implements SessionAware {
 		this.listaOperatori = new ArrayList<OperatoriEconomiciSearchBean>();
 
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null || !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {

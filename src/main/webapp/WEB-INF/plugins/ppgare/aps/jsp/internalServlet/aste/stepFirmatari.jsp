@@ -78,13 +78,23 @@ offerta.componentiRTI.size: <s:property value="%{#offerta.componentiRTI.size}"/>
 							<s:if test="%{#status.index==0}">
 								<s:if test="%{modificaFirmatarioVisible}">
 									<c:set var="hrefParams">&amp;id=${status.index}</c:set>
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandataria.action"/>&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
-									</a>
+									<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandataria.action"/>' method="post">	
+										<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+										<input type="hidden" name="codice" value="${codice}" />
+										
+										<a href="javascript:;" onclick="parentNode.submit();" class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
+										</a>
+									</form>
 								</s:if>
 							</s:if>
 							<s:else>
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandante.action"/>&amp;id=${status.index}&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
-								</a>
+								<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandante.action"/>' method="post">
+									<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+									<input type="hidden" name="id" value="${status.index}" />
+									
+									<a href="javascript:;" onclick="parentNode.submit();" class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA"/>' >
+									</a>
+								</form>
 							</s:else>
 						</td>
 					</tr>
@@ -108,7 +118,7 @@ offerta.componentiRTI.size: <s:property value="%{#offerta.componentiRTI.size}"/>
 				<%-- <s:if test="%{#offerta.componentiRTI.size > 1}" >. Selezionare il firmatario </s:if> :--%>
 				</p>
 					
-				<ul class="list">					
+				<ul class="list">
 					<s:if test="%{#offerta.componentiRTI.size > 1}" >
 						<%-- *** Elenco dei firmatari scelti per un RTI *** --%>
 						<table>
@@ -138,14 +148,23 @@ offerta.componentiRTI.size: <s:property value="%{#offerta.componentiRTI.size}"/>
 										<%-- il I elemento è sempre la mandataria, i successivi sono le mandanti --%>
 										<s:if test="%{#status.index==0}">
 											<s:if test="%{modificaFirmatarioVisible}">
-												<c:set var="hrefParams">&amp;id=${status.index}</c:set>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandataria.action"/>&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
-												</a>
+												<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandataria.action"/>' method="post">
+													<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+													<input type="hidden" name="id" value="${status.index}" />
+													
+													<a href="javascript:;" onclick="parentNode.submit();" class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA"/>'>
+													</a>
+												</form>
 											</s:if>
 										</s:if>
 										<s:else>
-											<a href='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandante.action"/>&amp;id=${status.index}&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
-											</a>
+											<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/editFirmatarioMandante.action"/>' method="post">
+												<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+												<input type="hidden" name="id" value="${status.index}" />
+												
+												<a href="javascript:;" onclick="parentNode.submit();" class="bkg modify" title='<wp:i18n key="BUTTON_MODIFICA" />'>
+												</a>
+											</form>
 										</s:else>
 									</td>
 								</tr>

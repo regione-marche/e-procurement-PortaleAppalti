@@ -19,6 +19,7 @@ package com.agiletec.aps.system.services.user;
 
 import java.util.List;
 
+import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsSystemException;
 
 /**
@@ -178,7 +179,7 @@ public interface IUserManager {
 	 * @return 0=ok, -1=se l'utente e' gia loggato ed effettua un login da un pc/cluster nodo diverso
 	 * @throws ApsSystemException In caso di errore.
 	 */
-	public int logLogin(String username, String ipAddress, String sessionId) throws ApsSystemException;
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException;
 
 	/**
 	 * Ad ogni disconnessione di un utente dal portale o scadenza della propria
@@ -191,7 +192,7 @@ public interface IUserManager {
 	 * @return True se il login out viene effettuato, False viceversa
 	 * @throws ApsSystemException In caso di errore.
 	 */
-	public boolean logLogout(String username, String ipAddress, String sessionId) throws ApsSystemException;
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException;
 
 	/**
 	 * Inserisce un record di log nella tabella ppcommon_wrongaccesses
@@ -312,5 +313,50 @@ public interface IUserManager {
 	 * Restituisce la lista degli utenti loggati presente su DB 
 	 */
 	public List<String[]> getLoggedUsers() throws ApsSystemException;
+	
+	/**
+	 * restituisce la lista dei profili utente associati ad un account SSO 
+	 */
+	public List<DelegateUser> getProfiliSSO(String username, String delegateUser) throws ApsSystemException;
+	
+	/**
+	 * recupera un profilo utente associato ad un operatore economico
+	 */
+	public DelegateUser getProfiloSSO(String username, String delegate) throws ApsSystemException;
+
+	/**
+	 * elimina un profilo utente impresa associato ad un operatore economico
+	 */
+	public void removeProfiloSSO(String username, String delegate) throws ApsSystemException;
+
+	/**
+	 * aggiorna un profilo utente associato ad un operatore economico
+	 */
+	public void updateProfiloSSO(DelegateUser delegateUser) throws ApsSystemException;
+
+	/**
+	 * aggiunge un nuovo profilo utente associato ad un operatore economico
+	 */
+	public void addProfiloSSO(DelegateUser delegateUser) throws ApsSystemException;
+
+	/**
+	 * crea un lock esclusivo per il soggetto impresa di una ditta per l'accesso ad una specifica funzione
+	 */
+	public DelegateUser lockProfiloSSOAccess(UserDetails user, String delegate, String function) throws ApsSystemException;
+	
+	/**
+	 * rimuove un lock per il soggetto impresa di una ditta per l'accesso ad una specifica funzione
+	 */
+	public boolean unlockProfiloSSOAccess(UserDetails user, String delegate) throws ApsSystemException;
+
+	/**
+	 * restituisce l'accesso del soggetti impresa di una ditta
+	 */
+	public DelegateUser loadProfiloSSOAccess(String username, String delegate) throws ApsSystemException;
+	
+	/**
+	 * restituisce l'elenco degli accessi dei soggetti impresa di una ditta
+	 */
+	public List<DelegateUser> loadProfiliSSOAccesses(String username) throws ApsSystemException;
 
 }

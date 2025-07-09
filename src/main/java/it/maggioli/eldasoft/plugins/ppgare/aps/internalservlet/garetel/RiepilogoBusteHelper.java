@@ -521,10 +521,9 @@ public class RiepilogoBusteHelper implements Serializable {
 								}
 								documentoMancante.setObbligatorio(currDocument.isObbligatorio());
 							}
-	                        // gestione questionario
+	                        // QFORM - gestione questionario
 	                        if(currBustaTecnica.isQuestionarioPresente()) {
-	                          bustaTecnicaLotto.setQuestionarioCompletato(currBustaTecnica.isQuestionarioCompletato());
-	                          bustaTecnicaLotto.setQuestionarioId(currBustaTecnica.getQuestionarioId());
+	                        	currBustaTecnica.aggiornaRiepilogoQuestionario(bustaTecnicaLotto);
 	                        }
 						}
 					}
@@ -575,8 +574,7 @@ public class RiepilogoBusteHelper implements Serializable {
 						}
 						// gestione questionario
 		                if(currBustaEconomica.isQuestionarioPresente()) {
-		                  bustaEconomicaLotto.setQuestionarioCompletato(currBustaEconomica.isQuestionarioCompletato());
-		                  bustaEconomicaLotto.setQuestionarioId(currBustaEconomica.getQuestionarioId());
+		                	currBustaEconomica.aggiornaRiepilogoQuestionario(bustaEconomicaLotto);
 		                }
 					}
 				}
@@ -687,8 +685,7 @@ public class RiepilogoBusteHelper implements Serializable {
 
 				// gestione questionario
 				if(this.bustaPrequalifica.isQuestionarioPresente()) {
-					documentazione.setQuestionarioCompletato(this.bustaPrequalifica.isQuestionarioCompletato());
-					documentazione.setQuestionarioId(this.bustaPrequalifica.getQuestionarioId());
+					this.bustaPrequalifica.aggiornaRiepilogoQuestionario(documentazione);
 				}
 			}
 		}
@@ -713,8 +710,7 @@ public class RiepilogoBusteHelper implements Serializable {
 				
 				// gestione questionario
 				if(this.bustaAmministrativa.isQuestionarioPresente()) {
-					documentazione.setQuestionarioCompletato(this.bustaAmministrativa.isQuestionarioCompletato());
-					documentazione.setQuestionarioId(this.bustaAmministrativa.getQuestionarioId());
+					this.bustaAmministrativa.aggiornaRiepilogoQuestionario(documentazione);
 				}
 			}
 		} else if(tipoBusta == PortGareSystemConstants.BUSTA_TECNICA) {
@@ -731,8 +727,7 @@ public class RiepilogoBusteHelper implements Serializable {
 				
 				// gestione questionario
 				if(this.bustaTecnica.isQuestionarioPresente()) {
-					documentazione.setQuestionarioCompletato(this.bustaTecnica.isQuestionarioCompletato());
-					documentazione.setQuestionarioId(this.bustaTecnica.getQuestionarioId());
+					this.bustaTecnica.aggiornaRiepilogoQuestionario(documentazione);
 				}
 			}
 		} else {
@@ -749,8 +744,7 @@ public class RiepilogoBusteHelper implements Serializable {
 				
 				// gestione questionario
 				if(this.bustaEconomica.isQuestionarioPresente()) {
-					documentazione.setQuestionarioCompletato(this.bustaEconomica.isQuestionarioCompletato());
-					documentazione.setQuestionarioId(this.bustaEconomica.getQuestionarioId());
+					this.bustaEconomica.aggiornaRiepilogoQuestionario(documentazione);
 				}
 			}
 		}
@@ -1598,31 +1592,74 @@ public class RiepilogoBusteHelper implements Serializable {
 		} else if(tipoBusta == PortGareSystemConstants.BUSTA_AMMINISTRATIVA) {
 			busta = this.bustaAmministrativa;
 		} else if(tipoBusta == PortGareSystemConstants.BUSTA_TECNICA) {
-			if (this.busteTecnicheLotti == null) {
+			if (this.bustaTecnica != null) {
 				busta = this.bustaTecnica;
-			} else {
-	          busta = this.busteTecnicheLotti.get(codiceLotto);
+			} else if (this.busteTecnicheLotti != null) {
+				busta = this.busteTecnicheLotti.get(codiceLotto);
 			}
 		} else if(tipoBusta == PortGareSystemConstants.BUSTA_ECONOMICA) {
-			if (this.busteEconomicheLotti == null) {
+			if (this.bustaEconomica != null) {
 				busta = this.bustaEconomica;
-			} else {
-	          busta = this.busteEconomicheLotti.get(codiceLotto);
+			} else if (this.busteEconomicheLotti != null) {
+				busta = this.busteEconomicheLotti.get(codiceLotto);
 			}
 		}
 		return busta;
 	}
 	
 	/**
+	 * resetta il riepilogo di una data busta o lotto (stato 99)
+	 */
+	public void reset(BustaDocumenti busta, String codiceLotto) {
+		// resetta i documenti della busta...
+		busta.getHelperDocumenti().clear();
+		
+		// aggiorna le info del riepilogo...
+		if(busta.getTipoBusta() == PortGareSystemConstants.BUSTA_PRE_QUALIFICA) {
+			primoAccessoPrequalificaEffettuato = false;
+		} else if(busta.getTipoBusta() == PortGareSystemConstants.BUSTA_AMMINISTRATIVA) {
+			primoAccessoAmministrativaEffettuato = false;
+		} else if(busta.getTipoBusta() == PortGareSystemConstants.BUSTA_TECNICA) {
+			if (this.bustaTecnica != null) {
+				primoAccessoTecnicaEffettuato = false;
+			} else if (this.busteTecnicheLotti != null) {
+				primoAccessoTecnicheEffettuato.put(codiceLotto, false);
+			}
+		} else if(busta.getTipoBusta() == PortGareSystemConstants.BUSTA_ECONOMICA) {
+			if (this.bustaEconomica != null) {
+				primoAccessoEconomicaEffettuato = false;
+			} else if (this.busteEconomicheLotti != null) {
+				primoAccessoEconomicheEffettuato.put(codiceLotto, false);
+			}
+		}
+		
+		// (Questionari - QFORM) aggiorna il questionario
+		RiepilogoBustaBean riepilogo = getRiepilogoBusta(busta.getTipoBusta(), codiceLotto);
+		if(riepilogo != null) 
+			resetQuestionario(riepilogo);
+	}
+
+	/**
+	 * (Questionari - QFORM)
+	 * resetta i dati del questionario relativi ad una busta di riepilogo
+	 */
+	public void resetQuestionario(RiepilogoBustaBean riepilogo) {
+		riepilogo.setQuestionarioPresente(false);
+		riepilogo.setQuestionarioCompletato(false);
+		riepilogo.setQuestionarioId(0);
+		riepilogo.setRiepilogoPdfAuto(false);
+	}
+	
+	/**
 	 * (Questionari - QFORM)
 	 * inizializza lo stato del questionario di una busta di riepilogo
 	 */
-	private void aggiornaStatoQuestionarioBusta(RiepilogoBustaBean busta, QuestionarioType questionario) {
-		if(busta != null) {
-			busta.setQuestionarioPresente(questionario != null);
-			busta.setQuestionarioCompletato(false);
-			busta.setQuestionarioId(0);
-			if(busta.isQuestionarioPresente()) {
+	private void aggiornaStatoQuestionarioBusta(RiepilogoBustaBean riepilogo, QuestionarioType questionario) {
+		if(riepilogo != null) {
+			resetQuestionario(riepilogo);
+			riepilogo.setQuestionarioPresente(questionario != null);
+			
+			if(questionario != null && riepilogo.isQuestionarioPresente()) {
 				int tipoBusta = 0;
 				if(StringUtils.isNotEmpty(questionario.getBusta())) {
 					tipoBusta = Integer.parseInt(questionario.getBusta()); 
@@ -1630,19 +1667,13 @@ public class RiepilogoBusteHelper implements Serializable {
 				
 				QCQuestionario q = new QCQuestionario(tipoBusta, questionario.getOggetto());
 				if(q != null) {
-					busta.setQuestionarioCompletato(q.getValidationStatus() && q.getSummaryGenerated());
-					busta.setQuestionarioId(questionario.getId());
+					riepilogo.setQuestionarioCompletato(q.getValidationStatus() && q.getSummaryGenerated());
+					riepilogo.setQuestionarioId(questionario.getId());
+					riepilogo.setRiepilogoPdfAuto(q.isRiepilogoPdfAuto());
 				}
 			}
 		}
 	}
 
-	/**
-	 * (Questionari - QFORM)
-	 * resetta i dati del questionario relativi ad una busta
-	 */
-	public void resetQuestionario(RiepilogoBustaBean busta) {
-		this.aggiornaStatoQuestionarioBusta(busta, null);
-	}
 
 }

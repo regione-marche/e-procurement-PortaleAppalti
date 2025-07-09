@@ -19,6 +19,7 @@ public interface IWSDMManager {
 	 * identificativi dei tipi di sistemi di protocollazione 
 	 */
 	public static final String CODICE_SISTEMA_TITULUS 			= "TITULUS";
+	public static final String CODICE_SISTEMA_ARCHIFLOW 		= "ARCHIFLOW";
 	public static final String CODICE_SISTEMA_ARCHIFLOWFA 		= "ARCHIFLOWFA";
 	public static final String CODICE_SISTEMA_JIRIDE 			= "JIRIDE";
 	public static final String CODICE_SISTEMA_JPROTOCOL 		= "JPROTOCOL";

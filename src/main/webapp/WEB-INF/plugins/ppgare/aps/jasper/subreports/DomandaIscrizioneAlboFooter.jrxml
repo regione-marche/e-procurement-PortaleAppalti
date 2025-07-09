@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlboHeader" pageWidth="510" pageHeight="802" columnWidth="510" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlboHeader" pageWidth="510" pageHeight="802" columnWidth="510" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b5e3c33f-db6d-4267-8279-aa0d02d2c07f">
 	<property name="ireport.zoom" value="1.6105100000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -36,41 +37,41 @@
 	</field>
 	<detail>
 		<band height="76" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="282" y="36" width="228" height="15" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="282" y="36" width="228" height="15" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="f2586304-5547-4cb3-a94a-ba7f350666e4">
 					<printWhenExpression><![CDATA[!$P{RTI}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="10"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[(($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="0" width="511" height="20"/>
+				<reportElement positionType="Float" x="0" y="0" width="511" height="20" uuid="daf465f6-7a9b-4d0d-b142-794bf44ab79e"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="10" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{comuneSedeLegale}.toUpperCase() + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{comuneSedeLegale}.toUpperCase() + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="282" y="21" width="228" height="15" isRemoveLineWhenBlank="true">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="282" y="21" width="228" height="15" isRemoveLineWhenBlank="true" uuid="0e7b3dbb-1026-4b83-bbb0-7fb30dadd666">
 					<printWhenExpression><![CDATA[!$P{RTI}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="10" isBold="false"/>
+					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($P{LIBERO_PROFESSIONISTA}
+				<textFieldExpression><![CDATA[($P{LIBERO_PROFESSIONISTA}
     ? "Libero professionista"
     : $F{qualifica}
 )]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="282" y="51" width="228" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="282" y="51" width="228" height="16" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="79e194cb-1d64-4d52-8d81-c2fbf9c34332">
 					<printWhenExpression><![CDATA[!$P{RTI}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="10"/>
+					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[(firma digitale)]]></text>
 			</staticText>
@@ -78,9 +79,9 @@
 		<band height="16">
 			<printWhenExpression><![CDATA[$P{RTI}]]></printWhenExpression>
 			<subreport>
-				<reportElement positionType="Float" x="282" y="0" width="228" height="14"/>
+				<reportElement positionType="Float" x="282" y="0" width="228" height="14" uuid="744a0119-e58c-43b5-82f9-c0d0216c2169"/>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmaFirmatari.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FirmaFirmatari.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

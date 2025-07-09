@@ -9,8 +9,11 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +36,11 @@ import java.util.stream.IntStream;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implements ISoggettoImpresa, SessionAware {
 
 	/**
@@ -59,14 +67,14 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 	@Validate(EParamValidation.SI_NO)
 	private String responsabileDichiarazioni;
 	@Validate(EParamValidation.QUALIFICA)
-	private String qualifica;
+	private String qualifica;				// (vedi soggettoQualifica)
 	@Validate(EParamValidation.COGNOME)
 	private String cognome;
 	@Validate(EParamValidation.NOME)
 	private String nome;
 	@Validate(EParamValidation.TITOLO_TECNICO)
 	private String titolo;
-	@Validate(EParamValidation.CODICE_FISCALE)
+	@Validate(value = EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO, error = @WithError(fieldLabel = "CODICE_FISCALE_O_IDENTIFICATIVO"))
 	private String codiceFiscale;
 	@Validate(EParamValidation.GENDER)
 	private String sesso;
@@ -109,122 +117,82 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 
 	private boolean delete;
 
+	/**
+	 * campo speciale contenente la concatenazione di tipologia soggetto e
+	 * qualifica, e serve solamente per l'interfaccia web.
+	 * (legali e direttori (1-,2-), altre cariche (3-1, 3-2, ...), collaboratori (4-1, 4-2, ...) )
+	 */
+	@Validate(EParamValidation.SPEC_SOGG_QUALIFICA)
+	private String soggettoQualifica;
+
 	public void setCustomConfigManager(CustomConfigManager customConfigManager) {
 		this.customConfigManager = customConfigManager;
 	}
 	
-	/**
-	 * campo speciale contenente la concatenazione di tipologia soggetto e
-	 * qualifica, e serve solamente per l'interfaccia web.
-	 */
-	private String soggettoQualifica;
-
 	@Override
 	public void setSession(Map<String, Object> session) {
 		this.session = session;
 	}
 
-	/**
-	 * @return the id
-	 */
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(String id) {
 		this.id = StringUtils.stripToNull(id);
 	}
 
-	/**
-	 * @return the idDelete
-	 */
 	public String getIdDelete() {
 		return idDelete;
 	}
 
-	/**
-	 * @param idDelete the idDelete to set
-	 */
 	public void setIdDelete(String idDelete) {
 		this.idDelete = idDelete;
 	}
 
-	/**
-	 * @return the esistente
-	 */
 	@Override
 	public boolean isEsistente() {
 		return esistente;
 	}
 
-	/**
-	 * @param esistente the esistente to set
-	 */
 	@Override
 	public void setEsistente(boolean esistente) {
 		this.esistente = esistente;
 	}
 
-	/**
-	 * @return the tipoSoggetto
-	 */
 	@Override
 	public String getTipoSoggetto() {
 		return tipoSoggetto;
 	}
 
-	/**
-	 * @param tipoSoggetto the tipoSoggetto to set
-	 */
 	@Override
 	public void setTipoSoggetto(String tipoSoggetto) {
 		this.tipoSoggetto = tipoSoggetto;
 	}
 
-	/**
-	 * @return the tipoSoggettoDelete
-	 */
 	public String getTipoSoggettoDelete() {
 		return tipoSoggettoDelete;
 	}
 
-	/**
-	 * @param tipoSoggettoDelete the tipoSoggettoDelete to set
-	 */
 	public void setTipoSoggettoDelete(String tipoSoggettoDelete) {
 		this.tipoSoggettoDelete = tipoSoggettoDelete;
 	}
 
-	/**
-	 * @return the dataInizioIncarico
-	 */
 	@Override
 	public String getDataInizioIncarico() {
 		return dataInizioIncarico;
 	}
 
-	/**
-	 * @param dataInizioIncarico the dataInizioIncarico to set
-	 */
 	@Override
 	public void setDataInizioIncarico(String dataInizioIncarico) {
 		this.dataInizioIncarico = dataInizioIncarico;
 	}
 
-	/**
-	 * @return the dataFineIncarico
-	 */
 	@Override
 	public String getDataFineIncarico() {
 		return dataFineIncarico;
 	}
 
-	/**
-	 * @param dataFineIncarico the dataFineIncarico to set
-	 */
 	@Override
 	public void setDataFineIncarico(String dataFineIncarico) {
 		this.dataFineIncarico = dataFineIncarico;
@@ -240,49 +208,31 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 		this.qualifica = qualifica;
 	}
 
-	/**
-	 * @return the responsabileDichiarazioni
-	 */
 	@Override
 	public String getResponsabileDichiarazioni() {
 		return responsabileDichiarazioni;
 	}
 
-	/**
-	 * @param responsabileDichiarazioni the responsabileDichiarazioni to set
-	 */
 	@Override
 	public void setResponsabileDichiarazioni(String responsabileDichiarazioni) {
 		this.responsabileDichiarazioni = responsabileDichiarazioni;
 	}
 
-	/**
-	 * @return the cognome
-	 */
 	@Override
 	public String getCognome() {
 		return cognome;
 	}
 
-	/**
-	 * @param cognome the cognome to set
-	 */
 	@Override
 	public void setCognome(String cognome) {
 		this.cognome = cognome.trim();
 	}
 
-	/**
-	 * @return the nome
-	 */
 	@Override
 	public String getNome() {
 		return nome;
 	}
 
-	/**
-	 * @param nome the nome to set
-	 */
 	@Override
 	public void setNome(String nome) {
 		this.nome = nome.trim();
@@ -298,177 +248,111 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 		this.titolo = titolo;
 	}
 
-	/**
-	 * @return the codiceFiscale
-	 */
 	@Override
 	public String getCodiceFiscale() {
 		return codiceFiscale;
 	}
 
-	/**
-	 * @param codiceFiscale the codiceFiscale to set
-	 */
 	@Override
 	public void setCodiceFiscale(String codiceFiscale) {
 		this.codiceFiscale = codiceFiscale.trim().toUpperCase();
 	}
 
-	/**
-	 * @return the sesso
-	 */
 	@Override
 	public String getSesso() {
 		return sesso;
 	}
 
-	/**
-	 * @param sesso the sesso to set
-	 */
 	@Override
 	public void setSesso(String sesso) {
 		this.sesso = sesso;
 	}
 
-	/**
-	 * @return the indirizzo
-	 */
 	@Override
 	public String getIndirizzo() {
 		return indirizzo;
 	}
 
-	/**
-	 * @param indirizzo the indirizzo to set
-	 */
 	@Override
 	public void setIndirizzo(String indirizzo) {
 		this.indirizzo = indirizzo.trim();
 	}
 
-	/**
-	 * @return the numCivico
-	 */
 	@Override
 	public String getNumCivico() {
 		return numCivico;
 	}
 
-	/**
-	 * @param numCivico the numCivico to set
-	 */
 	@Override
 	public void setNumCivico(String numCivico) {
 		this.numCivico = numCivico.trim();
 	}
 
-	/**
-	 * @return the cap
-	 */
 	@Override
 	public String getCap() {
 		return cap;
 	}
 
-	/**
-	 * @param cap the cap to set
-	 */
 	@Override
 	public void setCap(String cap) {
 		this.cap = cap;
 	}
 
-	/**
-	 * @return the comune
-	 */
 	@Override
 	public String getComune() {
 		return comune;
 	}
 
-	/**
-	 * @param comune the comune to set
-	 */
 	@Override
 	public void setComune(String comune) {
 		this.comune = comune.trim();
 	}
 
-	/**
-	 * @return the provincia
-	 */
 	@Override
 	public String getProvincia() {
 		return provincia;
 	}
 
-	/**
-	 * @param provincia the provincia to set
-	 */
 	@Override
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
 	}
 
-	/**
-	 * @return the nazione
-	 */
 	@Override
 	public String getNazione() {
 		return nazione;
 	}
 
-	/**
-	 * @param nazione the nazione to set
-	 */
 	@Override
 	public void setNazione(String nazione) {
 		this.nazione = nazione.trim();
 	}
 
-	/**
-	 * @return the dataNascita
-	 */
 	@Override
 	public String getDataNascita() {
 		return dataNascita;
 	}
 
-	/**
-	 * @param dataNascita the dataNascita to set
-	 */
 	@Override
 	public void setDataNascita(String dataNascita) {
 		this.dataNascita = dataNascita;
 	}
 
-	/**
-	 * @return the comuneNascita
-	 */
 	@Override
 	public String getComuneNascita() {
 		return comuneNascita;
 	}
 
-	/**
-	 * @param comuneNascita the comuneNascita to set
-	 */
 	@Override
 	public void setComuneNascita(String comuneNascita) {
 		this.comuneNascita = comuneNascita.trim();
 	}
 
-	/**
-	 * @return the provinciaNascita
-	 */
 	@Override
 	public String getProvinciaNascita() {
 		return provinciaNascita;
 	}
 
-	/**
-	 * @param provinciaNascita the provinciaNascita to set
-	 */
 	@Override
 	public void setProvinciaNascita(String provinciaNascita) {
 		this.provinciaNascita = provinciaNascita;
@@ -544,16 +428,10 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 		this.note = note;
 	}
 
-	/**
-	 * @return the obblIscrizione
-	 */
 	public boolean isObblIscrizione() {
 		return obblIscrizione;
 	}
 
-	/**
-	 * @param obblIscrizione the obblIscrizione to set
-	 */
 	public void setObblIscrizione(boolean obblIscrizione) {
 		this.obblIscrizione = obblIscrizione;
 	}
@@ -580,7 +458,6 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 	@Override
 	public void setSolaLettura(boolean solaLettura) {
 		this.solaLettura = solaLettura;
-		
 	}
 
 	@Override
@@ -590,6 +467,150 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 	
 	public boolean isDelete() {
 		return delete;
+	}
+
+	/**
+	 * Effettua i controlli di validazione sui dati modificati/inseriti del soggetto
+	 */
+	@Override
+	public void validate() {
+		super.validate();
+		if (this.getFieldErrors().size() > 0) {
+			return;
+		}
+		Calendar dataInizio = null;
+		if (StringUtils.isNotBlank(this.getDataInizioIncarico())) {
+			dataInizio = CalendarValidator.getInstance().validate(
+							this.getDataInizioIncarico(), "dd/MM/yyyy");
+			if (dataInizio != null
+				&& dataInizio.compareTo(new GregorianCalendar()) > 0) {
+				// data inizio > oggi
+				this.addFieldError("dataInizioIncarico", this.getText(
+								"Errors.invalidDataIncarico",
+								new String[]{this.getTextFromDB("dataInizioIncarico")}));
+			}
+		}
+		Calendar dataFine = null;
+		if (StringUtils.isNotBlank(this.getDataFineIncarico())) {
+			dataFine = CalendarValidator.getInstance().validate(
+							this.getDataFineIncarico(), "dd/MM/yyyy");
+			if (dataFine != null && dataFine.compareTo(new GregorianCalendar()) > 0) {
+				// data fine > oggi
+				this.addFieldError("dataFineIncarico", this.getText(
+								"Errors.invalidDataIncarico",
+								new String[]{this.getTextFromDB("dataFineIncarico")}));
+			}
+		}
+		if (dataInizio != null && dataFine != null && dataInizio.compareTo(dataFine) > 0) {
+			// data inizio > data fine
+			this.addFieldError("dataInizioIncarico", 
+								this.getText("Errors.invalidDataFineNextDataInizioIncarico"));
+		}
+		
+		boolean impresaItaliana = "ITALIA".equalsIgnoreCase(nazione);
+		if (!impresaItaliana)
+			this.provincia = null;
+		
+		// OE Italiano: verifica la lunghezza del CF (16 caratteri)
+		if (impresaItaliana) {
+			if(StringUtils.isNotEmpty(codiceFiscale) && codiceFiscale.length() > 16) {
+				this.addFieldError("codiceFiscale", this.getText(
+									"Errors.stringlength", 
+									new String[] { this.getTextFromDB("codiceFiscale"), "16" }));
+			}
+		}
+		
+		if (!"".equals(codiceFiscale)) {
+			if( !UtilityFiscali.isValidCodiceFiscale(codiceFiscale, impresaItaliana) ) {
+				this.addFieldError("codiceFiscale", this.getText(
+									"Errors.wrongField",
+									new String[]{this.getTextFromDB("codiceFiscale")}));
+			}
+		}
+
+		if (CommonSystemConstants.TIPO_SOGGETTO_COLLABORATORE.equals(this.tipoSoggetto) && "1".equals(this.responsabileDichiarazioni)) {
+			this.addFieldError("responsabileDichiarazioni",
+							   this.getText("Errors.notCollaboratoreResponsabileDichiarazioni"));
+		}
+		
+		WizardDatiImpresaHelper helper = getSessionHelper();
+		if (helper != null) {
+			int idSoggetto = (StringUtils.isNotBlank(this.id) ? Integer.parseInt(this.id) : -1);
+			String username = (this.getCurrentUser() != null ? this.getCurrentUser().getUsername() : "");
+			
+			List<ISoggettoImpresa> listaSoggetti = helper.getSoggettiImpresa(this.tipoSoggetto);
+			if (listaSoggetti != null) {
+				Object soggettoDuplicato = helper.isSoggettoDuplicato(
+						listaSoggetti,
+						idSoggetto,
+						codiceFiscale,
+						soggettoQualifica,
+						nome,
+						cognome,
+						dataNascita,
+						comuneNascita,
+						provinciaNascita,
+						sesso,
+						dataInizioIncarico,
+						dataFineIncarico,
+						username);
+
+				String denominazione = null;
+				String inizioIncarito = null;
+				String fineIncarito = null;
+				boolean isError = false;
+
+				if(soggettoDuplicato != null) {
+					isError = soggettoDuplicato instanceof String;
+					if (!isError) {
+						if (soggettoDuplicato instanceof ISoggettoImpresa) {
+							// duplicato presente a video...
+//						if(idSoggetto >= 0) {
+//							this.addActionError(this.getText("Errors.updateSoggettoDuplicato"));
+//						} else {
+//							this.addActionError(this.getText("Errors.insertSoggettoDuplicato"));
+//						}
+							ISoggettoImpresa soggetto = (ISoggettoImpresa) soggettoDuplicato;
+							denominazione = soggetto.getCognome() + " " + soggetto.getNome();
+							inizioIncarito = soggetto.getDataInizioIncarico();
+							fineIncarito = soggetto.getDataFineIncarico();
+						} else {
+							// duplicato presente in B.O.
+							ReferenteImpresaAggiornabileType soggetto = (ReferenteImpresaAggiornabileType) soggettoDuplicato;
+							SimpleDateFormat DDMMYYYY = new SimpleDateFormat("dd/MM/yyyy");
+							denominazione = soggetto.getCognome() + " " + soggetto.getNome();
+							inizioIncarito = (soggetto.getDataInizioIncarico() != null
+											  ? DDMMYYYY.format(soggetto.getDataInizioIncarico().getTime())
+											  : "");
+							fineIncarito = (soggetto.getDataFineIncarico() != null
+											? DDMMYYYY.format(soggetto.getDataFineIncarico().getTime())
+											: "");
+						}
+						String periodoIncarico =
+								(!StringUtils.isEmpty(inizioIncarito) ? getI18nLabel("LABEL_DA_DATA") + " " + inizioIncarito + " " : "") +
+										(!StringUtils.isEmpty(fineIncarito) ? getI18nLabel("LABEL_A_DATA") + " " + fineIncarito : "");
+						addActionError(getText("Errors.soggettoDuplicato",
+											   new String[] { periodoIncarico }));
+					} else
+						addActionError(getText((String) soggettoDuplicato));
+				} else if (overrideSubjects(helper))
+					addActionMessage(getText("warning.soggetti.sovrascritti"));
+			
+			}
+			
+			// verifica il cap...
+			boolean invalidCap = (this.cap != null && StringUtils.isNotEmpty(this.cap) && !this.cap.matches("[0-9]+"));
+			boolean invalidAlphaCap = (this.cap != null && StringUtils.isNotEmpty(this.cap) && !this.cap.matches("[0-9a-zA-Z]+"));
+			
+			if("1".equals(helper.getDatiPrincipaliImpresa().getAmbitoTerritoriale())) {
+				// operatore economico italiano
+				// valida i caratteri per il cap...
+				if(invalidCap) {
+					this.addFieldError("cap", this.getTextFromDB("cap") + " " + 
+											  this.getText("localstrings.wrongCharacters"));
+				}
+			}
+		}
 	}
 
 	/**
@@ -981,143 +1002,6 @@ public class ProcessPageSoggettiImpresaAction extends EncodedDataAction implemen
 			}
 		}
 		return target;
-	}
-
-	/**
-	 * Effettua i controlli sulle date incarico del soggetto editato
-	 */
-	@Override
-	public void validate() {
-		super.validate();
-		if (this.getFieldErrors().size() > 0) {
-			return;
-		}
-		Calendar dataInizio = null;
-		if (StringUtils.isNotBlank(this.getDataInizioIncarico())) {
-			dataInizio = CalendarValidator.getInstance().validate(
-							this.getDataInizioIncarico(), "dd/MM/yyyy");
-			if (dataInizio != null
-				&& dataInizio.compareTo(new GregorianCalendar()) > 0) {
-				// data inizio > oggi
-				this.addFieldError("dataInizioIncarico", this.getText(
-								"Errors.invalidDataIncarico",
-								new String[]{this.getTextFromDB("dataInizioIncarico")}));
-			}
-		}
-		Calendar dataFine = null;
-		if (StringUtils.isNotBlank(this.getDataFineIncarico())) {
-			dataFine = CalendarValidator.getInstance().validate(
-							this.getDataFineIncarico(), "dd/MM/yyyy");
-			if (dataFine != null && dataFine.compareTo(new GregorianCalendar()) > 0) {
-				// data fine > oggi
-				this.addFieldError("dataFineIncarico", this.getText(
-								"Errors.invalidDataIncarico",
-								new String[]{this.getTextFromDB("dataFineIncarico")}));
-			}
-		}
-		if (dataInizio != null && dataFine != null && dataInizio.compareTo(dataFine) > 0) {
-			// data inizio > data fine
-			this.addFieldError("dataInizioIncarico", this
-							.getText("Errors.invalidDataFineNextDataInizioIncarico"));
-		}
-		
-		boolean impresaItaliana = "ITALIA".equalsIgnoreCase(nazione);
-		if (!impresaItaliana)
-			this.provincia = null;
-
-		if (!"".equals(codiceFiscale)) {
-			if( !UtilityFiscali.isValidCodiceFiscale(codiceFiscale, impresaItaliana) ) {
-				this.addFieldError(
-						"codiceFiscale",
-						this.getText("Errors.wrongField",
-										new String[]{this.getTextFromDB("codiceFiscale")}));
-			}
-		}
-		
-		if (CommonSystemConstants.TIPO_SOGGETTO_COLLABORATORE.equals(this.tipoSoggetto) && "1".equals(this.responsabileDichiarazioni)) {
-			this.addFieldError(
-							"responsabileDichiarazioni",
-							this.getText("Errors.notCollaboratoreResponsabileDichiarazioni"));
-		}
-		
-		WizardDatiImpresaHelper helper = getSessionHelper();
-		if (helper != null) {
-			int idSoggetto = (StringUtils.isNotBlank(this.id) ? Integer.parseInt(this.id) : -1);
-			String username = (this.getCurrentUser() != null ? this.getCurrentUser().getUsername() : "");
-			
-			List<ISoggettoImpresa> listaSoggetti = helper.getSoggettiImpresa(this.tipoSoggetto);
-			if (listaSoggetti != null) {
-				Object soggettoDuplicato = helper.isSoggettoDuplicato(
-						listaSoggetti,
-						idSoggetto,
-						codiceFiscale,
-						soggettoQualifica,
-						nome,
-						cognome,
-						dataNascita,
-						comuneNascita,
-						provinciaNascita,
-						sesso,
-						dataInizioIncarico,
-						dataFineIncarico,
-						username);
-
-				String denominazione = null;
-				String inizioIncarito = null;
-				String fineIncarito = null;
-				boolean isError = false;
-
-				if(soggettoDuplicato != null) {
-					isError = soggettoDuplicato instanceof String;
-					if (!isError) {
-						if (soggettoDuplicato instanceof ISoggettoImpresa) {
-							// duplicato presente a video...
-//						if(idSoggetto >= 0) {
-//							this.addActionError(this.getText("Errors.updateSoggettoDuplicato"));
-//						} else {
-//							this.addActionError(this.getText("Errors.insertSoggettoDuplicato"));
-//						}
-							ISoggettoImpresa soggetto = (ISoggettoImpresa) soggettoDuplicato;
-							denominazione = soggetto.getCognome() + " " + soggetto.getNome();
-							inizioIncarito = soggetto.getDataInizioIncarico();
-							fineIncarito = soggetto.getDataFineIncarico();
-						} else {
-							// duplicato presente in B.O.
-							ReferenteImpresaAggiornabileType soggetto = (ReferenteImpresaAggiornabileType) soggettoDuplicato;
-							SimpleDateFormat DDMMYYYY = new SimpleDateFormat("dd/MM/yyyy");
-							denominazione = soggetto.getCognome() + " " + soggetto.getNome();
-							inizioIncarito = (soggetto.getDataInizioIncarico() != null
-											  ? DDMMYYYY.format(soggetto.getDataInizioIncarico().getTime())
-											  : "");
-							fineIncarito = (soggetto.getDataFineIncarico() != null
-											? DDMMYYYY.format(soggetto.getDataFineIncarico().getTime())
-											: "");
-						}
-						String periodoIncarico =
-								(!StringUtils.isEmpty(inizioIncarito) ? getI18nLabel("LABEL_DA_DATA") + " " + inizioIncarito + " " : "") +
-										(!StringUtils.isEmpty(fineIncarito) ? getI18nLabel("LABEL_A_DATA") + " " + fineIncarito : "");
-						addActionError(getText("Errors.soggettoDuplicato",
-											   new String[] { periodoIncarico }));
-					} else
-						addActionError(getText((String) soggettoDuplicato));
-				} else if (overrideSubjects(helper))
-					addActionMessage(getText("warning.soggetti.sovrascritti"));
-
-			}
-
-			// verifica il cap...
-			boolean invalidCap = (this.cap != null && StringUtils.isNotEmpty(this.cap) && !this.cap.matches("[0-9]+"));
-			boolean invalidAlphaCap = (this.cap != null && StringUtils.isNotEmpty(this.cap) && !this.cap.matches("[0-9a-zA-Z]+"));
-			
-			if("1".equals(helper.getDatiPrincipaliImpresa().getAmbitoTerritoriale())) {
-				// operatore economico italiano
-				// valida i caratteri per il cap...
-				if(invalidCap) {
-					this.addFieldError("cap", this.getTextFromDB("cap") + " " + 
-											  this.getText("localstrings.wrongCharacters"));
-				}
-			}
-		}
 	}
 
 	/**

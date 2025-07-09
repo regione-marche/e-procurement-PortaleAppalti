@@ -76,7 +76,7 @@
 		<table>
 			<tr>
 				<td class="label"><label for="password"><wp:i18n key="jpuserreg_PASSWORD"/> <abbr title="(<wp:i18n key="jpuserreg_REQUIRED"/>)">*</abbr></label></td>
-				<td class="field"><s:password name="password" id="jpuserreg_password" maxlength="50" cssClass="text" value="" /></td>
+				<td class="field"><s:password autocomplete="off" name="password" id="jpuserreg_password" maxlength="50" cssClass="text" value="" /></td>
 				<td class="status">
 					<div class="password-meter">
 						<div class="password-meter-message"> </div>
@@ -88,7 +88,7 @@
 			</tr>
 			<tr>
 				<td class="label"><label for="passwordConfirm"><wp:i18n key="jpuserreg_PASSWORD_CONFIRM"/> <abbr title="(<wp:i18n key="jpuserreg_REQUIRED"/>)">*</abbr></label></td>
-				<td class="field"><s:password name="passwordConfirm" id="jpuserreg_passwordConfirm" maxlength="50" cssClass="text" value="" /></td>
+				<td class="field"><s:password name="passwordConfirm" autocomplete="off" id="jpuserreg_passwordConfirm" maxlength="50" cssClass="text" value="" /></td>
 				<td class="status"> </td>	
 			</tr>
 		</table>

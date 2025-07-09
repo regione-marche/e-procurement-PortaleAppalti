@@ -124,7 +124,7 @@
   			<wp:i18n key="LABEL_MERCATO_ELETTRONICO" var="mepa" />
   			<%-- <wp:i18n key="LABEL_ELENCO" var="elenco" /> --%>
 			<li>
-				<a href='${urlCategoriePreviste}&amp;codice=<s:property value="codice"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+				<a href='${urlCategoriePreviste}&amp;codice=<s:property value="codice"/>&amp;ext=${param.ext}' 
 					title="<wp:i18n key="LABEL_ISCRALBO_VISUALIZZA_CATEGORIE_PREVISTE_BANDO" />"
 					class="bkg-big go" >
 				   	<c:choose>
@@ -136,7 +136,7 @@
 			<c:if test="${sessionScope.currentUser != 'guest'}">
 				<s:if test="%{stato == 2}">
 					<li>
-						<a href='${urlCategorieOperatore}&amp;codice=<s:property value="codice"/>&amp;tipoclassifica=<s:property value="tipoClassifica"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+						<a href='${urlCategorieOperatore}&amp;codice=<s:property value="codice"/>&amp;tipoclassifica=<s:property value="tipoClassifica"/>&amp;ext=${param.ext}' 
 							title="<wp:i18n key="LABEL_ISCRALBO_VISUALIZZA_CATEGORIE_ISCRIZ_BANDO" />"
 							class="bkg-big go" >
 							<wp:i18n key="LABEL_CATEGORIE_ISCRITTO" />
@@ -146,7 +146,7 @@
 			</c:if>
 			<s:if test="%{genere == 20L}">
 					<li>
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openSearchArticoli.action" />&amp;codiceCatalogo=<s:property value="codice"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openSearchArticoli.action" />&amp;codiceCatalogo=<s:property value="codice"/>&amp;ext=${param.ext}' 
 							title="<wp:i18n key="LABEL_ISCRALBO_VISUALIZZA_ARTICOLI_MEPA" />"
 							 class="bkg-big go" >
 						    <c:choose>
@@ -168,7 +168,7 @@
 					<%-- "Mercato elettronico" --%>
 					<c:set var="entita"><c:if test="${! empty param.entita}">&amp;entita=${param.entita}</c:if></c:set>
 					
-					<a href='${urlOperatoriAbilitatiElenco}&amp;codice=<s:property value="codice"/>&amp;ext=${param.ext}${entita}&amp;${tokenHrefParams}'
+					<a href='${urlOperatoriAbilitatiElenco}&amp;codice=<s:property value="codice"/>&amp;ext=${param.ext}${entita}'
 						class="bkg-big go" 
 						title="<wp:i18n key="LABEL_ISCRALBO_VISUALIZZA_OE_ABILITATI_A" /> ${fn:toLowerCase(param.entita)}">
 						<wp:i18n key="LABEL_ISCRALBO_OE_ABILITATI_A" /> ${fn:toLowerCase(param.entita)}
@@ -182,7 +182,7 @@
 	<div class="detail-row">
 		<ul class="list">
 			<li class='first last'>
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewAltriDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;entita=${param.entita}&amp;${tokenHrefParams}"
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewAltriDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;entita=${param.entita}"
 				   class="bkg-big go" 
 				   title='<wp:i18n key="LABEL_ALTRI_DOCUMENTI" />' >
 					<wp:i18n key="LABEL_ALTRI_DOCUMENTI" />

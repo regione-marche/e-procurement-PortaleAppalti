@@ -17,7 +17,7 @@
 		<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_INFO1'/> ${descrizioneBusta}! <wp:i18n key='LABEL_MODULISTICA_CAMBIATA_INFO2'/>
 		<ul>
 			<li>				
-				<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/openQCSummary.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;tipoBusta=${tipoBusta}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;${tokenHrefParams}">
+				<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/openQCSummary.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;tipoBusta=${tipoBusta}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}">
 					<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI'/>
 				</a>
 			</li>
@@ -29,7 +29,7 @@
 					elimino i doc della singola busta 
 					/ExtStr2/do/FrontEnd/GareTel/confirmRettificaBusta.action&currentFrame=7
 		 		--%>
-				<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/eliminaDocumentiBusta.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;tipoBusta=${tipoBusta}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;${tokenHrefParams}">
+				<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/eliminaDocumentiBusta.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;tipoBusta=${tipoBusta}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}">
 					<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI'/>
 				</a>
 			</li>

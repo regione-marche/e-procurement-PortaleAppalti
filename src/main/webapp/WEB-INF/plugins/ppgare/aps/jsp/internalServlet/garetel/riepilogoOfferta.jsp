@@ -2,10 +2,10 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
-<c:set var="isOfferta" value="${operazione == inviaOfferta}"/>
+<c:set var="isInvioOfferta" value="${operazione == inviaOfferta}"/>
 <c:set var="isPartecipazione" value="${operazione == presentaPartecipazione}"/>
 
-<c:if test="${isOfferta}">
+<c:if test="${isInvioOfferta}">
 	<c:set var="titolo"><wp:i18n key='TITLE_PAGE_GARETEL_RIEPILOGO_OFFERTA'/></c:set>
 	<c:set var="codiceBalloon" value="BALLOON_RIEPILOGO_OFFERTA"/> 
 </c:if>
@@ -22,7 +22,7 @@
 
 <div class="portgare-view">
 
-	<h2>${titolo}</h2>
+	<h2>${titolo} [<s:property value="%{dettGara.datiGeneraliGara.codice}" />]</h2>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
@@ -101,7 +101,7 @@
 			</div>
 		</div>
 
-		<div class="fieldset-row last-row">
+		<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_PARTECIPA_COME_MANDATARIA_RTI" /> : </label>
 			</div>
@@ -110,6 +110,18 @@
 				<s:else><wp:i18n key="LABEL_NO" /></s:else>
 			</div>
 		</div>
+		
+		<c:if test="${isInvioOfferta}">
+			<div class="fieldset-row last-row">
+				<div class="label">
+					<label><wp:i18n key='LABEL_CODICE_CNEL'/> : </label>
+				</div>
+				<div class="element">
+					<s:property value="%{codiceCNEL}" />
+				</div>
+			</div>
+		</c:if>	
+	
 	</fieldset>
 
 	<fieldset>
@@ -159,7 +171,7 @@
 	</fieldset>
 
 	<div class="azioni">
-		<s:if test="%{abilitaRettifica}">
+		<s:if test="%{abilitaRettifica && !garaSospesa}">
 			<form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmRettificaOfferta.action" />" method="post" class="azione">
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 				
@@ -187,7 +199,7 @@
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}">
 		<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 	</a>
 </div>

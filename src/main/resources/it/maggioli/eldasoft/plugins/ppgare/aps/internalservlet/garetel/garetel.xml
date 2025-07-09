@@ -2,14 +2,16 @@
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
     "http://struts.apache.org/dtds/struts-2.1.dtd">
-
 <struts>
-
 	<package name="portgare_do/FrontEnd/GareTel" namespace="/do/FrontEnd/GareTel" extends="pp-common">
 		
 		<action name="openGestioneBuste" class="openGestioneBusteAction" method="open">
 			<result type="dispatcher">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneBuste.jsp
+			</result>
+			<result name="backBando" type="chain">
+		    	<param name="actionName">view</param>
+		        <param name="namespace">/do/FrontEnd/Bandi</param>
 			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
@@ -21,13 +23,16 @@
 			<result type="dispatcher">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneBusteDistinte.jsp
 			</result>
-		<!--   <result type="chain" name="input">openGestioneBusteDistinte</result> -->
+			<result name="backBando" type="chain">
+		    	<param name="actionName">view</param>
+		        <param name="namespace">/do/FrontEnd/Bandi</param>
+			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
 				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio</param>
 			</interceptor-ref>
 		</action>
-				
+		
 		<action name="openGestioneListaOfferte" class="openGestioneListaOfferteAction" method="open">
 			<result type="dispatcher">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/gestioneListaOfferte.jsp
@@ -50,6 +55,20 @@
 			</result>
 			<result type="chain" name="successQuestionario">initQuestionario</result>
 			<result type="chain" name="successBustaTecnica">initOffTec</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="redirectSummaryEnv" class="redirectSummaryEnvelopeAction">
+			<result type="chain" name="reset-envelope">askResetEnvelope</result>
+			<result type="chain" name="off-tel">initOffTel</result>
+			<result type="chain" name="page-doc">openPageDocumenti</result>
+			<interceptor-ref name="tokenFreeStack" />
+		</action>
+		<action name="askResetEnvelope" class="resetEnvelopeAction" method="success">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/askResetEnvelope.jsp
+			</result>
+			<result name="go-to-riepilogo" type="redirect">${urlRedirect}</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 		</action>
 		
@@ -190,7 +209,7 @@
 			</result>
 			<result name="input" type="redirect">${urlRedirect}</result>
 		</action>
-		
+			
 		<action name="downloadBusta" class="riepilogoOffertaAction" method="download">
 			<result name="success" type="stream">
 				<param name="contentType">application/zip</param>
@@ -627,6 +646,33 @@
 			</interceptor-ref>
 		</action>
 
+		<action name="espletGaraViewGraduatoriaSecondoGrado" class="espletGaraViewGraduatoriaAction" method="viewSecondoGrado">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewGraduatoria.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAmmissioneProcedura</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewAccessoDocumentiLotti" class="espletGaraViewAccessoDocumentiLottiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewAccessoDocumentiLotti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="espletGaraViewAccessoDocumenti" class="espletGaraViewAccessoDocumentiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/espletamento/espletGaraViewAccessoDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiAmmissioneProcedura</param>
+			</interceptor-ref>
+		</action>
+
 		<!-- RINUNCIA PARTECIPAZIONE OFFERTA -->
 		
 		<action name="openPageRinunciaOfferta" class="openPageRinunciaOffertaAction" method="openPage">
@@ -863,5 +909,4 @@
 		</action>
 		
 	</package>
-
 </struts>

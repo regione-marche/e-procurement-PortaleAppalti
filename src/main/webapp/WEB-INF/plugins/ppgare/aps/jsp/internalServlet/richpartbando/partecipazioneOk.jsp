@@ -41,7 +41,7 @@
 	</div>
 			
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/RichPartBando/cancelPartecipazione.action" />&amp;codice=<s:property value="codice" />&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/RichPartBando/cancelPartecipazione.action" />&amp;codice=<s:property value="codice" />">
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

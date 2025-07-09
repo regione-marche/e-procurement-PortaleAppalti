@@ -5,6 +5,7 @@ import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.AbstractService;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import it.eldasoft.sil.portgare.datatypes.DatiImpresaDocument;
+import it.eldasoft.sil.portgare.datatypes.TipoPartecipazioneDocument;
 import it.eldasoft.www.sil.WSGareAppalto.*;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
@@ -18,12 +19,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.xmlbeans.XmlException;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Servizio gestore dei bandi.
@@ -148,7 +144,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 	private OrderCriteria getOrderCriteriaOrDefault(String searchOrderCriteria, OrderCriteria defaultOrderCriteria){
 		return StringUtils.isNotEmpty(searchOrderCriteria) ? OrderCriteria.fromString(searchOrderCriteria) : defaultOrderCriteria;
 	}
-
+	
 	/**
 	 * ...
 	 */
@@ -162,6 +158,16 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			Integer numAnniPubblicazione = (Integer) wsGareAppalto
 					.getAppParamManager().getConfigurationValue(
 							AppParamManager.PUBBLICAZIONE_NUM_ANNI);
+
+			// gestione customizzazione GARE-SCADUTE|NEGOZIATE|VIA
+			boolean visNegoziateScadute = true;
+			try {
+				ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
+						.getBean("CustomConfigManager", ServletActionContext.getRequest());
+				visNegoziateScadute = customConfigManager.isVisible("GARE-SCADUTE", "NEGOZIATE");
+			} catch (Exception ex) {
+				visNegoziateScadute = true;
+			}
 
 			GaraTypeSearch filtri = new GaraTypeSearch();
 			filtri.setNumAnniPubblicazione(numAnniPubblicazione);
@@ -177,6 +183,8 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			filtri.setStato(search.getStato());
 			filtri.setAltriSoggetti(search.getAltriSoggetti());
 			filtri.setSommaUrgenza(search.convertedSommaUrgenza());
+			filtri.setVisualizzaNegoziate(visNegoziateScadute);
+			filtri.setEsito(search.convertedEsito());
 			filtri.setIsGreen(search.getIsGreen());
 			filtri.setIsRecycle(search.getIsRecycle());
 			filtri.setIsPnrr(search.getIsPnrr());
@@ -193,6 +201,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -240,7 +249,6 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			filtri.setIndicePrimoRecord(search.getIndicePrimoRecord());
 			filtri.setMaxNumRecord(search.getiDisplayLength());
 
-
 			retWS = wsGareAppalto.getProxyWSGare().getElencoBandi(filtri);
 			if (retWS.getErrore() == null) {
 				if (retWS.getElencoBandi() != null)
@@ -249,6 +257,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -324,6 +333,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 				}
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -394,6 +404,58 @@ public class BandiManager extends AbstractService implements IBandiManager {
 
 		return dettaglio;
 	}
+	
+	@Override
+	public DettaglioGaraType getDettaglioGaraByCig(String cig) throws ApsException {
+		DettaglioGaraType dettaglio = null;
+		try {
+			DettaglioGaraOutType retWS = wsGareAppalto.getProxyWSGare().getDettaglioGaraByCig(cig);
+			if (retWS.getErrore() == null) {
+				dettaglio = retWS.getGara();
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura del dettaglio bando di gara: "
+						+ retWS.getErrore());
+			}
+			
+			//////////////////////////////////////////////
+			// Workaraound per il rilascio della memoria  
+			retWS = null;
+
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura del dettaglio bando di gara",
+					t);
+		}
+
+		return dettaglio;
+	}
+
+	@Override
+	public String getRagioneSocialeAnonima(String codImp, String ngara) throws ApsException {
+		String toReturn = null;
+		try {
+			StringOutType retWS = wsGareAppalto.getProxyWSGare().getRagioneSocialeAnonima(codImp, ngara);
+			if (retWS.getErrore() == null)
+				toReturn = retWS.getResult();
+			else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura del dettaglio bando di gara a partire da un lotto: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura del dettaglio bando di gara a partire da un lotto",
+					t);
+		}
+		return toReturn;
+	}
 
 	@Override
 	public DettaglioGaraType getDettaglioGaraFromLotto(String codiceLotto)
@@ -419,6 +481,24 @@ public class BandiManager extends AbstractService implements IBandiManager {
 		}
 
 		return dettaglio;
+	}
+	
+	@Override
+	public String getCodiceGaraFromLotto(String codiceLotto)
+            throws ApsException 
+	{
+		String codiceGara = null;
+		try {
+			codiceGara = wsGareAppalto.getProxyWSGare().getCodiceGaraFromLotto(codiceLotto);
+			if (StringUtils.isEmpty(codiceGara)) {
+				codiceGara = "";
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura del dettaglio bando di gara a partire da un lotto",
+					t);
+		}
+		return codiceGara;
 	}
 
 	@Override
@@ -1441,6 +1521,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -1553,6 +1634,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -1813,6 +1895,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -1875,6 +1958,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -2424,12 +2508,12 @@ public class BandiManager extends AbstractService implements IBandiManager {
 	
 	@Override
 	public List<EspletGaraOperatoreType> getEspletamentoGaraDocAmmElencoOperatori(
-			String codiceGara, String tokenRichiedente) throws ApsException {
+			EspletamentoElencoOperatoriSearch search
+	) throws ApsException {
 		List<EspletGaraOperatoreType> elenco = null;
 		try {
 			GetEspletamentoGaraElencoOperatoriOutType retWS = wsGareAppalto.getProxyWSGare()
-				.getEspletamentoGaraDocAmmElencoOperatori(
-						codiceGara, tokenRichiedente);
+				.getEspletamentoGaraDocAmmElencoOperatori(search);
 
 			if (retWS.getErrore() == null) {
 				if (retWS.getElenco() != null)
@@ -2452,12 +2536,12 @@ public class BandiManager extends AbstractService implements IBandiManager {
 	
 	@Override
 	public List<EspletGaraOperatoreType> getEspletamentoGaraValTecElencoOperatori(
-			String codice, String codiceLotto, String tokenRichiedente) throws ApsException {
+			EspletamentoElencoOperatoriSearch search
+	) throws ApsException {
 		List<EspletGaraOperatoreType> elenco = null;
 		try {
 			GetEspletamentoGaraElencoOperatoriOutType retWS = wsGareAppalto.getProxyWSGare()
-				.getEspletamentoGaraValTecElencoOperatori(
-						codice, codiceLotto, tokenRichiedente);
+				.getEspletamentoGaraValTecElencoOperatori(search);
 
 			if (retWS.getErrore() == null) {
 				if (retWS.getElenco() != null){
@@ -2481,12 +2565,12 @@ public class BandiManager extends AbstractService implements IBandiManager {
 
 	@Override
 	public List<EspletGaraOperatoreType> getEspletamentoGaraOffEcoElencoOperatori(
-			String codice, String codiceLotto, String tokenRichiedente) throws ApsException {
+			EspletamentoElencoOperatoriSearch search
+	) throws ApsException {
 		List<EspletGaraOperatoreType> elenco = null;
 		try {
 			GetEspletamentoGaraElencoOperatoriOutType retWS = wsGareAppalto.getProxyWSGare()
-				.getEspletamentoGaraOffEcoElencoOperatori(
-						codice, codiceLotto, tokenRichiedente);
+				.getEspletamentoGaraOffEcoElencoOperatori(search);
 			
 			if (retWS.getErrore() == null) {
 				if (retWS.getElenco() != null) {
@@ -2578,20 +2662,20 @@ public class BandiManager extends AbstractService implements IBandiManager {
 	
 	@Override
 	public List<EspletGaraOperatoreType> getEspletamentoGaraGraduatoriaElencoOperatori(
-			String codiceGara, String tokenRichiedente) throws ApsException {
+			EspletamentoElencoOperatoriSearch search
+	) throws ApsException {
 		List<EspletGaraOperatoreType> elenco = null;
 		try {
 			GetEspletamentoGaraElencoOperatoriOutType retWS = wsGareAppalto.getProxyWSGare()
-				.getEspletamentoGaraGraduatoriaElencoOperatori(
-						codiceGara, tokenRichiedente);
+				.getEspletamentoGaraGraduatoriaElencoOperatori(search);
 
 			if (retWS.getErrore() == null) {
 				if (retWS.getElenco() != null){
 					elenco = Arrays.asList(retWS.getElenco());
 					// normalizza il valore di alcuni campi Double (ribassoOfferto)
-					for(int i = 0; i < elenco.size(); i++) {
-						elenco.get(i).setRibassoOfferto( normalizzaRibasso(elenco.get(i).getRibassoOfferto()) );
-					}
+                    for (EspletGaraOperatoreType espletGaraOperatoreType : elenco) {
+                        espletGaraOperatoreType.setRibassoOfferto(normalizzaRibasso(espletGaraOperatoreType.getRibassoOfferto()));
+                    }
 				}
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
@@ -2608,6 +2692,66 @@ public class BandiManager extends AbstractService implements IBandiManager {
 		}
 		return elenco;
 	}
+
+	@Override
+	public List<EspletGaraOperatoreType> getEspletamentoGaraAccessoDocumentiElencoOperatori(
+            EspletamentoElencoOperatoriSearch search
+	) throws ApsException {
+		List<EspletGaraOperatoreType> elenco = null;
+		try {
+			GetEspletamentoGaraElencoOperatoriOutType retWS = wsGareAppalto.getProxyWSGare()
+				.getEspletamentoGaraAccessoDocumentiElencoOperatori(search);
+	
+			if (retWS.getErrore() == null) {
+				if (retWS.getElenco() != null) {
+					elenco = Arrays.asList(retWS.getElenco());
+				}
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+								"Errore durante la lettura dell'elenco degli operatori economici per l'espletamento per l'accesso ai documenti delle classificate: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+							"Errore durante la lettura dell'elenco degli operatori economici per l'espletamento per l'accesso ai documenti delle classificate",
+							t);
+		}
+		return elenco;
+	}
+	
+	
+	public List<EspletGaraAccessoDocumentiDocumentoType> getEspletamentoGaraAccessoDocumentiAtti(
+            String codice
+            , String tokenRichiedente
+    ) throws ApsException {
+		List<EspletGaraAccessoDocumentiDocumentoType> documenti = null;
+		try {
+			GetEspletamentoGaraAccessoDocumentiOutType retWS = wsGareAppalto.getProxyWSGare()
+				.getEspletamentoGaraAccessoDocumentiAtti(codice, tokenRichiedente);
+	
+			if (retWS.getErrore() == null) {
+				if (retWS.getDocumenti() != null) {
+					documenti = Arrays.asList(retWS.getDocumenti());
+				}
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+								"Errore durante la lettura dell'elenco degli operatori economici per l'espletamento per l'accesso ai documenti delle classificate: "
+								+ retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+							"Errore durante la lettura dell'elenco degli operatori economici per l'espletamento per l'accesso ai documenti delle classificate",
+							t);
+		}
+		return documenti;
+	}
+	
 	
 
 	public Long getFaseGara(String codice) throws ApsException {
@@ -2805,7 +2949,6 @@ public class BandiManager extends AbstractService implements IBandiManager {
 		}
 		return documenti;
 	}
-
 	
 	@Override
 	public SearchResult<DeliberaType> getDelibere(
@@ -2815,6 +2958,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			String cig,
 			Date dataPubblicazioneDa, 
 			Date dataPubblicazioneA,
+			String codgara,
 			Boolean sommaUrgenza,
 			int indicePrimoRecord,
 			int maxNumRecord) throws ApsException 
@@ -2831,13 +2975,14 @@ public class BandiManager extends AbstractService implements IBandiManager {
 										 	AppParamManager.PUBBLICAZIONE_NUM_ANNI);
 			 
 			retWS = wsGareAppalto.getProxyWSGare().getDelibere(
-					annoInizio,					
+					annoInizio,
 					stazioneAppaltante, 
 					oggetto, 
 					tipoAppalto, 
 					cig, 
 					(dataPubblicazioneDa != null ? DateUtils.toCalendar(dataPubblicazioneDa) : null),
 					(dataPubblicazioneA != null ? DateUtils.toCalendar(dataPubblicazioneA) : null),
+					codgara,
 					sommaUrgenza,
 					indicePrimoRecord, maxNumRecord);
 
@@ -2867,6 +3012,34 @@ public class BandiManager extends AbstractService implements IBandiManager {
 		return risultato;
 	}
 	
+	@Override
+	public DeliberaType getDettaglioDelibera(
+			String codiceGara) throws ApsException 
+	{
+		DeliberaType delibera = null;
+		DettaglioDeliberaOutType retWS = null;
+		try {
+			retWS = wsGareAppalto.getProxyWSGare().getDettaglioDelibera(codiceGara);
+
+			if (retWS.getErrore() == null) {
+				delibera = retWS.getDelibera();
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura delle delibere a contrarre "
+						+ ": " + retWS.getErrore());
+			}
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore durante la lettura delle delibere a contrarre "
+					, t);
+		}
+
+		return delibera;
+	}
+
 	@Override
 	public SearchResult<SommaUrgenzaType> getElencoSommaUrgenza(
 			String stazioneAppaltante, 
@@ -3023,6 +3196,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -3080,6 +3254,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati( new ArrayList<GaraType>() );
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -3119,10 +3294,10 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			filtri.setStato(search.getStato());
 			filtri.setAltriSoggetti(search.getAltriSoggetti());
 			filtri.setSommaUrgenza(search.convertedSommaUrgenza());
+			filtri.setGaraPrivatistica(search.getGaraPrivatistica());
 			filtri.setIsGreen(search.getIsGreen());
 			filtri.setIsRecycle(search.getIsRecycle());
 			filtri.setIsPnrr(search.getIsPnrr());
-			filtri.setGaraPrivatistica(search.getGaraPrivatistica());
 			filtri.setOrderCriteria(getOrderCriteriaOrDefault(search.getOrderCriteria(), DEFAULT_GARE_IN_CORSO));
 			filtri.setCodice(search.getCodice());
 			filtri.setIndicePrimoRecord(search.getIndicePrimoRecord());
@@ -3136,6 +3311,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati(new ArrayList<>());
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -3176,6 +3352,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 			filtri.setStato(search.getStato());
 			filtri.setAltriSoggetti(search.getAltriSoggetti());
 			filtri.setSommaUrgenza(search.convertedSommaUrgenza());
+			filtri.setGaraPrivatistica(search.getGaraPrivatistica());
 			filtri.setIsGreen(search.getIsGreen());
 			filtri.setIsRecycle(search.getIsRecycle());
 			filtri.setIsPnrr(search.getIsPnrr());
@@ -3193,6 +3370,7 @@ public class BandiManager extends AbstractService implements IBandiManager {
 					bandi.setDati( new ArrayList<GaraType>() );
 				bandi.setNumTotaleRecord(retWS.getNumBandi());
 				bandi.setNumTotaleRecordFiltrati(retWS.getNumBandi());
+				search.processResult(bandi.getNumTotaleRecord(), bandi.getNumTotaleRecordFiltrati());
 			} else {
 				// se si verifica un errore durante l'estrazione dei dati con il
 				// servizio, allora si ritorna un'eccezione che contiene il
@@ -3336,4 +3514,145 @@ public class BandiManager extends AbstractService implements IBandiManager {
 		return vendorRatingOutType.getVendorRatingType();
 	}
 
+	@Override
+	public ElencoOperatoriAbilitatiElenchiOutType getOEAbilitatiElenco(ElencoOperatoriAbilitatiSearch search) throws ApsException {
+		ElencoOperatoriAbilitatiElenchiOutType toReturn = null;
+		try {
+			toReturn = wsGareAppalto.getProxyWSGare().getElencoOperatoriAbilitatiElenco(search, false);
+			if (toReturn != null && StringUtils.isNotEmpty(toReturn.getErrore()))
+				throw new ApsException(toReturn.getErrore());
+		} catch (RemoteException e) {
+			throw new ApsException("Errore durante il recupero degli operatori abilitati all'elenco", e);
+		}
+		return toReturn;
+	}
+
+	@Override
+	public ElencoOperatoriAbilitatiElenchiOutType getElencoOperatoriAbilitatiElenco(ElencoOperatoriAbilitatiSearch search, boolean isRer) throws ApsException {
+		ElencoOperatoriAbilitatiElenchiOutType toReturn = null;
+		try {
+			toReturn = wsGareAppalto.getProxyWSGare().getElencoOperatoriAbilitatiElenco(search, isRer);
+			if (toReturn != null && StringUtils.isNotEmpty(toReturn.getErrore()))
+				throw new ApsException(toReturn.getErrore());
+			
+			if (toReturn != null && toReturn.getResult() != null) {
+				// NB: recupera solo gli OE che sono abilitati (abilitazione=1) 
+            	List<ElencoOperatoriAbilitatiElenco> abilitazioni = new ArrayList<ElencoOperatoriAbilitatiElenco>();   
+            	for (int i = 0; i < toReturn.getResult().length; i++)
+            		if(toReturn.getResult()[i].getAbilitazione().intValue() == 1) 
+            			abilitazioni.add(toReturn.getResult()[i]);
+            	
+            	toReturn.setResult(null);
+            	if(abilitazioni.size() > 0)
+            		toReturn.setResult(abilitazioni.toArray(new ElencoOperatoriAbilitatiElenco[0]));
+			}
+		} catch (RemoteException e) {
+			throw new ApsException("Errore durante il recupero degli operatori abilitati all'elenco", e);
+		}
+		return toReturn;
+	}
+
+	@Override
+	public boolean isConcorsoCrypted(String username, String codice) throws ApsException {
+		try {
+			BooleanOutType result = wsGareAppalto.getProxyWSGare().isConcorsoCrypted(username, codice);
+			if (result.getErrore() != null)
+				throw new ApsException(result.getErrore());
+			return result.getResult();
+		} catch (RemoteException e) {
+			throw new ApsException("Errore non sono riuscito a comunicare con il WSAppalti", e);
+		}
+	}
+
+	@Override
+	public String isConcorsoAttachedToRTI(String username, String codice) throws ApsException {
+		try {
+			StringOutType result = wsGareAppalto.getProxyWSGare().getDenominazioneConcorsoAllegato(username, codice);
+			if (result.getErrore() != null)
+				throw new ApsException(result.getErrore());
+			return result.getResult();
+		} catch (Exception e) {
+			throw new ApsException("Errore non sono riuscito a comunicare con il WSAppalti", e);
+		}
+	}
+
+	@Override
+	public TipoPartecipazioneDocument getPartecipantiRaggruppamento(String username, String codice) throws ApsException {
+		try {
+			StringOutType result = wsGareAppalto.getProxyWSGare().getPartecipantiRaggruppamento(username, codice);
+			if (result.getErrore() != null)
+				throw new ApsException(result.getErrore());
+			if (result.getResult() != null)
+				return TipoPartecipazioneDocument.Factory.parse(result.getResult());
+			else
+				return null;
+		} catch (Exception e) {
+			throw new ApsException("Errore non sono riuscito a comunicare con il WSAppalti", e);
+		}
+	}
+
+	@Override
+	public String getCodiceSecondoGrado(String username, String codice) throws ApsException {
+		try {
+			StringOutType result = wsGareAppalto.getProxyWSGare().getCodiceSecondoGrado(username, codice);
+			if (result.getErrore() != null)
+				throw new ApsException(result.getErrore());
+			return result.getResult();
+		} catch (Exception e) {
+			throw new ApsException("Errore non sono riuscito a comunicare con il WSAppalti", e);
+		}
+	}
+
+	/**
+	 * Determines whether a user can show the ranking for a first grade competition.
+	 *
+	 * @param ngara the code of the competition
+	 * @return true if the user can show the ranking, false otherwise
+	 * @throws ApsException if an error occurs while communicating with the WSAppalti
+	 */
+	@Override
+	public boolean canShowRankingFirstGradeCompetition(String ngara) throws ApsException {
+		try {
+			BooleanOutType result = wsGareAppalto.getProxyWSGare().canShowRankingFirstGradeCompetition(ngara);
+			if (result.getErrore() != null)
+				throw new ApsException(result.getErrore());
+			return result.getResult();
+		} catch (Exception e) {
+			throw new ApsException("Errore non sono riuscito a comunicare con il WSAppalti", e);
+		}
+	}
+
+	/**
+	 * restituisce l'elenco delle imprese ausiliarie relative ad un avvalimento 
+	 * @throws ApsException 
+	 */
+	@Override
+	public List<ImpresaAusiliariaType> getImpreseAusiliarie(String username, String codice, String progOfferta) throws ApsException {
+		List<ImpresaAusiliariaType> imprese = null;
+		ImpreseAusiliarieOutType retWS = null;
+		try {
+			retWS = wsGareAppalto.getProxyWSGare().getImpreseAusiliarie(username, codice, progOfferta);
+			if (retWS.getErrore() == null) {
+				if (retWS.getImpreseAusiliarie() != null)
+					imprese = Arrays.asList(retWS.getImpreseAusiliarie());
+				else
+					imprese = new ArrayList<ImpresaAusiliariaType>();
+			} else {
+				// se si verifica un errore durante l'estrazione dei dati con il
+				// servizio, allora si ritorna un'eccezione che contiene il
+				// messaggio di errore
+				throw new ApsException(
+						"Errore durante la lettura delle imprese ausiliarie: "
+						+ retWS.getErrore());
+			}
+
+		} catch (RemoteException t) {
+			throw new ApsException(
+					"Errore inaspettato durante la lettura delle imprese ausiliarie",
+					t);
+		}
+
+		return imprese;
+	}
+	
 }

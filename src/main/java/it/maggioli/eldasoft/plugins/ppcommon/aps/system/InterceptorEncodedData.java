@@ -71,20 +71,25 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	public static final String LISTA_ALIQUOTE_IVA = "aliquoteIVA";
 	public static final String LISTA_SETTORI_PRODUTTIVI = "settoriProduttivi";
 	public static final String LISTA_NAZIONI = "nazioni";
+	public static final String LISTA_CODICI_NAZIONI = "codicinazioni";
 	public static final String LISTA_TIPI_COMUNICAZIONE = "tipiComunicazione";
+	public static final String LISTA_TIPI_COMUNICAZIONE_ULTERIORI = "tipiComunicazioneUlteriori";
 	public static final String LISTA_STATI_COMUNICAZIONE = "statiComunicazione";
 	public static final String LISTA_TIPI_RAGGRUPPAMENTO = "tipiRaggruppamento";
+	public static final String LISTA_TIPO_PROCEDURA_CONCORSO = "tipoProceduraConcorso";	
 
 	// tabellati fissi da portale
 	public static final String LISTA_TIPI_SOGGETTO = "tipiSoggetto";
 	public static final String LISTA_SESSI = "sesso";
 	public static final String LISTA_SINO = "sino";
 	public static final String LISTA_AMBITO_TERRITORIALE = "ambitoTerritoriale";
+	public static final String LISTA_TIPI_BUSTA = "tipiBusta";
 
 	// tabellati "ibridi"
 	//public static final String LISTA_TIPI_SOGGETTO_QUALIFICA = "tipiSoggettoQualifica";
 	public static final String LISTA_TIPI_AVVISO = "tipiAvviso";
 	public static final String LISTA_NAZIONI_CODIFICATE = "nazioniCodificate";
+	public static final String LISTA_TIPI_AVVISO_GENERALI = "tipiAvvisoGenerali";
 
 	// tabellati web service gare
 	public static final String LISTA_STAZIONI_APPALTANTI = CommonSystemConstants.LISTA_STAZIONI_APPALTANTI;
@@ -128,7 +133,10 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	public static final String LISTA_TIPOLIGIA_PRODOTTO = "tipologiaProdotto";
 	public static final String LISTA_ORDER_CRITERIA = "orderCriteria";
 	public static final String LISTA_TIPO_AMMISSIONE_PROCEDURA = "tipiAmmissioneProcedura";
-	
+	public static final String LISTA_TIPI_AVVALIMENTO = "tipiAvvalimento";
+	public static final String LISTA_STATI_AVVISO = "statiAvviso";
+
+	public static final String LISTA_STATI_ELENCO = "statiElenco";
 
 	// tabellati di configurazione web service gare
 	public static final String CHECK_PARTITA_IVA_FACOLTATIVA_LIBERO_PROFESSIONISTA = "checkPILiberoProf";
@@ -149,7 +157,21 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	public static final String LISTA_TIPOLOGIE_COMUNICAZIONI = "tipologieComunicazioni";
 	public static final String LISTA_TIPOLOGIE_SOCIETA_COOPERATIVE = "tipiSocietaCooperative";
 	public static final String LISTA_FORME_GIURIDICHE_COOPERATIVE = "formeGiuridicheConSocCoop";
-    
+	public static final String LISTA_RATING = "listaRating";
+
+	// tabellato tipi impresa e natura giuridica (Michelangelo (SACE))
+	public static final String LISTA_TIPI_IMPRESA_NATURA_GIURIDICA = "tipiImpresaNaturaGiuridica"; 	
+
+	
+	// valori per il tabellato "order criteria"
+	public static final String ORDER_CRITERIA_DATA_SCADENZA_ASC 		= "DATA_SCADENZA_ASC";			// Data scadenza crescente
+	public static final String ORDER_CRITERIA_DATA_SCADENZA_DESC		= "DATA_SCADENZA_DESC"; 		// Data scadenza decrescente
+	public static final String ORDER_CRITERIA_DATA_PUBBLICAZIONE_ASC	= "DATA_PUBBLICAZIONE_ASC";		// Data pubblicazione crescente
+	public static final String ORDER_CRITERIA_DATA_PUBBLICAZIONE_DESC	= "DATA_PUBBLICAZIONE_DESC"; 	// Data pubblicazione decrescente
+	public static final String ORDER_CRITERIA_IMPORTO_ASC				= "IMPORTO_ASC"; 				// Importo crescente
+	public static final String ORDER_CRITERIA_IMPORTO_DESC				= "IMPORTO_DESC"; 				// Importo decrescente
+	
+	
 	/**
 	 * UID
 	 */
@@ -175,7 +197,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	public String intercept(ActionInvocation actionInvocation) throws Exception {
 		try {
 			if (this.types != null) {
-				//Se true proverò a sostituire i valori dei tabellati, con la versione tradotta nelle localstrings
+				//Se true proverï¿½ a sostituire i valori dei tabellati, con la versione tradotta nelle localstrings
 				boolean areLocalizedTextNeeded =
 						isMultiLanguageEnabled()
 								&& !isExportAction(actionInvocation)
@@ -225,7 +247,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 
 	/**
-	 * Controlla se la customization per il multilingua (dell'interceptor) è abilitato
+	 * Controlla se la customization per il multilingua (dell'interceptor) e' abilitata
 	 * @return
 	 * @throws Exception
 	 */
@@ -237,7 +259,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 
 	/**
-	 * Controlla se è stata richiesta l'istanza di un azione di export
+	 * Controlla se e' stata richiesta l'istanza di un azione di export
 	 * @param actionInvocation
 	 * @return
 	 */
@@ -246,8 +268,8 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 
 	/**
-	 * Controlla se è stata richiesta l'istanza di una action di import.
-	 * Tutti gli import devono utilizzare l'interceptor: "fileUpload"; quindi, se questo interceptor è nell'elenco
+	 * Controlla se e' stata richiesta l'istanza di una action di import.
+	 * Tutti gli import devono utilizzare l'interceptor: "fileUpload"; quindi, se questo interceptor e' nell'elenco
 	 * degli interceptor da invocare/invocati, allora sono in un action di import.
 	 * @param actionInvocation
 	 * @return
@@ -293,7 +315,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 
 	/**
-	 * LISTA_TIPI_IMPRESA_PER_ISCRIZ_ALBO effettua la stessa query di LISTA_TIPI_IMPRESA, solo che con qualche filtro in più
+	 * LISTA_TIPI_IMPRESA_PER_ISCRIZ_ALBO effettua la stessa query di LISTA_TIPI_IMPRESA, solo che con qualche filtro in piï¿½
 	 * per non creare label duplicate, utilizzo quelle di LISTA_TIPI_IMPRESA
 	 * @param type
 	 * @return
@@ -310,7 +332,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	private static LinkedHashMap<String, String> getList(String type) throws RemoteException, XmlException {
 		LinkedHashMap<String, String> lista = null;
 
-		//Convertito in switch, in quanto più performante per grossi if/else come questo (convertito da IDE e non manualmente)
+		//Convertito in switch, in quanto piï¿½ performante per grossi if/else come questo (convertito da IDE e non manualmente)
 		switch (type) {
 			case LISTA_PROVINCE:
 				lista = getProvince();
@@ -378,8 +400,14 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 			case LISTA_NAZIONI:
 				lista = getNazioni();
 				break;
+			case LISTA_CODICI_NAZIONI:
+				lista = getCodiciNazioni();
+				break;
 			case LISTA_TIPI_COMUNICAZIONE:
 				lista = getTipiComunicazione();
+				break;
+			case LISTA_TIPI_COMUNICAZIONE_ULTERIORI:
+				lista = getTipiComunicazioneUlteriori();
 				break;
 			case LISTA_STATI_COMUNICAZIONE:
 				lista = getStatiComunicazione();
@@ -405,6 +433,9 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 				break;
 			case LISTA_TIPI_AVVISO:
 				lista = getTipiAvviso();
+				break;
+			case LISTA_TIPI_AVVISO_GENERALI:
+				lista = getTipiAvvisoGenerali();
 				break;
 			case LISTA_STAZIONI_APPALTANTI:
 				lista = getStazioniAppaltanti();
@@ -546,7 +577,28 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 				break;
 			case LISTA_TIPO_AMMISSIONE_PROCEDURA:
 				lista = getTipiAmmissioneProcedura();
-				break;				
+				break;
+			case LISTA_STATI_ELENCO:
+				lista = getListaStatiElenco();
+				break;
+			case LISTA_RATING:
+				lista = getListaRating();
+				break;
+			case LISTA_TIPO_PROCEDURA_CONCORSO:
+				lista = getTipoProceduraConcorso();
+				break;
+			case LISTA_TIPI_AVVALIMENTO:
+				lista = getTipiAvvalimento();
+				break;
+			case LISTA_TIPI_IMPRESA_NATURA_GIURIDICA:
+				lista = getTipiImpresaNaturaGiuridica();
+				break;
+			case LISTA_STATI_AVVISO:
+				lista = getStatiAvviso();
+				break;
+			case LISTA_TIPI_BUSTA:
+				lista = getTipiBusta();
+				break;
 			default:
 				// eccezione che si puo' verificare solo in fase di sviluppo
 				throw new RuntimeException(
@@ -554,6 +606,70 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 		}
 
 		return lista;
+	}
+
+	private static LinkedHashMap<String, String> getListaStatiElenco() {
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_STATI_ELENCO)) {
+			lista = hash.get(LISTA_STATI_ELENCO);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			lista = new LinkedHashMap<>();
+			lista.put("1", "In verifica da Enti esterni");
+			lista.put("0", "Regolare");
+			hash.put(LISTA_STATI_ELENCO, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	private static LinkedHashMap<String, String> getListaRating() throws RemoteException, XmlException {
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_RATING)) {
+			lista = hash.get(LISTA_RATING);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSOperazioniGeneraliWrapper wrapper = (WSOperazioniGeneraliWrapper) ApsWebApplicationUtils
+					.getBean(CommonSystemConstants.WS_OPERAZIONI_GENERALI,
+							ServletActionContext.getRequest());
+
+			lista = InterceptorEncodedData.parseXml(wrapper.getProxyWSOPGenerali().getListaRating());
+			hash.put(LISTA_RATING, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	private static LinkedHashMap<String, String> getTipoProceduraConcorso() throws RemoteException, XmlException {
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPO_PROCEDURA_CONCORSO)) {
+			lista = hash.get(LISTA_TIPO_PROCEDURA_CONCORSO);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSOperazioniGeneraliWrapper wrapper = (WSOperazioniGeneraliWrapper) ApsWebApplicationUtils
+					.getBean(CommonSystemConstants.WS_OPERAZIONI_GENERALI,
+							ServletActionContext.getRequest());
+
+			lista = InterceptorEncodedData.parseXml(wrapper.getProxyWSOPGenerali().getListaTipoProceduraConcorso());
+			hash.put(LISTA_TIPO_PROCEDURA_CONCORSO, lista);
+		}
+
+		return clonaHash(lista);
 	}
 
 	/**
@@ -659,7 +775,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	@SuppressWarnings("unchecked")
 	private static LinkedHashMap<String, String> clonaHash(
 			LinkedHashMap<String, String> lista) {
-		LinkedHashMap<String, String> risultato = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> risultato = new LinkedHashMap<>();
 		if (lista != null)
 			risultato = (LinkedHashMap<String, String>) lista.clone();
 		return risultato;
@@ -1270,6 +1386,41 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 
 		return clonaHash(lista);
 	}
+	
+	/**
+	 restiruisce la lista delle nazioni 
+	 * @return mappa con coppie (codice, descrizione)
+	 * @throws RemoteException
+	 * @throws XmlException
+	 */
+	private static LinkedHashMap<String, String> getCodiciNazioni() 
+			throws RemoteException, XmlException 
+	{
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_CODICI_NAZIONI)) {
+			lista = hash.get(LISTA_CODICI_NAZIONI);
+		} else {
+			WSOperazioniGeneraliWrapper wrapper = (WSOperazioniGeneraliWrapper) ApsWebApplicationUtils
+					.getBean(CommonSystemConstants.WS_OPERAZIONI_GENERALI,
+							ServletActionContext.getRequest());
+			
+			String xml = wrapper.getProxyWSOPGenerali().getElencoNazioni();
+			ListaDatiCodificatiDocument document = ListaDatiCodificatiDocument.Factory.parse(xml);
+			ListaDatiCodificatiType listaDati = document.getListaDatiCodificati();
+			
+			lista = new LinkedHashMap<String, String>();			
+			for (int i = 0; i < listaDati.sizeOfElementoArray(); i++) {
+				DatoCodificatoType datoCodificato = listaDati.getElementoArray(i);
+				lista.put(datoCodificato.getCodice(), datoCodificato.getDescrizione());
+			}
+			hash.put(LISTA_CODICI_NAZIONI, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
 
 	private static LinkedHashMap<String, String> getTipiComunicazione() 
 			throws RemoteException, XmlException 
@@ -1290,6 +1441,30 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 			String xml = wrapper.getProxyWSOPGenerali().getElencoTipiComunicazione();
 			lista = InterceptorEncodedData.parseXml(xml);
 			hash.put(LISTA_TIPI_COMUNICAZIONE, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	private static LinkedHashMap<String, String> getTipiComunicazioneUlteriori() 
+			throws RemoteException, XmlException 
+	{
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPI_COMUNICAZIONE_ULTERIORI)) {
+			lista = hash.get(LISTA_TIPI_COMUNICAZIONE_ULTERIORI);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSOperazioniGeneraliWrapper wrapper = (WSOperazioniGeneraliWrapper) ApsWebApplicationUtils
+					.getBean(CommonSystemConstants.WS_OPERAZIONI_GENERALI,
+							ServletActionContext.getRequest());
+			String xml = wrapper.getProxyWSOPGenerali().getElencoTipiComunicazioneUlteriori();
+			lista = InterceptorEncodedData.parseXml(xml);
+			hash.put(LISTA_TIPI_COMUNICAZIONE_ULTERIORI, lista);
 		}
 
 		return clonaHash(lista);
@@ -1470,6 +1645,30 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 			lista = InterceptorEncodedData.parseXml(xml);
 			lista.put("0", "Elenco operatori economici");
 			hash.put(LISTA_TIPI_AVVISO, lista);
+		}
+
+		return clonaHash(lista);
+	}
+	
+	private static LinkedHashMap<String, String> getTipiAvvisoGenerali()
+			throws RemoteException, XmlException 
+	{
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPI_AVVISO_GENERALI)) {
+			lista = hash.get(LISTA_TIPI_AVVISO_GENERALI);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSOperazioniGeneraliWrapper wrapper = (WSOperazioniGeneraliWrapper) ApsWebApplicationUtils
+					.getBean(CommonSystemConstants.WS_OPERAZIONI_GENERALI,
+							ServletActionContext.getRequest());
+			String xml = wrapper.getProxyWSOPGenerali().getListaTipiAvvisoGenerali();
+			lista = InterceptorEncodedData.parseXml(xml);
+			hash.put(LISTA_TIPI_AVVISO_GENERALI, lista);
 		}
 
 		return clonaHash(lista);
@@ -1711,7 +1910,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 
 		return clonaHash(lista);
 	}
-
+	
 	private static LinkedHashMap<String, String> getStatiDettaglioGara()
 			throws RemoteException, XmlException 
 	{
@@ -2497,13 +2696,13 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 	
 	/**
-	 * Ritorna la lista di società cooperative clonate.
+	 * Ritorna la lista di societï¿½ cooperative clonate.
 	 *
-	 * @return lista di società cooperative
+	 * @return lista di societï¿½ cooperative
 	 */
 	private static LinkedHashMap<String, String> getSocietaCooperative() {	//Throws RuntimeException (RemoteException, XmlException)
 		//Il computeIfAbsent effettua la lambda passata come secondo parametro in caso la chiave richiesta non esista
-		//La lambda come secondo parametro ritornerà il valore della nuova Entry che verrà aggiunta in automatico
+		//La lambda come secondo parametro ritornerï¿½ il valore della nuova Entry che verrï¿½ aggiunta in automatico
 		//corrisponde a: if(!map.contains(key)) map.put(key, calculateValue())
 		//throwRuntimeOnThrows ritorna una RuntimeException (che non deve essere specificata in throws) in caso di eccezione
 
@@ -2522,25 +2721,25 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 			lista = hash.get(LISTA_ORDER_CRITERIA);
 		} else {
 			lista = new LinkedHashMap<String, String>();
-			lista.put("DATA_SCADENZA_ASC", "Data scadenza crescente");
-			lista.put("DATA_SCADENZA_DESC", "Data scadenza decrescente");
-			lista.put("DATA_PUBBLICAZIONE_ASC", "Data pubblicazione crescente");
-			lista.put("DATA_PUBBLICAZIONE_DESC", "Data pubblicazione decrescente");
-			lista.put("IMPORTO_ASC", "Importo crescente");
-			lista.put("IMPORTO_DESC", "Importo decrescente");
+			lista.put(ORDER_CRITERIA_DATA_SCADENZA_ASC, "Data scadenza crescente");
+			lista.put(ORDER_CRITERIA_DATA_SCADENZA_DESC, "Data scadenza decrescente");
+			lista.put(ORDER_CRITERIA_DATA_PUBBLICAZIONE_ASC, "Data pubblicazione crescente");
+			lista.put(ORDER_CRITERIA_DATA_PUBBLICAZIONE_DESC, "Data pubblicazione decrescente");
+			lista.put(ORDER_CRITERIA_IMPORTO_ASC, "Importo crescente");
+			lista.put(ORDER_CRITERIA_IMPORTO_DESC, "Importo decrescente");
 			hash.put(LISTA_ORDER_CRITERIA, lista);
 		}
 		return clonaHash(lista);
 }
 
 	/**
-	 * Ritorna la lista di forme giuridiche che supportano le società cooperative.
+	 * Ritorna la lista di forme giuridiche che supportano le societï¿½ cooperative.
 	 *
-	 * @return lista di società cooperative
+	 * @return lista di societï¿½ cooperative
 	 */
 	private static LinkedHashMap<String, String> getFormeGiuridicheCooperative() {	//Throws RuntimeException (RemoteException, XmlException)
 		//Il computeIfAbsent effettua la lambda passata come secondo parametro in caso la chiave richiesta non esista
-		//La lambda come secondo parametro ritornerà il valore della nuova Entry che verrà aggiunta in automatico
+		//La lambda come secondo parametro ritornerï¿½ il valore della nuova Entry che verrï¿½ aggiunta in automatico
 		//corrisponde a: if(!map.contains(key)) map.put(key, calculateValue())
 		//throwRuntimeOnThrows ritorna una RuntimeException (che non deve essere specificata in throws) in caso di eccezione
 
@@ -2552,7 +2751,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 	}
 
 	/**
-	 * Mi faccio ritornare dal WSAppalti l'xml con le forme giuridiche che supportano le società cooperative e lo
+	 * Mi faccio ritornare dal WSAppalti l'xml con le forme giuridiche che supportano le societï¿½ cooperative e lo
 	 * trasformo in linkedhashmap
 	 *
 	 * @return
@@ -2568,7 +2767,7 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 		return InterceptorEncodedData.parseXml(xml);
 	}
 	/**
-	 * Mi faccio ritornare dal WSAppalti l'xml con le società cooperative e lo trasformo in linkedhashmap
+	 * Mi faccio ritornare dal WSAppalti l'xml con le societï¿½ cooperative e lo trasformo in linkedhashmap
 	 *
 	 * @return
 	 * @throws RemoteException
@@ -2604,4 +2803,127 @@ public class InterceptorEncodedData extends AbstractInterceptor {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	/**
+	 * elenco dei tipi di avvalimento (tabellato A1123)
+	 */
+	private static LinkedHashMap<String, String> getTipiAvvalimento() throws RemoteException, XmlException {
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPI_AVVALIMENTO)) {
+			lista = hash.get(LISTA_TIPI_AVVALIMENTO);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSGareAppaltoWrapper wrapper = (WSGareAppaltoWrapper) ApsWebApplicationUtils
+					.getBean(PortGareSystemConstants.WS_GARE_APPALTO,
+							 ServletActionContext.getRequest());
+			String xml = wrapper.getProxyWSGare().getTipiAvvalimento();
+			lista = InterceptorEncodedData.parseXml(xml);
+			logger.debug("Loaded LISTA_TIPI_AVVALIMENTO {}",lista.size());
+			hash.put(LISTA_TIPI_AVVALIMENTO, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	/**
+	 * elenco dei tipi impresa e natura giuridica (tabellato A1z28)
+	 */
+	private static LinkedHashMap<String, String> getTipiImpresaNaturaGiuridica() throws RemoteException, XmlException {
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPI_IMPRESA_NATURA_GIURIDICA)) {
+			lista = hash.get(LISTA_TIPI_IMPRESA_NATURA_GIURIDICA);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+			WSGareAppaltoWrapper wrapper = (WSGareAppaltoWrapper) ApsWebApplicationUtils
+					.getBean(PortGareSystemConstants.WS_GARE_APPALTO,
+							 ServletActionContext.getRequest());
+			String xml = wrapper.getProxyWSGare().getTipiImpresaNaturaGiuridica();
+			//lista = InterceptorEncodedData.parseXml(xml);
+			
+			// PORTAPPALT-1049 SACE 
+			// NB: nella lista ci sono 2 occorrenze di PF (persona fisica (6,10), persona fisica estero (6,16))
+			lista = new LinkedHashMap<String, String>();
+			ListaDatiCodificatiDocument document = ListaDatiCodificatiDocument.Factory.parse(xml);
+			ListaDatiCodificatiType dati = document.getListaDatiCodificati();
+			for (int i = 0; i < dati.sizeOfElementoArray(); i++) {
+				DatoCodificatoType datoCodificato = dati.getElementoArray(i);
+				// sostituisco PF per la persona fisica estero con PFE
+				String codice = datoCodificato.getCodice();
+				if("PF".equalsIgnoreCase(codice) && "6,16".equalsIgnoreCase(datoCodificato.getDescrizione())) {
+					codice = "PFE";
+				} 
+				lista.put(codice, datoCodificato.getDescrizione());
+			}
+			
+			logger.debug("Loaded LISTA_TIPI_IMPRESA_NATURA_GIURIDICA {}",lista.size());
+			hash.put(LISTA_TIPI_IMPRESA_NATURA_GIURIDICA, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	private static LinkedHashMap<String, String> getStatiAvviso()
+			throws RemoteException, XmlException 
+	{
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_STATI_AVVISO)) {
+			lista = hash.get(LISTA_STATI_AVVISO);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+//			WSGareAppaltoWrapper wrapper = (WSGareAppaltoWrapper) ApsWebApplicationUtils
+//					.getBean(PortGareSystemConstants.WS_GARE_APPALTO,
+//							ServletActionContext.getRequest());
+//			String xml = wrapper.getProxyWSGare().getElencoStatiGara();
+//			lista = InterceptorEncodedData.parseXml(xml);
+			lista = new LinkedHashMap<String, String>();
+			lista.put("1", "In corso"); 
+			lista.put("2", "Scaduto");
+			hash.put(LISTA_STATI_AVVISO, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
+	private static LinkedHashMap<String, String> getTipiBusta()
+			throws RemoteException, XmlException 
+	{
+		Hashtable<String, LinkedHashMap<String, String>> hash = getHash();
+		LinkedHashMap<String, String> lista = null;
+
+		if (hash.containsKey(LISTA_TIPI_BUSTA)) {
+			lista = hash.get(LISTA_TIPI_BUSTA);
+		} else {
+			// non viene applicata alcuna sincronizzazione in quanto Hashtable
+			// e' una classe sincronizzata, e i valori che si andrebbero a
+			// scrivere comunque sono sempre i medesimi, al piu' potrebbero
+			// esserci 2 scritture se il primo test ritorna false
+//			WSGareAppaltoWrapper wrapper = (WSGareAppaltoWrapper) ApsWebApplicationUtils
+//					.getBean(PortGareSystemConstants.WS_GARE_APPALTO,
+//							ServletActionContext.getRequest());
+//			String xml = wrapper.getProxyWSGare().getElencoStatiGara();
+//			lista = InterceptorEncodedData.parseXml(xml);
+			lista = new LinkedHashMap<String, String>();
+			lista.put("2", "Busta tecnica"); 
+			lista.put("3", "Busta economica");
+			hash.put(LISTA_TIPI_BUSTA, lista);
+		}
+
+		return clonaHash(lista);
+	}
+
 }

@@ -6,15 +6,12 @@
 <es:checkCustomization var="visExportPdf" objectId="EXPORT" attribute="PDF" feature="VIS" />
 <es:checkCustomization var="withAdvancedUI" objectId="UI-ADVANCED" attribute="DATATABLE" feature="ACT" />
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
-
 <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/send_blockUI.jsp" />
 
-<script src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script src="<wp:resourceURL/>static/js/ppgare/dialogFullScreen.js"></script>
 <script src="<wp:resourceURL/>static/js/jspdf.min.js"></script>
 <script src="<wp:resourceURL/>static/js/jspdf.plugin.autotable.js"></script>
-
 <script src='<wp:resourceURL/>static/js/jquery.dataTables.min.js'></script>
 
 <c:if test="${withAdvancedUI}" >
@@ -98,7 +95,7 @@
 		</s:iterator>
 	</fieldset>
 	
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchAnticorruzione.action" />" method="post" >
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchAnticorruzione.action" />" method="post" >
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 		
 		<fieldset>
@@ -161,7 +158,7 @@
 											 maxlength="50" size="30" />
 				</div>
 			</div>
-			<div class="fieldset-row last-row">
+			<div class="fieldset-row">
 				<div class="label">
 					<label for="model.aggiudicatario"><wp:i18n key="LABEL_AGGIUDICATARIO" />: </label>
 				</div>
@@ -169,7 +166,21 @@
 					<s:textfield name="model.aggiudicatario" id="model.aggiudicatario" cssClass="text" value="%{#searchForm.aggiudicatario}" 
 											 maxlength="50" size="30" />
 				</div>
-			</div>	
+			</div>
+			<div class="fieldset-row last-row">
+                <div class="label">
+                    <label for="model.iDisplayLength"><s:property value="%{getText('label.rowsPerPage')}" /> : </label>
+                </div>
+                <div class="element">
+                    <select name="model.iDisplayLength" id="model.iDisplayLength" class="text">
+                        <option <s:if test="%{model.iDisplayLength==10}">selected="selected"</s:if> value="10">10</option>
+                        <option <s:if test="%{model.iDisplayLength==20}">selected="selected"</s:if> value="20">20</option>
+                        <option <s:if test="%{model.iDisplayLength==50}">selected="selected"</s:if> value="50">50</option>
+                        <option <s:if test="%{model.iDisplayLength==100}">selected="selected"</s:if> value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
 			<div class="azioni">
 				<wp:i18n key="BUTTON_SEARCH" var="valueSearchButton" />
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui"/>
@@ -187,7 +198,7 @@
 				</s:if> 		
 			
 				<div class="list-summary">
-					<wp:i18n key="SEARCH_RESULTS_INTRO" /> <s:property value="%{listaAppalti.size()}"/> <wp:i18n key="SEARCH_RESULTS_OUTRO" />.
+					<wp:i18n key="SEARCH_RESULTS_INTRO" /> <s:property value="%{model.iTotalDisplayRecords}"/> <wp:i18n key="SEARCH_RESULTS_OUTRO" />.
 				</div>
 				<div class="table-container">
 					<table id="tableBandi" class="info-table source-popup">
@@ -271,29 +282,35 @@
 				</div>
 
 				<c:if test="${!(skin == 'highcontrast' || skin == 'text')}">
-					<a href='javascript:' title='<wp:i18n key="LINK_VIEW_TABLE_DETAIL" />' class="bkg expand-fullscreen" id="openDialog">
-					</a>
+				    <c:if test="${withAdvancedUI}" >
+                        <a href='javascript:' title='<wp:i18n key="LINK_VIEW_TABLE_DETAIL" />' class="bkg expand-fullscreen" id="openDialog">
+                        </a>
+					</c:if>
 				</c:if>
+
+                <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
 
 				<s:url id="urlExport" namespace="/do/FrontEnd/AmmTrasp" action="exportAnticorruzione">
 					<s:param name="last" value="1"></s:param>
 				</s:url>
 
 				<p>
-					<a href='<s:property value="%{#urlExport}" />&amp;${tokenHrefParams}' class="important">
+					<a href='<s:property value="%{#urlExport}" />' class="important">
 						<wp:i18n key="LINK_EXPORT_CSV" />
 					</a>
 				</p>
 				<c:if test="${visExportPdf}">
-				<p>
-					<a href='javascript:' id="hrefExportPdf" class="important">
-						<wp:i18n key="LINK_EXPORT_PDF" />
-					</a>
-				</p>
+					<p>
+						<a href='javascript:' id="hrefExportPdf" class="important">
+							<wp:i18n key="LINK_EXPORT_PDF" />
+						</a>
+					</p>
 				</c:if>
 
 			</s:if>
 			<s:else>
+				<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+				<input disabled="disabled" type="submit" style="display:none;"/>
 				<div class="list-summary">
 					<wp:i18n key="SEARCH_NOTHING_FOUND" />.
 				</div>
@@ -302,7 +319,7 @@
 	</form>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/listaAdempimentiAnticorruzione.action"/>&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/listaAdempimentiAnticorruzione.action"/>">
 			<wp:i18n key="LINK_BACK_TO_YEAR" />
 		</a>
 	</div> 

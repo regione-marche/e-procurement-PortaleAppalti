@@ -1,0 +1,203 @@
+/* =ERRORS-AND-MESSAGES */
+
+.error,
+.errors, 
+.required-field {
+	color: #FF0000;
+}
+
+.warnings {
+	color: #0000FF;
+}
+
+/* =BALLOON */
+
+.balloon {
+	border: 1px solid #A0C4B6;
+}
+
+.balloon a {
+	color: #043F56;
+}
+
+/* =TABLES */
+
+.light-table,
+.light-table th,
+.light-table td {
+	border: 0;
+	color: #000;	
+}
+
+.light-table th {
+	background-color: #E5ECFA;
+}
+
+.light-table td {
+	background: none;
+}
+
+/* =DETAIL-FORM */
+
+.detail-section-title {
+	border-bottom: 2px #144873 solid;
+	color: #144873;
+}
+
+fieldset {
+	border: 1px solid #A0C4B6; 
+}
+
+legend {
+	background-color: #A0C4B6;
+	background-position:center top;
+	border: 1px solid #A0C4B6;
+	color: #FFF;
+	padding: 5px;
+}
+
+.element input, 
+.element select,
+.element textarea {
+	background-color: #F0F9FF;
+	border: 1px solid #DFDFDF;
+}
+
+.element .no-editable {
+	background-color: #CFCFCF;
+	margin-top: -1px;
+}
+
+.fieldset-row {
+	border:1px dotted #ccc;
+}
+
+.fieldset-row:hover {
+	border: 1px solid #00FF00;
+}
+
+.portgare-list label, 
+.portgare-view label {
+	color: #144873;
+}
+
+.label {
+	border-right: 1px dotted #ccc;
+}
+
+.element label {
+	color: #000;
+}
+
+div div.note {
+	background-color: #CCDDFF;
+	border: 1px silver dotted;
+}
+
+div.sottosezione h4 {
+	border-bottom: 2px #144873 solid;
+	color: #144873;
+}
+
+.special {
+	background-color: #D7DFE8;
+	border: 1px solid #B7C9D9;
+}
+
+.special a {
+	color: #043F56;
+}
+
+/* =LIST-FORM */
+
+.list-item {
+	background: none repeat scroll 0 0 #F0F4F7;
+	border: 1px solid #B7C9D9;
+}
+
+/* =FILTER-FORM */
+
+.search input[type="text"] {
+	background-color: #F0F9FF;
+	border: 1px solid #DFDFDF;
+}
+
+/* =CHANGE-PASSWORD-FORM */
+
+#change_password_form label.error {
+	color: #B70039;
+}
+
+#change_password_form label.success_msg {
+	color: #0060BF;
+}
+
+/* =WIZARD-STEPS */
+
+.steps {
+	border-bottom-color: #CCC;
+}
+
+.current-step {
+	background-color: #FFCC00;
+	border-left-color: #CCC;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-right-color: #CCC;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-top-color: #CCC;
+	border-top-style: solid;
+	border-top-width: 1px;
+	padding: 4px 4px 5px;
+}
+
+/* =PAGINATION */
+
+#pagination-navi .selected {
+	background-color: #FFF;
+	color: #043F56;
+}
+
+/* =MENU-FORM */
+
+.menu-gestione {
+	background-color: #F0F4F7;
+}
+
+.menu-gestione li:hover, 
+.menu-gestione li:focus {
+	background-color: #0073A8;
+}
+
+.menu-gestione li.disabled {
+	background-color: #F2F2F2;
+}
+
+.menu-gestione a {
+	color: #0073A8;
+}
+
+.menu-gestione li:hover a, 
+.menu-gestione li:focus a {
+	color: #FFF;
+	text-decoration: none;
+}
+
+.menu-gestione li.disabled a {
+	color: #C4C4C4;
+}
+
+.menu-gestione li.disabled:hover, 
+.menu-gestione li.disabled:focus {
+	background-color: #F2F2F2;
+}
+
+.menu-gestione li.disabled:hover a, 
+.menu-gestione li.disabled:focus a {
+	color: #C4C4C4;
+}
+
+.menu-gestione .info {
+	color: #333;
+}

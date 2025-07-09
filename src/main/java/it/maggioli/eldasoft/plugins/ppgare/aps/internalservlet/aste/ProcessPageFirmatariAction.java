@@ -14,6 +14,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.C
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardOffertaEconomicaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -28,6 +30,7 @@ import com.agiletec.aps.system.ApsSystemUtils;
  *
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class ProcessPageFirmatariAction extends AbstractProcessPageAction {
 	/**
 	 * UID

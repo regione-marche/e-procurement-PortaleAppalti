@@ -10,6 +10,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_unitari.GenExcelPrezziUnitariAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_unitari.PrezziUnitariFields;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -26,12 +28,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_unitari.PrezziUnitariFields.PrezziUnitariFieldsBuilder;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPagePrezziUnitariAction extends AbstractProcessPageAction implements ParameterAware {
 	/**
 	 * UID

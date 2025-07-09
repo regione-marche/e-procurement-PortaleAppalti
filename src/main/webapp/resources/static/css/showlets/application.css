@@ -99,13 +99,26 @@
 .table-container {
 	max-height: 35em;
 	overflow: auto;
+	display: inline;
+}
+
+.dataTables_wrapper,
+.dataTables_scroll,
+.dataTables_scrollHead,
+.dataTables_scrollHeadInner,
+.dataTables_scrollFoot {
+	display: block;
+}
+
+.dataTables_scrollBody {
+	display: block;
 }
 
 .wizard-table {
 	border-collapse: collapse; 
 }
 
-.wizard-table td, .wizard-table th {	
+.wizard-table td, .wizard-table th {
 	padding: 8px 16px;
 	text-align: left;
 }
@@ -321,6 +334,10 @@ legend {
 	padding: 0;
 }
 
+div.note {
+	display: block;
+}
+
 .fieldset-row div div.note {
 	margin: .5em 0 .3em 0;
 }
@@ -338,6 +355,15 @@ div.note ul {
 
 .fieldset-row div div.contents-group {
 	margin-bottom: .25em;
+	flex-direction: row !important;
+	align-items: center;
+	flex-wrap: wrap;
+	max-width: 100%;
+}
+
+div.contents-group input, 
+div.contents-group select {
+	max-width: 100%;
 }
 
 .first-row {
@@ -363,11 +389,6 @@ div.note ul {
 	max-width: 67%;
 	font-size: .9em;
 	padding: .5em .3em;
-}
-
-.element input, 
-.element select {
-	max-width: 100%;
 }
 
 .element textarea {
@@ -397,6 +418,7 @@ div.note ul {
 	font-weight: bold;
 	margin-top: 20px;
 	text-align: right;
+	display: block;
 }
 
 .detail-row {
@@ -430,16 +452,19 @@ div.note ul {
 
 .list-summary {
 	padding-bottom: .5em;
-	text-align: center;
+	justify-content: center; 
 }
 
 .list-item {
 	margin: .5em 0;
 	padding: .5em;
+	align-items: flex-start;
 }
 
 .list-item-row {
 	padding: .5em 0;
+	display: flex !important;
+	width: 100% !important;
 }
 
 .list-action {
@@ -1006,7 +1031,7 @@ a.menu-item-link.go {
 }
 
 select[id^="zoneAttivita"] {
-    width:80px !important;
+    width:60px !important;
 }
 
 
@@ -1054,7 +1079,6 @@ select[id^="zoneAttivita"] {
     display: table-cell;
     vertical-align: middle;
     text-align: center;
-	
 }
 
 #spid-idp-button-small-get{
@@ -1084,6 +1108,27 @@ select[id^="zoneAttivita"] {
     background-color: #e8e8e8;
 }
 
+.credentials-form{
+	width: 100%;
+	flex-direction: column !important;
+}
+
+.credentials-field{	
+	width: 100%;
+    padding: .5em;
+	flex-direction: row;
+}
+
+.credentials-label{
+	width:40%;
+	justify-content: end;
+}
+
+.credentials-input{
+	width:60%;
+	justify-content: start;
+}
+
 .auth_button{
     display: inline-block;
 }
@@ -1092,7 +1137,6 @@ select[id^="zoneAttivita"] {
     color: white !important;
 }
 
-
 .auth_button .button-spid{
 	border-radius: 10px;
 }
@@ -1100,16 +1144,6 @@ select[id^="zoneAttivita"] {
 .auth_description{
 	padding-top: .5em;
 } 
-
-.credentials-field{
-    padding: .5em;
-	display: flex;
-}
-
-.credentials-label{
-	width:40%;
-   text-align: end;
-}
 
 
 

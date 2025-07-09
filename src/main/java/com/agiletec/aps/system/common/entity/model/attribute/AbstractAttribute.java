@@ -17,8 +17,6 @@
 */
 package com.agiletec.aps.system.common.entity.model.attribute;
 
-import java.io.Serializable;
-
 import org.jdom.Element;
 
 import com.agiletec.aps.system.common.entity.model.IApsEntity;
@@ -30,7 +28,7 @@ import com.agiletec.aps.system.exception.ApsSystemException;
  * This abstract class must be used when implementing Entity Attributes.
  * @author W.Ambu - E.Santoboni
  */
-public abstract class AbstractAttribute implements AttributeInterface, Serializable {
+public abstract class AbstractAttribute implements AttributeInterface {
 	
 	/**
 	 * @see com.agiletec.aps.system.common.entity.model.attribute.AttributeInterface#isMultilingual()

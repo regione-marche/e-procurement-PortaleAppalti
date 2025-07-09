@@ -1,13 +1,14 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import org.apache.commons.lang.StringUtils;
-
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Action di gestione delle operazioni nella pagina dei dati ulteriori
@@ -16,12 +17,17 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
-public class ProcessPageDatiUlterioriImpresaAction extends
-				AbstractProcessPageAction implements IDatiUlterioriImpresa {
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
+public class ProcessPageDatiUlterioriImpresaAction extends AbstractProcessPageAction implements IDatiUlterioriImpresa {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 23179258092441689L;
+
 
 	@Validate(EParamValidation.SI_NO)
 	private String iscrittoCCIAA;
@@ -49,6 +55,8 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 	private String localitaIscrizioneINPS;
 	@Validate(EParamValidation.POSIZ_CONTRIB_INPS)
 	private String posizContributivaIndividualeINPS;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 	@Validate(EParamValidation.NUM_ISCR_INAIL)
 	private String numIscrizioneINAIL;
 	@Validate(EParamValidation.DATE_DDMMYYYY)
@@ -123,7 +131,7 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 //	private String estremiCCDedicato;
 	@Validate(EParamValidation.IBAN)
 	private String codiceIBANCCDedicato;
-	@Validate(EParamValidation.BICC)
+	@Validate(value = EParamValidation.BICC, error = @WithError(fieldLabel = "BIC"))
 	private String codiceBICCCDedicato;
 	@Validate(EParamValidation.SOGG_ABILITATI_CC)
 	private String soggettiAbilitatiCCDedicato;
@@ -170,6 +178,10 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 	private boolean obbIban;
 	@Validate(EParamValidation.TIPO_IMPRESA)
 	private String tipoImpresa;
+	@Validate(EParamValidation.SI_NO)
+	private String withIBAN;
+	@Validate(EParamValidation.NUMERO_CONTO)
+	private String numeroConto;
 
 
 	@Override
@@ -300,6 +312,16 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 	@Override
 	public void setPosizContributivaIndividualeINPS(String posizContributivaIndividualeINPS) {
 		this.posizContributivaIndividualeINPS = posizContributivaIndividualeINPS;
+	}
+	
+	@Override
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+	
+	@Override
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
 	}
 
 	@Override
@@ -662,6 +684,10 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 		this.codiceIBANCCDedicato = (codiceIBANCCDedicato != null ? codiceIBANCCDedicato.toUpperCase() : codiceIBANCCDedicato);
 	}
 
+	public void setWithIBAN(String withIBAN) {
+		this.withIBAN = withIBAN;
+	}
+
 	@Override
 	public String getCodiceBICCCDedicato() {
 		return codiceBICCCDedicato;
@@ -946,6 +972,20 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 		this.obbIban = obbIban;
 	}
 
+	@Override
+	public void setNumeroConto(String numeroConto) {
+		this.numeroConto = StringUtils.isNotEmpty(numeroConto) ? numeroConto.toUpperCase(): numeroConto;
+	}
+	@Override
+	public String getWithIBAN() {
+		return withIBAN;
+	}
+
+	@Override
+	public String getNumeroConto() {
+		return numeroConto;
+	}
+
 	/**
 	 * Si verifica che l'eventuale modifica degli indirizzi email non vada in
 	 * conflitto con gli indirizzi email usati come riferimento per altre imprese.
@@ -974,8 +1014,9 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 			}
 			if("1".equals(this.iscrittoCCIAA)) {
 				if (this.obblOggettoSociale
-						&& !this.liberoProfessionista
-						&& StringUtils.isBlank(this.oggettoSociale)) {
+					&& !this.liberoProfessionista
+					&& StringUtils.isBlank(this.oggettoSociale)) 
+				{
 					this.addFieldError("oggettoSociale", this.getText("Errors.requiredstring", new String[] { this.getTextFromDB("oggettoSociale") }));
 				}
 			}
@@ -996,11 +1037,9 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 
 	@Override
 	public String next() {
-
 		String target = SUCCESS;
 
 		WizardDatiImpresaHelper helper = getSessionHelper();
-
 		if (helper == null) {
 			// la sessione e' scaduta, occorre riconnettersi
 			this.addActionError(this.getText("Errors.sessionExpired"));
@@ -1010,20 +1049,27 @@ public class ProcessPageDatiUlterioriImpresaAction extends
 			this.numDipendenti = new Integer[this.strNumDipendenti.length];
 			for (int i = 0; i < this.strNumDipendenti.length; i++) {
 				if (StringUtils.isNotBlank(this.strNumDipendenti[i])) {
-					this.numDipendenti[i] = Integer
-									.parseInt(this.strNumDipendenti[i]);
+					this.numDipendenti[i] = Integer.parseInt(this.strNumDipendenti[i]);
 				}
 			}
+			
+			// nel caso "iscritto CCIAA = No" per libero professionistta o studio associato 
+			// si imposta il valore di default "M.71.1"
+			if( !"1".equals(iscrittoCCIAA) &&  helper.isLiberoProfessionista() ||  helper.isStudioAssociato()) {
+				//if(StringUtils.isEmpty(settoreAttivitaEconomica))
+					settoreAttivitaEconomica = "M.71.1";
+			}
+			
 			// aggiorna i dati in sessione
 			OpenPageDatiUlterioriImpresaAction.synchronizeDatiUlterioriImpresa(
 							this, helper.getDatiUlterioriImpresa());
 		}
+		
 		return target;
 	}
 
 	@Override
 	public String back() {
-
 		String target = "back";
 
 		WizardDatiImpresaHelper helper = getSessionHelper();

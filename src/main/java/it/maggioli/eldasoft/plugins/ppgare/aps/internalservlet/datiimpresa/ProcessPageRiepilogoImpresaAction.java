@@ -8,15 +8,17 @@ import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StrutsUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.ws.EsitoOutType;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -24,12 +26,6 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiI
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.IRegistrazioneImpresaManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.RegistrazioneImpresaManager;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRXmlDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -39,11 +35,9 @@ import org.apache.xmlbeans.XmlValidationError;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +48,11 @@ import java.util.Map;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageRiepilogoImpresaAction extends BaseAction implements SessionAware {
 	
 	 /**
@@ -115,6 +114,11 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 	public String send() {
 		String target = SUCCESS;
 
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return target;
+		}
+
 		WizardDatiImpresaHelper helper = getSessionHelper();
 		if (helper == null) {
 			// la sessione e' scaduta, occorre riconnettersi
@@ -166,8 +170,7 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 							IUserProfile userProfile = (IUserProfile)this.getCurrentUser().getProfile();
 							RegistrazioneImpresaManager.updateEntityAttributes(
 									userProfile,
-									(String) userProfile.getValue(userProfile
-											.getFirstNameAttributeName()),
+									(String) userProfile.getValue(userProfile.getFirstNameAttributeName()),
 									email);
 							if (helper.getIdComunicazione() != null
 									&& this._comunicazioniManager
@@ -181,8 +184,9 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 								helper.setIdComunicazione(null);
 							}
 							this.sendComunicazione(helper);
-							this.session
-									.remove(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
+
+							// Non si puï¿½ cancellare perchï¿½ utilizzata in CancelAggiornamentoAction.backAfter in caso di iscr_albo/asta/rich_part_bando
+//							session.remove(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
 							session.remove(PortGareSystemConstants.SESSION_ID_PAGINA);
 						} else {
 							this.addActionError(this.getText("Errors.aggiornamentoAnagraficaPortaleUnexpectedError", 
@@ -197,11 +201,14 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 				}
 			}
 		}
+		
+		unlockAccessoFunzione();
+		
 		return target;
 	}
 
     public String cancel() {
-	return "cancel";
+    	return "cancel";
     }
 
     public String back() {
@@ -221,9 +228,9 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 			} catch (Exception e) {
 				// Configurazione sbagliata
 				ApsSystemUtils.logThrowable(e, this, "next",
-						"Errore durante la ricerca delle proprietà di visualizzazione dello step dati ulteriori");
+						"Errore durante la ricerca delle proprietï¿½ di visualizzazione dello step dati ulteriori");
 			}
-			// nel caso di libero professionista la pagina precedente ï¿½ il
+			// nel caso di libero professionista la pagina precedente e' il
 			// dettaglio con altri dati del libero professionista e non la
 			// pagina dei soggetti
 			if (helper.isLiberoProfessionista()) {
@@ -237,67 +244,43 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 
     @SkipValidation
     public String createPdf() {
-	String target = "successCreatePdf";
-
-	WizardDatiImpresaHelper helper = getSessionHelper();
-	if (helper == null) {
-	    // la sessione e' scaduta, occorre riconnettersi
-	    this.addActionError(this.getText("Errors.sessionExpired"));
-	    target = CommonSystemConstants.PORTAL_ERROR;
-	} else {
-	    // la sessione non e' scaduta, per cui proseguo regolarmente
-
-	    // si determina il nome del file di destinazione nell'area
-	    // temporanea
-	    String nomePdf = FileUploadUtilities.generateFileName() + ".pdf";
-	    File filePdf = new File(this.getTempDir().getAbsolutePath()
-		    + File.separatorChar + nomePdf);
-
-	    StringBuilder xml = new StringBuilder();
-	    xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	    // qui si deve creare la stringa XML da passare al report
-
-	    try {
-		// si carica il report jasper, lo si filla con i dati e si
-		// genera il pdf
-		InputStream isJasper = this.getRequest().getSession()
-			.getServletContext().getResourceAsStream(
-				PortGareSystemConstants.GARE_JASPER_FOLDER
-					+ "AnagraficaImpresa.jasper");
-		JRXmlDataSource jrxmlds = new JRXmlDataSource(
-			new ByteArrayInputStream(xml.toString().getBytes()),
-			"/rich_partecipazione/lotto");
-		JasperPrint print = JasperFillManager.fillReport(isJasper,
-			new HashMap<String, Object>(), jrxmlds);
-		JRExporter exporter = new JRPdfExporter();
-		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME,
-			filePdf.getAbsolutePath());
-		exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-		exporter.exportReport();
-
-		// generato il report con JasperReport, si memorizza lo stream
-		// per il download e si inserisce una referenza nel bean in
-		// sessione per la rimozione alla rimozione del bean dalla
-		// sessione
-		this.inputStream = new FileInputStream(filePdf);
-		helper.getTempFiles().add(filePdf);
-
-	    } catch (JRException e) {
-		ApsSystemUtils.logThrowable(e, this, "createPdf");
-		ExceptionUtils.manageExceptionError(e, this);
-		// il download ï¿½ una url indipendente e non dentro una porzione
-		// di pagina
-		target = ERROR;
-	    } catch (IOException e) {
-		ApsSystemUtils.logThrowable(e, this, "createPdf");
-		ExceptionUtils.manageExceptionError(e, this);
-		// il download ï¿½ una url indipendente e non dentro una porzione
-		// di pagina
-		target = ERROR;
-	    }
-	}
-
-	return target;
+		String target = "successCreatePdf";
+	
+		WizardDatiImpresaHelper helper = getSessionHelper();
+		if (helper == null) {
+		    // la sessione e' scaduta, occorre riconnettersi
+		    this.addActionError(this.getText("Errors.sessionExpired"));
+		    target = CommonSystemConstants.PORTAL_ERROR;
+		} else {
+		    // la sessione non e' scaduta, per cui proseguo regolarmente
+		    try {
+		    	// crea l'xml da passare al report
+		    StringBuilder xml = new StringBuilder();
+		    xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	
+		    	this.inputStream = new ByteArrayInputStream(
+		    			GenPDFAction.createPdf(
+		    					getRequest().getSession().getServletContext().getResourceAsStream(PortGareSystemConstants.GARE_JASPER_FOLDER + "AnagraficaImpresa.jasper") 
+		    					, xml.toString() 
+		    					, "/rich_partecipazione/lotto"
+		    			)
+		    	);
+		    } catch (JRException e) {
+				ApsSystemUtils.logThrowable(e, this, "createPdf");
+				ExceptionUtils.manageExceptionError(e, this);
+				// il download e' una url indipendente e non dentro una porzione
+				// di pagina
+				target = ERROR;
+		    } catch (Exception e) {
+				ApsSystemUtils.logThrowable(e, this, "createPdf");
+				ExceptionUtils.manageExceptionError(e, this);
+				// il download e' una url indipendente e non dentro una porzione
+				// di pagina
+				target = ERROR;
+		    }
+		}
+	
+		return target;
     }
 
     /**
@@ -306,9 +289,9 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
      * @return helper contenente i dati dell'impresa
      */
     protected WizardDatiImpresaHelper getSessionHelper() {
-	WizardDatiImpresaHelper helper = (WizardDatiImpresaHelper) this.session
-		.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
-	return helper;
+		WizardDatiImpresaHelper helper = (WizardDatiImpresaHelper) this.session
+			.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
+		return helper;
     }
 
     /**
@@ -319,8 +302,8 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
      * @return path alla directory per i file temporanei
      */
     private File getTempDir() {
-	return StrutsUtilities.getTempDir(this.getRequest().getSession()
-		.getServletContext());
+		return StrutsUtilities.getTempDir(this.getRequest().getSession()
+			.getServletContext());
     }
 
     /**
@@ -330,7 +313,8 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
      * @throws ApsException
      */
 	private void sendComunicazione(WizardDatiImpresaHelper helper)
-			throws ApsException {
+		throws ApsException 
+	{
 		ComunicazioneType comunicazione = null;
 
 		// FASE 1: estrazione dei parametri necessari per i dati di testata
@@ -419,15 +403,14 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 			ComunicazioneType comunicazione, 
 			XmlObject xmlDocument,
 			String nomeFile, 
-			String descrizioneFile) throws IOException {
-		
+			String descrizioneFile) throws IOException 
+	{	
 		AllegatoComunicazioneType allegatoAggAnagr = ComunicazioniUtilities
 			.createAllegatoComunicazione(
 					nomeFile,
 					descrizioneFile,
 					xmlDocument.toString().getBytes());
 		comunicazione.setAllegato(new AllegatoComunicazioneType[] { allegatoAggAnagr });
-		
 	}
 	
     private Map<String, Object> session;
@@ -439,44 +422,27 @@ public class ProcessPageRiepilogoImpresaAction extends BaseAction implements Ses
 
     @Override
     public void setSession(Map<String, Object> session) {
-	this.session = session;
+    	this.session = session;
     }
 
-    /**
-     * @return the session
-     */
     public Map<String, Object> getSession() {
-	return session;
+    	return session;
     }
 
-	/**
-	 * @param datiImpresaChecker the datiImpresaChecker to set
-	 */
 	public void setDatiImpresaChecker(DatiImpresaChecker datiImpresaChecker) {
 		this._datiImpresaChecker = datiImpresaChecker;
 	}
 
-    /**
-     * @param manager
-     *            the _comunicazioniManager to set
-     */
 	public void setComunicazioniManager(IComunicazioniManager manager) {
 		this._comunicazioniManager = manager;
 	}
     
-    /**
-	 * @param manager the manager to set
-	 */
-	public void setRegistrazioneImpresaManager(
-			IRegistrazioneImpresaManager manager) {
+	public void setRegistrazioneImpresaManager(IRegistrazioneImpresaManager manager) {
 		this._registrazioneImpresaManager = manager;
 	}
 
-	/**
-     * @return the inputStream
-     */
     public InputStream getInputStream() {
-	return inputStream;
+    	return inputStream;
     }
 
 }

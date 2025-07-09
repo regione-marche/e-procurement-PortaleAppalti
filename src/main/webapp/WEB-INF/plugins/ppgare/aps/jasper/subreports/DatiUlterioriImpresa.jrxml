@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<!-- Created with Jaspersoft Studio version 6.18.1.final utlizzo versione della libreria JasperReports6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiUlterioriImpresa" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="NoPages" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b0acb041-8e2d-4afe-a505-23d135100c8b">
 	<property name="ireport.zoom" value="1.2100000000000009"/>
 	<property name="ireport.x" value="0"/>
@@ -88,6 +88,9 @@
 	</field>
 	<field name="inpsLocalitaIscrizione" class="java.lang.String">
 		<fieldDescription><![CDATA[inps/localitaIscrizione]]></fieldDescription>
+	</field>
+	<field name="codiceCNEL" class="java.lang.String">
+		<fieldDescription><![CDATA[codiceCNEL]]></fieldDescription>
 	</field>
 	<field name="inailNumIscrizione" class="java.lang.String">
 		<fieldDescription><![CDATA[inail/numIscrizione]]></fieldDescription>
@@ -236,6 +239,12 @@
 	<field name="oggettoSociale" class="java.lang.String">
 		<fieldDescription><![CDATA[oggettoSociale]]></fieldDescription>
 	</field>
+	<field name="withIBAN" class="java.lang.String">
+		<fieldDescription><![CDATA[contoCorrente/areaIBAN]]></fieldDescription>
+	</field>
+	<field name="numeroConto" class="java.lang.String">
+		<fieldDescription><![CDATA[contoCorrente/numeroConto]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -363,6 +372,19 @@
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="173" y="50" width="382" height="20" isRemoveLineWhenBlank="true" uuid="3d6e4b26-5f5f-4f39-bcae-8d18e6280d1a"/>
 				<textFieldExpression><![CDATA[$F{settoreProduttivo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="40">
+			<staticText>
+				<reportElement x="0" y="0" width="242" height="20" uuid="e5378ab3-831b-419f-8e24-4f7fed910dd7"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Codice CNEL]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="40" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="3d6e4b26-5f5f-4f39-bcae-8d18e6280d1a"/>
+				<textFieldExpression><![CDATA[$F{codiceCNEL}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="100">
@@ -781,21 +803,62 @@
 				<textFieldExpression><![CDATA[$F{ratingDataScadenza}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="80">
+		<band height="120">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>
 			<elementGroup>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="480144ac-a91d-4ecf-8f6e-6b99fa09738b">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<text><![CDATA[Area IBAN?:]]></text>
+				</staticText>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="22608c95-5b4e-4a75-9e2e-e8cab5a95f55"/>
-					<textFieldExpression><![CDATA[$F{contoCorrenteSoggettiAbilitati}]]></textFieldExpression>
+					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="1d09425d-be09-4b0f-95e5-65b077a1cda2">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA[($F{withIBAN} == null ? "" : ($F{withIBAN}.equals("1") ? "SI" : "NO"))]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="c6e3accf-9f88-492a-b3b1-c53a631e7984">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<text><![CDATA[Codice IBAN :]]></text>
+				</staticText>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="173" y="20" width="382" height="20" isRemoveLineWhenBlank="true" uuid="353e83a8-dac1-49ee-aa7f-73baed185720"/>
+					<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="353e83a8-dac1-49ee-aa7f-73baed185720">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
 					<textFieldExpression><![CDATA[$F{contoCorrenteEstremi}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="046601fb-efed-4aec-b897-67e455301091"/>
+					<reportElement positionType="Float" x="39" y="60" width="134" height="20" uuid="28084e46-7912-47c9-9bff-25b85248cf84">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<text><![CDATA[Numero conto corrente:]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="60" width="382" height="20" isRemoveLineWhenBlank="true" uuid="5d291e50-e25e-42d3-9d6e-50fc109ad379">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{numeroConto}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="39" y="100" width="134" height="20" uuid="046601fb-efed-4aec-b897-67e455301091">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
 					<text><![CDATA[Soggetti abilitati :]]></text>
 				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="100" width="382" height="20" isRemoveLineWhenBlank="true" uuid="22608c95-5b4e-4a75-9e2e-e8cab5a95f55">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{contoCorrenteSoggettiAbilitati}]]></textFieldExpression>
+				</textField>
 				<staticText>
 					<reportElement positionType="Float" x="0" y="0" width="242" height="20" uuid="b13a9140-ecbf-429a-b8d9-c51801023306"/>
 					<textElement>
@@ -803,19 +866,19 @@
 					</textElement>
 					<text><![CDATA[Conto corrente dedicato]]></text>
 				</staticText>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="173" y="80" width="382" height="20" isRemoveLineWhenBlank="true" uuid="889a8cc0-9a15-4b5a-b113-10101de839ec">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{contoCorrenteBIC}]]></textFieldExpression>
+				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="20" width="134" height="20" uuid="c6e3accf-9f88-492a-b3b1-c53a631e7984"/>
-					<text><![CDATA[Codice IBAN :]]></text>
+					<reportElement positionType="Float" x="39" y="80" width="134" height="20" uuid="49a929ce-6b75-41e0-b234-928cc86c37e1">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<text><![CDATA[Codice BIC:]]></text>
 				</staticText>
 			</elementGroup>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="173" y="40" width="382" height="20" isRemoveLineWhenBlank="true" uuid="889a8cc0-9a15-4b5a-b113-10101de839ec"/>
-				<textFieldExpression><![CDATA[$F{contoCorrenteBIC}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement positionType="Float" x="39" y="40" width="134" height="20" uuid="49a929ce-6b75-41e0-b234-928cc86c37e1"/>
-				<text><![CDATA[Codice BIC:]]></text>
-			</staticText>
 		</band>
 		<band height="40">
 			<printWhenExpression><![CDATA[$P{DATIULTALTRIDATIVISIBILI}==1]]></printWhenExpression>

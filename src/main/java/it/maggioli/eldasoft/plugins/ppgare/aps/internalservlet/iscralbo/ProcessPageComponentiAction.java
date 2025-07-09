@@ -1,8 +1,11 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IRaggruppamenti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -18,6 +21,10 @@ import java.math.BigDecimal;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageComponentiAction {
 	/**
 	 * UID
@@ -40,7 +47,6 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 		return (WizardIscrizioneHelper) this.session
 			.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 	}
-
 	
 	/**
 	 * ... 
@@ -65,10 +71,11 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 	/**
 	 * ... 
 	 */
+	@Override
 	public String next() {
 		String target = SUCCESS;
 		
-		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session		
+		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session
 				.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 			
 		if (helper == null) {
@@ -86,14 +93,14 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 					if(helper.getImpresa().isConsorzio()) {
 						componente = helper.getComponenti().get(id);
 					} else {
-						componente = helper.getComponentiRTI().get(id);						
+						componente = helper.getComponentiRTI().get(id);
 					}
 					
-					ProcessPageComponentiAction.synchronizeComponente(this, componente);
+					ComponenteHelper.copyTo(this, componente);
 				} else {
 					// aggiunge i dati in sessione (codice preso da insert)
 					ComponenteHelper componente = new ComponenteHelper();
-					ProcessPageComponentiAction.synchronizeComponente(this, componente);
+					ComponenteHelper.copyTo(this, componente);
 					
 					if(helper.isRti()) {
 						helper.getComponentiRTI().add(componente);
@@ -157,18 +164,19 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 					target = CommonSystemConstants.PORTAL_ERROR;
 				}
 			}
-						
+			
 			double sommaQuote = helper.getQuotaRTI() != null ? helper.getQuotaRTI() : 0;
 			
 			// siccome vado avanti, procedo con la verifica dei record in lista
 			for (int i = 0; i < helper.getComponenti().size(); i++) {
 
 				IComponente componente = helper.getComponenti().get(i);
+				
 				if (StringUtils.isBlank(componente.getRagioneSociale())
 					|| StringUtils.isBlank(componente.getNazione())
-					|| (StringUtils.isBlank(componente.getPartitaIVA())
-					    && StringUtils.isBlank(componente.getCodiceFiscale()))
-					|| (helper.checkQuota() && helper.isRti() && componente.getQuota() == null)
+					|| (IImpresa.isAmbitoTerritorialeItalia(componente) && StringUtils.isBlank(componente.getPartitaIVA()) && StringUtils.isBlank(componente.getCodiceFiscale()))
+					|| (IImpresa.isAmbitoTerritorialeUEExtraUE(componente) && StringUtils.isBlank(componente.getIdFiscaleEstero()))
+					|| (helper.isRti() && helper.checkQuota() && componente.getQuota() == null)
 					|| StringUtils.isBlank(componente.getTipoImpresa())) {
 
 					if (helper.isRti()) {
@@ -177,9 +185,9 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 					} else {
 						this.addActionError(this.getText("Errors.datiConsorziataIncompleti",
 														 new String[] {i + 1 + ""}));
-					}					
+					}
 					target = "refresh";
-				} else if (helper.isRti() && componente.getQuota() != null) {										
+				} else if (helper.isRti() && componente.getQuota() != null) {
 					sommaQuote += componente.getQuota();
 				}
 			}
@@ -187,7 +195,7 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 			sommaQuote = bd.doubleValue();
 
 			// Controllo QUOTA > 100%
-			if (helper.checkQuota() && helper.isRti()) {				
+			if (helper.checkQuota() && helper.isRti()) {
 				// somma < 100% 	=> errore
 				// somma 100% 		=> OK
 				// somma > 100% 	=> warning e proseguo
@@ -223,7 +231,7 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 			if (this.getIdDelete() != null) {
 				if(helper.isRti()) {
 					helper.getComponentiRTI().remove(Integer.parseInt(this.getIdDelete()));
-				} else {	
+				} else {
 					helper.getComponenti().remove(Integer.parseInt(this.getIdDelete()));
 				}
 			}
@@ -248,11 +256,11 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 			// aggiorna i dati in sessione
 			if (this.getRagioneSociale().length() > 0) {
 				ComponenteHelper componente = new ComponenteHelper();
-				ProcessPageComponentiAction.synchronizeComponente(this, componente);
+				ComponenteHelper.copyTo(this, componente);
 				
 				if(!helper.isRti()) {
 					helper.getComponenti().add(componente);
-				}else{
+				} else {
 					helper.getComponentiRTI().add(componente);
 				}
 			}
@@ -260,5 +268,48 @@ public class ProcessPageComponentiAction extends it.maggioli.eldasoft.plugins.pp
 		
 		return target;
 	}
-	
+
+	/**
+	 * "save" per la partecipazione degli elenchi operatore
+	 */
+	@Override
+	public String save() {
+		String target = "refresh";
+		
+		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) getSessionHelper();
+		if (helper == null) {
+			// la sessione e' scaduta, occorre riconnettersi
+			this.addActionError(this.getText("Errors.sessionExpired"));
+			target = CommonSystemConstants.PORTAL_ERROR;
+		} else {
+			// aggiorna i dati in sessione
+			if (this.getRagioneSociale().length() > 0) {
+				boolean insert = StringUtils.isEmpty(this.getId());
+				
+				IComponente componente = null;
+				if(insert) {
+					componente = new ComponenteHelper();
+				} else {
+					componente = (!helper.isRti()
+						? helper.getComponenti().get(Integer.parseInt(this.getId()))
+						: helper.getComponentiRTI().get(Integer.parseInt(this.getId()))
+					);
+				}
+				if(componente != null) {
+					ComponenteHelper.copyTo(this, componente);
+					
+					if(insert) {
+						if(!helper.isRti()) {
+							helper.getComponenti().add(componente);
+						} else {
+							helper.getComponentiRTI().add(componente);
+						}
+					}
+				}
+			}
+		}
+		
+		return target;
+	}
+
 }

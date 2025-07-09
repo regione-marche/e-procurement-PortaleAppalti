@@ -34,6 +34,9 @@
 			<c:when test="${sessionScope.page eq 'componenti'}">
 				<c:set var="href" value="/ExtStr2/do/FrontEnd/RichPartBando/openPageComponentiClear.action" />
 			</c:when>
+			<c:when test="${sessionScope.page eq 'avvalimento'}">
+				<c:set var="href" value="/ExtStr2/do/FrontEnd/RichPartBando/openPageAvvalimento.action" />
+			</c:when>
 			<c:when test="${sessionScope.page eq 'lotti'}">
 				<c:set var="href" value="/ExtStr2/do/FrontEnd/RichPartBando/openPageLotti.action" />
 			</c:when>

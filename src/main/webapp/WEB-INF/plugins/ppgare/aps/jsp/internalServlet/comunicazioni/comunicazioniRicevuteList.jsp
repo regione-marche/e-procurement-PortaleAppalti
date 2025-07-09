@@ -1,7 +1,10 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="wp" uri="aps-core.tld"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="es" uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
+<es:checkCustomization var="visSA" objectId="COMUNICAZIONI" attribute="STAZIONEAPPALTANTE" feature="VIS" />
+<es:checkCustomization var="visOE" objectId="COMUNICAZIONI" attribute="OPERATORE" feature="VIS" />
 
 <s:if test="%{tipoComunicazione == 'ricevute'}">
 	<c:set var="path" value="/ExtStr2/do/FrontEnd/Comunicazioni/openPageComunicazioniRicevute.action" />
@@ -63,7 +66,7 @@
 		<jsp:param name="keyMsg" value="${balloon}" />
 	</jsp:include>
 
-	<s:if test="%{comunicazioni.dati.size>0}">
+	<s:if test="%{comunicazioni.dati.size > 0}">
 		<div class="list-summary">
 			<wp:i18n key="SEARCH_RESULTS_INTRO" />
 			<s:property value="model.iTotalDisplayRecords" />
@@ -78,7 +81,12 @@
 						<c:if test="${showRiferimento == true}">
 							<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_RIFERIMENTO" /></th>
 						</c:if>
-						<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_DESTINATARIO" /></th>
+						<s:if test="%{#attr.visSA}">
+							<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_MITTENTE" /></th>
+						</s:if>
+						<s:if test="%{#attr.visOE}">
+							<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_DESTINATARIO" /></th>
+						</s:if>
 						<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_OGGETTO" /></th>
 						<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_RICEVUTO_IL" /></th>
 						<th scope="col"><wp:i18n key="LABEL_COMUNICAZIONI_STATO" /></th>
@@ -92,18 +100,25 @@
 							<c:if test="${! empty param.ext}">&amp;ext=${param.ext}</c:if>
 							&amp;idDestinatario=<s:property value="%{idDestinatario}"/>
 							&amp;applicativo=<s:property value="%{applicativo}"/>
-							&amp;${tokenHrefParams}
 						</c:set>
-						<tr>						
+						
+						<tr>
 							<c:if test="${showRiferimento == true}">
 								<td>
 									<s:property value="%{codice}" />
 								</td>
 							</c:if>
-							<td
-								<s:if test="dataLettura == null">class="detail-link-content"</s:if>>
-								<s:property value="%{destinatario}" />
-							</td>
+							<s:if test="%{#attr.visSA}">
+								<td>
+									<s:property value="%{mittente}" />
+								</td>
+							</s:if>
+							<s:if test="%{#attr.visOE}">
+								<td
+									<s:if test="dataLettura == null">class="detail-link-content"</s:if>>
+									<s:property value="%{destinatario}" />
+								</td>
+							</s:if>
 							<td
 								<s:if test="dataLettura == null">class="detail-link-content"</s:if> >
 								<a href='<wp:action path="${pathDettaglio}"/>${href}'>
@@ -127,7 +142,9 @@
 					</s:iterator>
 				</tbody>
 			</table>
+			
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
+			
 			<s:hidden name="comunicazioniCodiceProcedura" value="%{comunicazioniCodiceProcedura}"/> 
 			<s:hidden name="genere" value="%{comunicazioniGenere}"/> 
 			<s:hidden name="namespace" value="%{namespace}"/>
@@ -135,6 +152,8 @@
 		</form>
 	</s:if>
 	<s:else>
+		<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+		<input disabled="disabled" type="submit" style="display:none;"/>
 		<wp:i18n key="LABEL_NO_COMUNICAZIONI" />.
 	</s:else>
 	
@@ -145,7 +164,6 @@
 				<c:if test="${! empty param.ext}">&amp;ext=${param.ext}</c:if>
 				<c:if test="${! empty codice2}">&amp;nappal=${codice2}</c:if>
 				&amp;idComunicazione=<s:property value="%{idComunicazione}"/>&amp;idDestinatario=<s:property value="%{idDestinatario}"/>
-				&amp;${tokenHrefParams}
 			</c:set>
 			
 			<a href='<wp:action path="${pathProcedura}" />${href}'>

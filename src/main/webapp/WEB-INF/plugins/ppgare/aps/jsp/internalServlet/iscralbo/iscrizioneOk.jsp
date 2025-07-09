@@ -42,8 +42,16 @@
 	</s:if>
 
 	<div class="back-link">
-		<a href="<s:if test="%{tipologia == 2}"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" /></s:if>
-				<s:else><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" /></s:else>&amp;codice=<s:property value="codice" />&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<c:set var="urlBackto"> 
+			<s:if test="%{tipologia == 2}">
+				<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />
+			</s:if>
+			<s:else>
+				<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />
+			</s:else>
+			&amp;codice=<s:property value="codice" />&amp;ext=${param.ext}
+		</c:set>
+		<a href="${urlBackto}">
 			<wp:i18n key='LINK_BACK_TO'/> <c:out value="${dettaglio}" />
 		</a>
 	</div>

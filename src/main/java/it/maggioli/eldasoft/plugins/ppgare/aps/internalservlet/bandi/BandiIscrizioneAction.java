@@ -1,31 +1,5 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi;
 
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.aps.system.services.user.UserDetails;
-import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
-import it.eldasoft.www.sil.WSGareAppalto.CategoriaOperatoreIscrittoType;
-import it.eldasoft.www.sil.WSGareAppalto.ComunicazioneType;
-import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
-import it.eldasoft.www.sil.WSGareAppalto.OperatoreIscrittoType;
-import it.eldasoft.www.sil.WSGareAppalto.StatisticheComunicazioniPersonaliType;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CatalogResultBean;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardIscrizioneHelper;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.SessionAware;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +9,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.interceptor.SessionAware;
+import org.apache.xmlbeans.XmlException;
+
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.user.UserDetails;
+
+import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
+import it.eldasoft.www.sil.WSGareAppalto.CategoriaOperatoreIscrittoType;
+import it.eldasoft.www.sil.WSGareAppalto.ComunicazioneType;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
+import it.eldasoft.www.sil.WSGareAppalto.ElencoOperatoriAbilitatiElenchiOutType;
+import it.eldasoft.www.sil.WSGareAppalto.ElencoOperatoriAbilitatiElenco;
+import it.eldasoft.www.sil.WSGareAppalto.ElencoOperatoriAbilitatiSearch;
+import it.eldasoft.www.sil.WSGareAppalto.OperatoreIscrittoType;
+import it.eldasoft.www.sil.WSGareAppalto.StatisticheComunicazioniPersonaliType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CatalogResultBean;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardIscrizioneHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 
 /**
  * Action per le operazioni sui bandi d'iscrizione. Implementa le operazioni
@@ -53,6 +61,9 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
      * UID
      */
     private static final long serialVersionUID = 7302885346940171730L;
+    
+    private static final int ABILITAZIONE_ABILITATA 						= 1;	// vedi tabellato tab1 A1075 
+    private static final int ABILITAZIONE_SOSPESA_PER_ISCRIZIONE_SCADUTA	= 8;	// vedi tabellato tab1 A1075
 
 	private Map<String, Object> session;
 
@@ -62,7 +73,7 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 
 	@Validate(EParamValidation.CODICE)
     private String codice;
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
 	private String filtroCategorie;
     private DettaglioBandoIscrizioneType dettaglio;
     private Integer stato;
@@ -72,6 +83,7 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 	private Boolean iscrizioneInBozza;
 	private Boolean rinnovoInBozza;
 	private Boolean aggiornamentoInBozza;
+	private Boolean abilitaIscrizione;
 
 	private int numComunicazioniRicevute;
 	private int numComunicazioniRicevuteDaLeggere;
@@ -306,6 +318,14 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 	public void setAggiornamentoInBozza(Boolean aggiornamentoInBozza) {
 		this.aggiornamentoInBozza = aggiornamentoInBozza;
 	}
+	
+	public Boolean getAbilitaIscrizione() {
+		return abilitaIscrizione;
+	}
+
+	public void setAbilitaIscrizione(Boolean abilitaIscrizione) {
+		this.abilitaIscrizione = abilitaIscrizione;
+	}
 
 	public List<CatalogResultBean> getProcessedResult() {
 		return processedResult;
@@ -362,37 +382,51 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 					// quindi i test effettuati nel dbms server
 				}
 				
-				StatisticheComunicazioniPersonaliType stat = this.getBandiManager()
-					.getStatisticheComunicazioniPersonali(
+				StatisticheComunicazioniPersonaliType stat = this.getBandiManager().getStatisticheComunicazioniPersonali(
 							this.getCurrentUser().getUsername(), 
 							this.codice, null,
-							null);
+							null
+				);
 				this.setNumComunicazioniRicevute(stat.getNumComunicazioniRicevute());
 				this.setNumComunicazioniRicevuteDaLeggere(stat.getNumComunicazioniRicevuteDaLeggere());
 				this.setNumComunicazioniArchiviate(stat.getNumComunicazioniArchiviate());
 				this.setNumComunicazioniArchiviateDaLeggere(stat.getNumComunicazioniArchiviateDaLeggere());
 				this.setNumSoccorsiIstruttori(stat.getNumSoccorsiIstruttori());
 				this.setNumComunicazioniInviate(stat.getNumComunicazioniInviate());
-				this.stato = this.getBandiManager()
-						.getStatoIscrizioneABandoIscrizione(
-								this.getCurrentUser().getUsername(), 
-								this.codice);
 
-				this.setImpresaAbilitataAlRinnovo(
-						this.bandiManager.isImpresaAbilitataRinnovo(
-								this.codice, 
-								this.getCurrentUser().getUsername()));
+				this.stato = this.getBandiManager().getStatoIscrizioneABandoIscrizione(
+						this.getCurrentUser().getUsername(), 
+						this.codice
+				);
+
+				boolean abilitataRinnovo = this.bandiManager.isImpresaAbilitataRinnovo(this.codice, this.getCurrentUser().getUsername());
+				this.setImpresaAbilitataAlRinnovo(abilitataRinnovo);
 				
-				// verifica se esiste una comunicazione in stato BOZZA per 
-				// la domanda di iscrizione
-				Long idComunicazioneBozza = InitIscrizioneAction.getComunicazioneStatoBozza(
-						this.codice, 
-						PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO,
-						this.getCurrentUser().getUsername());				
-				this.setIscrizioneInBozza(idComunicazioneBozza != null && idComunicazioneBozza.longValue() > 0);
-								
-				// verifica se esiste una comunicazione in stato BOZZA per 
-				// la domanda di rinnovo
+				// NB: se l'iscrizione dell'OE all'elenco è sospesa ("sospesa per iscrizione scaduta") 
+				// oppure l'OE e' gia' presente nelle elenco operatori (aggiunto da BO)
+				// i pulsanti di iscrizione NON vanno visualizzati
+				ElencoOperatoriAbilitatiElenco abilitazioneImpresa = getAbilitazioneElenco();
+				boolean impresaInElenco = (abilitazioneImpresa != null);
+				int abilitazione = (abilitazioneImpresa != null ? abilitazioneImpresa.getAbilitazione().intValue() : 0);
+
+				// NB: l'iscrizione deve essere visibile solo se l'OE non e' ancora presente nell'elenco
+				setAbilitaIscrizione(false);
+				setIscrizioneInBozza(false);
+				Long idComunicazioneBozza = null;
+				if( !impresaInElenco ) {
+					// verifica se esiste una comunicazione in stato BOZZA per la domanda di iscrizione
+					if(abilitazione != ABILITAZIONE_ABILITATA && abilitazione != ABILITAZIONE_SOSPESA_PER_ISCRIZIONE_SCADUTA) {
+						setAbilitaIscrizione(true);
+						idComunicazioneBozza = InitIscrizioneAction.getComunicazioneStatoBozza(
+								this.codice, 
+								PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO,
+								this.getCurrentUser().getUsername());
+						this.setIscrizioneInBozza(idComunicazioneBozza != null && idComunicazioneBozza.longValue() > 0);
+					}
+				}
+				
+//				if(impresaInElenco) {
+				// verifica se esiste una comunicazione in stato BOZZA per la domanda di rinnovo
 				idComunicazioneBozza = InitIscrizioneAction.getComunicazioneStatoBozza(
 						this.codice, 
 						PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE,
@@ -404,16 +438,16 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 						PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO,
 						this.getCurrentUser().getUsername());
 				this.setAggiornamentoInBozza(idComunicazioneBozza != null && idComunicazioneBozza.longValue() > 0);
-				
+//				}
 				
 				this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA, this.codice);
 				this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
-				this.session.put(ComunicazioniConstants.SESSION_ID_DETTAGLIO_PRESENTE, true);				
+				this.session.put(ComunicazioniConstants.SESSION_ID_DETTAGLIO_PRESENTE, true);
 			}
 			
 			this.session.put(PortGareSystemConstants.SESSION_ID_DETT_GARA, bando);
 			
-		} catch (ApsException t) {
+		} catch (Throwable t) {
 			ApsSystemUtils.logThrowable(t, this, "view");
 			ExceptionUtils.manageExceptionError(t, this);
 			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -426,7 +460,7 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 		try {
 			String filtro = StringUtils.stripToNull(this.filtroCategorie);
 			CategoriaBandoIscrizioneType[] categorie = this.getBandiManager()
-					.getElencoCategorieBandoIscrizione(this.codice, filtro);					
+					.getElencoCategorieBandoIscrizione(this.codice, filtro);
 			this.setCategorie(categorie);
 			
 		} catch (ApsException t) {
@@ -660,6 +694,23 @@ public class BandiIscrizioneAction extends EncodedDataAction implements SessionA
 		    dataFineValidita = cal.getTime();
 		}
 		return !(dataFineValidita != null && dataFineValidita.before(new Date(System.currentTimeMillis())));
+	}
+
+	/**
+	 *  
+	 */
+	private ElencoOperatoriAbilitatiElenco getAbilitazioneElenco() throws ApsException, XmlException {
+		ElencoOperatoriAbilitatiElenco abilitazione = null; 
+		WizardRegistrazioneImpresaHelper impresa = ImpresaAction.getLatestDatiImpresa(getCurrentUser().getUsername(), this);
+		ElencoOperatoriAbilitatiSearch search = new ElencoOperatoriAbilitatiSearch();
+		search.setCodElenco(codice);
+		search.setFiscalCode(impresa.getDatiPrincipaliImpresa().getCodiceFiscale());
+		ElencoOperatoriAbilitatiElenchiOutType abilitazioniImpresa = bandiManager.getOEAbilitatiElenco(search);
+		
+		if(abilitazioniImpresa != null && abilitazioniImpresa.getResult() != null && abilitazioniImpresa.getResult().length > 0) {
+			abilitazione = abilitazioniImpresa.getResult()[0]; 
+		}
+		return abilitazione;
 	}
 
 }

@@ -20,6 +20,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.Wizar
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
@@ -68,7 +69,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 	private List<FlussiInviatiKO> listaRegistazioni = new ArrayList<>();
 	@Validate(EParamValidation.DIGIT)
 	private String idComunicazione;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlPdf;
 	private boolean rejectQuestion;
 	@Validate(EParamValidation.MOTIVO_RIFIUTO)
@@ -137,6 +138,20 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 	}
 
 	/**
+	 * validate 
+	 */
+	@Override
+	public void validate() {
+		// funzionalità accessibile sono da amministratore!!!
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
+			redirectToHome();
+			return;
+		} 
+		
+		super.validate();
+	}
+
+	/**
 	 * ...
 	 */
 	@SkipValidation
@@ -147,8 +162,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		this.rejectQuestion = false;
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			 || !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
@@ -193,8 +207,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		String target = SUCCESS_VIEW;
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) 
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) 
 		{
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
@@ -236,8 +249,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		String target = SUCCESS_ACCEPT;
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) 
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) 
 		{
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
@@ -304,8 +316,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		String target = SUCCESS;
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) 
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) 
 		{
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
@@ -331,8 +342,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		String target = SUCCESS_REJECT;
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) 
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) 
 		{
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
@@ -352,8 +362,7 @@ public class RegistrazioneManualeOperatoriEconomiciAction extends EncodedDataAct
 		this.setRejectQuestion(true);
 		
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null
-			|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) 
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) 
 		{
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;

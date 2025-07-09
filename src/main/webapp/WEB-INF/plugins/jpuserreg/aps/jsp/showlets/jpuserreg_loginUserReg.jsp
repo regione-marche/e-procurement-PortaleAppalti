@@ -11,14 +11,29 @@
 
 <es:checkCustomization var="visRegistrati" objectId="AREARISERVATA" attribute="REGISTRATI" feature="VIS" />
 
+		<c:set var="layout" value="${param.layout}" />
+			<c:if test="${empty layout}">
+				<c:set var="layout" value="${cookie.layout.value}" />
+			</c:if>
+
+			<es:getAppParam name="layoutStyle" var="dir" />
+			<c:if test="${! empty layout}">
+				<c:set var="dir" value="${layout}" />
+			</c:if>
+						<c:set var="isNewLayout" value="${layout == 'appalti-contratti' || dir == 'appalti-contratti'}" />
+
+
 <%
 // genera un nuovo token per le voci dei menu
 com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 %>
-
 <div class="menu-box">
-	<h2><wp:i18n key="RESERVED_AREA" /></h2>
-	<div class="login-box">
+	
+			
+						<c:if test="${!isNewLayout}">
+ 	<h2><wp:i18n key="RESERVED_AREA" /></h2>
+			</c:if>	
+	<div class="login-box new-login-box">
 
 		<c:choose>
 			<c:when test="${sessionScope.currentUser != 'guest' || sessionScope.accountSSO != null}">
@@ -74,7 +89,7 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 												<% 
 												com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.UserProfile profilo = (com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.UserProfile)pageContext.getAttribute("profilo");
 												nome = profilo.getValue((String)pageContext.getAttribute("nomeAttributo"));
-												%>			
+												%>
 											</c:when>
 										</c:choose>
 								<%
@@ -116,7 +131,7 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 									<a href="<wp:info key="systemParam" paramName="applicationBaseURL" />do/logout.action" class="genlink"><wp:i18n key="LOGOUT" /></a>
 								</c:when>
 								<c:otherwise>
-									<a href="<wp:info key="systemParam" paramName="applicationBaseURL" />do/SSO/LogoutSSO.action" class="genlink"><wp:i18n key="LOGOUT" /></a>
+									<a href="<wp:info key="systemParam" paramName="applicationBaseURL" />do/SSO/logoutSSO.action" class="genlink"><wp:i18n key="LOGOUT" /></a>
 								</c:otherwise>
 							</c:choose> 
 						</c:when>
@@ -126,7 +141,6 @@ com.agiletec.apsadmin.system.TokenInterceptor.saveSessionToken(pageContext);
 							</p>
 							<a href="<wp:url page="ppcommon_cambia_password" />" class="genlink alert-link"><wp:i18n key="USER_STATUS_EXPIRED_PASSWORD_CHANGE" /></a> |
 							<a href="<wp:info key="systemParam" paramName="applicationBaseURL" />do/logout.action" class="genlink"><wp:i18n key="LOGOUT" /></a>
-							
 						</c:otherwise>
 					</c:choose>
 				</div>

@@ -2,15 +2,16 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
 <script type="text/javascript" src='<wp:resourceURL/>static/js/ppgare/categorieIscrizione.js'></script>
+
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
 var collapseTree = true;
 var labelCoprimiCategorie = '<wp:i18n key="LABEL_LISTA_CATEGORIE_COMPRIMI" />';
 var labelEspandiCategorie = '<wp:i18n key="LABEL_LISTA_CATEGORIE_ESPANDI" />';
-//--><!]]></script>
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
+//--><!]]>
+</script>
 
 
 <jsp:include page="/WEB-INF/aps/jsp/models/inc/skin.jsp" >
@@ -42,7 +43,7 @@ var labelEspandiCategorie = '<wp:i18n key="LABEL_LISTA_CATEGORIE_ESPANDI" />';
 	</form>
 	<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/categorieIscrizione.jsp" />
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_ISCRIZIONE" />
 		</a>
 	</div>

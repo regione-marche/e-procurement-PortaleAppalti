@@ -25,20 +25,20 @@
 				<c:choose>
 					<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 						<li>
-							<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+							<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}'
 								 title="<wp:i18n key="TITLE_AZIONE_MODIFICA_SOGGETTO" />">
 								<wp:i18n key="LABEL_AZIONE_MODIFICA_SOGGETTO" />
 							</a>
 						</li>
 						<li>
-							<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/copySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+							<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/copySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}'
 								 title="<wp:i18n key="TITLE_AZIONE_COPIA_SOGGETTO" />">
 								<wp:i18n key="LABEL_AZIONE_COPIA_SOGGETTO" />
 							</a>
 						</li>
 						<s:if test="%{not esistente}">
 							<li>
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteSoggettoImpresa.action"/>&amp;tipoSoggettoDelete=${tipoSoggetto}&amp;idDelete=${status.index}&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteSoggettoImpresa.action"/>&amp;tipoSoggettoDelete=${tipoSoggetto}&amp;idDelete=${status.index}&amp;id=${status.index}&amp;ext=${param.ext}'
 									 title="<wp:i18n key="TITLE_AZIONE_ELIMINA_SOGGETTO" />">
 									<wp:i18n key="LABEL_AZIONE_ELIMINA_SOGGETTO" />
 								</a>
@@ -47,18 +47,18 @@
 					</c:when>
 					<c:otherwise>
 						<li>
-							<a class="bkg modify" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+							<a class="bkg modify" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}'
 								 title="<wp:i18n key="TITLE_AZIONE_MODIFICA_SOGGETTO" />">
 							</a>
 						</li>
 						<li>
-							<a class="bkg copy" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/copySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+							<a class="bkg copy" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/copySoggettoImpresa.action"/>&amp;tipoSoggetto=${tipoSoggetto}&amp;id=${status.index}&amp;ext=${param.ext}'
 								 title="<wp:i18n key="TITLE_AZIONE_COPIA_SOGGETTO" />">
 							</a>
 						</li>
 						<s:if test="%{not esistente}">
 							<li>
-								<a class="bkg delete" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteSoggettoImpresa.action"/>&amp;tipoSoggettoDelete=${tipoSoggetto}&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}'
+								<a class="bkg delete" href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteSoggettoImpresa.action"/>&amp;tipoSoggettoDelete=${tipoSoggetto}&amp;idDelete=${status.index}&amp;ext=${param.ext}'
 									 title="<wp:i18n key="TITLE_AZIONE_ELIMINA_SOGGETTO" />">
 								</a>
 							</li>

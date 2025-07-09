@@ -840,6 +840,25 @@ INSERT INTO resources VALUES ('RES-STD-REGPIAT', 'Attach', 'Regole di utilizzo d
 INSERT INTO resources VALUES ('RES-STD-ISCRELE', 'Attach', 'Iscrizione ad un Elenco Operatori', 'free', '<?xml version="1.0" encoding="UTF-8"?>
 <resource typecode="Attach" id="RES-STD-ISCRELE"><descr>Iscrizione ad un Elenco Operatori</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>Guida_iscrizione_elenco_operatori.pdf</filename><mimetype>application/x-unknown</mimetype><weight>1638 Kb</weight></instance></resource>
 ');
+INSERT INTO resources VALUES ('RES-STD-MANMDGUE', 'Attach', 'Manuale uso M-DGUE Response', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="RES-STD-MANMDGUE"><descr>Manuale uso M-DGUE Response</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>Manuale_uso_M-DGUE_Response_OE.pdf</filename><mimetype>application/x-unknown</mimetype><weight>894 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-MANUSO', 'Attach', 'Modalità tecniche utilizzo piattaforma e accesso Area Riservata (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-MANUSO"><descr>Modalità tecniche utilizzo piattaforma e accesso Area Riservata (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Technical_procedures_for_using_the_electronic_platform_and_access_the_reserved_area.pdf</filename><mimetype>application/x-unknown</mimetype><weight>2289 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-OFFTEL', 'Attach', 'Presentazione Offerte Telematiche (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-OFFTEL"><descr>Presentazione Offerte Telematiche (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Guide_for_tenderers.pdf</filename><mimetype>application/x-unknown</mimetype><weight>4601 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-REGPIAT', 'Attach', 'Regole di utilizzo della piattaforma telematica (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-REGPIAT"><descr>Regole di utilizzo della piattaforma telematica (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Rules_for_use_of_telematic_platform.pdf</filename><mimetype>application/x-unknown</mimetype><weight>189 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-ISCRELE', 'Attach', 'Iscrizione ad un Elenco Operatori (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-ISCRELE"><descr>Iscrizione ad un Elenco Operatori (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Guide_for_registration_to_Operators_Lists.pdf</filename><mimetype>application/x-unknown</mimetype><weight>2006 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-MANMDGUE', 'Attach', 'Manuale uso M-DGUE Response (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-MANMDGUE"><descr>Manuale uso M-DGUE Response (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_M-DGUE_Response_Operators_Lists_user_manual.pdf</filename><mimetype>application/x-unknown</mimetype><weight>894 Kb</weight></instance></resource>
+');
+
 
 INSERT INTO contentmodels (modelid, contenttype, descr, model, stylesheet) VALUES (1, 'GEN', 'Completo - default', '<div class="container_cms">
 <h2>$content.Titolo.text</h2>
@@ -893,7 +912,7 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('jpuserreg_REA
 DELETE FROM localstrings WHERE keycode = 'jpuserreg_REACTIVATION_PASSWORD_LOST_MSG' AND langcode = 'en';
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('jpuserreg_REACTIVATION_PASSWORD_LOST_MSG', 'en', 'Recover password from username');
 DELETE FROM localstrings WHERE keycode = 'jpuserreg_REACTIVATION_USERNAME_LOST_MSG' AND langcode = 'it';
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('jpuserreg_REACTIVATION_USERNAME_LOST_MSG', 'it', 'Recupera utenza da indirizzo di posta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('jpuserreg_REACTIVATION_USERNAME_LOST_MSG', 'it', 'Recupera password da un indirizzo di posta elettronica');
 DELETE FROM localstrings WHERE keycode = 'jpuserreg_REACTIVATION_USERNAME_LOST_MSG' AND langcode = 'en';
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('jpuserreg_REACTIVATION_USERNAME_LOST_MSG', 'en', 'Recover password from email address');
 DELETE FROM localstrings WHERE keycode = 'jpuserreg_EMAIL' AND langcode = 'it';
@@ -954,8 +973,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_BREA
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_BREADCRUMBS', 'en', '<!-- HTML_PRE_BREADCRUMBS -->');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_FOOTER', 'it', '<!-- HTML_PRE_FOOTER -->');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('HTML_PRE_FOOTER', 'en', '<!-- HTML_PRE_FOOTER -->');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'en', '<div class="footer-info"><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div></div>');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'it', '<div class="footer-info"><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div></div>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'en', '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibility</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="sitemap-info"><a href="ppcommon_site_map.wp">Site map</a></div></div>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('FOOTER', 'it', '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibilità</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="sitemap-info"><a href="ppcommon_site_map.wp">Mappa sito</a></div></div>');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DISCLAIMER', 'it', 'Attenzione!');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DISCLAIMER', 'en', 'Warning!');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DISCLAIMER_NOTE', 'it', 'Stai utilizzando Microsoft Internet Explorer 10 o versioni precedenti, non più supportate dalla manutenzione Microsoft.<br />Inoltre questo portale non è stato sviluppato nel tentativo di risolvere eventuali problemi che emergono con queste versioni obsolete.<br />Per utilizzare il portale senza anomalie <a href="https://www.microsoft.com/it-it/edge">passa a Microsoft Edge</a>, Mozilla Firefox o Google Chrome.');
@@ -1230,6 +1249,13 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PE
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_MERCATI_ELETTRONICI', 'en', 'Go to the list of electronic markets');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_MERCATI_ELETTRONICI', 'it', 'Mercati elettronici');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_MERCATI_ELETTRONICI', 'en', 'Electronic markets');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ISCRIZIONE_A_CATALOGO', 'it', 'Iscriviti al catalogo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ISCRIZIONE_A_CATALOGO', 'en', 'Subscribe to catalog');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ISCRIZIONE_A_CATALOGO', 'it', 'Iscriviti al catalogo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ISCRIZIONE_A_CATALOGO', 'en', 'Register to catalog');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO_CATALOGO', 'it', 'Attenzione: non sei ancora iscritto ad alcun catalogo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO_CATALOGO', 'en', 'Warning: you are not yet subscribed to list of catalog.');
+
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_ORDINI', 'it', 'Ordini');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_ORDINI', 'en', 'Orders');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_PERSONALE_ORDINI', 'it', 'I tuoi ordini');
@@ -1287,6 +1313,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_FEDERA', 'en', 'Federa');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_COHESION', 'it', 'Cohesion');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_COHESION', 'en', 'Cohesion');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_EIDAS', 'it', 'EIDAS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_EIDAS', 'en', 'EIDAS');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DELEGATEUSER', 'it', 'Soggetto con delega');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DELEGATEUSER', 'en', 'Delegate user');
@@ -1461,6 +1489,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ASSISTE
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RICERCA_BANDI', 'it', 'Ricerca bandi di gara');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RICERCA_BANDI', 'en', 'Search for tenders');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'it', 'Gare e procedure');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'en', 'Tenders and procedures');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI_IN_CORSO', 'it', 'Gare e procedure in corso');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI_IN_CORSO', 'en', 'Tenders and procedures in progress');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI_SCADUTI', 'it', 'Gare e procedure scadute');
@@ -1482,13 +1512,19 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LISTA_L
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RICERCA_AVVISI', 'it', 'Ricerca avvisi');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RICERCA_AVVISI', 'en', 'Search for notices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'it', 'Avvisi di gara');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'en', 'Tender notices');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI', 'it', 'Avvisi pubblici in corso');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI', 'en', 'Notices list');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_SCADUTI', 'it', 'Avvisi pubblici scaduti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_SCADUTI', 'en', 'Expired notices list');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'it', 'Avvisi, comunicazioni e atti di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'en', 'Notices, communications and documents of a general nature');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO', 'it', 'Dettaglio avviso');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO', 'en', 'Notice detail');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'it', 'Dettaglio Avviso, comunicazione e atto di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'en', 'Detail Notice, communication and act of a general nature');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_AVVISO_BANDO_ISCRIZIONE_ELENCO', 'it', 'Bando d''iscrizione a elenco');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_DETTAGLIO_AVVISO_BANDO_ISCRIZIONE_ELENCO', 'en', 'Detail of the announcement of the operators list');
 
@@ -1852,6 +1888,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DAT
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DATA_ULTIMO_AGGIORNAMENTO_XML', 'en', 'Date of last XML update');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_GENERAZIONE_XML', 'it', 'Generazione XML in corso');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_GENERAZIONE_XML', 'en', 'XML generation in progress');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DATA_RIFERIMENTO', 'it', 'Data di riferimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DATA_RIFERIMENTO', 'en', 'Reference date');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_ANNO_RIFERIMENTO', 'it', 'Anno di riferimento');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_ANNO_RIFERIMENTO', 'en', 'Reference year');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_OGGETTO', 'it', 'Oggetto');
@@ -2090,6 +2128,10 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_BACK_TO_
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_BANDI_DELIBERE_A_CONTRARRE', 'it', 'Delibere a contrarre o atto equivalente');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_BANDI_DELIBERE_A_CONTRARRE', 'en', 'Resolutions to contract or equivalent act');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_DELIBERA', 'it', 'Delibera a contrarre o atto equivalente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_DELIBERA', 'en', 'Resolution to contract or equivalent act');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_DELIBERA', 'it', 'All''interno di questa sezione è possibile consultare i documenti relativi alla delibera o atto equivalente e i relativi allegati.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_DELIBERA', 'en', 'Within this section it is possible to consult the documents relating to the resolution or equivalent act and the related attachments.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESS_KEYS', 'it', 'Access key definite');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESS_KEYS', 'en', 'Defined access keys');
@@ -2123,7 +2165,7 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SEARCH', 'it'
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SEARCH', 'en', 'Search');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SEARCH_ENGINE', 'it', 'Ricerca');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SEARCH_ENGINE', 'en', 'Search engine');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USERNAME', 'it', 'Utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USERNAME', 'it', 'Nome utente');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USERNAME', 'en', 'Username');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_ACCESS_LAST', 'it', 'Ultimo accesso');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_ACCESS_LAST', 'en', 'Last access');
@@ -2131,7 +2173,7 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_CRE
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_CREATION', 'en', 'Creation date');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_PASSWORD_CHANGE_LAST', 'it', 'Ultimo cambio password');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_DATE_PASSWORD_CHANGE_LAST', 'en', 'Last password change');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_STATUS_CREDENTIALS_INVALID', 'it', 'Username o password non corretti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_STATUS_CREDENTIALS_INVALID', 'it', 'Credenziali non valide');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_STATUS_CREDENTIALS_INVALID', 'en', 'Invalid credentials');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_STATUS_EXPIRED', 'it', 'Utenza scaduta');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('USER_STATUS_EXPIRED', 'en', 'User expired');
@@ -2203,32 +2245,38 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_JAVAS
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_JAVASCRIPT_REQUIRED', 'en', 'To use this function, it is necessary to enable Javascript code execution in the browser.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_SELEZIONE_STAZIONE_APPALTANTE', 'it', 'Lista delle stazioni appaltanti utilizzabili nel portale. Selezionare una stazione appaltante per filtrare tutte le funzioni di estrazione dati per la stazione appaltante selezionata. Selezionando la prima occorrenza ("Tutte le stazioni appaltanti") è possibile annullare il filtro impostato e tornare all''estrazione di tutti gli elementi.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_SELEZIONE_STAZIONE_APPALTANTE', 'en', 'List of the contracting authorities available in the portal. Select a contracting authority to filter all data extraction features for the selected one. By selecting the first occurrence ("All contracting authorities") it is possible to cancel the set filter and return to the extraction of all the elements.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DELIBERE_A_CONTRARRE', 'it', 'All''interno di questa sezione è possibile consultare  le delibere a contrarre e gli atti equivalenti secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione è previsto dall''art. 29 del D.Lgs. 50/2016.<br/><br/>Impostare un criterio di ricerca per consultare i dati. In corrispondenza della descrizione è disponibile il collegamento per consultare o scaricare il documento.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DELIBERE_A_CONTRARRE', 'en', 'In this section you can consult contract resolutions and equivalent acts according to the timeframe provided for in the contract regulations.<br/>The publication obligation is provided by the art. 29 of Legislative Decree 50/2016.<br/><br/>Set a search criterion to consult the data. A link to consult or download the document is available under the description.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione dei bandi di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_IN_CORSO', 'en', 'In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione dei bandi di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_SCADUTI', 'en', 'In this section it is possible to consult the tender announcements <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>The obligation to publish the contract notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione degli avvisi di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO', 'en', 'In this section it is possible to consult the notices according to the deadlines set by the contracts legislation.<br/>The obligation to publish the tender notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione degli avvisi di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda"');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_SCADUTI', 'en', 'In this section it is possible to consult the notices <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>The obligation to publish the tender notices is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare gli esiti di gara secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione degli esiti di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_IN_CORSO', 'en', 'In this section it is possible to consult the results of tenders according to the deadlines set by the contracts legislation.<br/>The obligation to publish the tender results is provided by the art. 29 of Legislative Decree 50/2016.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_AFFIDAMENTI', 'it', 'All''interno di questa sezione è possibile consultare gli esiti di gare, condotte mediante l''utilizzo di elenco operatori economici secondo i tempi previsti dalla normativa dei contratti.<br/>L''obbligo di pubblicazione degli esiti di gara è previsto dall''art. 29 del D.Lgs. 50/2016.<br/><br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_AFFIDAMENTI', 'en', 'In this section it is possible to consult the results of tenders, conducted through the use of the economic operators list according to the times provider by the regulations of the contracts.<br/>The obligation to publish the tender results is provided by the art. 29 of Legislative Decree 50/2016.<br/><br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DELIBERE_A_CONTRARRE', 'it', 'All''interno di questa sezione è possibile consultare  le delibere a contrarre e gli atti equivalenti secondo i tempi previsti dalla normativa dei contratti.<br/><br/>Impostare un criterio di ricerca per consultare i dati. In corrispondenza della descrizione è disponibile il collegamento per consultare o scaricare il documento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DELIBERE_A_CONTRARRE', 'en', 'In this section you can consult contract resolutions and equivalent acts according to the timeframe provided for in the contract regulations.<br/><br/>Set a search criterion to consult the data. A link to consult or download the document is available under the description.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI', 'en', 'In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_IN_CORSO', 'en', 'In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_SCADUTI', 'en', 'In this section it is possible to consult the tender announcements <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO_SCADUTI', 'en', 'In this section it is possible to consult the notices according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO', 'en', 'In this section it is possible to consult the notices according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda"');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_SCADUTI', 'en', 'In this section it is possible to consult the notices <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'it', 'All''interno di questa sezione è possibile consultare avvisi, atti e documenti di carattere generale riferiti a tutte le procedure, quali ad esempio la documentazione sull''uso di procedure automatizzate nel ciclo di vita dei contratti pubblici, gli allegati della programmazione dei lavori (con le eventuali opere incompiute) e dei servizi e forniture, ecc.<br/>Per ciascuna pubblicazione sono consultabili i relativi documenti selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'en', 'Within this section it is possible to consult notices, deeds and documents of a general nature referring to all procedures, such as for example the documentation on the use of automated procedures in the life cycle of public contracts, the annexes of the work planning (with any unfinished works) and services and supplies, etc.<br/>For each publication the relevant documents can be consulted by selecting the "View Sheet" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_IN_CORSO', 'it', 'All''interno di questa sezione è possibile consultare gli esiti di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_IN_CORSO', 'en', 'In this section it is possible to consult the results of tenders according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_AFFIDAMENTI', 'it', 'All''interno di questa sezione è possibile consultare gli esiti di gare, condotte mediante l''utilizzo di elenco operatori economici secondo i tempi previsti dalla normativa dei contratti.<br/><br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_ESITI_AFFIDAMENTI', 'en', 'In this section it is possible to consult the results of tenders, conducted through the use of the economic operators list according to the times provider by the regulations of the contracts.<br/><br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INDICIZZAZIONE_DPCM', 'it', 'In questa sezione è possibile consultare la tabella informativa di indicizzazione, per il bando esito od avviso di gara selezionato, come prevista dal DPCM 26 Aprile 2011.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INDICIZZAZIONE_DPCM', 'en', 'In this section it is possible to consult the indexing information table, for the tender, announcement or tender notice selected, as required by the Prime Ministerial Decree of 26 April 2011.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_ANNI_ANTICORRUZIONE', 'it', 'Tabelle riassuntive degli affidamenti di lavori, servizi e forniture (Adempimenti art.1 comma 32 Legge 190/2012). Selezionare l''anno per accedere alla consultazione dei dati pubblicati.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_ANNI_ANTICORRUZIONE', 'en', 'Summary tables of the assignments for works, services and supplies (Compliance with art.1 paragraph 32 Law 190/2012). Select the year to access the published data.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_ANTICORRUZIONE', 'it', 'Informazioni relative a procedure di acquisizione di gare e contratti, pubblicate ai sensi dell''articolo 1 della legge 6 novembre 2012 n. 190.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, a fine pagina è disponibile il link per esportare i dati estratti.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_ANTICORRUZIONE', 'en', 'Information relating to tender and contract acquisition procedures, published pursuant to Article 1 of Law No. 190 of 6 November 2012.<br/>Set a search criterion to consult the data. If at least one occurrence is extracted, a link to export the extracted data is available at the end of the page.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTI_LISTA', 'it', 'Informazioni relative alla trasparenza sugli appalti affidati secondo il D.Lgs. 50/2016.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, è disponibile sul campo CIG il link per consultare il relativo dettaglio.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTI_LISTA', 'en', 'Information relating to transparency on contracts awarded in accordance with Legislative Decree 50/2016.<br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link is available on the CIG field to consult the relevant detail. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it in horizontal direction, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTI_LISTA', 'it', 'Informazioni relative alla trasparenza sugli appalti affidati secondo il D.Lgs. 36/2023.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, è disponibile sul campo CIG il link per consultare il relativo dettaglio.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTI_LISTA', 'en', 'Information relating to transparency on contracts awarded in accordance with Legislative Decree 36/2023.<br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link is available on the CIG field to consult the relevant detail. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it in horizontal direction, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTO_SCHEDA', 'it', 'Nella scheda seguente vengono presentate le informazioni di dettaglio in merito all''appalto selezionato. Per tornare alla lista degli appalti selezionare il link "Torna alla lista " in fondo alla scheda.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AMMTRASP_CONTRATTO_SCHEDA', 'en', 'The tab below shows the detailed information of the selected contract. To return to the procurement list, click on the "Back to list" link at the bottom of the card.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_AMM_APERTA', 'it', 'Informazioni relative agli appalti affidati secondo il D.Lgs 163/06 pubblicate ai sensi dell''articolo 26 e 27 del DLgs 33 del 2013.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, a fine pagina è disponibile il link per esportare i dati estratti.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_AMM_APERTA', 'en', 'Information relating to contracts awarded pursuant to Legislative Decree 163/06 published pursuant to Article 26 and 27 of Legislative Decree 33 of 2013. <br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link to export the extracted data is available at the end of the page. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it horizontally, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_AMM_APERTA', 'it', 'Informazioni relative agli appalti affidati secondo il D.Lgs 36/2023 pubblicate ai sensi dell''articolo 26 e 27 del DLgs 33 del 2013.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, a fine pagina è disponibile il link per esportare i dati estratti.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_PROSPETTO_AMM_APERTA', 'en', 'Information relating to contracts awarded pursuant to Legislative Decree 36/2023 published pursuant to Article 26 and 27 of Legislative Decree 33 of 2013. <br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link to export the extracted data is available at the end of the page. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it horizontally, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RICERCA_BANDI', 'it', 'In questa sezione si possono impostare i criteri di selezione per la ricerca dei bandi di gara. Premendo il pulsante “Procedi” si accede alla lista delle gare che soddisfano i criteri impostati, e sempre dalla lista sarà possibile accedere ai dati di dettaglio di una singola gara.<br/><br/>Per effettuare ricerche su avvisi o esiti selezionare la corrispondente voce nella riga "Ricerca in".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RICERCA_BANDI', 'en', 'In this section you can set the selection criteria for tenders announcements. Click on "Search" to access the list of tenders that satisfy the set criteria, and  from the that you can view the detailed data of a single tender.<br/><br/>To search for tender notices or results select the corresponding entry in the "Search for" line.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_RICERCA_AVVISI', 'it', 'In questa sezione si possono impostare i criteri di selezione per la ricerca degli avvisi di gara. Premendo il pulsante “Procedi” si accede alla lista degli avvisi che soddisfano i criteri impostati, e sempre dalla lista sarà possibile accedere ai dati di dettaglio di un singolo avviso.<br/><br/>Per effettuare ricerche su bandi o esiti selezionare la corrispondente voce nella riga "Ricerca in".');
@@ -2248,6 +2296,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTA
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_ESITO', 'en', 'This feature allows you to view the detailed data of the selected tender result, including the documents. Clicking on "Lots" you can view the detailed information on the tender lots, while clicking on "Call for tenders" you can access the call for tender detail associated to this tender result');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO', 'it', 'Questa funzionalità permette di visualizzare i dati di dettaglio dell''avviso selezionato, compresi i documenti. Nel caso di portale con la gestione degli elenchi operatori economici, per un avviso riferito ad un elenco compare inoltre il pulsante "Bando d''iscrizione a elenco" che consente di accedere alle informazioni di dettaglio dell''elenco stesso.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO', 'en', 'This feature allows you to view the detailed data of the selected tender notice, including documents. In case of a portal with the management of economic operators lists, in a notice referring to a list, the "Detail of the announcement of the operators list" button  appears, which allows to access the detailed information of the list.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'it', 'Dettaglio Avviso, comunicazione e atto di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'en', 'Detail Notice, communication and act of a general nature');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LOTTI_BANDO', 'it', 'Elenco dei lotti della procedura selezionata con i relativi dati di dettaglio.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LOTTI_BANDO', 'en', 'List of the lots of the selected procedure with their details.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_CATEGORIE_DETTAGLIO_BANDO_ISCRIZIONE', 'it', 'Elenco delle categorie/prestazioni del bando d''iscrizione selezionato.');
@@ -2331,8 +2381,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_RTI', 'en', 'If applicable by the tender announcement, it is possible to present an offer as a temporary grouping. In this case it is necessary that the data entry operations on this website are carried out by the grouping company specifying "Yes" in the box below and indicating the name.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_RTI', 'it', 'Inserire la quota di partecipazione della mandataria ed i dati relativi a tutte le mandanti che partecipano al raggruppamento temporaneo.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_RTI', 'en', 'Enter the agent''s participation fee and the data relating to all the principals participating in the temporary grouping.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'it', 'Inserire le imprese consorziate esecutrici appartenenti al consorzio.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'en', 'Enter the consortium member companies belonging to the consortium.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'it', 'ATTENZIONE: non sono state inserite le imprese consorziate esecutrici o le imprese consorziate non esecutrici che forniscono requisiti al consorzio. Queste devono essere indicate nei casi previsti per consentire alla Stazione Appaltante di effettuare le verifiche mediante FVOE, il Fascicolo Virtuale dell''Operatore Economico di ANAC.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'en', 'ATTENTION: the executing consortium companies or the non-executing consortium companies that provide requirements to the consortium have not been included. These must be indicated in the cases foreseen to allow the Contracting Authority to carry out checks using FVOE, the ANAC Economic Operator Virtual File.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_DOC_ART48_IMPRESA', 'it', 'Di seguito vengono presentati i dati anagrafici generali dell''operatore economico. Per modificare i dati anagrafici o visualizzarne il dettaglio premere il bottone "Modifica". In caso di dati dell''operatore incompleti, viene bloccato l''accesso al passo successivo fintantochè i dati dell''operatore non vengono aggiornati completamente.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_DOC_ART48_IMPRESA', 'en', 'The master data of the economic operator are presented below. To change the personal data or view the details, click on "Edit". In case of incomplete operator data, access to the next step is blocked as long as the operator data is not completely updated.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_DOC_ART48_RTI', 'it', 'Nel caso in cui l''impresa abbia partecipato alla procedura come raggruppamento temporaneo, è necessario che le operazioni di inserimento dati nel presente sito web vengano effettuate dall''impresa mandataria del raggruppamento specificando “Si” nella casella sotto riportata ed indicandone la denominazione.');
@@ -2389,8 +2439,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AGG_I
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AGG_IMPRESA_ALTRI_DATI_ANAGR_IMPRESA', 'en', 'Enter the further personal informations and the registration data of the economic operator.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AGG_IMPRESA_RIEPILOGO', 'it', 'Di seguito vengono presentati i dati riepilogativi dell''anagrafica dell''operatore economico. Se tutte le informazioni inserite sono corrette, completare il processo di aggiornamento premendo il bottone "Invia".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AGG_IMPRESA_RIEPILOGO', 'en', 'Below you can find the summary data of the economic operator. If all the information is correct, complete the update process by clicking on "Send".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG', 'it', 'E'' possibile recuperare la password inserendo il nome utente utilizzato per l''accesso al sito o l''indirizzo mail ad esso abbinato (entrambe informazioni assegnate in fase di registrazione). Qualora non si disponga più di utente o della casella di posta elettronica associata, contattare l''amministrazione.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG', 'en', 'It is possible to recover the password by entering the username used to access the site or the email address associated with it (both information assigned during registration). If you no longer have a user or associated mailbox, contact the administration.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG', 'it', 'E'' possibile recuperare la password inserendo il nome utente utilizzato per l''accesso al sito o l''indirizzo email ad esso abbinato (entrambe informazioni assegnate in fase di registrazione). Qualora non si disponga più del nome utente o della casella di posta elettronica associata, contattare l''amministrazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG', 'en', 'It is possible to recover the password by entering the username used to access the site or the email address associated with it (both information assigned during registration). If you no longer have a username or associated mailbox, contact the administration.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserprofile_EDITPASSWORD', 'it', 'Inserire la vecchia password e quella nuova (ripetendola due volte per controllo). La nuova password deve contenere un minimo di 8 caratteri (utilizzando lettere e almeno 2 numeri) fino ad un massimo di 20. E'' consigliato l''uso di lettere maiuscole e minuscole oltre che un carattere speciale tra . (punto) e _ (underscore).');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_jpuserprofile_EDITPASSWORD', 'en', 'Enter your old and new passwords (repeat twice to check). The new password must contain a minimum of 8 characters (using letters and at least 2 numbers) up to a maximum of 20. It is recommended to use upper and lower case letters as well as a special character between . (dot) and _ (underscore).');
 
@@ -2579,16 +2629,16 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_C
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_COMUNICAZIONE_DOCUMENTI', 'en', 'Insert any attachments to the communication. <br/> To add documents to the list, first specify the "description" and then upload the related file by clicking on "Browse ...".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_COMUNICAZIONE_RIEPILOGO', 'it', 'Verificare i dati inseriti e proseguire confermando ed inviando i dati mediante il pulsante "Invia comunicazione".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_COMUNICAZIONE_RIEPILOGO', 'en', 'Check the data entered and continue by confirming and sending the data using the "Send communication" button.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ATTI_DOCUMENTI', 'it', 'Di seguito viene presentata la lista degli eventuali documenti e atti previsti dal c. 1 art. 29 del DLgs 50/2016 ai fini della trasparenza.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ATTI_DOCUMENTI', 'en', 'The list of any documents and deeds required by c. 1 art. 29 of Legislative Decree 50/2016 for the purposes of transparency is showed below.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_ATTI_DOCUMENTI', 'it', 'Di seguito viene presentata la lista degli eventuali documenti e atti previsti ai fini della trasparenza.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_ATTI_DOCUMENTI', 'en', 'The list of any documents and deeds required for the purposes of transparency is showed below.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_DOCUMENTI', 'it', 'Di seguito viene presentata la lista degli eventuali altri documenti.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_DOCUMENTI', 'en', 'The list of any other documents is showed below.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_CONSULENTI_COLLABORATORI', 'it', 'Incarichi esterni di consulenza e collaborazione');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_CONSULENTI_COLLABORATORI', 'en', 'External consultancy and collaboration assignments');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_SOMMA_URGENZA', 'it', 'All''interno di questa sezione vengono riepilogate le procedure indette in casi di somma urgenza, ai sensi degli artt. 163 o 63 del D.lgs. 50/2016.
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_SOMMA_URGENZA', 'it', 'All''interno di questa sezione vengono riepilogate le procedure indette in casi di somma urgenza, ai sensi degli dell''art. 140 del D.Lgs. 36/2023.
 
 I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_SOMMA_URGENZA', 'en', 'This section summarises the procedures created in cases of extreme urgency, pursuant to articles 163 or 63 of Legislative Decree 50/2016. 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_SOMMA_URGENZA', 'en', 'This section summarises the procedures created in cases of extreme urgency, pursuant to article 140 of Legislative Decree 36/2023. 
 
 The detailed data of the public procedures can be consulted by selecting the link "View Detail".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_INVII', 'it', 'Elenco delle richieste inviate all''Amministrazione. Per consultare i dettagli di un invio selezionare la tipologia di invio della richiesta di interesse.');
@@ -2646,14 +2696,18 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_GRADUATORIA_LOTTI', 'en', 'Select the lot to proceed with the consultation of the ranking.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_GRADUATORIA', 'it', 'Elenco degli operatori economici ammessi alla graduatoria. Per ogni plico viene riportato l''operatore economico oppure il raggruppamento, il valore della propria offerta e la graduatoria.<br/>Attenzione: in caso di definizione della graduatoria non ancora ultimata, è disponibile il pulsante "Aggiorna" per richiedere un aggiornamento della lista visualizzata.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_GRADUATORIA', 'en', 'List of economic operators admitted to the ranking. For each envelope the economic operator or the grouping, the value of its offer and the ranking are listed.<br/>Attention: if the ranking is not completed yet, the "Refresh" button is available to request an update of the displayed list.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'it', 'In questa pagina sono resi disponibili gli atti (verbali di gara, comunicazioni, ecc.) e i documenti d''offerta dell''aggiudicataria a tutti i candidati e offerenti non esclusi.<br/>Sempre in questa pagina, quando applicabile, gli operatori economici collocatisi nei primi cinque posti in graduatoria troveranno anche le reciproche offerte presentate.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'en', 'On this page the documents (tender reports, communications, etc.) and the tender documents of the successful tenderer are made available to all candidates and bidders not excluded.<br/>Always on this page, when applicable, the economic operators placed in the first five places in the ranking will also find each other''s offers presented.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI_LOTTI', 'it', 'Selezionare il lotto per il quale procedere alla consultazione degli atti (verbali di gara, comunicazioni, ecc.) e i documenti d''offerta dell''aggiudicataria a tutti i candidati e offerenti non esclusi.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI_LOTTI', 'en', 'Select the lot for which to proceed with the consultation of the documents (tender minutes, communications, etc.) and the offer documents of the successful tenderer to all candidates and bidders not excluded.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_NEWS', 'it', 'Elenco delle comunicazioni pubblicate nel portale negli ultimi 60 giorni. I dati di dettaglio delle procedure oggetto delle comunicazioni sono consultabili selezionando il collegamento "Visualizza Scheda".');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_NEWS', 'en', 'List of communications published in the portal in the last 60 days. Detailed data on the procedures subject of the communications can be consulted by selecting the "View detail" link.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_CON_ESITO', 'it', 'In questa sezione si possono impostare i criteri di selezione per la ricerca dei bandi di gara. Premendo il pulsante "Procedi" si accede alla lista delle gare che soddisfano i criteri impostati, e sempre dalla lista sarà possibile accedere ai dati di dettaglio di una singola gara.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI_CON_ESITO', 'en', 'In this section you can set the selection criteria for the search for tenders. Click on "Search" to access the list of tenders that satisfy the set criteria, and from the list it will be possible to access the detailed data of a single tender.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC', 'it', 'La PEC (Posta Elettronica Certificata) &egrave; lo strumento privilegiato dall''Ente per l''invio di comunicazioni e corrispondenza all''operatore economico. Nel caso in cui la <strong>PEC</strong> risulti <strong>definita ma non ancora attiva ed utilizzabile</strong> si prega di <strong>rinviare la procedura</strong> pena l''impossibilit&agrave; da parte dell''Ente di inviare comunicazioni che non possono ancora essere recapitate correttamente. ATTENZIONE: la casella PEC da utilizzare deve essere quella ufficiale del Registro INI-PEC (<a href=''https://www.inipec.gov.it/''>https://www.inipec.gov.it/</a>)<br/>');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC', 'en', 'The PEC (Certified Email) is the PEC (Posta Elettronica Certificata) is the preferred tool for sending communications and correspondence to the economic operator. In case the <strong> PEC </strong> is <strong> defined but not active yet</strong> please <strong> postpone the procedure </strong>otherwise the Administration will not be able to send communications that cannot yet be delivered correctly.<br/>');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC2', 'it', 'Si autorizza la Stazione appaltante ad inviare eventuali comunicazioni e/o corrispondenza agli indirizzi di posta elettronica indicati, ai sensi dell''art.76, comma 6, del D.Lgs. 50/2016, consapevole che le comunicazioni e/o corrispondenza correttamente inviate ai predetti recapiti si intenderanno conosciute al destinatario.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC2', 'en', 'The Contracting Authority is authorised to send any notices and/or correspondence to the email addresses indicated, pursuant to Article 76, paragraph 4, of Legislative Decree 50/2016, in the knowledge that notices and/or correspondence correctly sent to the aforementioned addresses shall be deemed to be known to the addressee.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC2', 'it', 'Si autorizza la Stazione appaltante ad inviare eventuali comunicazioni e/o corrispondenza agli indirizzi di posta elettronica indicati, ai sensi dell''art.29 del D.Lgs. 36/2023, consapevole che le comunicazioni e/o corrispondenza correttamente inviate ai predetti recapiti si intenderanno conosciute al destinatario.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_PEC2', 'en', 'The Contracting Authority is authorised to send any notices and/or correspondence to the email addresses indicated, pursuant to Article 29 of Legislative Decree 36/2023, in the knowledge that notices and/or correspondence correctly sent to the aforementioned addresses shall be deemed to be known to the addressee.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SSO_LOGIN', 'it', 'Accedi mediante sistema di autenticazione');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('SSO_LOGIN', 'en', 'Login using the authentication system');
 
@@ -2725,6 +2779,10 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MAX_REQ
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MAX_REQUEST_SIZE_1', 'en', 'You have uploaded documents for');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MAX_REQUEST_SIZE_2', 'it', 'e puoi caricare documenti per altri');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MAX_REQUEST_SIZE_2', 'en', 'and you can upload documents up to');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ESTENSIONI_FILE', 'it', 'Visualizza estensioni dei file caricabili');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ESTENSIONI_FILE', 'en', 'View uploadable file extensions');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NASCONDI_ESTENSIONI_FILE', 'it', 'Nascondi estensioni dei file caricabili');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NASCONDI_ESTENSIONI_FILE', 'en', 'Hide uploadable file extensions');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_UPLOADING', 'it', 'Upload in corso ...');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_UPLOADING', 'en', 'Uploading ...');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FILE_UPLOADING_COMPLETING', 'it', 'Completamento operazione ...');
@@ -2742,8 +2800,10 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DEAR_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DEAR_USER', 'en', 'Dear User');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STAZIONE_APPALTANTE', 'it', 'Stazione appaltante');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STAZIONE_APPALTANTE', 'en', 'Contracting authority');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RUP', 'it', 'Responsabile unico procedimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RUP', 'it', 'RUP');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RUP', 'en', 'Single procedure manager');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RESPONSABILE_FASE_AFFIDAMENTO', 'it', 'Responsabile di procedimento per la fase di affidamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RESPONSABILE_FASE_AFFIDAMENTO', 'en', 'Responsible for the procedure for the assignment phase');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ADERENTI', 'it', 'Soggetti aderenti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ADERENTI', 'en', 'Members');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATI_GENERALI', 'it', 'Dati generali');
@@ -2758,6 +2818,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AP
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_APPALTO', 'en', 'Contract type');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO', 'it', 'Tipologia');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO', 'en', 'Type of tender notice');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO_GENERALE', 'it', 'Tipologia');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO_GENERALE', 'en', 'Type of tender notice');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BANDI', 'it', 'Bandi');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BANDI', 'en', 'Tenders');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVISI', 'it', 'Avvisi');
@@ -2780,6 +2842,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_TE
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_TERMINE_PRESENZAZIONE_OFFERTE', 'en', 'Tender submission deadline');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_GARA', 'it', 'Stato');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_GARA', 'en', 'Tender status');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_AVVISO', 'en', 'Tender notice status');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_AVVISO', 'it', 'Stato');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOMMA_URGENZA', 'it', 'Somma urgenza');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOMMA_URGENZA', 'en', 'Extreme urgency');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_BANDO', 'it', 'Importo');
@@ -2800,6 +2864,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CRITERI
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CRITERIO_AGGIUDICAZIONE', 'en', 'Award criteria');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CUC_AGISCE_PER_CONTO', 'it', 'Centrale di committenza agisce per conto di');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CUC_AGISCE_PER_CONTO', 'en', 'CUC acts on behalf of');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_CUC_AGISCE_PER_CONTO', 'it', '-- Scegli una centrale di committenza --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_CUC_AGISCE_PER_CONTO', 'en', '-- Choose a CUC --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NO_DOCUMENT', 'it', 'Nessun documento');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NO_DOCUMENT', 'en', 'No document');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOTTI', 'it', 'Lotti');
@@ -2843,12 +2909,28 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGOR
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_LISTA_ARTICOLI_CATEGORIA', 'it', 'Visualizza la lista articoli della categoria');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_LISTA_ARTICOLI_CATEGORIA', 'en', 'View the articles list in the category');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOC_ART29', 'it', 'Atti e documenti (art.29 c.1 DLgs 50/2016)');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOC_ART29', 'en', 'Acts and documents (art.29 c.1 Legislative Decree 50/2016)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOCUMENTI', 'it', 'Atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOCUMENTI', 'en', 'Acts and documents');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_ATTI_DOCUMENTI', 'it', 'Altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_ATTI_DOCUMENTI', 'en', 'Other acts and documents');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI', 'it', 'Visualizza altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI', 'en', 'View acts altri and documents');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_DOCUMENTI', 'it', 'Altri documenti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_DOCUMENTI', 'en', 'Other documents');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ATTI_DOC_ART29', 'it', 'Visualizza atti e documenti (art.29 c.1 DLgs 50/2016)');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ATTI_DOC_ART29', 'en', 'View acts and documents (art.29 c.1 Legislative Decree 50/2016)');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_BDNCP', 'it', 'Link BDNCP');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_BDNCP', 'en', 'BDNCP Link');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BDNCP', 'it', 'Dati aperti BDNCP');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BDNCP', 'en', 'BDNCP open data');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_BDNCP', 'it', 'Dati aperti BDNCP');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_BDNCP', 'en', 'BDNCP open data');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DATI_APERTI_BDNCP', 'it', 'Dati aperti BDNCP');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DATI_APERTI_BDNCP', 'en', 'BDNCP open data');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DATI_APERTI_BDNCP', 'it', 'Viene qui riportato il collegamento ipertestuale che rinvia ai dati relativi all''intero ciclo di vita del contratto contenuti nella BDNCP (Banca Dati Nazionale dei Contratti Pubblici istituita da ANAC).  Tale collegamento garantisce un accesso immediato e diretto ai dati da consultare riferiti allo specifico contratto ed assicura la trasparenza di tutti gli atti di ogni procedura contrattuale, dai primi atti all''esecuzione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DATI_APERTI_BDNCP', 'en', 'Below is the hyperlink which refers to the data relating to the entire life cycle of the contract contained in the BDNCP (National Database of Public Contracts established by ANAC). This connection guarantees immediate and direct access to the data to be consulted relating to the specific contract and ensures the transparency of all the documents of each contractual procedure, from the first documents to the execution.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_BDNCP', 'it', 'Apri la scheda nel BDNCP di ANAC');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_BDNCP', 'en', 'Open the tab in ANAC''s BDNCP');
+
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BUSTA_PREQUALIFICA', 'it', 'Busta di prequalifica');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BUSTA_PREQUALIFICA', 'en', 'Prequalification envelope');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BUSTA_AMMINISTRATIVA', 'it', 'Busta amministrativa');
@@ -3121,6 +3203,38 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MANDANT
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DENOMINAZIONE_RAGGRUPPAMENTO_TEMPORANEO', 'it', 'Denominazione raggruppamento temporaneo');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DENOMINAZIONE_RAGGRUPPAMENTO_TEMPORANEO', 'en', 'Temporary grouping name');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CNEL', 'it', 'Codice CNEL');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CNEL', 'en', 'CNEL code');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'it', 'Inserire il codice CNEL di 4 caratteri corrispondente al contratto di settore utilizzato come reperibile in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, punto a), scaricando il file excel di competenza (colonna CCNL id), oppure calcolandolo come indicato nel punto b) dal sito web al link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (primi 4 caratteri del campo "Categoria" dopo aver selezionato il campo "Settore").<br/>Nel caso in cui il codice non risulti applicabile, indicare "n.a." nel valore del campo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'en', 'Enter the 4-character CNEL code corresponding to the sector contract used as available in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, point a), downloading the relevant excel file (CCNL id column), or calculating it as indicated in point b) from the website at the link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (first 4 characters of the "Category" field after selecting the "Sector" field).<br/>If the code is not applicable, indicate "n.a." in the field value.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL_OFFERTA', 'it', 'Inserire il codice CNEL di 4 caratteri corrispondente al contratto di settore utilizzato come reperibile in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, punto a), scaricando il file excel di competenza (colonna CCNL id), oppure calcolandolo come indicato nel punto b) dal sito web al link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (primi 4 caratteri del campo "Categoria" dopo aver selezionato il campo "Settore").<br/>Nel caso in cui il codice non risulti applicabile, indicare "n.a." nel valore del campo.<br/>E'' possibile salvare il valore del campo CNEL nella propria anagrafica in modo che venga riproposto nelle procedure di gara; per farlo vai nell''Area personale, nella sezione "I tuoi dati".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL_OFFERTA', 'en', 'Enter the 4-character CNEL code corresponding to the sector contract used as available in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, point a), downloading the relevant excel file (CCNL id column), or calculating it as indicated in point b) from the website at the link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (first 4 characters of the "Category" field after selecting the "Sector" field).<br/>If the code is not applicable, indicate "n.a." in the field value.<br/>It is possible to save the value of the CNEL field in your personal data so that it is re-proposed in the tender procedures; to do this go to the Personal Area, in the "Your data" section.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO', 'it', 'Avvalimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO', 'en', 'Availability');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_AVVALIMENTO', 'it', 'Inserire i dati relativi a tutte le imprese ausiliarie che partecipano in avvalimento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_AVVALIMENTO', 'en', 'Enter the data relating to all the auxiliary companies participating in availment.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICORSO_AVVALIMENTO', 'it', 'Avvalimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICORSO_AVVALIMENTO', 'en', 'Availability');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELENCO_IMPRESE_AUSILIARIE', 'it', 'Imprese ausiliarie');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELENCO_IMPRESE_AUSILIARIE', 'en', 'Auxiliary companies');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO_PER', 'it', 'Avvalimento per');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO_PER', 'en', 'Availability for');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPRESA_AUSILIARIA', 'it', 'Impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPRESA_AUSILIARIA', 'en', 'Auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_IMPRESA_AUSILIARIA', 'it', 'Modifica l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_IMPRESA_AUSILIARIA', 'en', 'Edit auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_IMPRESA_AUSILIARIA', 'it', 'Elimina l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_IMPRESA_AUSILIARIA', 'en', 'Remove auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONFIRM_IMPRESA_AUSILIARIA', 'it', 'Vuoi eliminare l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONFIRM_IMPRESA_AUSILIARIA', 'en', 'Do you want to eliminate the auxiliary company?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SKIP_IMPRESA_AUSILIARIA', 'it', 'Salta la lista delle imprese ausiliarie e vai allo step successivo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SKIP_IMPRESA_AUSILIARIA', 'en', 'Skip the list of auxiliary companies and go to the next step');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_ADD_IMPRESA_AUSILIARIA', 'it', 'Aggiungi impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_ADD_IMPRESA_AUSILIARIA', 'en', 'Add auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_IMPRESA_AUSILIARIA', 'it', 'Nuova impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_IMPRESA_AUSILIARIA', 'en', 'New auxiliary company');
+
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUOVA_MANDANTE', 'it', 'Nuova mandante');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUOVA_MANDANTE', 'en', 'New principal');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONFIRM_DEL_MANDANTE', 'it', 'Sei sicuro di voler eliminare la mandante');
@@ -3187,6 +3301,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_COM
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_COMPONENTE', 'en', 'Start the compilation of a new component');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA', 'it', 'Sei sicuro di voler proseguire ugualmente senza indicare alcuna consorziata esecutrice?');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA', 'en', 'Are you sure you want to continue without indicating any consortium member?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA_OFF', 'it', 'Per il consorzio nell''ambito dell''appalto specifico sono previste imprese consorziate esecutrici o le imprese consorziate non esecutrici che forniscono requisiti al consorzio?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA_OFF', 'en', 'Are there implementing consortium companies or non-executing consortium companies providing requirements to the consortium within the specific contract?');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUOTA_PARTECIPAZIONE', 'it', 'Quota di partecipazione');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUOTA_PARTECIPAZIONE', 'en', 'Participation fee');
 
@@ -3783,6 +3899,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MANDATA
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MANDATARIA', 'en', 'Group leader/agent');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIO', 'it', 'Aggiudicatario');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIO', 'en', 'Tenderer');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_SCOSTAMENTO', 'it', 'Importo scostamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_SCOSTAMENTO', 'en', 'Amount of deviation');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMPONENTI', 'it', 'Componenti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COMPONENTI', 'en', 'Components');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PARTECIPANTE', 'it', 'Partecipante');
@@ -3802,6 +3920,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_ST
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_STATO_GARA', 'en', '-- Choose a tender status --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_ESITO_GARA', 'it', '-- Scegli un esito --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_ESITO_GARA', 'en', '-- Choose a tender result --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_STATO_AVVISO', 'it', '-- Scegli uno stato --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_STATO_AVVISO', 'en', '-- Choose a tender status --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_NATURA_GIURIDICA', 'it', '-- Scegli una forma giuridica --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_NATURA_GIURIDICA', 'en', '-- Choose a legal form --');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_TIPO_IMPRESA', 'it', '-- Scegli una tipologia di impresa --');
@@ -4442,6 +4562,10 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD_SAVE_DOCUMENTI', 'en', 'Save documents');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_SAVE_DOCUMENTI', 'it', 'Salva le modifiche ai documenti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_SAVE_DOCUMENTI', 'en', 'Save changes to documents');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD_VERIFICA_BUSTA', 'it', 'Verifica busta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD_VERIFICA_BUSTA', 'en', 'Check envelope');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_VERIFICA_BUSTA', 'it', 'Verifica busta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_VERIFICA_BUSTA', 'en', 'Check envelope');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_OFFERTA_ECONOMICA', 'it', 'Offerta economica');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_OFFERTA_ECONOMICA', 'en', 'Economic offer');
@@ -4525,6 +4649,14 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OFFERTA
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OFFERTA', 'en', 'offer');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PARTECIPAZIONE', 'it', 'partecipazione');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PARTECIPAZIONE', 'en', 'participation');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIA', 'it', 'Aggiudicataria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIA', 'en', 'Successful bidder');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CLASSIFICATA', 'it', 'Impresa classificata');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CLASSIFICATA', 'en', 'Classified company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_ACCESSO_DOCUMENTI', 'it', 'Accesso agli atti e offerte');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents and offers');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'it', 'Accesso agli atti e offerte');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents and offers');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('NOTIFICA_GARETEL_OGGETTO', 'it', 'Invio {0} per il bando {1}');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('NOTIFICA_GARETEL_OGGETTO', 'en', 'Sending {0} for the tender procedure {1}');
@@ -5711,11 +5843,11 @@ Best regards
 This email is generated by an automatic system, please do not reply.');
 
 -- SISTEMI AUTENTICAZIONE SSO
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'it', 'Accedi con Username e Password ');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'en', 'Login with Username and Password');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'it', 'Accedi con nome utente e password');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_TITLE', 'en', 'Login with username and password');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'it', 'Se sei in possesso di credenziali al portale puoi accedere tramite l''inserimento di Username e Password nell''apposita form.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'en', 'If you have credentials for the portal you can login by filling Username and Password in the form.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'it', 'Se sei in possesso di credenziali al portale puoi accedere tramite l''inserimento di nome utente e password nell''apposita form.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_DESCRIPTION', 'en', 'If you have credentials for the portal you can login by filling username and password in the form.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_BUTTON', 'it', 'Accedi');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_FORM_LOGIN_BUTTON', 'en', 'Login');
@@ -5753,6 +5885,9 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOG
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'it', 'Se possiedi un account SPID, il Sistema Pubblico di Identità Digitale, puoi accedere cliccando il bottone ''Accedi con SPID''');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_SPID_LOGIN_DESCRIPTION', 'en', 'If you have a SPID account, the Italian Public Digital Identity System, you can login by clicking pn ''Log in with SPID''');
 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_PER_PROCEDERE_SELEZIONARE_SA', 'it', 'Per procedere selezionare la stazione appaltante su cui si intende operare in questa sessione di utilizzo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_PER_PROCEDERE_SELEZIONARE_SA', 'en', 'To proceed, select the contracting station on which you intend to operate in this session of use');
+
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_TITLE', 'it', 'Accedi con MyID');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_MYID_LOGIN_TITLE', 'en', 'Login with MyID');
 
@@ -5789,7 +5924,6 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_BUTTON', 'it', 'Accedi con Cohesion');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_COHESION_LOGIN_BUTTON', 'en', 'Login with Cohesion');
 
-
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_TITLE', 'it', 'Accedi con Crs');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_CRS_LOGIN_TITLE', 'en', 'Login with Crs');
 
@@ -5808,8 +5942,19 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_BUTTON', 'it', 'Accedi con Gateway');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_GATEWAY_LOGIN_BUTTON', 'en', 'Login with Gateway');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'it', 'Accedi');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'en', 'Login');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_TITLE', 'it', 'Accedi con EIDAS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_TITLE', 'en', 'Login with EIDAS');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_DESCRIPTION', 'it', 'Se sei in possesso delle credenziali europee EIDAS clicca su "Accedi con EIDAS". Per maggiori informazioni <a href="https://eid.gov.it">https://eid.gov.it</a>.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_DESCRIPTION', 'en', 'If you have European EIDAS credentials click on "Log in with EIDAS". For more information <a href="https://eid.gov.it">https://eid.gov.it</a>.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_BUTTON', 'it', 'Accedi con EIDAS');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_BUTTON', 'en', 'Login with EIDAS');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'it', 'Accedi - Registrati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_ACCEDI', 'en', 'Login - Register');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_LOGIN_HEADER', 'it', 'Accedi');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_LOGIN_HEADER', 'en', 'Login');
 
 	--stipule contratti
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_WSDM_OGGETTO_STIPULA_CONTRATTO', 'it', 'Conferma invio documenti');
@@ -6164,7 +6309,7 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_1', 'en', 'You have requested the cancellation of your tender offer waiver previously sent.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2', 'it', 'Quest''operazione annuller&agrave; a tutti gli effetti l''invio della precedente rinuncia all''offerta, pertanto sar&agrave; necessario procedere nuovamente all''inserimento ed al reinvio dei dati.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_2', 'en', 'This operation will definitively cancel the sending of the previous tender offer waiver, therefore it will be necessary to proceed again with the insertion and the sending of the data.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3', 'it', 'Vuoi veramente annullare la rinucia all''offerta?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3', 'it', 'Vuoi veramente annullare la rinuncia all''offerta?');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3', 'en', 'Do you really want to cancel the tender offer waiver?');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GARETEL_ANNULLA_RINUNCIA_1', 'it', 'La sua richiesta di annullamento della rinuncia all''offerta presentata il');
@@ -6405,55 +6550,53 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAPAG', 'it', 'Data pagamento');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGOPA_DATAPAG', 'en', 'Payment date');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'it', 'Termini e condizioni di utilizzo della piattaforma telematica');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'en', 'Terms and conditions of use of the telematic platform');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_CRITERIA', 'it', 'Ordina per');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_CRITERIA', 'en', 'Order by');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'it', 'I presenti Termini e Condizioni disciplinano, in maniera vincolante, il funzionamento della Piattaforma telematica denominata "<strong>{0}</strong>", definendo, tra l''altro, le condizioni di accesso e le modalit&agrave; di utilizzo della stessa.<br>
-La suddetta Piattaforma &egrave; finalizzata all''espletamento delle procedure ad evidenza pubblica che si svolgono in modalit&agrave; telematica. Tali procedure sono regolate dal D.Lgs n. 50 del 2016, recante "Codice dei contratti pubblici" e relativi provvedimenti attuativi, cui si rinvia per quanto qui non specificato.<br>
-Per quanto concerne le specifiche tecniche, si rimanda al Manuale per gli Utenti della Piattaforma.<br>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'it', 'Termini e condizioni di utilizzo della piattaforma telematica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS_TITLE', 'en', 'Terms and conditions of use of the telematic platform');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'it', 'I presenti Termini e Condizioni disciplinano, in maniera vincolante, il funzionamento della Piattaforma telematica denominata "<strong>{0}</strong>", definendo, tra l''altro, le condizioni di accesso e le modalit&agrave; di utilizzo della stessa.<br/>
+La suddetta Piattaforma &egrave; finalizzata all''espletamento delle procedure d’appalto che si svolgono in modalit&agrave; telematica. Tali procedure sono regolate dal D.Lgs n. 36 del 2023, recante "Codice dei contratti pubblici" e relativi provvedimenti attuativi, cui si rinvia per quanto qui non specificato.<br/>
+Per quanto concerne le specifiche tecniche, si rimanda al Manuale per gli Utenti della Piattaforma.<br/>
 L''Utente, come di seguito definito, &egrave; pregato di leggere attentamente questo documento prima di registrarsi e di usufruire dei Servizi.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'en', 'These Terms and Conditions govern, in a binding manner, the operation of the telematic platform called "<strong>{0}</strong>", defining, among other things, the conditions of access and how to use it.<br>
-The aforementioned platform is aimed at carrying out public procedures that take place electronically. These procedures are governed by Legislative Decree no. 50 of 2016, containing the "Code of public contracts" and related implementing measures, to which reference should be made for what is not specified here.<br>
-As regards the technical specifications, please refer to the Manual for Users of the Platform.<br>
-The User, as defined below, is requested to read this document carefully before registering and using the Services.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_TERMS', 'en', 'These Terms and Conditions govern, in a binding manner, the functioning of the online platform called "<strong>{0}</strong>", defining, among other things, the conditions of access and the methods of of use of the same.<br/>
+The aforementioned Platform is aimed at completing the procurement procedures which are carried out in a telematics. These procedures are regulated by Legislative Decree no. 36 of 2023, containing the "Public Contracts Code" and related implementing measures, to which reference should be made for anything not specified here.<br/>
+As regards the technical specifications, please refer to the Platform User Manual.<br/>
+The User, as defined below, is Please read this document carefully before registering and using the Services.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI_TITLE', 'it', '1. Definizioni - acronimi - glossario');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI_TITLE', 'en', '1. Definitions - acronyms - glossary');
-
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'it', 'Le espressioni di cui al presente articolo, quando utilizzate con l''iniziale maiuscola, avranno il seguente significato:<br>
-<strong>Area Riservata:</strong> indica l''area riservata all''Utente sulla Piattaforma, creata dopo la sua registrazione e finalizzata all''invio e alla ricezione di comunicazioni nell''ambito del Sistema;<br>
-<strong>Gestore del sistema:</strong> il soggetto di cui si avvale la stazione appaltante per la gestione tecnica della piattaforma;<br>
-<strong>Codice degli Appalti/Codice dei contratti pubblici:</strong> si intende il Decreto Legislativo n. 50/2016;<br>
-<strong>Operatore Economico:</strong> si intende uno dei soggetti ammessi a partecipare alle procedure ad evidenza pubblica, come definiti dall''art. 45 del Codice dei contratti pubblici e dalla normativa eurounitaria;<br>
-<strong>Piattaforma:</strong> si intende la piattaforma {0}"; il sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; telematica nel rispetto delle disposizioni di cui al Codice dei contratti pubblici;<br>
-<strong>Portale Appalti:</strong> si intende la componente della Piattaforma telematica rivolta ad offrire funzionalit&agrave; specifiche agli operatori economici;<br>
-<strong>Procedure Telematiche:</strong> si intendono le procedure gestite mediante la Piattaforma;<br>
-<strong>Utente:</strong> si intende la persona fisica, autorizzata dall''Operatore Economico e dotata dei necessari poteri di rappresentanza, che agisce sulla Piattaforma in nome e per conto dell''Operatore Economico stesso;<br>
-<strong>Servizio:</strong> si intende il Servizio offerto tramite la Piattaforma, come meglio definito all''articolo 2;<br>
-<strong>Stazione Appaltante:</strong> si intende l''ente, come definito nel Codice dei contratti pubblici, che offre il Servizio agli Operatori Economici interessati a partecipare ad una determinata procedura di gara;<br>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'it', 'Le espressioni di cui al presente articolo, quando utilizzate con l''iniziale maiuscola, avranno il seguente significato:<br/>
+<strong>Area Riservata:</strong> indica l''area riservata all''Utente sulla Piattaforma, creata dopo la sua registrazione e finalizzata all''invio e alla ricezione di comunicazioni nell''ambito del Sistema;<br/>
+<strong>Gestore della Piattaforma di Approvvigionamento Digitale o Gestore del Sistema</strong>: il soggetto di cui si avvale la stazione appaltante per la gestione tecnica della piattaforma e iscritto quale Gestore autorizzato al Registro Piattaforme Certificate ANAC in conformità alle Regole Tecniche AgID;<br/>
+<strong>Codice degli Appalti/Codice dei contratti pubblici:</strong> si intende il Decreto Legislativo n. 36/2023;<br/>
+<strong>Operatore Economico:</strong> si intende uno dei soggetti ammessi a partecipare alle procedure d''appalto, come definiti dall''art. 65 del Codice dei contratti pubblici e dalla normativa eurounitaria;<br/>
+<strong>Piattaforma o PAD (Piattaforma di Approvvigionamento Digitale):</strong> si intende la piattaforma "{0}"; certificata e registrata nel Registro Piattaforme Certificate ANAC, ovvero il sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalità telematica nel rispetto delle disposizioni di cui al Codice dei contratti pubblici;<br/>
+<strong>Portale Appalti:</strong> si intende la componente della Piattaforma telematica rivolta ad offrire funzionalità specifiche agli operatori economici;<br/>
+<strong>Procedure Telematiche:</strong> si intendono le procedure gestite mediante la Piattaforma;<br/>
+<strong>Utente:</strong> si intende la persona fisica, autorizzata dall''Operatore Economico e dotata dei necessari poteri di rappresentanza, che agisce sulla Piattaforma in nome e per conto dell''Operatore Economico stesso;<br/>
+<strong>Servizio:</strong> si intende il Servizio offerto tramite la Piattaforma, come meglio definito nel Titolo I D.Lgs. 36/2023;<br/>
+<strong>Stazione Appaltante:</strong> si intende l''ente, come definito nel Codice dei contratti pubblici, che offre il Servizio agli Operatori Economici interessati a partecipare ad una determinata procedura di gara;<br/>
 <strong>Termini e Condizioni:</strong> indica il presente documento.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'en', 'The expressions referred to in this article, when used with a capital letter, will have the following meaning:<br>
-<strong>Reserved Area:</strong> indicates the area reserved for the User on the Platform, created after his registration and aimed at sending and receiving communications within the System;<br>
-<strong>System manager:</strong> the subject used by the contracting authority for the technical management of the platform;<br>
-<strong>Procurement Code/Public Contracts Code:</strong> means the Legislative Decree n. 50/2016;<br>
-<strong>Economic Operator:</strong> means one of the subjects admitted to participate in public tender procedures, as defined by art. 45 of the Code of public contracts and the European Union legislation;<br>
-<strong>Platform:</strong> means the platform {0}"; the computer system (software and hardware) through which it is possible to carry out tender procedures entirely managed electronically in compliance with the provisions of the Code of public contracts;<br>
-<strong>Procurement Portal:</strong> means the telematic platform'' component aimed at offering functionalities specific to economic operators;<br>
-<strong>Telematic Procedures:</strong> means the procedures managed through the Platform;<br>
-<strong>User:</strong> means the natural person, authorized by the Economic Operator and endowed with the necessary powers of representation, who acts on the Platform in the name and on behalf of the Economic Operator itself;<br>
-<strong>Service:</strong> means the Service offered through the Platform, as better defined in article 2;<br>
-<strong>Contracting Authority:</strong> means the entity, as defined in the Public Contracts Code, which offers the Service to Economic Operators interested in participating in a specific tender procedure;<br>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACRONIMI', 'en', 'The expressions referred to in this article, when used with a capital letter, will have the following meaning:<br/>
+<strong>Reserved Area:</strong> indicates the area reserved for the User on the Platform, created after registration and aimed at sending and receiving communications within the System;
+<strong>Manager of the Digital Procurement Platform or System Manager</strong>: the person used by the contracting authority for the technical management of the platform and registered as an authorized Manager in the ANAC Register of Certified Platforms in compliance with the AgID Technical Rules; <br/>
+<strong>Procurement Code/Public Contracts Code:</strong> means Legislative Decree no. 36/2023;<br/>
+<strong>Economic Operator:</strong> means one of the subjects admitted to participate in the procurement procedures, as defined by the art. 65 of the Public Contracts Code and the European Union legislation;<br/>
+<strong>Platform or PAD (Digital Procurement Platform):</strong> means the "{0}" platform; certified and registered in the ANAC Register of Certified Platforms, i.e. the IT system (software and hardware) through which it is it is possible to carry out tender procedures entirely managed electronically in compliance with the provisions of the Public Contracts Code;<br/>
+<strong>Procurement Portal:</strong> means the component of the telematic platform aimed at offering specific functions to economic operators;<br/>
+<strong>Telematic Procedures:</strong> means the procedures managed via the Platform;<br/>
+<strong>User:</strong> means the natural person, authorized by the Economic Operator and equipped with the necessary powers of representation, who acts on the Platform in the name and on behalf of the Economic Operator itself;<br/>
+<strong>Service:</strong> means the Service offered through the Platform, as better defined in Title I Legislative Decree 36/2023;<br/>
+<strong>Contracting Authority:</strong> means the body, as defined in the Public Contracts Code, which offers the Service to Economic Operators interested in participating in a specific tender procedure;<br/>
 <strong>Terms and Conditions:</strong> means this document.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE', 'it', '2. Descrizione della Piattaforma telematica e del Servizio');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE', 'en', '2. Description of the Telematic Platform and the Service');
-
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'it', 'Il Servizio consiste in un sistema online, accessibile mediante registrazione dell''Operatore Economico alla Piattaforma, che consente all''Operatore economico di partecipare alle procedure ad evidenza pubblica, indette dalla Stazione Appaltante.<br>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'it', 'Il Servizio consiste in un sistema online, accessibile mediante registrazione dell''Operatore Economico alla Piattaforma, che consente all''Operatore economico di partecipare alle procedure d''appalto, indette dalla Stazione Appaltante.<br/>
 L''utilizzo della piattaforma da parte degli Operatori economici &egrave; subordinato alla registrazione degli stessi al fine di accedere all''Area Riservata, ove sono disponibili le funzionalit&agrave; di interazione con la Stazione Appaltante.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'en', 'The Service consists of an online system, accessible by registering the Economic Operator on the Platform, which allows the Economic Operator to participate in public procedures, announced by the Contracting Authority.<br>
-The use of the platform by economic operators is subject to their registration in order to access the Reserved Area, where the functionalities are available of interaction with the Contracting Authority.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION', 'en', 'The Service consists of an online system, accessible by registering the Economic Operator on the Platform, which allows the Economic Operator to participate in the procurement procedures called by the Contracting Authority.<br/>
+The use of the platform by Economic Operators is subject to their registration in order to access the Reserved Area, where the functionalities are available. of interaction with the Contracting Authority.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE', 'it', '3. Registrazione alla piattaforma');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE', 'en', '3. Registration on the platform');
@@ -6472,22 +6615,18 @@ The Economic Operator is required to equip themselves, at their own expense, wit
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT_TITLE', 'it', '4. Gestione dell''account e utilizzo della Piattaforma');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT_TITLE', 'en', '4. Account Management and use of the Platform');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'it', 'L''Utente registrato effettuer&agrave; l''accesso alla Piattaforma mediante l''utilizzo delle proprie credenziali costituite da nome utente e password o tramite sistema pubblico di identit&agrave; digitale (SPID).<br>
-La stazione appaltante potrebbe in ogni caso adottare restrizioni in materia di strumenti di identificazione nel caso si rendesse necessario per adeguarsi a disposizioni normative sopravvenute.<br>
-L''Utente garantisce che le informazioni personali fornite durante la procedura di registrazione, o anche successivamente, sono complete e veritiere e si impegna a tenere la stazione appaltante indenne e manlevata da qualsiasi danno, obbligo risarcitorio e/o sanzione derivante da e/o in qualsiasi modo collegata alla violazione da parte dell''Utente delle disposizioni del presente articolo.<br>
-L''account creato dall''Utente &egrave; strettamente personale e non pu&ograve; essere ceduto a qualunque titolo o condiviso con terzi, neanche temporaneamente.<br>
-L''Utente si impegna a non cedere neanche temporaneamente a terzi e a conservare le credenziali di registrazione con la dovuta cura, diligenza e segretezza sotto la propria responsabilit&agrave;, costituendo le stesse i soli mezzi per identificare l''Utente e per validare i suoi accessi alla Piattaforma. L''Utente pertanto &egrave; informato che tutti gli atti compiuti mediante l''utilizzo delle dette credenziali saranno a lui attribuiti ed avranno efficacia vincolante nei suoi confronti e nei confronti dell''Operatore rappresentato.<br>
-L''Utente, una volta terminata la registrazione, non potr&agrave; modificare autonomamente le proprie informazioni o quelle dell''Operatore Economico. Eventuali variazioni dovranno essere richieste utilizzando l''apposita procedura "Richiedi variazione dati identificativi" disponibile nell''Area Riservata. Per tali variazioni &egrave; richiesta la verifica e l''accettazione da parte da parte della stazione appaltante e, pertanto, il processo di aggiornamento &egrave; differito. In caso di urgenza &egrave; possibile contattare la Stazione Appaltante mediante il pulsante "Assistenza operatori economici" presente sul Portale.<br>
-<!-- L''Utente potr&agrave; cancellare il proprio account seguendo la procedura indicata sulla Piattaforma nell''Area Riservata alla voce "Dismetti ed elimina account" e specificata nel Manuale per gli Utenti della Piattaforma.<br>
-La cancellazione dell''account comporter&agrave; l''impossibilit&agrave; di fruire delle funzionalit&agrave; della Piattaforma. -->');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'en', 'The registered User will carry out access to the Platform through the use of his credentials consisting of a username and password or through a public identity system digital (SPID).<br>
-The contracting authority could in any case adopt restrictions on identification tools should it become necessary to comply with supervening regulatory provisions.<br>
-The User guarantees that the personal information provided during the registration procedure, or even subsequently, is complete and truthful and undertakes to keep the contracting authority harmless and indemnified from any damage, compensation obligation and/or sanction deriving from and/or in any way related to the User''s violation of the provisions of this article.<br>
-The account created by the User is strictly personal and cannot be transferred for any reason or shared with third parties, not even temporarily.<br>
-The User undertakes not to transfer even temporarily to third parties and to keep the registration credentials with due care, diligence and secrecy under his own responsibility, constituting the only means to identify the User and to validate his access to the Platform. The User therefore is informed that all the acts carried out through the use of said credentials will be attributed to him and will have binding effect on him and on the represented Operator.<br>
-Once the registration has been completed, the User will not be able to independently modify their own information or that of the Economic Operator. Any changes must be requested using the appropriate procedure "Request identification data change" available in the Reserved Area. For such variations is required verification and acceptance by the contracting authority and, therefore, the updating process is deferred. In case of urgency It is possible to contact the Contracting Authority using the "Economic operators assistance" button on the Portal. <br>
-<!-- The User will be able to cancel his account by following the procedure indicated on the Platform in the Reserved Area under the heading "Unsubscribe and delete account" and specified in the Platform User Manual.<br>
-The cancellation of the account will result in the impossibility to use the functionalities of the Platform. -->');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'it', 'L''Utente registrato effettuer&agrave; l''accesso alla Piattaforma mediante l''utilizzo delle proprie credenziali costituite da nome utente e password o tramite sistema pubblico di identit&agrave; digitale (SPID, CIE, ecc.).<br/>
+La stazione appaltante potrebbe in ogni caso adottare restrizioni in materia di strumenti di identificazione nel caso si rendesse necessario per adeguarsi a disposizioni normative sopravvenute.<br/>
+L''Utente garantisce che le informazioni personali fornite durante la procedura di registrazione, o anche successivamente, sono complete e veritiere e si impegna a tenere la stazione appaltante indenne e manlevata da qualsiasi danno, obbligo risarcitorio e/o sanzione derivante da e/o in qualsiasi modo collegata alla violazione da parte dell''Utente delle disposizioni del presente articolo.<br/>
+L''account creato dall''Utente &egrave; strettamente personale e non pu&ograve; essere ceduto a qualunque titolo o condiviso con terzi, neanche temporaneamente.<br/>
+L''Utente si impegna a non cedere neanche temporaneamente a terzi e a conservare le credenziali di registrazione con la dovuta cura, diligenza e segretezza sotto la propria responsabilit&agrave;, costituendo le stesse i soli mezzi per identificare l''Utente e per validare i suoi accessi alla Piattaforma. L''Utente pertanto &egrave; informato che tutti gli atti compiuti mediante l''utilizzo delle dette credenziali saranno a lui attribuiti ed avranno efficacia vincolante nei suoi confronti e nei confronti dell''Operatore rappresentato.
+L''Utente, una volta terminata la registrazione, non potr&agrave; modificare autonomamente le proprie informazioni o quelle dell''Operatore Economico. Eventuali variazioni dovranno essere richieste utilizzando l''apposita procedura "Richiedi variazione dati identificativi" disponibile nell''Area Riservata. Per tali variazioni &egrave; richiesta la verifica e l''accettazione da parte da parte della stazione appaltante e, pertanto, il processo di aggiornamento &egrave; differito. In caso di urgenza &egrave; possibile contattare la Stazione Appaltante mediante il pulsante "Assistenza operatori economici" presente sul Portale.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCOUNT', 'en', 'The Registered User will carry out access to the Platform through the use of your credentials consisting of username and password or via a public identity system; digital (SPID, CIE, etc.).<br/>
+The contracting authority could in any case adopt restrictions regarding identification tools if it were necessary to adapt to new regulatory provisions.<br/>
+The User guarantees that the personal information provided during the registration procedure, or even subsequently, is complete and truthful and undertakes to hold the contracting authority harmless and indemnified from any damage, compensation obligation and/or sanction deriving from and/or in any way connected to the violation by the User of the provisions of this article.<br/>
+The account created by the User is strictly personal and cannot be be transferred for any reason or shared with third parties, even temporarily.<br/>
+The User undertakes not to transfer the registration credentials to third parties, even temporarily, and to keep the registration credentials with due care, diligence and secrecy under his own responsibility, as they constitute the only means to identify the User and to validate his access to the Platform. The User is therefore informed that all actions carried out through the use of said credentials will be attributed to him and will have binding effect towards him and towards the Operator represented.
+Once registration is completed, the User will not be able to register. independently modify your own information or that of the Economic Operator. Any changes must be requested using the specific "Request change in identification data" procedure available in the Reserved Area. For these variations it is verification and acceptance by the contracting authority is required and, therefore, the update process is deferred. In case of emergency it is It is possible to contact the Contracting Authority using the "Assistance for economic operators" button on the Portal.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE', 'it', '5. Modalit&agrave; di sottoscrizione dei documenti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE', 'en', '5. Methods of signing of documents');
@@ -6499,11 +6638,10 @@ The User is required to comply with all legislative, regulatory, implementation,
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION_TITLE', 'it', '6. Elezione di domicilio e comunicazioni');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION_TITLE', 'en', '6. Election of domicile and communications');
-
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'it', 'Con l''accettazione dei presenti Termini e Condizioni l''Utente elegge domicilio presso la casella di posta elettronica certificata indicata all''atto della registrazione alla Piattaforma. L''utente potr&agrave; rinvenire le comunicazioni anche presso l''area Utente riservata all''interno della Piattaforma.
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'it', 'Con l''accettazione dei presenti Termini e Condizioni l''Utente elegge domicilio presso la Piattaforma stessa e presso la casella di posta elettronica certificata indicata all''atto della registrazione alla Piattaforma. L''utente potrà rinvenire le comunicazioni presso l''area Utente riservata all''interno della Piattaforma. 
 Le comunicazioni tra la stazione appaltante e l''Utente potranno avvenire mediante i canali summenzionati.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'en', 'By accepting these Terms and Conditions, the User elects domicile at the certified e-mail address indicated when registering on the Platform. The user can find the communications also in the reserved User area within the Platform.
-Communications between the contracting authority and the User will may take place through the aforementioned channels.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ELECTION', 'en', 'By accepting these Terms and Conditions, the User elects domicile at the Platform itself and at the certified email address indicated when registering on the Platform. The user will be able to find the communications in the reserved User area within the Platform. 
+Communications between the contracting authority and the User may take place through the aforementioned channels.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL_TITLE', 'it', '7. Propriet&agrave; intellettuale');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_INTELLECTUAL_TITLE', 'en', '7. Intellectual ownership');
@@ -6547,9 +6685,8 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL_TITLE', 'it', '10. Protezione dei dati personali');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL_TITLE', 'en', '10. Protection of personal data');
-
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'it', 'I dati comunicati dall''Utente saranno trattati dalla Stazione Appaltante, in qualit&agrave; di titolare del trattamento, nel rispetto della normativa sulla protezione dei dati personali (Reg. (UE) 2016/679 RGPD e D.lgs. 196/2003 s.m.i.). Per ulteriori specificazioni si invita l''Utente a prendere visione dell''<a href="ppgare_auth.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7">informativa sul trattamento dei dati personali</a>, consultabile alla sezione "Informazioni", sottosezione "Accesso area riservata" del sito, la quale costituisce parte integrante e sostanziale dei presenti "Termini e Condizioni".');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'en', 'The data communicated by the User will be processed by the Contracting Authority, in quality as the data controller, in compliance with the legislation on the protection of personal data (Reg. (EU) 2016/679 RGPD and Legislative Decree 196/2003 s.m.a.). For further specifications, the User is invited to read the <a href="ppgare_auth.wp?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openDataUsageInfo.action&currentFrame=7"> information on the processing of personal data</a>, which can be consulted in the "Informations" section, "Access to reserved area" subsection of the site, which forms an integral and essential part of these "Terms and Conditions".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'it', 'I dati comunicati dall''Utente saranno trattati dalla Stazione Appaltante, in qualit&agrave; di titolare del trattamento, nel rispetto della normativa sulla protezione dei dati personali. Per ulteriori specificazioni si invita l''Utente a prendere visione dell''informativa sul trattamento dei dati personali, consultabile alla sezione "Informazioni", sottosezione "Accesso area riservata" del sito, la quale costituisce parte integrante e sostanziale dei presenti "Termini e Condizioni".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_PERSONAL', 'en', 'The data communicated by the User will be processed by the Contracting Authority, as of the data controller, in compliance with the legislation on the protection of personal data. For further specifications, the User is invited to read the information on the processing of personal data, which can be consulted in the "Information" section, "Access to the reserved area" subsection of the site, which constitutes an integral and substantial part of these "Terms and Conditions".');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS_TITLE', 'it', '11. Accesso agli atti');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF_USE_ACCESS_TITLE', 'en', '11. Access to documents');
@@ -6573,19 +6710,31 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TERM_OF
 The contracting authority reserves the right to make changes, at any time, to these "Terms and Conditions" as well as to make changes to the functionalities of the Platform, providing thirty days'' notice to Users by certified e-mail and publishing the new version on the Procurement Portal. The changes made will be effective once the aforementioned deadline has elapsed. In the event that the user does not agree with the changes made, he has the option to request cancellation of your account by certified e-mail.<br>
 Any nullity, annulment o ineffectiveness of one or more clauses of the "Terms and Conditions" do not extend the remaining clauses which will therefore remain fully valid and effective.');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TITLE', 'it', 'Informativa sul trattamento dei dati personali');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TITLE', 'it', 'Informativa sul trattamento dei dati personali – Privacy policy');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TITLE', 'en', 'Information on the processing of personal data');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'it', '<p>In questa pagina, si descrivono le modalit&agrave; e le logiche del trattamento dei dati personali degli utenti che consultano il sito {0} (di seguito "il Sito" o "la Piattaforma"). L''informativa &egrave; resa ai sensi dell''art. 13 del Regolamento (UE) 2016/679 a tutti gli utenti che, interagendo con il Sito, forniscono i propri dati personali. La validit&agrave; dell''informativa contenuta nella presente pagina &egrave; limitata al solo Sito e non si estende ad altri siti web eventualmente consultabili mediante collegamento ipertestuale.</p>
-<p>Gli utenti  sono invitati a prendere visione della seguente informativa prima di fornire informazioni personali di qualsiasi genere.</p>');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'en', '<p>On this page, we describe the methods and logic of the processing of personal data of users who visit the site {0} (hereinafter "the Site" or "the Platform"). The information is provided pursuant to art. 13 of Regulation (EU) 2016/679 to all users who, by interacting with the Site, provide their personal data. The validity of the information contained in this page is limited to the Site and does not extend to other websites that may be accessed through hypertext links.</p>
-<p>Users are invited to read the following information before providing personal information of any kind.</p>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'it', '<p>La privacy e la sicurezza dei dati personali dell''utente sono molto importanti e pertanto i dati personali sono raccolti e gestiti con la massima attenzione adottando adeguate misure di sicurezza per custodirli. In questa pagina, si descrivono le modalit&agrave; e le logiche del trattamento dei dati personali degli utenti che consultano il Sito. L''informativa &egrave; resa ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 a tutti gli utenti che, interagendo con il Sito, forniscono i propri dati personali. La validit&agrave; dell''informativa contenuta nella presente pagina &egrave; limitata al solo Sito e non si estende ad altri siti web eventualmente consultabili mediante collegamento ipertestuale. Di seguito, verranno chiaramente elencati:<br/>
+<ul>
+<li>i riferimenti di chi tratterà i suoi dati personali;</li>
+<li>quali dati personali verranno trattati;</li>
+<li>le finalità e la base giuridica per cui saranno trattati i dati;</li>
+<li>i tempi di conservazione e i diritti che le sono riconosciuti.</li>
+</ul>
+Gli utenti, utilizzando il presente Sito, accettano la presente informativa e sono, pertanto, invitati a prenderne visione prima di fornire informazioni personali di qualsiasi genere.</p>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES', 'en', '<p>The privacy and security of the user''s personal data are very important and therefore personal data is collected and managed with the utmost care by adopting adequate security measures to safeguard it. On this page, we describe the methods and the logic of the processing of personal data of users who consult the Site. The information is made pursuant to articles. 13 and 14 of Regulation (EU) 2016/679 to all users who, interacting with the Site, provide their personal data. The validity of the information contained on this page is limited to the Site only and does not extend to other websites that may be consulted via hyperlink. Below, they will be clearly listed:<br/>
+<ul>
+<li>the contact details of who will process your personal data;</li>
+<li>what personal data will be processed;</li>
+<li>the purposes and legal basis for which the data will be processed;</li>
+<li>the retention times and the rights recognized to you.</li>
+</ul>
+Users, by using this Site, accept this information and are therefore invited to read it before providing personal information of any kind.</p>');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_TITLE', 'it', 'Titolare del trattamento');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_TITLE', 'en', 'Holder of the treatment');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'it', 'Il Titolare del trattamento &egrave; {0} - {1} - {2}');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'en', 'The Data Controller is {0} - {1} - {2}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'it', 'Il Titolare del trattamento &egrave; {0} con sede in {1} - email {2}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT', 'en', 'The Data Controller is {0} based in {1} - email {2}');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO_TITLE', 'it', 'Responsabile della protezione dei dati');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO_TITLE', 'en', 'Responsible for data protection');
@@ -6593,11 +6742,11 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO', 'it', 'Il Titolare ha provveduto a nominare il Responsabile della protezione dei dati che potr&agrave; essere contattato ai seguenti indirizzi: {0}');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_DPO', 'en', 'The Data Controller has appointed the Data Protection Officer who can be contacted at the following addresses: {0}');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'it', 'Gestore del sistema');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'en', 'System manager');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'it', 'Gestore della Piattaforma di Approvvigionamento Digitale e responsabile del trattamento dei dati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER_TITLE', 'en', 'Digital Procurement Platform Manager and data controller');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'it', 'Il Gestore del sistema responsabile del trattamento dei dati &egrave; {0} - {1} - {2}');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'en', 'The System Manager responsible for data processing is {0} - {1} - {2}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'it', 'Il Gestore della Piattaforma di Approvvigionamento Digitale responsabile del trattamento dei dati &egrave; {0} con sede in {1} – email {2}.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_HANDLER', 'en', 'The Digital Procurement Platform Manager responsible for data processing is {0} based in {1} – email {2}.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TYPE_OF_DATA_TITLE', 'it', 'Tipologie di dati trattati');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TYPE_OF_DATA_TITLE', 'en', 'Types of data processed');
@@ -6605,32 +6754,36 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION_TITLE', 'it', 'Dati di navigazione');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION_TITLE', 'en', 'Navigation data');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'it', 'I sistemi informatici e le procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali la cui trasmissione &egrave; implicita nell''uso dei protocolli di comunicazione di Internet.</p>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'it', 'I sistemi informatici e le procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali la cui trasmissione &egrave; implicita nell''uso dei protocolli di comunicazione di Internet.</p> 
 <p>In questa categoria di dati rientrano gli indirizzi IP o i nomi a dominio dei computer e dei terminali utilizzati dagli utenti, gli indirizzi in notazione URI/URL (Uniform Resource Identifier/Locator) delle risorse richieste, l''orario della richiesta, il metodo utilizzato nel sottoporre la richiesta al server, la dimensione del file ottenuto in risposta, il codice numerico indicante lo stato della risposta data dal server (buon fine, errore, ecc.) ed altri parametri relativi al sistema operativo e all''ambiente informatico dell''utente.</p>
+<p>Tali dati, necessari per la fruizione dei servizi web, vengono anche trattati allo scopo di ottenere informazioni statistiche sull''uso dei servizi (pagine pi&ugrave; visitate, numero di visitatori per fascia oraria o giornaliera, aree geografiche di provenienza, ecc.) e/o controllare il corretto funzionamento dei servizi offerti.</p>  
 <p>I dati di navigazione non persistono per pi&ugrave; di {0} mesi e vengono cancellati immediatamente dopo la loro aggregazione (salve eventuali necessit&agrave; di accertamento di reati da parte dell''Autorit&agrave; giudiziaria).');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'en', 'The computer systems and software procedures used to operate this site acquire, during their normal operation, some personal data whose transmission is implicit in the use of Internet communication protocols.</p>
-<p>This category of data includes IP addresses or domain names of computers and terminals used by users, URI/URL (Uniform Resource Identifier/Locator) addresses of the requested resources, the time of the request, the method used in submitting the request to the server, the size of the file obtained in response, the numerical code indicating the status of the response given by the server (successful, error, etc.) and other parameters related to the user’s operating system and IT environment.</p>
-<p>The navigation data does not persist for longer of {0} months and are canceled immediately after their aggregation (except for any need to ascertain crimes by the judicial Authority).');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_NAVIGATION', 'en', 'The computer systems and software procedures used to operate this site acquire, during their normal operation, some personal data whose transmission is required. implicit in the use of Internet communication protocols.</p> 
+<p>This category of data includes the IP addresses or domain names of the computers and terminals used by users, the addresses in URI/URL (Uniform Resource Identifier/Locator) notation of the requested resources, the time of the request, the method used to submit the request to the server, the size of the file obtained in response, the numerical code indicating the status of the response given by the server (successful, error, etc.) and other parameters relating to the operating system and the environment user''s computer.</p>
+<p>Such data, necessary for the use of web services, are also processed for the purpose of obtaining statistical information on the use of the services (most visited pages, number of visitors per time slot or day, geographical areas of origin, etc. .) and/or check the correct functioning of the services offered.</p>  
+<p>Browsing data does not persist for longer of {0} months and are canceled immediately after their aggregation (except for any need for the investigation of crimes by the judicial authority).');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY_TITLE', 'it', 'Dati forniti volontariamente dall''utente');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY_TITLE', 'en', 'Data provided voluntarily by the user');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY', 'it', 'I dati personali sono forniti dagli utenti allo scopo di fruire dei servizi della Piattaforma.</p>
-<p>Il Titolare non raccoglie e non tratta dati personali relativi ai minori d''et&agrave;. Accedendo al Sito e utilizzando i servizi offerti, dichiara di aver compiuto la maggiore et&agrave;. Gli utenti minori di 18 anni sono pertanto pregati di non registrarsi alla Piattaforma e di non fornire dati personali.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY', 'en', 'Personal data are provided by users in order to use the services of the Platform.</p>
-<p>The Data Controller does not collect and does not process personal data relating to minors. By accessing the Site and using the services offered, you declare that you have reached the age of majority. Users under the age of 18 are therefore requested not to register on the Platform and not to provide personal data.');
+Attraverso il Sito &egrave; possibile inviare richieste e comunicazioni mediante gli indirizzi e i moduli di contatto ivi indicati. Il conferimento di tali dati &egrave; obbligatorio, necessario per rispondere alle richieste inviate nonch&egrave; per ricontattare il mittente per ottenere precisazioni in ordine a quanto segnalato. In particolare, i dati personali sono forniti dagli utenti allo scopo di fruire dei servizi del Sito.
+<p>Il Titolare non raccoglie e non tratta dati personali relativi ai minori d''et&agrave;. Accedendo al Sito e utilizzando i servizi offerti, dichiara di aver compiuto la maggiore et&agrave;. Gli utenti minori di 18 anni sono pertanto pregati di non registrarsi al Sito e di non fornire dati personali.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_VOLUNTARILY', 'en', 'Personal data is provided by users for the purpose of using the Platform''s services.</p>
+Through the Site it is It is possible to send requests and communications via the addresses and contact forms indicated therein. The provision of such data is mandatory, necessary to respond to the requests sent as well as to contact the sender to obtain clarifications regarding what was reported. In particular, personal data are provided by users for the purpose of using the Site''s services.
+<p>The Data Controller does not collect or process personal data relating to minors. By accessing the Site and using the services offered, you declare that you have reached the age of majority. Users under 18 are therefore asked not to register on the Site and not to provide personal data.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA_TITLE', 'it', 'Dati forniti per la registrazione dell''account');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA_TITLE', 'en', 'Data provided for account registration');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'it', 'L''accesso alla propria area riservata pu&ograve; avvenire attraverso l''identificazione con SPID oppure attraverso l''autenticazione tramite username e password. Nel caso di SPID, i dati che vengono trattati dal Titolare sono visualizzabili da ciascun utente prima di completare l''identificazione nella schermata riepilogativa messa a disposizione dal proprio Identity Provider.  Nel caso di autenticazione tramite username e password, l''utente dovr&agrave; fornire alcuni dati tra cui a titolo esemplificativo il nome, il cognome, l''indirizzo email, il numero di telefono oltre che i dati dell''operatore economico che intende registrare. I dati obbligatori sono contrassegnati da asterisco, pertanto il rifiuto di fornirli comporta l''impossibilit&agrave; di completare la registrazione.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'en', 'Access to your own reserved area can take place through identification with SPID or through authentication via username and password. In the case of SPID, the data that are processed by the Data Controller can be viewed by each user before completing the identification in the summary screen made available by their Identity Provider. In the case of authentication via username and password, the user must provide some data including, by way of example, the name, surname, email address, telephone number as well as the data of the economic operator he intends to register. The mandatory data are marked with an asterisk, therefore the refusal to supply them implies the impossibility to complete the registration.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'it', 'L''accesso alla propria area riservata pu&ograve; avvenire mediante sistemi pubblici di identit&agrave; (quali SPID, CIE, ecc.) oppure attraverso l''autenticazione con sistemi interni (es. username e password) in conformità alle Regole tecniche AgID relative alla certificazione della piattaforma. Nel caso di sistemi pubblici di identit&agrave;, i dati che vengono trattati dal Titolare sono visualizzabili da ciascun utente prima di completare l''identificazione nella schermata riepilogativa messa a disposizione dal proprio Identity Provider. Nel caso di autenticazione tramite sistemi interni, l''utente potrebbe dover fornire alcuni dati tra cui il nome, il cognome, l''indirizzo email, un numero di telefono. Oltre ai dati dell''utente, dovranno essere forniti i dati dell''operatore economico che intende registrare e per il quale ha titolo ad operare. I dati obbligatori sono contrassegnati da asterisco, pertanto il rifiuto di fornirli comporta l''impossibilit&agrave; di completare la registrazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_REGISTRATION_DATA', 'en', 'Access to your reserved area can be take place through public identity systems (such as SPID, CIE, etc.) or through authentication with internal systems (e.g. username and password) in compliance with the AgID Technical Rules relating to platform certification. In the case of public identity systems, the data processed by the Data Controller can be viewed by each user before completing identification in the summary screen made available by their Identity Provider. In the case of authentication via internal systems, the user may have to provide some data including name, surname, email address, telephone number. In addition to the user''s data, the data of the economic operator who intends to register and for whom he is entitled to operate must be provided. Mandatory data is marked with an asterisk, therefore refusal to provide it will make it impossible to complete the data. to complete the registration.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES_TITLE', 'it', 'Dati forniti utilizzando gli indirizzi di contatto');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES_TITLE', 'en', 'Data provided using contact addresses');
-		
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'it', 'Si tratta delle informazioni che decider&agrave; di comunicare scrivendo agli indirizzi indicati sulla Piattaforma o nelle aree dedicate all''interazione con la Stazione Appaltante. In questo, caso il Titolare tratta i suoi dati come l''indirizzo e-mail e ogni altra informazione che includer&agrave; nella comunicazione.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'en', 'This is the information that will decide to communicate by writing to the addresses indicated on the Platform or in the areas dedicated to interaction with the Contracting Authority. In this case, the Data Controller processes your data such as the e-mail address and any other information that will include in communication.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'it', 'Si tratta delle informazioni che decider&agrave; di comunicare scrivendo agli indirizzi indicati sulla Piattaforma o nelle aree dedicate all''interazione con la Stazione Appaltante. In questo caso il Titolare tratta i suoi dati come l''indirizzo e-mail, PEC e ogni altra informazione che includer&agrave; nella comunicazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_CONTACT_ADDRESSES', 'en', 'This is the information that will decide to communicate by writing to the addresses indicated on the Platform or in the areas dedicated to interaction with the Contracting Authority. In this case the Data Controller processes your data such as the e-mail address, PEC and any other information that will include in communication.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST_TITLE', 'it', 'Dati forniti per l''iscrizione all''elenco operatori');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_OPERATORS_LIST_TITLE', 'en', 'Data provided for registration in the operator list');
@@ -6647,8 +6800,12 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE_TITLE', 'it', 'Cookie');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE_TITLE', 'en', 'Cookie');
 
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'it', 'La Piattaforma utilizza cookie. Ulteriori dettagli possono essere consultati nella sezione dedicata all''interno della <a href="ppgare_cookies.wp">seguente pagina</a>.');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'en', 'The Platform uses cookies. Further details can be found in the dedicated section inside the <a href="ppgare_cookies.wp">following page</a>.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'it', 'I cookie sono piccoli file di testo che i siti web visitati dall''utente inviano al suo terminale, dove vengono memorizzati per essere poi ritrasmessi agli stessi siti alla successiva visita del medesimo utente.</p>
+<p>In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali non &egrave; richiesto alcun consenso da parte dell''interessato, nel rispetto dell''articolo 122 del D. Lgs. n. 196/2003 – Codice in materia di protezione dei dati personali (di seguito “Codice Privacy”), nonch&egrave; dei Provvedimenti generali del Garante per la Protezione dei Dati Personali n. 229 dell''8 maggio 2014 e n. 231 del 10 giugno 2021 in materia di cookie.</p>
+<p>I cookie tecnici sono quelli che consentono la normale navigazione di un sito nonch&egrave; il corretto funzionamento dello stesso. Poich&egrave; consentono attivit&agrave; essenziali per una ottimale fruizione del Sito, hanno la funzione di agevolare la consultazione del sito da parte degli utenti. Essi non vengono utilizzati per scopi ulteriori e sono normalmente installati direttamente dal titolare o gestore del sito web. Per l''installazione di tali cookie non &egrave; richiesto il preventivo consenso degli utenti.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_COOKIE', 'en', 'Cookies are small text files that the websites visited by the user send to his terminal, where they are stored before being re-transmitted to the same sites at the next visit by the same user.</p>
+<p>This site uses only technical cookies strictly necessary for navigation and configuration of the site, with respect to which it is not no consent is required from the interested party, in compliance with article 122 of Legislative Decree no. 196/2003 – Code regarding the protection of personal data (hereinafter “Privacy Code”), as well as of the General Provisions of the Guarantor for the Protection of Personal Data n. 229 of 8 May 2014 and n. 231 of 10 June 2021 regarding cookies.</p>
+<p>Technical cookies are those that allow normal navigation of a site as well as its correct functioning. Since allow activities essential for optimal use of the Site, they have the function of facilitating consultation of the site by users. They are not used for other purposes and are normally installed directly by the owner or operator of the website. It is not possible to install these cookies. the prior consent of users is required.');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE_TITLE', 'it', 'Finalit&agrave; e base giuridica');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE_TITLE', 'en', 'Purpose and legal basis');
@@ -6659,15 +6816,15 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_US
 <li>Creare il profilo utente o consentire l''identificazione dell''utente per garantire l''accesso alla propria area riservata. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
 <li>Riscontrare le richieste di informazioni e di assistenza dell''utente. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
 <li>Consentire l''iscrizione all''elenco operatori. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
-<li>Fruire dei servizi della Piattaforma partecipando alle procedure ad evidenza pubblica. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
+<li>Fruire dei servizi della Piattaforma partecipando alle procedure d''appalto. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
 </ol>');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE', 'en', '<p> The processing of personal data is carried out by the Data Controller for the following purposes:</p>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PURPOSE', 'en', '<p>The processing of personal data is carried out by the Data Controller for the following purposes:</p>
 <ol>
-<li>To ensure the proper functioning of web pages and their contents. In this case, the data processing is based on the legitimate interest of the Data Controller.</li>
-<li>Create the user profile or allow the user to be identified to guarantee access to their private area. The treatment is functional to fulfill a user''s request and it is based on the execution of a contract or pre-contractual measures.</li>
-<li>Respond to the user''s requests for information and assistance. The treatment is functional to fulfill a user''s request and it is based on the execution of a contract or pre-contractual measures.</li>
-<li>Allow subscription to the operator list. The treatment is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
-<li>Use the services of the Platform by participating in public procedures. The treatment is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+<li>Ensure the correct functioning of web pages and their contents. In this case, the data processing is based on the legitimate interest of the Data Controller.</li>
+<li>Create the user profile or allow user identification to guarantee access to your reserved area. The treatment is functional to fulfill a user request and is based on the execution of a contract or pre-contractual measures.</li>
+<li>Respond to user requests for information and assistance. The treatment is functional to fulfill a user request and is based on the execution of a contract or pre-contractual measures.</li>
+<li>Allow registration to the operator list. The processing is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+<li>Use the Platform''s services by participating in the procurement procedures. The processing is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
 </ol>');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_TREATMENT_MODALITY_TITLE', 'it', 'Modalit&agrave; di trattamento');
@@ -6684,20 +6841,20 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_US
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION', 'it', '<p>Il Titolare adotta le seguenti politiche in materia di conservazione dei dati degli utenti della Piattaforma:</p>
 <ol>
 <li>I dati di navigazione verranno conservati per {0} mesi.</li>
-<li>I dati forniti in fase di registrazione e necessari alla creazione del profilo utente verranno conservati fino alla cancellazione dell''account.<!-- da parte dell''utente nell''Area Riservata alla voce "Dismetti ed elimina account".--></li>
+<li>I dati forniti in fase di registrazione e necessari alla creazione del profilo utente verranno conservati fino alla cancellazione dell''account.</li>
 <li>I dati forniti nei form di contatto o nelle mail inviate agli indirizzi pubblicati sulla Piattaforma verranno conservati per {1} mesi.</li>
-<li>I dati inseriti nell''elenco operatori saranno conservati per l''intera durata dell''elenco e in caso di mancato rinnovo o richiesta di rimozione dall''elenco per  {2} mesi.</li>
-<li>I dati, ricompresi in atti e documenti, forniti per partecipare alle procedure ad evidenza pubblica verranno conservati per l''intera durata delle procedure e al termine di queste per {3} anni.</li>
+<li>I dati inseriti nell''elenco operatori saranno conservati per l''intera durata dell''elenco e in caso di mancato rinnovo o richiesta di rimozione dall''elenco per {2} mesi.</li>
+<li>I dati, ricompresi in atti e documenti, forniti per partecipare alle procedure d''appalto verranno conservati per l''intera durata delle procedure e al termine di queste per {3} anni.</li>
 <li>I dati caricati all''interno della propria area riservata e non inviati per la partecipazione alle procedure verranno conservati per {4} mesi.</li>
 </ol>');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION', 'en', '<p>The Data Controller adopts the following policies regarding the retention of data of users of the Platform:</p>
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_PRESERVATION', 'en', '<p>The Owner adopts the following policies regarding the storage of data of users of the Platform:</p>
 <ol>
-<li>The navigation data will be kept for {0} months.</li>
-<li>The data provided during registration and necessary for the creation of the user profile will be kept until the account is canceled.<!--by the user in the Reserved Area under "Unmiss and delete account".--></li>
-<li>The data provided in the contact forms or in the emails sent to the addresses published on the Platform will be kept for {1} months.</li>
-<li>The data entered in the list of operators will be kept for the entire duration of the list and in case of non-renewal or request for removal from the list for {2} months.</li>
-<li>The data, included in deeds and documents, provided to participate in public tender procedures will be kept for the entire duration of the procedures and at the end of these for {3} years.</li>
-<li>The data uploaded to your reserved area and not sent for participation in the procedures will be kept for {4} months.</li>
+<li>Browsing data will be kept for {0} months.</li>
+<li>The data provided during registration and necessary for the creation of the user profile will be retained until the account is deleted.</li>
+<li>The data provided in the contact forms or in emails sent to the addresses published on the Platform will be kept for {1} months.</li>
+<li>The data entered in the operator list will be kept for the entire duration of the list and in case of non-renewal or request for removal from the list for {2} months.</li>
+<li>The data, included in deeds and documents, provided to participate in the procurement procedures will be kept for the entire duration of the procedures and at the end of these for {3} years.</li>
+<li>The data uploaded into your reserved area and not sent for participation in the procedures will be kept for {4} months.</li>
 </ol>');
 
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DATA_USAGES_RIGHTS_TITLE', 'it', 'Esercizio dei diritti');
@@ -6830,13 +6987,15 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_RESET'
 
 -- dialog per l'accettazione dei cookie di navigazione
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_SITE_COOKIES', 'it', 'In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali, ai sensi dell''art. 122 del codice privacy e del Provvedimento del Garante dell''8 maggio 2014, non è richiesto alcun consenso da parte dell''interessato.<br/>
-Nessun dato personale degli utenti viene in proposito acquisito dal sito.');
+Nessun dato personale degli utenti viene memorizzato nel sito mediante cookie.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_INFO_SITE_COOKIES', 'en', 'This site uses only technical cookies strictly necessary for navigation and site configuration, with respect to which, pursuant to art. 122 of the privacy code and the Provision of the Guarantor of 8 May 2014, no consent is required from the interested party.<br/>
-No personal user data is acquired by the site in this regard.');
+No personal user data is stored by the site via cookies.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_COOKIES', 'it', 'Accetta');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_ACCETTA_COOKIES', 'en', 'Confirm');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO', 'it', 'I numeri di telefono o fax vanno inseriti nel formato previsto per i bandi europei (SIMAP), ovvero "+" iniziale, prefisso internazionale (39 per Italia), spazio, numero telefonico eventualmente con caratteri "-" per separare le cifre.');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO', 'en', 'Telephone or fax numbers must be entered in the format envisaged for European calls (SIMAP), ie initial "+", international prefix (39 for Italy), space, telephone number possibly with "-" characters to separate the digits.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO_NO_RECAP', 'it', 'I numeri di telefono o fax possono essere inseriti in formato numerico senza spazi oppure ulteriori caratteri (es: 02123456) oppure possono anche essere inseriti nel formato previsto per i bandi europei (SIMAP), ovvero "+" iniziale, prefisso internazionale (39 per Italia), spazio, numero telefonico eventualmente con caratteri "-" per separare le cifre (es: +39 02-123456, oppure +39 02123456).');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO_NO_RECAP', 'en', 'Telephone or fax numbers can be entered in numeric format without spaces or additional characters (e.g.: 02123456) or they can also be entered in the format required for European tenders (SIMAP), i.e. initial "+", international prefix (39 for Italy ), space, telephone number possibly with "-" characters to separate the digits (eg: +39 02-123456, or +39 02123456).');
 --Società per azioni
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_1', 'it', '#');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_1', 'en', 'Joint-stock company');
@@ -6889,48 +7048,45 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tip
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_17', 'it', '#');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiNaturaGiuridica_17', 'en', 'Other');
 
---Impresa (art.45 c.2/a DLgs 50/2016)
+--Impresa (art.65 c.2/a DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'en', 'Company (Art.45 paragraph 2/a Legislative Decree 50/2016)');
---Consorzio (art.45 c.2/b,c DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'en', 'Company (Art.65 paragraph 2/a Legislative Decree 36/2023)');
+--Consorzio (art.65 c.2/b,c,d DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'en', 'Consortium (Art.45 c.2/b,c Legislative Decree 50/2016)');
---Raggruppamento temporaneo di concorrenti (art.45 c.2/d,e,f,g  DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'en', 'Consortium (Art.65 c.2/b,c,d Legislative Decree 36/2023)');
+--Raggruppamento temporaneo di concorrenti (art.65 c.2/e,f,h  DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'en', 'Temporary grouping of competitors (Art.45 c.2/d,e,f,g Legislative Decree 50/2016)');
---Gruppo europeo di interesse economico (GEIE) (art.34 c.1/f DLgs 163/2006)
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_4', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_4', 'en', 'European Economic Interest Grouping (EEIG) (Art.34 c.1/f Legislative Decree 163/2006)');
---Operatore economico stabilito in altri Stati membri (art.45 c.1 DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'en', 'Temporary grouping of competitors (Art.65 c.2/e,f,h Legislative Decree 36/2023)');
+--Operatore economico stabilito in altri Stati membri (art.65 c.1 DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'en', 'Economic operator established in other Member States (Art.45 c.1 Legislative Decree 50/2016)');
---Libero professionista (art.46 c.1/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'en', 'Economic operator established in other Member States (art.65 c.1 Legislative Decree 36/2023)');
+--Libero professionista (art.66 c.1/a DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'en', 'Freelancer (Art.46 c.1/a Legislative Decree 50/2016)');
---Società di professionisti (art.46 c.1/b DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'en', 'Freelancer (Art.66 c.1/a Legislative Decree 36/2023)');
+--Società di professionisti (art.66 c.1/b DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'en', 'Professionals company (Art.46 c.1/b Legislative Decree 50/2016)');
---Società di ingegneria (art.46 c.1/c DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'en', 'Professionals company (Art.66 c.1/b Legislative Decree 36/2023)');
+--Società di ingegneria (art.66 c.1/c DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'en', 'Engineering company (Art.46 c.1/c Legislative Decree 50/2016)');
---Prestatore di servizi stabilito in altri Stati membri (art.46 c.1/d DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'en', 'Engineering company (Art.66 c.1/c Legislative Decree 36/2023)');
+--Prestatore di servizi stabilito in altri Stati membri (art.66 c.1/d DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'en', 'Service provider established in other Member States (Art.46 c.1/d Legislative Decree 50/2016)');
---Raggruppamento temporaneo di professionisti (art.46 c.1/e DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'en', 'Service provider established in other Member States (Art.66 c.1/d Legislative Decree 36/2023)');
+--Raggruppamento temporaneo di professionisti (art.66 c.1/f DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'en', 'Temporary grouping of professionals (Art.46 c.1/e Legislative Decree 50/2016)');
---Consorzio stabile di società di professionisti o di ingegneria (art.46 c.1/f DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'en', 'Temporary grouping of professionals (Art.66 c.1/f Legislative Decree 36/2023)');
+--Consorzio stabile di società di professionisti o di ingegneria (art.66 c.1/g DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'en', 'Stable consortium of professional or engineering companies (Art.46 c.1/f Legislative Decree 50/2016)');
---Studio associato (art.46 c.1/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'en', 'Stable consortium of professional or engineering companies (Art.66 c.1/g Legislative Decree 36/2023)');
+--Studio associato (art.66 c.1/a DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'en', 'Associated study (Art.46 c.1/a Legislative Decree 50/2016)');
---Impresa sociale (art.45 c.2/a DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'en', 'Associated study (Art.66 c.1/a Legislative Decree 36/2023)');
+--Impresa sociale (art.65 c.2/a DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'en', 'Social enterprise (Art.45 c.2/a Legislative Decree 50/2016)');
---Rete di imprese con soggettività giuridica (art.45 c.2/f DLgs 50/2016)
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'en', 'Social enterprise (Art.65 c.2/a Legislative Decree 36/2023)');
+--Rete di imprese con soggettività giuridica (art.65 c.2/g DLgs 36/2023)
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'it', '#');
-INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'en', 'Business network with legal subjectivity (Art.45 c.2/f Legislative Decree 50/2016)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'en', 'Business network with legal subjectivity (Art.65 c.2/g Legislative Decree 36/2023)');
 
 --Operatore economico italiano
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_ambitoTerritoriale_1', 'it', '#');
@@ -6953,6 +7109,20 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTR
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_IMPORT_DGUE', 'en', 'Import data from an ESPD/ESPD XML file');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_DGUE_XML', 'it', 'Importa i dati da un file DGUE XML Response');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_DGUE_XML', 'en', 'Import data from a DGUE XML Response file');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_MICHELANGELO', 'it', 'Importa anagrafica da banca dati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_MICHELANGELO', 'en', 'Import personal data from database');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_MICHELANGELO', 'it', 'Se sei un operatore economico italiano iscritto alla CCIAA, puoi fruire della banca dati centralizzata messa a disposizione da SACE e reperirei automaticamente tuoi dati impresa per semplificare il processo di registrazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_MICHELANGELO', 'en', 'If you are an Italian economic operator registered with the Chamber of Commerce, you can use the centralized database made available by SACE and automatically retrieve your company data to simplify the registration process.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'it', 'Ricerca anagrafica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Company search');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA', 'it', 'Ricerca anagrafica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Company search');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_MICHELANGELO', 'it', 'Inserisci il tuo codice fiscale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_MICHELANGELO', 'en', 'Insert your fiscal code');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_SEARCH_CODICE_FISCALE', 'it', 'Inserisci il tuo codice fiscale per richiedere i dati della tua organizzazione e precompilare la registrazione. Attenzione: i dati importati non saranno modificabili in quanto reperiti da archivi nazionali centralizzati. Per ulteriori informazioni consultare la stazione appaltante');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_SEARCH_CODICE_FISCALE', 'en', 'Enter your tax code to request your organization''s data and pre-fill the registration. Attention: the imported data cannot be modified as it is obtained from centralized national archives. For further information, consult the contracting authority');
+
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID_BUSINESS', 'it', 'SPID Professionale');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_SPID_BUSINESS', 'en', 'SPID BUSINESS');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATA_TERMINE_RICHIESTA_CHIARIMENTI', 'it', 'Data termine richiesta chiarimenti');
@@ -6988,6 +7158,193 @@ INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGOR
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FOUND_WITH_FILTER', 'it', 'Non sono presenti richieste acquisite');
 INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORY_FOUND_WITH_FILTER', 'en', 'There are no acquired requests');
 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OPERATORI_ISCRITTI_RATING', 'it', 'Rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OPERATORI_ISCRITTI_RATING', 'en', 'Rating');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ELENCO_OPERATORI_ISCRITTI', 'it', 'Imprese iscritte all''elenco');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ELENCO_OPERATORI_ISCRITTI', 'en', 'Economic operators registered in the list');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ELENCO_OPERATORI_ISCRITTI', 'it', 'All''interno di questa sezione è possibile consultare gli operatori iscritti ed abilitati ad un elenco. E'' possibile restringere i dati estratti agendo sui filtri di ricerca. Nel caso di utilizzo della funzione di esportazione in formato CSV, vengono riportati tutti i dati estratti indipendentemente dalla paginazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ELENCO_OPERATORI_ISCRITTI', 'en', 'Within this section it is possible to consult the registered and authorized operators in a list. It is possible to restrict the extracted data by acting on the search filters. In the case of using the export function in CSV format, all the extracted data are reported regardless of the pagination.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORIA_CODE_DESCR', 'it', 'Categoria (codice o descrizione)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORIA_CODE_DESCR', 'en', 'Category (code or description)');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTO_CORRENTE', 'it', 'Numero conto corrente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTO_CORRENTE', 'en', 'Current account number');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_IBAN', 'it', 'Area IBAN?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_IBAN', 'en', 'IBAN Area?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_FISCALE_O_IDENTIFICATIVO', 'it', 'Codice fiscale/Identificativo fiscale estero');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_FISCALE_O_IDENTIFICATIVO', 'en', 'Italian Social Security Number/Foreign tax ID');
+
+-- profili SSO per soggetti impresa 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_AGGIORNAMENTO_SSO', 'it', 'Autorizzazione accesso all''''operatore economico {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_AGGIORNAMENTO_SSO', 'en', 'Access authorization to the economic operator {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_AGGIORNAMENTO_SSO', 'it', 'Si notifica all''''utente {0} l''''assegnazione del profilo di accesso {1} ai fini dell''''utilizzo dell''''operatore economico {2} nel portale e-Procurement {3}. 
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_AGGIORNAMENTO_SSO', 'en', 'The user {0} is notified of the assignment of the access profile {1} for the purpose of using the economic operator {2} in the e-Procurement portal {3}.
+
+----- 
+This mail is generated by an automated system, please do not reply.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_RIMOZIONE_SSO', 'it', 'Rimozione autorizzazione accesso all''''operatore economico {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_RIMOZIONE_SSO', 'en', 'Removal of access authorization to the economic operator {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_RIMOZIONE_SSO', 'it', 'Si notifica all''''utente {0} la rimozione delle autorizzazioni ai fini dell''''utilizzo dell''''operatore economico {1} nel portale e-Procurement {2}. 
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_RIMOZIONE_SSO', 'en', 'The access profile for company {0} for company {1} has been removed
+
+----- 
+This mail is generated by an automated system, please do not reply.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'it', 'Profili degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'en', 'Profiles of enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'it', 'Utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'en', 'Enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'it', 'Id. Utente (codice fiscale)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'en', 'User ID (tax code)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'it', 'Modifica utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'en', 'Edit user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'it', 'Elimina utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'en', 'Delete user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_SOLA_LETTURA', 'it', 'Sola lettura');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_SOLA_LETTURA', 'en', 'Read only');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'it', 'Compilazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'en', 'Compilation');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'it', 'Compilazione ed invio');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'en', 'Compilation and submission');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_IMPRESA', 'it', 'Sei sicuro di voler eliminare l''utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_IMPRESA', 'en', 'Are you sure you want to delete the user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK_SOGGETTO_IMPRESA', 'it', 'Sei sicuro di voler sbloccare l''utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK_SOGGETTO_IMPRESA', 'en', 'Are you sure you want to unlock the user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Profili degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Profiles of enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Accedi alla presente funzionalità in quanto hai registrato l''operatore economico sul portale e pertanto sei il PROPRIETARIO ed AMMINISTRATORE delle autorizzazioni.<br/>Di seguito è presente l''elenco degli utenti abilitati, e quindi DELEGATI ad accedere, mediante autenticazione forte (es: SPID, CIE, sistemi centralizzati di autenticazione...), ai dati dell''operatore economico; puoi aggiungere utenti, eliminarli, oppure rettificarne le abilitazioni.<br/>
+È importante associare l''identificativo per consentire agli utenti di accedere, e tipicamente questo corrisponde al codice fiscale. Associare inoltre il corretto profilo di utilizzo all''utente; i profili disponibili sono:
+<ul>
+<li>Sola lettura: l''utente accede in sola lettura ai dati dell''operatore economico, può solamente consultare i dati senza operare attivamente inviando/annullando dei flussi o modificando qualsiasi informazione</li>
+<li>Compilazione: l''utente può accedere ai processi operativi, può inserire e salvare in bozza informazioni e documenti, ma non può inviare flussi eccetto l''aggiornamento dei dati anagrafici e l''invio nuova comunicazione</li>
+<li>Compilazione ed invio: l''utente può compilare ed inviare qualsiasi flusso operativo; a differenza della tua utenza, non può accedere alla presente pagina per variare le abilitazioni</li>
+</ul>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Access this functionality because you have registered the economic operator on the portal and therefore you are the OWNER and ADMINISTRATOR of the authorizations.<br/>Below is the list of users enabled, and therefore DELEGATED to access, through strong authentication (e.g. SPID, CIE, centralized authentication systems...), to the data of the economic operator; you can add users, delete them, or adjust their permissions.<br/>
+It is important to associate the identifier to allow users to access, and typically this corresponds to the tax code. Also associate the correct usage profile to the user; the available profiles are:
+<ul>
+<li>Read only: the user has read-only access to the economic operator''s data, he can only consult the data without actively sending/cancelling flows or modifying any information</li>
+<li>Compilation: the user can access operational processes, can insert and save information and documents in draft form, but cannot send flows except updating personal data and sending new communication</li>
+<li>Compilation and submission: the user can compile and send any operational flow; unlike your user, he cannot access this page to change the authorizations</li>
+</ul>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Si fornisce la lista degli utenti attualmente connessi e relativa funzione utilizzata; la funzione può contenere anche il riferimento alla procedura sulla quale l''utente sta operando. Se si intende togliere l''accesso ad una funzionalità forzando l''uscita dell''utente bloccante, selezionare l''azione "Sblocca" nell''ultima colonna.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'The list of users currently connected and the related function used is provided; the function can also contain the reference to the procedure on which the user is operating. If you intend to remove access to a feature by forcing the locking user to exit, select the "Unlock" action in the last column.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COGNOME_NOME', 'it', 'Cognome e nome');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COGNOME_NOME', 'en', 'Last and first name');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PROFILO', 'it', 'Profilo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PROFILO', 'en', 'Profile');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FUNCTION', 'it', 'Funzione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FUNCTION', 'en', 'Function');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGINTIME', 'it', 'Log in');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGINTIME', 'en', 'Log in');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGOUTTIME', 'it', 'Log out');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGOUTTIME', 'en', 'Log out');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK', 'it', 'Sblocca');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK', 'en', 'Unlock');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALORE_COMPLESSIVO_APPALTO', 'it', 'Valore complessivo dell’Appalto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALORE_COMPLESSIVO_APPALTO', 'en', 'Total value of the Contract');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ENVELOPE_RESET', 'it', 'Stai richiedendo la cancellazione totale dei dati inseriti nella presente busta, e la compilazione della stessa dovrà essere ripetuta accedendo alla busta stessa ed inserendo nuovamente tutte le informazioni oppure i documenti richiesti.<br/><br/>Vuoi confermare e proseguire con l''operazione?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ENVELOPE_RESET', 'en', 'You are requesting the total deletion of the data entered in this envelope, and the compilation of the same must be repeated by accessing the envelope itself and re-entering all the information or documents requested.<br/><br/>Do you want to confirm and continue with the operation?');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ELIMINATION', 'it', 'Conferma eliminazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ELIMINATION', 'en', 'Confirm deletion');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA', 'it', 'Elimina');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA', 'en', 'Delete');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_DESC', 'it', 'Ordinamento decrescente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_DESC', 'en', 'Descending sort');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_ASC', 'it', 'Ordinamento crescente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_ASC', 'en', 'Ascending sort');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GRADUATORIA_SECONDO_GRADO', 'it', 'Graduatoria 2° grado');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GRADUATORIA_SECONDO_GRADO', 'en', '2° degree ranking');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALUTAZIONE_TECNICA_PRIMO_GRADO', 'it', 'Valutazione tecnica 1° grado');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALUTAZIONE_TECNICA_PRIMO_GRADO', 'en', '1° degree technical evaluation');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_PROCEDURA_CONCORSO', 'it', 'Tipologia concorso');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_PROCEDURA_CONCORSO', 'en', 'Design competition type');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_RETTIFICA_OFFERTA', 'it', 'Rettifica offerta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_RETTIFICA_OFFERTA', 'en', 'Offer Rectification');		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_OFFERTA', 'it', 'Fino al giorno fissato per l''apertura, l''operatore economico pu&ograve; effettuare, tramite la Piattaforma, la richiesta di rettifica di un errore materiale contenuto nell''offerta tecnica o nell''offerta economica, di cui si sia avveduto dopo la scadenza del termine per la loro presentazione.<br/>
+<br/>
+A tal fine, con il presente modulo richiede di potersi avvalere di tale facolt&agrave;.<br/>
+<br/>
+A seguito della richiesta, sono comunicate all''operatore economico le modalit&agrave; e i tempi con cui procedere all''indicazione degli elementi che consentono l''individuazione dell''errore materiale e la sua correzione.<br/>
+La rettifica &egrave; operata nel rispetto della segretezza dell''offerta e non pu&ograve; comportare la presentazione di una nuova offerta, ne la sua modifica sostanziale.
+Se la rettifica &egrave; ritenuta non accoglibile perch&egrave; sostanziale, &egrave; valutata la possibilit&agrave; di dichiarare l''offerta inammissibile.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_OFFERTA', 'en', 'Until the day set for the opening, the economic operator can make, via the Platform, the request for rectification of a material error contained in the technical offer or in the economic offer, which he/she becomes aware of after the deadline. of the deadline for their submission.<br/>
+<br/>To this end, with this form you request to be able to make use of this option.<br/>
+<br/>
+Following the request, the economic operator is informed of the methods and times with which to proceed with the indication of the elements that allow the identification of the material error and its correction.<br/>
+The rectification is carried out in compliance with the secrecy of the offer and cannot lead to the submission of a new offer, nor its substantial modification.
+If the correction is deemed unacceptable because it is substantial, the possibility of declaring the offer inadmissible is assessed.');		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_DOCUMENTI', 'it', 'Inserisci i documenti da inviare con la rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_DOCUMENTI', 'en', 'Enter the documents to send with the rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_RIEPILOGO', 'it', 'Riepilogo della rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_RIEPILOGO', 'en', 'Rectification summary');		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_INVIO_RETTIFICA', 'it', 'Procedere con la presentazione della rettifica. Si rammenta che la rettifica &egrave; operata nel rispetto della segretezza dell''offerta e non pu&ograve; comportare la presentazione di una nuova offerta, ne la sua modifica sostanziale. Se la rettifica &egrave; ritenuta non accoglibile perch&egrave; sostanziale, &egrave; valutata la possibilità di dichiarare l''offerta inammissibile.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_INVIO_RETTIFICA', 'en', 'Proceed with the submission of the correction. Please remember that the rectification is carried out in compliance with the secrecy of the offer and cannot lead to the submission of a new offer, nor its substantial modification. If the correction is deemed unacceptable because it is substantial, the possibility of declaring the offer inadmissible is assessed.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_BUSTA', 'it', 'Tipo busta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_BUSTA', 'en', 'Envelope type');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_LOTTO', 'it', '-- Lotto --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_LOTTO', 'en', '-- Lot --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_RETTIFICA_BUSTA', 'it', 'Richiesta rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_RETTIFICA_BUSTA', 'en', 'Rectification request');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_TEC', 'it', 'Richiesta di rettifica offerta tecnica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_TEC', 'en', 'Request for technical offer rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_ECO', 'it', 'Richiesta di rettifica offerta economica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_ECO', 'en', 'Request for economic offer rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_TESTO', 'it', 'Si invia la richiesta di rettifica per la {0} con rif. procedura {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_TESTO', 'en', 'The rectification request is sent for {0} with ref. procedure {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_TEC', 'it', 'Invio rettifica offerta tecnica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_TEC', 'en', 'Sending technical offer rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_ECO', 'it', 'Invio rettifica offerta economica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_ECO', 'en', 'Sending economic offer rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_TESTO', 'it', 'Si invia la rettifica per la {0} con rif. procedura {1}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_TESTO', 'en', 'The rectification sent for {0} with ref. procedure {1}');		
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_BUSTA', 'it', 'Rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_BUSTA', 'en', 'Rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RICHIESTA_RETTIFICA', 'it', 'Ultima richiesta di rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RICHIESTA_RETTIFICA', 'en', 'Last rectification request');		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_IN_ATTESA_DI_APPROVAZIONE', 'it', 'In attesa di approvazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_IN_ATTESA_DI_APPROVAZIONE', 'en', 'Pending for approval');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RIFIUTATA', 'it', 'Rifiutata');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RIFIUTATA', 'en', 'Rejected');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ACCETTATA', 'it', 'Accettata');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ACCETTATA', 'en', 'Accepted');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_TRASMESSA', 'it', 'Trasmessa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_TRASMESSA', 'en', 'Transmitted');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RETTIFICA', 'it', 'Ultima rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RETTIFICA', 'en', 'Last rectification');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RETTIFICA_CONFERMA_RICHIESTA', 'it', 'Conferma richiesta rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RETTIFICA_CONFERMA_RICHIESTA', 'en', 'Confirm rectification request');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_TEC', 'it', 'Vuoi procedere inviando una comunicazione di richiesta di rettifica per l''offerta tecnica?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_TEC', 'en', 'Do you want to proceed by sending a communication requesting rectification for the technical offer?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_ECO', 'it', 'Vuoi procedere inviando una comunicazione di richiesta di rettifica per l''offerta economica?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_ECO', 'en', 'Do you want to proceed by sending a communication requesting rectification for the economic offer?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_RETTIFICA', 'it', 'Fase di rettifica');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_RETTIFICA', 'en', 'Rectification phase');
+
 -- pagemodels 
 INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('2colonne-mainsx', '2 Colonne con area principale a sinistra', '<frames>
 	<frame pos="9">
@@ -7022,9 +7379,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('2colonne-mains
 		<descr>Second Column: Box 2</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="5">
 		<descr>Second Column: Box 3</descr>
@@ -7054,9 +7411,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('2colonne-maind
 		<descr>First Column: Box 2</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="5">
 		<descr>First Column: Box 3</descr>
@@ -7091,9 +7448,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('3colonne', '3 
 		<descr>First Column: Box 1</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="4">
 		<descr>First Column: Box 2</descr>
@@ -7153,9 +7510,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('2colonne-agid-
 		<descr>Second Column: Box 2</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="5">
 		<descr>Second Column: Box 3</descr>
@@ -7185,9 +7542,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('2colonne-agid-
 		<descr>First Column: Box 2</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="5">
 		<descr>First Column: Box 3</descr>
@@ -7222,9 +7579,9 @@ INSERT INTO pagemodels (code, descr, frames, plugincode) VALUES ('3colonne-agid'
 		<descr>First Column: Box 1</descr>
 		<defaultShowlet code="navigation_menu">
 			<properties>
-				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 			</properties>
-		</defaultShowlet>		
+		</defaultShowlet>
 	</frame>
 	<frame pos="4">
 		<descr>First Column: Box 2</descr>
@@ -7314,8 +7671,15 @@ INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode
 </properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/initSearch.action</property>
-</properties>
-', 1);
+</properties>', 1);
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listBandi', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Calls for tender in progress and expired</property>
+<property key="it">Lista bandi gara in corso e scaduti</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/listAllBandi.action</property>
+</properties>', 1);
 INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listBandiInCorso', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Calls for tender in progress</property>
@@ -7364,6 +7728,14 @@ INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode
 </properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="actionPath">/ExtStr2/do/FrontEnd/Esiti/listAllAffidamenti.action</property>
+</properties>', 1);
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listAvvisi', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tender notices in progress and expired</property>
+<property key="it">Lista avvisi di gara in corso e scaduti</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Avvisi/listAllAvvisi.action</property>
 </properties>', 1);
 INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listAvvisiInCorso', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
@@ -7827,7 +8199,17 @@ INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode
 <properties>
 <property key="actionPath">/ExtStr2/do/FrontEnd/Cataloghi/listAllCataloghiArchiviati.action</property>
 </properties>', 1);
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listOperatoriIscritti', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Economic operators registered in the list</property><property key="it">Imprese iscritte ad un elenco</property></properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/openPageImpreseElenco.action</property></properties>', 1);
 
+--atti e documenti di carattere generale
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_avvisiAttiDocGen', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Notices, communications and documents of a general nature</property>
+<property key="it">Avvisi, comunicazioni e atti di carattere generale</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Avvisi/listAvvisiComunicazioniAtti.action</property>
+</properties>', 1);
 
 DELETE FROM sysconfig WHERE version = 'production' AND item = 'contentTypes';
 INSERT INTO sysconfig VALUES ('production', 'contentTypes', 'Definizione dei tipi di contenuto', '<?xml version="1.0" encoding="UTF-8"?>
@@ -8133,8 +8515,10 @@ INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VAL
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIULT-CCIAA', 'SETTOREATTIVITA', 'MAN', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-CATEG', 'ACLASSIFICA', 'MAN', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-CATEG', 'NOTA', 'MAN', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-CATEG', 'NOTA', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'PRIVACY', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'LOGINCF', 'ACT', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'IMPORT-MICHELANGELO', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIPRINC-RECAPITI', 'MAIL', 'MAN', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIPRINC-RECAPITI', 'MAILRIF', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIANAGR-SEZ', 'ISCRIZIONEALBOPROF', 'MAN', 0);
@@ -8161,14 +8545,17 @@ INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VAL
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE-DOCUMOFFERTA', 'PASSOE', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('TABINF-INDICIZZAZIONE', 'TAB', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('COMUNICAZIONI', 'INVIARISPONDI', 'VIS', 1);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('COMUNICAZIONI', 'STAZIONEAPPALTANTE', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('COMUNICAZIONI', 'OPERATORE', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'DOCRICHIESTI', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'DOCINVITOPUBBLICA', 'VIS', 0);
-INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'ATTIDOCART29', 'VIS', 1);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'ATTIDOC', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'ADERENTI', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'FILTROCUC', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'NUMORDINEINVITO', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'RINUNCIA', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE-SCADUTE', 'NEGOZIATE', 'VIS', 1);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ESITO', 'RUP', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AREARISERVATA', 'REGISTRATI', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ALBO-ISCRITTI', 'CATEGORIE', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('DOCUM-FIRMATO', 'ACCETTASOLOP7M', 'ACT', 0);
@@ -8177,6 +8564,7 @@ INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VAL
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE-ESPLETAMENTO', 'LETTURADOC', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIPRINC-RECAPITI', 'CELL', 'MAN', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AMMTRASP-RIEPCONTRATTI', 'IMPCONTRATTO', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AMMTRASP-RIEPCONTRATTI', 'EXPORT', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO', 'MEPACONSIP', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'VERIFICAMANUALE', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIULT','CCIAA','VIS',1);
@@ -8189,18 +8577,26 @@ INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VAL
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA','CONSENSO-EXTRA','VIS',0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PDF', 'PDF-A', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PDF', 'UPLOADPDF-A', 'ACT', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PDF', 'PDF-UA', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LOGIN', 'CHECK-DATIMPRESA', 'ACT', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LOGIN', 'PROFILAUTENTISSO', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UI-ADVANCED', 'DATATABLE', 'ACT', 1); 
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LAYOUT', 'TESTATAFISSA', 'ACT', 0); 
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-DOCUM', 'NUMSERIEBOLLODOMANDA', 'MAN', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'SOLOESTERE', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('PASSWORD-ALGORITMO', 'INDECIFRABILE', 'ACT', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-RECAPITITEL', 'FORMATOSIMAP', 'ACT', 0); 
-INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('BOTFILTER', 'ABILITACOOKIES', 'ACT', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('BOTFILTER', 'ABILITACOOKIES', 'ACT', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('MULTILINGUA', 'TABELLATI', 'ACT', 0);
-INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIULT-ALTRIDATI','IBAN','MAN',0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('IMPRESA-DATIULT-ALTRIDATI','CCDEDICATO','MAN',0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AREAPERSONALE', 'ALBI', 'VIS', 1);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AREARISERVATA', 'VENDORRATING', 'VIS', 0);
 INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('DELIBERECONTRARRE', 'EXPORT', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'EXPORT', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ESITI', 'EXPORT', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UPLOADFILE', 'CHECKCONTENUTO', 'ACT', 1);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UPLOADFILE', 'CHECKPDFVULNERABILE', 'ACT', 1);
+
 
 ----------------------------------------------------
 -- NUOVA TABELLA PER LA CONFIGURAZIONE DI PROPERTIES
@@ -8220,6 +8616,7 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('wsBandiEsitiAvvisiAuthenticationToken', 'S', 'Token di autenticazione, se richiesto, per utilizzare il web service per la pubblicazione di bandi, esiti ed avvisi', '', '','configurazione generale', 90);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('wsPagoPA', 'S', 'Web service per le tabelle interne PagoPA', 'http://localhost:8080/WSAppalti/services/WSPagoPASOAP', 'http://localhost:8080/WSAppalti/services/WSPagoPASOAP', 92, 'configurazione generale');
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('nomeCliente', 'S', 'Nome del cliente presso il quale e'' stato installato il portale', null, null,'configurazione generale', 100);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('codiceCliente', 'S', 'Codice del cliente presso il quale e'' stato installato il portale', null, null,'configurazione generale', 105);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('mailAmministratoreSistema', 'S', 'Indirizzo email dell''amministratore di sistema a cui vengono inoltrate le mail di notifica generate dal portale', '', '','configurazione generale', 110);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('pubblicazione.numAnni', 'I', 'Durata in anni della pubblicazione di bandi, esiti, avvisi (DLgs 33/2013 art8 c.3)', '5', '5','configurazione generale', 120);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('incarichiCessati.estraiNumAnniPrecedenti', 'I', 'Numero di anni precedenti per cui recuperare i soggetti cessati per l''impresa (-1=NESSUNA GESTIONE,0=solo anno corrente, 1=anno precedente, ...)', '-1', '-1','configurazione generale', 130);
@@ -8229,11 +8626,14 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('comunicazioni.limiteUploadFile', 'I', 'Dimensione massima, in MB, del singolo upload di file per una comunicazione, da parte di un''impresa. Attenzione: va indicato un numero intero al massimo pari a 15', '2', '2','configurazione generale', 165);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('comunicazioni.limiteTotaleUpload', 'I', 'Limite massimo, in MB, considerando tutti gli allegati di una comunicazione. Attenzione: va indicato un numero intero al massimo pari a 50', '5', '5','configurazione generale', 166);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('comunicazioni.tipologie', 'S', 'Elenco delle coppie codice-descrizione che identificano le tipologie di comunicazione gestite', '', '','configurazione generale', 168);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('estensioniAmmesseDocIscrizione', 'S', 'Estensioni, separate da una virgola e senza spazi, accettate nelle funzioni di caricamento di file da portale', null, 'PDF,P7M,XLS,XLSX,XML,ODS,DOC,DOCX,RTF,ODT,ZIP','configurazione generale', 170);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('estensioniAmmesseDocIscrizione', 'S', 'Estensioni, separate da una virgola e senza spazi, accettate nelle funzioni di caricamento di file da portale', null, 'PDF,P7M,XLS,XLSX,XML,ODS,DOC,DOCX,RTF,ODT,ZIP,TSD,IFC,DXF,SHP','configurazione generale', 170);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('estensioniAmmesseImmagineProdotto', 'S', 'Estensioni, separate da una virgola e senza spazi, ammesse per l''immagine di un prodotto', null, null,'configurazione generale', 180);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('ricercaBandi.statoApertura', 'I', 'Stato in apertura della pagina di ricerca dei bandi (Valori ammessi: 0=nessun filtro, 1=In corso [DEFAULT], 2=In aggiudicazione, 3=Conclusa)', '1', '1', 'configurazione generale', 185);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('urlAlboFornitoriEsterni', 'S', 'Url albo fornitori esterni', '', '','configurazione generale', 190);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('denominazioneStazioneAppaltanteUnica', 'S', 'Indicare la denominazione della stazione appaltante unica SOLO SE l''installazione DEVE MASCHERARE TUTTE LE STAZIONI APPALTANTI PRESENTI', null, null,'configurazione generale', 195);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('httpHeader.host.allowed', 'S', 'Elenco degli host ammessi nell''header http delle richieste separate da ",". La base url del portale, e localhost sono implicitamente incluse. Utilizzare "*" per disattivare il controllo.', null, null,'configurazione generale', 196); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('bdncp.templateUrl', 'S', 'Template per url di accesso alla scheda ANAC', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_cig/?cig={0}', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_cig/?cig={0}','configurazione generale', 197); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('bdncp.sa.templateUrl', 'S', 'Template per url di accesso ai dati di una stazione appaltante in ANAC', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa={0}', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa={0}','configurazione generale', 198); 
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('protocollazione.tipo', 'I', 'Attivazione protocollazione (0-non abilitata, 1-mail, 2-WSDM)', '0', '0','protocollazione', 200);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('protocollazione.stazioneAppaltante', 'S', 'Codice della stazione appaltante per la quale viene gestita la protocollazione (se non valorizzata la protocollazione invece si applica a tutte)', null, null,'protocollazione', 210);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('protocollazione.mail.destinatari', 'S', 'Indirizzi email, separati da virgola, a cui inoltrare le notifica di richieste inviate dalle imprese all''ente', null, null,'protocollazione', 220);
@@ -8294,11 +8694,12 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('nso.baseUrlFatt', 'L', 'URL del servizio rest per fatture (CEF eInvoicing)', 'http://127.0.0.1:8999', 'http://127.0.0.1:8999','nso', 861);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('nso.fatt.auth', 'L', 'Auth per nso.baseUrlFatt (10 anni)', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYW5hZ2VyIiwiYXVkIjoiTWFuYWdlciIsIlVTRVJfQ0YiOiJNYW5hZ2VyIiwiaXNzIjoiMTI3LjAuMC4xIiwiZXhwIjoxOTM0NzAzNTY2LCJpYXQiOjE2MTkxNzA3NjZ9.zkPZQRIQZYB4lGadWVwra12PzwIFGN6gYtV4Nh45Yec', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYW5hZ2VyIiwiYXVkIjoiTWFuYWdlciIsIlVTRVJfQ0YiOiJNYW5hZ2VyIiwiaXNzIjoiMTI3LjAuMC4xIiwiZXhwIjoxOTM0NzAzNTY2LCJpYXQiOjE2MTkxNzA3NjZ9.zkPZQRIQZYB4lGadWVwra12PzwIFGN6gYtV4Nh45Yec','nso', 862);
 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.tipologia', 'S', 'Tipologia di marcatura temporale. Valori ammessi: 1 [default] = servizio Maggioli protetto da autenticazione, 2 = blockchain (valore riservato, non disponibile), 3 = servizio Maggioli diretto (deprecato)', '3', '3','marcatura temporale', 865);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.provider.url', 'S', 'Url del provider di marcatura temporale dei file', '', 'http://timestamp.sectigo.com','marcatura temporale', 870);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.provider.tipo', 'S', 'Tipologia provider del servizio di marcatura temporale dei file', '', 'rfc3161','marcatura temporale', 880);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.provider.tipo', 'S', 'Tipologia provider del servizio di marcatura temporale dei file', 'rfc3161', 'rfc3161','marcatura temporale', 880);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.provider.username', 'S', 'Username di accesso al provider di marcatura temporale dei file', '', '','marcatura temporale', 890);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.provider.password', 'S', 'Password di accesso al provider di marcatura temporale dei file', '', '','marcatura temporale', 900);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.url', 'L', 'URL di accesso al servizio di marcatura temporale dei file', 'https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts', 'https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts','marcatura temporale', 910);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.url', 'L', 'URL di accesso al servizio di marcatura temporale dei file (https://apis.maggioli.cloud/rest/segreteria/v2/dts per tipo 1, https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts per tipo 3)', 'https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts', 'https://apis.maggioli.cloud/rest/segreteria/v2/dts','marcatura temporale', 910);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('clausolePiattaforma.versione', 'I', 'Versione delle clausole della piattaforma', '', '','configurazione generale', 920);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('importMassivoUtenti.dataTermine', 'S', 'UTILIZZARE SOLO IN CASO DI IMPORT MASSIVO DI UTENZE: impostare la data termine per consentire ad utenti di inserirsi a sistema (formato GG/MM/AAAA)', '', '','configurazione generale', 930);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('dgue-symkey', 'S', 'Chiave simmetrica per la cifratura dei dati da scambiare con applicativo M-DGUE', NULL, NULL, 'dgue', 940);
@@ -8307,22 +8708,22 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('dgue-url-mdgue', 'S', 'URL applicativo M-DGUE', 'https://dgue.maggiolicloud.it/m-dgue', 'https://dgue.maggiolicloud.it/m-dgue', 'dgue', 970);
 
 --Privacy 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomeTitolare', 'S', 'Nome del titolare dell''impianto (es. Comune di Metropolis)', NULL, NULL, 'privacy', 1500); 
-INSERT INTO ppcommon_properties	(name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.sedeTitolare', 'S', 'Sede del titolare dell''impianto (es: Piazza Venezia 13, 00149 (RM))', NULL, NULL, 'privacy', 1501); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailTitolare', 'S', 'Mail del titolare dell''impianto', NULL, NULL, 'privacy', 1502); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailDPO', 'S', 'Mail del DPO dell''impianto', NULL, NULL, 'privacy', 1503); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomeGestore', 'S', 'Nome del gestore dell''impianto', 'Maggioli SpA', 'Maggioli SpA', 'privacy', 1504); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.sedeGestore', 'S', 'Sede del gestore dell''impianto', 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)', 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)', 'privacy', 1505); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailGestore', 'S', 'Mail del gestore dell''impianto', NULL, NULL, 'privacy', 1506); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataLogNavigazione', 'S', 'Durata dei log di navigazione (in mesi)', '24', '24', 'privacy', 1507); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataConservazioneContattiMail', 'S', 'Durata conservazione contatti mail (in mesi)', '24', '24', 'privacy', 1508); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiElenco', 'S', 'Durata dati associati ad un elenco (in mesi)', '12', '12', 'privacy', 1509); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiGare', 'S', 'Durata dati gare (in anni)', '10', '10', 'privacy', 1510); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiNonTrasmessi', 'S', 'Durata dati non trasmessi (in mesi)', '12', '12', 'privacy', 1511); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.dataInizioValiditaPolicy', 'S', 'Data inizio validità della policy sulla privacy (GG/MM/AAAA)', NULL, NULL, 'privacy', 1512); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomePiattaforma', 'S', 'Denominazione della piattaforma telematica', NULL, 'Appalti&Contratti e-procurement', 'privacy', 1513); 
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.localitaForo', 'S', 'Localita del foro di competenza', NULL, 'Rimini (RN)', 'privacy', 1514); 
-INSERT INTO ppcommon_properties	(name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.pubblicaCondizioniUsoStd', 'I', 'Pubblica i termini e le condizioni di servizio standard? (1=Si, 0=No)', '1', '1','privacy', 1515); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomeTitolare', 'S', 'Nome del titolare dell''impianto (in genere Maggioli S.p.A.; verificare per i clienti on premise)', 'Maggioli S.p.A.', 'Maggioli S.p.A.', 'privacy', 1500); 
+INSERT INTO ppcommon_properties	(name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.sedeTitolare', 'S', 'Sede del titolare dell''impianto (es: Via del Carpino n. 8 – 47822 Santarcangelo di Romagna (RN))', 'Via del Carpino n. 8 – 47822 Santarcangelo di Romagna (RN)', 'Via del Carpino n. 8 – 47822 Santarcangelo di Romagna (RN)', 'privacy', 1501); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailTitolare', 'S', 'Mail del titolare dell''impianto (es. privacy@maggioli.it)', 'privacy@maggioli.it', 'privacy@maggioli.it', 'privacy', 1502); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailDPO', 'S', 'Mail del DPO dell''impianto (es. mail: dpo.privacy@maggioli.it pec: dpo.privacy@maggioli.legalmail.it)', 'mail: dpo.privacy@maggioli.it pec: dpo.privacy@maggioli.legalmail.it', 'mail: dpo.privacy@maggioli.it pec: dpo.privacy@maggioli.legalmail.it', 'privacy', 1503); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomeGestore', 'S', 'Nome del gestore autorizzato (in genere Maggioli S.p.A.; verificare per i clienti on premise)', 'Maggioli S.p.A.', 'Maggioli S.p.A.', 'privacy', 1504); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.sedeGestore', 'S', 'Sede del gestore autorizzato', 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)', 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)', 'privacy', 1505); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.mailGestore', 'S', 'Mail del gestore autorizzato', 'privacy@maggioli.it', 'privacy@maggioli.it', 'privacy', 1506); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataLogNavigazione', 'S', 'Durata dei log, in mesi (24)', '24', '24', 'privacy', 1507); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataConservazioneContattiMail', 'S', 'Durata conservazione contatti mail, in mesi (24)', '24', '24', 'privacy', 1508); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiElenco', 'S', 'Durata dati associati ad un elenco, in mesi (24)', '24', '24', 'privacy', 1509); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiGare', 'S', 'Durata dati gare, in anni (10)', '10', '10', 'privacy', 1510); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.durataDatiNonTrasmessi', 'S', 'Durata dati non trasmessi, in mesi (24)', '24', '24', 'privacy', 1511); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.dataInizioValiditaPolicy', 'S', 'Data inizio validità della policy sulla privacy (GG/MM/AAAA)', '01/01/2024', '01/01/2024', 'privacy', 1512); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.nomePiattaforma', 'S', 'Denominazione della piattaforma telematica come dal registro ANAC (per Maggioli è Appalti&Contratti e-Procurement, verificare per i clienti on premise)', 'Appalti & Contratti e-Procurement', 'Appalti & Contratti e-Procurement', 'privacy', 1513); 
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.localitaForo', 'S', 'Localita del foro di competenza (per Maggioli è Rimini, verificare per i clienti on premise)', 'Rimini (RN)', 'Rimini (RN)', 'privacy', 1514); 
+INSERT INTO ppcommon_properties	(name, type, description, value, defvalue, category, ordprog) VALUES ('privacy.pubblicaCondizioniUsoStd', 'I', 'Pubblica i termini e le condizioni di servizio standard? (1=Si per Maggioli, 0=No)', '1', '1','privacy', 1515); 
 
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-configuration', 'S', 'Configurazione per PagoPA, attualmente solo SISPI', 'SISPI', 'SISPI', 1550, 'pagopa');
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-sispi-clientid', 'S', 'Client id per token SISPI', 'sige', 'sige', 1560, 'pagopa');
@@ -8343,7 +8744,6 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordpr
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-versione', 'S', 'Versione delle API Maggioli PagoPA', '1.2', '1.2', 1700, 'pagopa');
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('pagopa-maggioli-jppa-codiceservizio', 'S', 'Codice servizio API Maggioli PagoPA', 'JCITY.GOV', 'JCITY.GOV', 1710, 'pagopa');
 
-
 --CONFIGURAZIONI GENERALI AUTENTICAZIONE
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.form', 'I', 'Sistema di autenticazione tramite credenziali (0=non previsto, 1=previsto)', '1', '1','autenticazione', 10000);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cohesion', 'I', 'Sistema di autenticazione Single Sign-on Cohesion (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]', '0', '0','autenticazione', 10010);
@@ -8358,6 +8758,7 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.federa', 'I', 'Sistema di autenticazione Single Sign-on FEDERA (0=non previsto, 1=previsto) [SISTEMA ESCLUSIVO: Non usare in contemporanea ad altri sistemi di autenticazione]', '0', '0','autenticazione', 10090);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness', 'I', 'Sistema di autenticazione tramite Single Sign-on SPID Business (0=non previsto, 1=previsto)', '0', '0','autenticazione', 10100);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway', 'I', 'Sistema di autenticazione Single Sign-on CIE (0=non previsto, 1=previsto)', 0, 0,'autenticazione', 10101);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas', 'I', 'Sistema di autenticazione Single Sign-on EIDAS (0=non previsto, 1=previsto)', '0', '0','autenticazione', 10102);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.form.position', 'I', 'posizione sistema di autenticazione tramite credenziali', '1', '1','autenticazione', 10110);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cohesion.position', 'I', 'posizione sistema di autenticazione Single Sign-on cohesion', '2', '2','autenticazione', 10120);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.shibboleth.position', 'I', 'posizione sistema di autenticazione Single Sign-on shibboleth', '3', '3','autenticazione', 10130);
@@ -8370,6 +8771,8 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cns.position', 'I', 'posizione sistema di autenticazione Single Sign-on CNS', '10', '10','autenticazione', 10200);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.crs.position', 'I', 'posizione sistema di autenticazione Single Sign-on CRS', '11', '11','autenticazione', 10210);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.position', 'I', 'posizione sistema di autenticazione Single Sign-on gateway', '2', '2','autenticazione', 10220);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.position', 'I', 'posizione sistema di autenticazione tramite EIDAS', '12', '12','autenticazione', 10230);
+
 --CONFIGURAZIONI SHIBBOLETH
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.shibboleth.login.url', 'S', 'URL autenticazione al sistema di SSO shibboleth', null, null,'autenticazione-shibboleth', 10300);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.shibboleth.logout.url', 'S', 'URL disconnessione al sistema di SSO shibboleth', null, null,'autenticazione-shibboleth', 10310);
@@ -8394,14 +8797,16 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 
 --CONFIGURAZIONI SPID
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.wsAuthServiceSPID.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione SPID', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService','autenticazione-spid', 10500);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spid', 10510);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceindex', 'I', 'Dataset restituito da SPID. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-spid', 10520);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', null, null,'autenticazione-spid', 10510);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceindex', 'I', 'Dataset restituito da SPID. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '1', '1','autenticazione-spid', 10520);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione SPID (L1, L2, L3)', 'L2', 'L2', 'autenticazione-spid',10530);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.validator', 'I', 'Attiva il link di validazione SPID per AGID. Valori ammessi: 0=Non attivo [default], 1=Attivo', '0', '0', 'autenticazione-spid',10540);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('loginMultiente', 'S', 'Installazione che gestisce i dati per più enti (0 [default] = No, 1= Si)', '0', '0', 'autenticazione-spid', 10580);
+--INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceprovider.?', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID - <denominazione staz. appaltante>', '<valore>', '<valore>','autenticazione-spid', 10581,2,3,4,5);
 
 --CONFIGURAZIONI CIE
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.wsAuthServiceCIE.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione CIE', 'https://cie.comune-online.it/AuthServiceCIE/services/AuthService', 'https://cie.comune-online.it/AuthServiceCIE/services/AuthService','autenticazione-cie', 10600);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione CIE', 'bergamo', 'bergamo','autenticazione-cie', 10610);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.wsAuthServiceCIE.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione CIE', 'https://cie-oidc.comune-online.it/AuthServiceOIDC/services/AuthService', 'https://cie-oidc.comune-online.it/AuthServiceOIDC/services/AuthService', 'autenticazione-cie', 10600);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione CIE', 'maggioli-rp', 'maggioli-rp','autenticazione-cie', 10610);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.serviceindex', 'I', 'Dataset restituito da CIE. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-cie', 10620);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.cie.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione CIE (L1, L2, L3)', 'L2', 'L2', 'autenticazione-cie',10630);
 
@@ -8424,9 +8829,9 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.federa.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione FEDERA', 'parma', 'parma','autenticazione-federa', 11110);
 
 --CONFIGURAZIONE SPID BUSINESS
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.authpurpose', 'S', 'Tipologia di riconoscimento persona giuridica', 'LP', 'LP','autenticazione-spidbusiness', 11120);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.authpurpose', 'S', 'Tipologia di riconoscimento persona giuridica', 'P', 'P','autenticazione-spidbusiness', 11120);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.wsAuthServiceSPID.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spidbusiness', 11130);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', '', '','autenticazione-spidbusiness', 11140);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID', null, null,'autenticazione-spidbusiness', 11140);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.serviceindex', 'I', 'Dataset restituito da SPID. Valori ammessi: 0 [default, dati minimi quali nome, cognome, codice fiscale, mail...], 1, 2', '0', '0','autenticazione-spidbusiness', 11150);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spidbusiness.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione SPID (L1, L2, L3)', 'L2', 'L2', 'autenticazione-spidbusiness',11160);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.ws.url', 'S', 'URL del microservizio di gateway per l''autenticazione SSO', NULL, NULL,'autenticazione-gateway', 11170);
@@ -8434,16 +8839,25 @@ INSERT INTO ppcommon_properties (name, type, description, value, defvalue, categ
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.clientId', 'S', 'ID del client da inviare al microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11190);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.authtype', 'S', 'Tipo di autenticazione da eseguire attraverso il microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11200);
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.gateway.passphrase', 'S', 'Chiave per decifrare il token JWT inviato dal microservizio di gateway per l''autenticazione SSO', NULL, NULL, 'autenticazione-gateway', 11210);
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authurl', 'S', 'Url di keycloack per la autorizzazione servizio verifica firma', 'https://login.maggiolicloud.it/realms/progetto_segreteria/protocol/openid-connect/token/', 'https://login.maggiolicloud.it/realms/progetto_segreteria/protocol/openid-connect/token/', 12000, 'digital-signature-check');
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authusername', 'S', 'Username per keycloack per la autorizzazione servizio verifica firma', '', NULL, 12010, 'digital-signature-check');
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-authsecret', 'S', 'Secret per la autorizzazione servizio verifica firma', null, null, 12020, 'digital-signature-check');
-INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-url', 'S', 'Url del servizio per la verifica delle firme digitali', 'https://api.maggiolicloud.it/rest/segreteria/v2', 'https://api.maggiolicloud.it/rest/segreteria/v2', 12030, 'digital-signature-check');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('kong.auth.url', 'S', 'Url di autenticazione mediante kong', 'https://login.maggioli.cloud/realms/progetto_segreteria', 'https://login.maggioli.cloud/realms/progetto_segreteria', 12000, 'kong-client');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('kong.auth.clientId', 'S', 'Username per kong', '', NULL, 12010, 'kong-client');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('kong.auth.secret', 'S', 'Secret per autenticazione ed autorizzazione mediante kong', null, null, 12020, 'kong-client');
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, ordprog, category) VALUES('digital-signature-check-url', 'S', 'Url del servizio per la verifica delle firme digitali', 'https://apis.maggioli.cloud/rest/segreteria/v2', 'https://apis.maggioli.cloud/rest/segreteria/v2', 12030, 'digital-signature-check');
 INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('digital-signature-checker-provider', 'I', 'Modalità verifica firma digitale. Valori ammessi: 0 [default]=BouncyCastle, 1=servizi Maggioli, 2=Infocert', '0', '0','digital-signature-check', 12040); 
 
+--CONFIGURAZIONI EIDAS
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.wsAuthServiceEIDAS.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione EIDAS', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'autenticazione-eidas', 12100);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione EIDAS (L1, L2, L3)', 'L2', 'L2', 'autenticazione-eidas', 12110);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.serviceindex', 'I', 'Dataset restituito da EIDAS. Valori ammessi: 100', '100', '100', 'autenticazione-eidas', 12120);
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione EIDAS', null, null, 'autenticazione-eidas', 12130);
+
+--CONFIGURAZIONI SACE
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('michelangelo.baseUrl', 'S', 'Url per la ricerca dei dati impresa mediante Michelangelo', 'https://eservices.sace.it/sace-xapi-digital-prod/api/informations/integrations/services', 'https://eservices.sace.it/sace-xapi-digital-prod/api/informations/integrations/services', 'sace', 13000);
+
 --credenziali ambiente test
---UPDATE ppcommon_properties SET value='https://login-dev.maggiolicloud.it/realms/progetto_segreteria/protocol/openid-connect/token/' where name='digital-signature-check-authurl' and category='digital-signature-check';
---UPDATE ppcommon_properties SET value='YXBwYWx0aUB2b2w6Y2RlOWM5NTMtNTM1MS00MGRiLWFjMWItMmQwMTEwNTg5MDYy' where name='digital-signature-check-authsecret' and category='digital-signature-check';
---UPDATE ppcommon_properties SET value='https://api-dev.maggiolicloud.it/rest/segreteria/v2' where name='digital-signature-check-url' and category='digital-signature-check';
+--UPDATE ppcommon_properties SET value='https://login-dev.maggioli.cloud/realms/progetto_segreteria/protocol/openid-connect/token/' where name='kong.auth.url' and category='kong-client';
+--UPDATE ppcommon_properties SET value='YXBwYWx0aUB2b2w6Y2RlOWM5NTMtNTM1MS00MGRiLWFjMWItMmQwMTEwNTg5MDYy' where name='kong.auth.password' and category='kong-client';
+--UPDATE ppcommon_properties SET value='https://apis-dev.maggioli.cloud/rest/segreteria/v2' where name='digital-signature-check-url' and category='digital-signature-check';
 
 ---------------------------------------------------------------------------------------------------------------------------
 -- NUOVA TABELLA PER LA CONFIGURAZIONE DI REPORT JASPER DIFFERENTI RISPETTO AI REPORT DI DEFAULT, DIVERSIFICATI PER CLIENTI
@@ -8499,6 +8913,8 @@ INSERT INTO ppcommon_customreports VALUES (47, 'agenziapo', 2, 'DomandaRinnovoAl
 INSERT INTO ppcommon_customreports VALUES (48, 'agenziapo', 2, 'DomandaRinnovoAlboServiziForniture', 'Domanda rinnovo per servizi e forniture per Agenzia PO'); 
 INSERT INTO ppcommon_customreports VALUES (49, 'agenziapo', 2, 'DomandaRinnovoAlboServiziTecnici', 'Domanda rinnovo per servizi tecnici per Agenzia PO'); 
 INSERT INTO ppcommon_customreports VALUES (50, 'com-bari', 1, 'DomandaIscrizioneAlboMedici', 'Domanda iscrizione albo medici consulenti per Comune di Bari');
+INSERT INTO ppcommon_customreports VALUES (51, 'com-reggioemilia', 1, 'DomandaIscrizioneAlbo', 'Domanda iscrizione standard per Comune Reggio Emilia');
+
 ----------------------------------------------------------------------
 -- CREAZIONE ED AGGIORNAMENTO PAGINE DEL PORTALE CON LAYOUT DI DEFAULT
 ----------------------------------------------------------------------
@@ -8514,7 +8930,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 
 -- si elimina la pagina service e la si ricrea con il pos corretto
 DELETE FROM pages where code = 'service';
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('service', 'homepage', 11, 'service', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('service', 'homepage', 12, 'service', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Service</property>
 <property key="it">Pagine di Servizio</property>
@@ -8550,7 +8966,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 
 -- si inseriscono le pagine che costituiscono il portale
 
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_documenti', 'homepage', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_documenti', 'homepage', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Informations</property>
 <property key="it">Informazioni</property>
@@ -8570,26 +8986,36 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Regulations</property>
 <property key="it">Regolamento</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_info_proc_tabellare', 'homepage', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_info_proc_tabellare', 'homepage', 8, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="en">Informations on individual procedures in tabular format</property>
-<property key="it">Informazioni sulle singole procedure in formato tabellare</property>
+<property key="en">Tenders until 12/31/2023</property>
+<property key="it">Procedure fino al 31/12/2023</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_gara', 'homepage', 4, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_gara', 'homepage', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="en">Acts of contracting authorities and contracting entities separately for each procedure</property>
-<property key="it">Atti delle amministrazioni aggiudicatrici e degli enti aggiudicatori distintamente per ogni procedura</property>
+<property key="en">Tender procedures and contracts</property>
+<property key="it">Procedure d''appalto e contratti</property>
 </properties>', 'free', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_atti_doc_gen', 'homepage', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Deeds and documents of a general nature referring to all procedures</property>
+<property key="it">Atti e documenti di carattere generale riferiti a tutte le procedure</property>
+</properties>', 'free', 1);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_atti_doc_gen', 'ppgare_atti_doc_gen', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Notices, communications and documents of a general nature</property>
+<property key="it">Avvisi, comunicazioni e atti di carattere generale</property>
+</properties>', 'free', 1);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_doc_faq', 'ppgare_documenti', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">F.A.Q.</property>
 <property key="it">F.A.Q.</property>
-</properties>', 'free', 1);
+</properties>', 'free', 0);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_doc_accessibilita', 'ppgare_documenti', 6, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Accessibility</property>
 <property key="it">Accessibilità</property>
-</properties>', 'free', 1);
+</properties>', 'free', 0);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_cookies', 'ppgare_documenti', 7, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Cookies</property>
@@ -8605,22 +9031,22 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Instructions and manuals</property>
 <property key="it">Istruzioni e manuali</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_anticorr', 'ppgare_info_proc_tabellare', 11, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_anticorr', 'ppgare_info_proc_tabellare', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Annual reports (art. 1, p. 32, L.190)</property>
 <property key="it">Prospetti annuali (art. 1 c. 32 L.190 del 6/11/2012)</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_contratti', 'ppgare_info_proc_tabellare', 12, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_contratti', 'ppgare_bandi_gara', 7, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="en">Contracts summary</property>
-<property key="it">Riepilogo contratti</property>
+<property key="en">Contracts summary - BDNCP Link</property>
+<property key="it">Riepilogo contratti - Link BDNCP</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_art18', 'ppgare_bandi_gara', 7, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_ammtrasp_art18', 'ppgare_bandi_gara', 8, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Grants, contributions, subsidies - List of beneficiaries</property>
 <property key="it">Sovvenzioni, contributi, sussidi - Elenco dei soggetti beneficiari</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_consulenti', 'ppgare_bandi_gara', 8, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_consulenti', 'ppgare_bandi_gara', 9, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Consultants and collaborators</property>
 <property key="it">Consulenti e collaboratori</property>
@@ -8630,20 +9056,20 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Supreme urgencies summary</property>
 <property key="it">Riepilogo somme urgenze</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_delibere_contrarre', 'ppgare_bandi_gara', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_delibere_contrarre', 'ppgare_bandi_gara', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Resolutions to contract or equivalent act</property>
 <property key="it">Delibere a contrarre o atto equivalente</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_lista', 'ppgare_bandi_gara', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_lista', 'ppgare_bandi_gara', 4, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="en">Tenders and procedures in progress</property>
-<property key="it">Gare e procedure in corso</property>
+<property key="en">Tenders and procedures</property>
+<property key="it">Gare e procedure</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_lista', 'ppgare_bandi_gara', 4, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_lista', 'ppgare_bandi_gara', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="en">Public announcements in progress</property>
-<property key="it">Avvisi pubblici in corso</property>
+<property key="en">Public announcements</property>
+<property key="it">Avvisi pubblici</property>
 </properties>', 'free', 1);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_esiti_lista', 'ppgare_bandi_gara', 6, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
@@ -8655,17 +9081,17 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Indexing informations</property>
 <property key="it">Informazioni di indicizzazione</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_scaduti_lista', 'ppgare_bandi_gara', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_scaduti_lista', 'ppgare_bandi_gara', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Expired tenders and procedures</property>
 <property key="it">Gare e procedure scadute</property>
-</properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_scaduti_lista', 'ppgare_bandi_gara', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+</properties>', 'free', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_scaduti_lista', 'ppgare_bandi_gara', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Expired public notices</property>
 <property key="it">Avvisi pubblici scaduti</property>
-</properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_economici', 'homepage', 7, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+</properties>', 'free', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_economici', 'homepage', 6, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">List of economic operators</property>
 <property key="it">Elenco operatori economici</property>
@@ -8680,22 +9106,27 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Announcements and notices of subscription archived</property>
 <property key="it">Bandi e avvisi d''iscrizione archiviati</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_ec_esiti_aff', 'ppgare_oper_economici', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_ec_esiti_aff', 'ppgare_oper_economici', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Outcomes of assignments</property>
 <property key="it">Esiti affidamenti</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_albo_fornitori_esterno',  'ppgare_oper_economici', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_albo_fornitori_esterno',  'ppgare_oper_economici', 4, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Access to the Suppliers Register</property>
 <property key="it">Accesso all''Albo Fornitori</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_cataloghi', 'homepage', 8, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_ec_iscritti_elenco', 'ppgare_oper_economici', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Economic operators registered in the list</property>
+<property key="it">Imprese iscritte ad un elenco</property>
+</properties>', 'free', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_cataloghi', 'homepage', 7, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Electronic market</property>
 <property key="it">Mercato elettronico</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_extra', 'homepage', 10, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_extra', 'homepage', 9, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Additional configurable section</property>
 <property key="it">Sezione aggiuntiva configurabile</property>
@@ -8710,10 +9141,15 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Announcements and notices of subscription preserved</property>
 <property key="it">Bandi e avvisi d''iscrizione archiviati</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_gara_area_pers', 'ppgare_bandi_gara', 10, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_bandi_gara_area_pers', 'ppgare_bandi_gara', 11, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Tenders - Personal area</property>
 <property key="it">Bandi di gara - Area personale</property>
+</properties>', 'free', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_detail', 'ppgare_bandi_gara', 12, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Procedure detail</property>
+<property key="it">Dettaglio procedura</property>
 </properties>', 'free', 0);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_vai_a_rich_offerta', 'ppgare_bandi_gara_area_pers', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
@@ -8735,7 +9171,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Procurement or completed tender procedures</property>
 <property key="it">Procedure in aggiudicazione o concluse</property>
 </properties>', 'gare', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppcommon_area_riservata', 'homepage', 12, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppcommon_area_riservata', 'homepage', 10, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Access to the reserved area</property>
 <property key="it">Accesso all''area riservata</property>
@@ -8750,7 +9186,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Password recovery</property>
 <property key="it">Recupera Password</property>
 </properties>', 'free', 1);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_impr', 'homepage', 13, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_impr', 'homepage', 11, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Company</property>
 <property key="it">Impresa</property>
@@ -8856,7 +9292,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="it">Credits</property>
 </properties>
 ', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_contratti_ordini', 'homepage', 9, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_contratti_ordini', 'homepage', 13, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Orders</property>
 <property key="it">Ordini</property>
@@ -8871,7 +9307,7 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Access identify for administrator user</property>
 <property key="it">Accesso identificazione utente amministratore</property>
 </properties>', 'free', 0);
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_acq_reg_priv', 'homepage', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_acq_reg_priv', 'homepage', 4, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="en">Purchases under a private regime</property>
 <property key="it">Acquisti in regime privatistico</property>
@@ -8946,8 +9382,9 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <property key="en">Contracts execution</property>
 <property key="it">Esecuzione contratti</property>
 </properties>', 'gare', 0);
+
 --PAGOPA pages
-INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa', 'homepage', (select max(pos)+1 from pages), '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments</property><property key="it">Pagamenti</property></properties>', 'gare', 0);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa', 'homepage', 15, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments</property><property key="it">Pagamenti</property></properties>', 'gare', 0);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_nuovo', 'ppgare_pagopa', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">New payment</property><property key="it">Nuovo pagamento</property></properties>', 'gare', 1);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_effettuati', 'ppgare_pagopa', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments done</property><property key="it">Pagamenti effettuati</property></properties>', 'gare', 1);
 INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_pagopa_daeffettuare', 'ppgare_pagopa', 3, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Payments to do</property><property key="it">Pagamenti da effettuare</property></properties>', 'gare', 1);
@@ -8960,7 +9397,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_auth', 7, 'ppcommon_auth', NULL, NULL);
@@ -8971,7 +9408,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('homepage', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('homepage', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('homepage', 7, 'ppgare_listBandiInCorso', NULL, NULL);
@@ -8987,7 +9424,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
@@ -8995,7 +9432,6 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 <property key="modelId">1</property>
 <property key="contentId">GEN-STD-AAR</property>
 </properties>
-
 ', 'GEN-STD-AAR');
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 8, 'privacy_link', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accesso_area_riserv', 9, 'language_choose', NULL, NULL);
@@ -9005,7 +9441,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_regolamento', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_regolamento', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_regolamento', 9, 'language_choose', NULL, NULL);
@@ -9015,7 +9451,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_istruzioni', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_istruzioni', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_istruzioni', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
@@ -9023,7 +9459,6 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 <property key="modelId">1</property>
 <property key="contentId">GEN-STD-IM</property>
 </properties>
-
 ', 'GEN-STD-IM');
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_istruzioni', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_faq', 0, 'date_time', NULL, NULL);
@@ -9032,7 +9467,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_faq', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_faq', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_faq', 7, 'content_viewer_list', '<?xml version="1.0" encoding="UTF-8"?>
@@ -9041,7 +9476,6 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 <property key="modelId">22</property>
 <property key="contentType">FAQ</property>
 </properties>
-
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_faq', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accessibilita', 0, 'date_time', NULL, NULL);
@@ -9050,7 +9484,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accessibilita', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accessibilita', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_accessibilita', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
@@ -9066,7 +9500,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cookies', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cookies', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cookies', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
@@ -9082,7 +9516,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_privacy', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_privacy', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_privacy', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
@@ -9098,7 +9532,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_anticorr', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_anticorr', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_anticorr', 7, 'ppgare_searchGareContrattiAnticorruzione', NULL, NULL);
@@ -9109,7 +9543,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_contracts', 7, 'ppcommon_contracts', NULL, NULL);
@@ -9120,7 +9554,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_contratti', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_contratti', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_contratti', 7, 'ppgare_searchContrattiAnticorruzione', NULL, NULL);
@@ -9132,7 +9566,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_art18', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_art18', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_ammtrasp_art18', 7, 'ppgare_searchSoggettiBeneficiari', NULL, NULL);
@@ -9143,7 +9577,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_consulenti', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_consulenti', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_consulenti', 7, 'ppgare_listConsulenti', NULL, NULL);
@@ -9154,7 +9588,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_somme_urgenze_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_somme_urgenze_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_somme_urgenze_lista', 7, 'ppgare_listSommeUrgenze', NULL, NULL);
@@ -9165,7 +9599,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_delibere_contrarre', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_delibere_contrarre', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_delibere_contrarre', 7, 'ppgare_searchDelibereAContrarre', NULL, NULL);
@@ -9176,10 +9610,10 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_lista', 7, 'ppgare_listBandiInCorso', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_lista', 7, 'ppgare_listBandi', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_lista', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 1, 'search_form', NULL, NULL);
@@ -9187,12 +9621,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
-</properties>
-', NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 7, 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
-<properties>
-<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/viewTabIndicizzazione.action</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_tab_inf_dpcm', 9, 'language_choose', NULL, NULL);
@@ -9203,10 +9632,10 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_lista', 7, 'ppgare_listAvvisiInCorso', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_lista', 7, 'ppgare_listAvvisi', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_lista', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_esiti_lista', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_esiti_lista', 1, 'search_form', NULL, NULL);
@@ -9214,7 +9643,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_esiti_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_esiti_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_esiti_lista', 7, 'ppgare_listEsitiInCorso', NULL, NULL);
@@ -9225,7 +9654,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_scaduti_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_scaduti_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_bandi_scaduti_lista', 7, 'ppgare_listBandiScaduti', NULL, NULL);
@@ -9236,7 +9665,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_scaduti_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_scaduti_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_scaduti_lista', 7, 'ppgare_listAvvisiScaduti', NULL, NULL);
@@ -9247,7 +9676,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_bandi_avvisi', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_bandi_avvisi', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_bandi_avvisi', 7, 'ppgare_listBandiIscrizione', NULL, NULL);
@@ -9258,7 +9687,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_esiti_aff', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_esiti_aff', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_esiti_aff', 7, 'ppgare_listEsitiAffidamenti', NULL, NULL);
@@ -9269,7 +9698,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_albo_fornitori_esterno', 7, 'ppgare_alboFornitoriEsterno', NULL, NULL);
@@ -9280,18 +9709,29 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_bandi_avvisi', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_bandi_avvisi', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_bandi_avvisi', 7, 'ppgare_listCataloghi', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_bandi_avvisi', 9, 'language_choose', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 7, 'ppgare_listBandi', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_offerta', 7, 'ppgare_listRichOfferta', NULL, NULL);
@@ -9302,7 +9742,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_aste_corso', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_aste_corso', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_aste_corso', 7, 'ppgare_listAllAsteInCorso', NULL, NULL);
@@ -9313,7 +9753,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_documenti', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_documenti', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_rich_documenti', 7, 'ppgare_listRichiesteDocumenti', NULL, NULL);
@@ -9324,7 +9764,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_proc_aggiudicaz', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_proc_aggiudicaz', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vai_a_proc_aggiudicaz', 7, 'ppgare_searchProcAggiudicazione', NULL, NULL);
@@ -9335,7 +9775,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('search_result', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('search_result', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('search_result', 7, 'search_result', NULL, NULL);
@@ -9346,7 +9786,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_site_map', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_site_map', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_site_map', 7, 'site_map', NULL, NULL);
@@ -9357,7 +9797,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_cambia_password', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_cambia_password', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_cambia_password', 7, 'jpuserprofile_editCurrentUser_password', NULL, NULL);
@@ -9368,7 +9808,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_registr', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_registr', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_registr', 7, 'ppgare_regImpresa', NULL, NULL);
@@ -9379,7 +9819,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('activation', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('activation', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('activation', 7, 'jpuserreg_Activation', NULL, NULL);
@@ -9390,7 +9830,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('passwordrecover', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('passwordrecover', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('passwordrecover', 7, 'jpuserreg_Recover', NULL, NULL);
@@ -9401,7 +9841,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('recover', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('recover', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('recover', 7, 'jpuserreg_Reactivation', NULL, NULL);
@@ -9412,13 +9852,14 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('portalerror', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('portalerror', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('portalerror', 7, 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="actionPath">/ExtStr2/do/FrontEnd/Common/portalErrorPage.action</property>
-</properties>', NULL);
+</properties>
+', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('portalerror', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig VALUES ('test_preview', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig VALUES ('test_preview', 1, 'search_form', NULL, NULL);
@@ -9426,7 +9867,7 @@ INSERT INTO showletconfig VALUES ('test_preview', 2, 'navigation_breadcrumbs', N
 INSERT INTO showletconfig VALUES ('test_preview', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig VALUES ('test_preview', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig VALUES ('test_preview', 6, 'content_viewer', NULL, NULL);
@@ -9437,7 +9878,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_visdati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_visdati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_visdati', 7, 'ppgare_dettImpresa', NULL, NULL);
@@ -9448,7 +9889,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_aggdati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_aggdati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_aggdati', 7, 'ppgare_editImpresa', NULL, NULL);
@@ -9459,7 +9900,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_vardati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_vardati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_impr_vardati', 7, 'ppgare_varImpresa', NULL, NULL);
@@ -9471,12 +9912,11 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accesso_simultaneo', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accesso_simultaneo', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accesso_simultaneo', 7, 'ppcommon_accessoSimultaneo', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accesso_simultaneo', 9, 'language_choose', NULL, NULL);
-
 
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_soggetto_sso', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_soggetto_sso', 1, 'search_form', NULL, NULL);
@@ -9484,7 +9924,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_soggetto_sso', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_soggetto_sso', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_soggetto_sso', 7, 'ppcommon_areaSoggettoSSO', NULL, NULL);
@@ -9495,7 +9935,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_personale', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_personale', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_area_personale', 7, 'ppcommon_areaPersonale', NULL, NULL);
@@ -9506,7 +9946,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_assistenza_tecnica', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_assistenza_tecnica', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_assistenza_tecnica', 7, 'ppcommon_assistenza', NULL, NULL);
@@ -9517,7 +9957,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_ordini_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_ordini_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_ordini_lista', 7, 'ppgare_searchContrattiOrdini', NULL, NULL);
@@ -9529,7 +9969,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_registra_op_manuale', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_registra_op_manuale', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_registra_op_manuale', 7, 'ppcommon_registraopmanuale', NULL, NULL);
@@ -9540,7 +9980,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_op_ko', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_op_ko', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_op_ko', 7, 'ppcommon_adminOpKO', NULL, NULL);
@@ -9551,7 +9991,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_invii_ko', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_invii_ko', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_invii_ko', 7, 'ppcommon_adminInviiKO', NULL, NULL);
@@ -9562,7 +10002,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_sblocca_account', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_sblocca_account', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_sblocca_account', 7, 'ppcommon_adminSbloccaAccount', NULL, NULL);
@@ -9573,7 +10013,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_delegateuser', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_delegateuser', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_delegateuser', 7, 'ppcommon_adminDelegateUser', NULL, NULL);
@@ -9584,44 +10024,43 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
-INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 0, 'date_time', NULL, NULL);
-INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 1, 'search_form', NULL, NULL);
-INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 2, 'navigation_breadcrumbs', NULL, NULL);
-INSERT INTO showletconfig(pagecode, framepos, showletcode, config, publishedcontent)VALUES('ppgare_doc_credits', 3, 'jpuserreg_loginUserReg', NULL, NULL);
-INSERT INTO showletconfig
-(pagecode, framepos, showletcode, config, publishedcontent)
-VALUES('ppgare_doc_credits', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 7, 'ppcommon_adminSearchOE', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 9, 'language_choose', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>', NULL);
-INSERT INTO showletconfig
-(pagecode, framepos, showletcode, config, publishedcontent)
-VALUES('ppgare_doc_credits', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 7, 'content_viewer', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
 <property key="contentId">GEN-STD-CRED</property>
 </properties>', 'GEN-STD-CRED');
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_credits', 9, 'language_choose', NULL, NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 7, 'ppcommon_adminSearchOE', NULL, NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_searchoe', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 7, 'ppcommon_abilitaAccessoSSO', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_abilita_accesso_sso', 9, 'language_choose', NULL, NULL);
+
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_sblocco_autonomo', 7, 'ppcommon_sbloccoautonomo', NULL, NULL);
@@ -9632,7 +10071,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_accetta_consensi', 7, 'ppcommon_accettaconsensi', NULL, NULL);
@@ -9641,7 +10080,6 @@ INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinme
 <properties>
 <property key="it">News</property>
 </properties>
-
 ', 'free', 1);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_news', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_news', 1, 'search_form', NULL, NULL);
@@ -9649,7 +10087,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_news', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_news', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_doc_news', 7, 'ppgare_news', NULL, NULL);
@@ -9661,7 +10099,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_access', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_access', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppcommon_admin_access', 7, 'ppcommon_adminAccess', NULL, NULL);
@@ -9672,7 +10110,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_davalutare_list', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_davalutare_list', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_davalutare_list', 7, 'ppgare_eorders_davalutare', NULL, NULL);
@@ -9683,7 +10121,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_confermati_list', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_confermati_list', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_confermati_list', 7, 'ppgare_eorders_confermati', NULL, NULL);
@@ -9694,7 +10132,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_tutti_list', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_tutti_list', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_eorders_tutti_list', 7, 'ppgare_eorders_tutti', NULL, NULL);
@@ -9705,7 +10143,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_in_corso', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_in_corso', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_in_corso', 7, 'ppgare_listAcquistiRegPrivInCorso', NULL, NULL);
@@ -9716,7 +10154,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_scaduti', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_scaduti', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_scaduti', 7, 'ppgare_listAcquistiRegPrivScaduti', NULL, NULL);
@@ -9727,7 +10165,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_rich_off', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_rich_off', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_rich_off', 7, 'ppgare_listRichOffertaAcqRegPriv', NULL, NULL);
@@ -9738,7 +10176,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_proc_agg', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_proc_agg', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_acq_reg_priv_proc_agg', 7, 'ppgare_listProcAggiudicazioneAcqRegPriv', NULL, NULL);
@@ -9749,7 +10187,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_in_corso', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_in_corso', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_in_corso', 7, 'ppgare_listVenditeRegPrivInCorso', NULL, NULL);
@@ -9760,7 +10198,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_scaduti', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_scaduti', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_scaduti', 7, 'ppgare_listVenditeRegPrivScaduti', NULL, NULL);
@@ -9771,7 +10209,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_rich_off', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_rich_off', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_rich_off', 7, 'ppgare_listRichOffertaVendRegPriv', NULL, NULL);
@@ -9782,7 +10220,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_proc_agg', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_proc_agg', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_vend_reg_priv_proc_agg', 7, 'ppgare_listProcAggiudicazioneVendRegPriv', NULL, NULL);
@@ -9793,7 +10231,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_contratti_lfs_lista', 7, 'ppgare_searchContrattiLFS', NULL, NULL);
@@ -9804,21 +10242,33 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 3, 'jpuserreg_loginUserReg', NULL, NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 7, 'ppgare_pagopa_sc_nuovo', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_nuovo', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 7, 'ppgare_pagopa_sc_effettuati', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_effettuati', 9, 'language_choose', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 0, 'date_time', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 1, 'search_form', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 2, 'navigation_breadcrumbs', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 3, 'jpuserreg_loginUserReg', NULL, NULL);
-INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>'
+, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 7, 'ppgare_pagopa_sc_daeffettuare', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_pagopa_daeffettuare', 9, 'language_choose', NULL, NULL);
 
@@ -9828,7 +10278,7 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_cataloghi_archiviati', 7, 'ppgare_listCataloghiArchiviati', NULL, NULL);
@@ -9839,26 +10289,50 @@ INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcon
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 3, 'jpuserreg_loginUserReg', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
 <properties>
-<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
 </properties>
 ', NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 7, 'ppgare_opEcArchiviati', NULL, NULL);
 INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_op_ec_bandi_archiviati', 9, 'language_choose', NULL, NULL);
 
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>'
+, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 7, 'ppgare_listOperatoriIscritti', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 9, 'language_choose', NULL, NULL);
+
+--Atti e documenti di carattere generale
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 7, 'ppgare_avvisiAttiDocGen', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 9, 'language_choose', NULL, NULL);
 
 -- ISTRUZIONE DA TOGLIERE AL MOMENTO DELL'INTRODUZIONE DEL MULTILINGUA PER TUTTI!
 delete from showletconfig where showletcode='language_choose';
 
-INSERT INTO contents VALUES ('GEN-STD-AAR', 'GEN', 'Accesso area riservata', 'READY', '<?xml version="1.0" encoding="UTF-8"?> 
-<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>3.0</version></content> 
-', '20160505164957', '20220222120110', '<?xml version="1.0" encoding="UTF-8"?> 
-<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access to reserved area</text><text lang="it">Accesso area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following document describes the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>Il documento seguente descrivere i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>3.0</version></content> 
-', 'free', '4.0', 'admin');
+INSERT INTO contents VALUES ('GEN-STD-AAR', 'GEN', 'Accesso e utilizzo dell''area riservata', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANUSO" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>6.0</version></content>
+', '20160505164957', '20240517122820', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANUSO" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>6.0</version></content>
+', 'free', '6.0', 'admin');
 INSERT INTO contents VALUES ('GEN-STD-IM', 'GEN', 'Istruzioni e manuali', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
-<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List (Italian version)</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer (Italian version)</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute></list></attributes><status>READY</status><version>3.0</version></content>
-', '20160505164957', '20190626170625', '<?xml version="1.0" encoding="UTF-8"?>
-<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List (Italian version)</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer (Italian version)</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute></list></attributes><status>READY</status><version>3.0</version></content>
-', 'free', '2.0', 'admin');
+<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-ISCRELE" lang="en" /><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-OFFTEL" lang="en" /><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANMDGUE" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANMDGUE" lang="it" /><text lang="en">Guide for creating and managing the XML DGUE Response file (Italian version)</text><text lang="it">Guida per la creazione e gestione del file XML DGUE Response</text></attribute></list></attributes><status>READY</status><version>4.0</version></content>
+', '20160505164957', '20240517122651', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-ISCRELE" lang="en" /><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-OFFTEL" lang="en" /><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANMDGUE" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANMDGUE" lang="it" /><text lang="en">Guide for creating and managing the XML DGUE Response file (Italian version)</text><text lang="it">Guida per la creazione e gestione del file XML DGUE Response</text></attribute></list></attributes><status>READY</status><version>4.0</version></content>
+', 'free', '3.0', 'admin');
 INSERT INTO contents VALUES ('GEN-STD-CKI', 'GEN', 'Informativa cookies', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
 <content id="GEN-STD-CKI" typecode="GEN" typedescr="Contenuto generico"><descr>Informativa cookies</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Cookies policy</text><text lang="it">Informativa sui Cookies</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
 A cookie is a small file created on user personal computer when a certain webpage is reached, with the purpose to store and send informations.<br/>
@@ -10274,37 +10748,37 @@ Santarcangelo di Romagna (RN) - Italia
 ]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach" /></attributes><status>READY</status><version>3.0</version></content>
 ', 'free', '1.0', 'admin');
 INSERT INTO contents VALUES ('FAQ-STD-SPT', 'FAQ', 'FAQ - Significato piattaforma telematica', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
-<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 50/2016.
+<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 36/2023.
 <br/>
 The e-procurement platform, the telematic system and the Procurement portal are also understood as synonyms for the online platform, the latter refers to the component specifically dedicated to economic operators.
 </p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
-Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 50/2016.
+Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 36/2023.
 <br/>
 Si intendono quali sinonimi di piattaforma telematica anche piattaforma di e-procurement, sistema telematico e Portale Appalti, quest''ultimo fa riferimento alla componente specificamente dedicata agli operatori economici.
-</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>4.0</version></content>
-', '20160509125553', '20190708105102', '<?xml version="1.0" encoding="UTF-8"?>
-<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 50/2016.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>3.0</version></content>
+', '20160509125553', '20230614170616', '<?xml version="1.0" encoding="UTF-8"?>
+<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 36/2023.
 <br/>
 The e-procurement platform, the telematic system and the Procurement portal are also understood as synonyms for the online platform, the latter refers to the component specifically dedicated to economic operators.
 </p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
-Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 50/2016.
+Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 36/2023.
 <br/>
 Si intendono quali sinonimi di piattaforma telematica anche piattaforma di e-procurement, sistema telematico e Portale Appalti, quest''ultimo fa riferimento alla componente specificamente dedicata agli operatori economici.
-</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>4.0</version></content>
-', 'free', '2.0', 'admin');
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>3.0</version></content>
+', 'free', '3.0', 'admin');
 INSERT INTO contents VALUES ('FAQ-STD-SOE', 'FAQ', 'FAQ - Significato operatore economico', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
 <content id="FAQ-STD-SOE" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato operatore economico</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is an economic operator?</text><text lang="it">Che cosa si intende per operatore economico?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
-Please refer to the definition of the procurement code - Legislative Decree 50/2016 art. 3. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
+Please refer to the definition of the procurement code - Legislative Decree 36/2023. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
 </p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
-Si rimanda alla definizione del codice degli appalti - Dlgs 50/2016 art. 3. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
-</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>3.0</version></content>
-', '20160509125853', '20190708105427', '<?xml version="1.0" encoding="UTF-8"?>
+Si rimanda alla definizione del codice degli appalti - Dlgs 36/2023. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>5.0</version></content>
+', '20160509125853', '20230614171205', '<?xml version="1.0" encoding="UTF-8"?>
 <content id="FAQ-STD-SOE" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato operatore economico</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is an economic operator?</text><text lang="it">Che cosa si intende per operatore economico?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
-Please refer to the definition of the procurement code - Legislative Decree 50/2016 art. 3. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
+Please refer to the definition of the procurement code - Legislative Decree 36/2023. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
 </p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
-Si rimanda alla definizione del codice degli appalti - Dlgs 50/2016 art. 3. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
-</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>3.0</version></content>
-', 'free', '2.0', 'admin');
+Si rimanda alla definizione del codice degli appalti - Dlgs 36/2023. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>5.0</version></content>
+', 'free', '5.0', 'admin');
 INSERT INTO contents VALUES ('FAQ-STD-APE', 'FAQ', 'FAQ - Accesso piattaforma telematica', 'READY', '<?xml version="1.0" encoding="UTF-8"?>
 <content id="FAQ-STD-APE" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Accesso piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">How can I access and use the online platform?</text><text lang="it">Come è possibile accedere ed utilizzare la piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
 The online platform is publicly accessible for the only purpose of consulting the information and documents relating to the advertising, legal and transparency. <br/>
@@ -10438,9 +10912,14 @@ Il servizio di Assistenza tecnica non &egrave; abilitato ad erogare informazioni
 
 INSERT INTO contentrelations VALUES ('GEN-STD-AAR', NULL, NULL, NULL, NULL, 'free');
 INSERT INTO contentrelations VALUES ('GEN-STD-AAR', NULL, NULL, 'RES-STD-MANUSO', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-AAR', NULL, NULL, 'EN-STD-MANUSO', NULL, NULL);
 INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, NULL, NULL, 'free');
 INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'RES-STD-ISCRELE', NULL, NULL);
 INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'RES-STD-OFFTEL', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'RES-STD-MANMDGUE', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-ISCRELE', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-OFFTEL', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-MANMDGUE', NULL, NULL);
 INSERT INTO contentrelations VALUES ('GEN-STD-CKI', NULL, NULL, NULL, NULL, 'free');
 INSERT INTO contentrelations VALUES ('GEN-STD-PRIV', NULL, NULL, NULL, NULL, 'free');
 INSERT INTO contentrelations VALUES ('GEN-STD-ACC', NULL, NULL, NULL, NULL, 'free');
@@ -10547,7 +11026,7 @@ INSERT INTO workcontentsearch VALUES ('FAQ-STD-ASS', 'Progressivo', NULL, NULL, 
 
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('japs', '2.0.10', CURRENT_TIMESTAMP);
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('jpmail', '1.2', CURRENT_TIMESTAMP);
-INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '3.24.0', CURRENT_TIMESTAMP);
-INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppgare', '3.24.0', CURRENT_TIMESTAMP);
+INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '4.8.0', CURRENT_TIMESTAMP);
+INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppgare', '4.8.0', CURRENT_TIMESTAMP);
 
 

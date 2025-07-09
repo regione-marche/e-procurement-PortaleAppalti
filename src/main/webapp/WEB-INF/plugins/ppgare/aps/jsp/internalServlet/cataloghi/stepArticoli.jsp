@@ -3,7 +3,7 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="es" uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
 <script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.highlight.js'></script>
 
 <script type="text/javascript">
@@ -214,8 +214,6 @@
     }	
 	});
 //--><!]]></script>
-
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
 
 
 <jsp:include page="/WEB-INF/aps/jsp/models/inc/skin.jsp" >

@@ -2,6 +2,7 @@ package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers;
 
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -16,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Azione che gestisce il DELEGATEUSER associato ad un'impresa
@@ -44,7 +46,7 @@ public class DelegateUserAction extends BaseAction {
 	private String olddelegateuser;
 	@Validate(EParamValidation.CODICE_FISCALE)
 	private String newdelegateuser;
-	
+	private List<DelegateUser> impresaDelegates; 
 		
 	public void setUserManager(IUserManager userManager) {
 		this.userManager = userManager;
@@ -86,6 +88,24 @@ public class DelegateUserAction extends BaseAction {
 		this.newdelegateuser = StringUtils.stripToNull(newdelegateuser.toUpperCase());
 	}
 
+	public List<DelegateUser> getImpresaDelegates() {
+		return impresaDelegates;
+	}
+	
+	/**
+	 * validate 
+	 */
+	@Override
+	public void validate() {
+		// funzionalità accessibile sono da amministratore!!!
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
+			redirectToHome();
+			return;
+		} 
+		
+		super.validate();
+	}
+
 	/**
 	 * Predispone l'apertura della pagina previo controllo autorizzazione (si
 	 * deve essere un utente amministratore).
@@ -96,10 +116,8 @@ public class DelegateUserAction extends BaseAction {
 	public String openDelegateUser() {
 		String target = SUCCESS;
 
-		// funzionalita' disponibile solo per l'utente con il ruolo di
-		// amministratore
-		if (this.getCurrentUser() == null
-				|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		// funzionalita' disponibile solo per l'utente con il ruolo di amministratore
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}
@@ -204,7 +222,7 @@ public class DelegateUserAction extends BaseAction {
 			evento.setIpAddress(this.getCurrentUser().getIpAddress());
 			evento.setSessionId(this.getRequest().getSession().getId());
 			
-			if (this.getCurrentUser() == null || !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+			if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 				this.addActionError(this.getText("Errors.function.notEnabled"));
 				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {

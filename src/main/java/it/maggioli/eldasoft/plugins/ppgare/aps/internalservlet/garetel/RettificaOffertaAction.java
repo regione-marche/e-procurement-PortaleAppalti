@@ -20,6 +20,10 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper.FasiRettifica;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -34,7 +38,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
@@ -48,6 +54,7 @@ import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUse
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class RettificaOffertaAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -249,10 +256,16 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 	 */
 	public String confirmRettifica() {
 		this.setTarget("reopen");
-
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, this.codice) ) {
+			return this.getTarget();
+		}
+		
 		this.offerteDistinte = false;
 		if (null != this.getCurrentUser() &&
-				!this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			!this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
 			try {
 				String nomeOperazione = this.getNomeOperazione(this.operazione);
 				String nomeFunzioneEvento = (this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA)
@@ -339,6 +352,11 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 	 */
 	public String rettifica() {
 		this.setTarget("reopen");
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, this.codice) ) {
+			return this.getTarget();
+		}
 
 		boolean inviataComunicazione = false;
 		String nomeOperazione = null;
@@ -474,7 +492,7 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 								} else {
 									comunicazioniDaAggiornare.add(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 								}
-
+								
 								// completo il messaggio per la gestione eventi
 								for (DettaglioComunicazioneType comunicazione : comunicazioniDaAggiornare) {
 									ids.append(" ").append(comunicazione.getId());
@@ -491,15 +509,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 								// elimina dalla busta della forma di partecipazione il pdf di riepilogo...
 								this.removeRiepilogoAllegati(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 
+								// elimina eventuali FS12 di richiesta/invio rettifica
+								List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+								if(rettifiche != null)
+									comunicazioniDaEliminare.addAll(rettifiche);
+								
 								// elimina le comunicazioni da eliminare...
 								if (comunicazioniDaEliminare.size() > 0) {
 									for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
-										this.comunicazioniManager.deleteComunicazione(
-												comunicazione.getApplicativo(),
-												comunicazione.getId());
+										this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 									}
 								}
-
+								
 								// ...ed aggiorna le comunicazioni da aggiornare
 								if(comunicazioniDaAggiornare.size() > 0) {
 									this.comunicazioniManager.updateStatoComunicazioni(
@@ -577,6 +598,8 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 		}
 
+		unlockAccessoFunzione();
+		
 		return this.getTarget();
 	}
 
@@ -891,13 +914,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 					bustaRiepilogo.getHelper().setBustaAmministrativa( new RiepilogoBustaBean() );
 					bustaRiepilogo.getHelper().setListaCompletaLotti( new ArrayList<String>() );    // o null ???
 
+					// elimina eventuali FS12 di richiesta/invio rettifica
+					List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+					if(rettifiche != null)
+						comunicazioniDaEliminare.addAll(rettifiche);
+
 					// elimina le comunicazioni FS11A, FS11B*, FS11C*
 					if (comunicazioniDaEliminare.size() > 0) {
 						for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
 							this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 						}
 					}
-
+					
 					// invia FS11/FS10 e FS11R/FS10R aggiornate in stato BOZZA...
 					bustaPartecipazione.send(CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
 					bustaRiepilogo.send(null);
@@ -973,13 +1001,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 					comunicazioniDaEliminare.add(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 					comunicazioniDaEliminare.add(bustaRiepilogo.getComunicazioneFlusso().getDettaglioComunicazione());
 
+					// elimina eventuali FS12 di richiesta/invio rettifica
+					List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+					if(rettifiche != null)
+						comunicazioniDaEliminare.addAll(rettifiche);
+
 					// elimina le comunicazioni...
 					if (comunicazioniDaEliminare.size() > 0) {
 						for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
 							this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 						}
 					}
-
+					
 					// completo il messaggio per la gestione eventi...
 					if (comunicazioniDaEliminare.size() > 0) {
 						ids.append(" ed eliminazione comunicazioni con id");
@@ -1139,13 +1172,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 					// rimuovi dalla comunicazione FS10/FS11 il pdf di riepilogo
                     this.removeRiepilogoAllegati(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 
+					// elimina eventuali FS12 di richiesta/invio rettifica
+					List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+					if(rettifiche != null)
+						comunicazioniDaEliminare.addAll(rettifiche);
+
 					// elimina le comunicazioni
 					if (comunicazioniDaEliminare.size() > 0) {
 						for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
 							this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 						}
 					}
-
+					
 					// aggiorna le comunicazioni in stato BOZZA
 					if(!comunicazioniDaAggiornare.isEmpty()) {
 						this.comunicazioniManager.updateStatoComunicazioni(
@@ -1254,13 +1292,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 					comunicazioniDaEliminare.add(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 					comunicazioniDaEliminare.add(bustaRiepilogo.getComunicazioneFlusso().getDettaglioComunicazione());
 
+					// elimina eventuali FS12 di richiesta/invio rettifica
+					List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+					if(rettifiche != null)
+						comunicazioniDaEliminare.addAll(rettifiche);
+
 					// elimina le comunicazioni
 					if (comunicazioniDaEliminare.size() > 0) {
 						for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
 							this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 						}
 					}
-
+					
 					// completo il messaggio per la gestione eventi
 					if (comunicazioniDaEliminare.size() > 0) {
 						ids.append(" ed eliminazione comunicazioni con id");
@@ -1363,13 +1406,18 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 						comunicazioniDaAggiornare.add(bustaPartecipazione.getComunicazioneFlusso().getDettaglioComunicazione());
 					}
 
+					// elimina eventuali FS12 di richiesta/invio rettifica
+					List<DettaglioComunicazioneType> rettifiche = recuperaComunicazioniRichiesteRettifica(comunicazioniDaEliminare);
+					if(rettifiche != null)
+						comunicazioniDaEliminare.addAll(rettifiche);
+
 					// elimina le comunicazioni cifrate...
 					if (comunicazioniDaEliminare.size() > 0) {
 						for (DettaglioComunicazioneType comunicazione : comunicazioniDaEliminare) {
 							this.comunicazioniManager.deleteComunicazione(comunicazione.getApplicativo(), comunicazione.getId());
 						}
 					}
-
+					
 					// aggiornare le altre comunicazioni...
 					if(!comunicazioniDaAggiornare.isEmpty()) {
 						this.comunicazioniManager.updateStatoComunicazioni(
@@ -1409,4 +1457,171 @@ public class RettificaOffertaAction extends EncodedDataAction implements Session
 		}
 	}
 
+	/**
+	 * trova l'elenco di tutte le rettifiche (richieste, risposte, invii) relative alle busta da eliminare  
+	 */
+	private List<DettaglioComunicazioneType> recuperaComunicazioniRichiesteRettifica(List<DettaglioComunicazioneType> comunicazioniBuste) {
+		List<DettaglioComunicazioneType> daEliminare = null;
+		Event evento = null;
+		try {
+			// cancellare tutte le FS12 con COMMODELLO valorizzato sulla gara (e nel caso di gara a lotti, sui lotti usati nello specifico plico)
+			// comunicazioni di richieste di rettifica
+			// cancellare tutte le comunicazioni in arrivo da appalti (IDPRG=PG) con COMMODELLO valorizzato tra 10 e 18, relative alla gara (COMKEY2), 
+			// e nel caso di gara a lotti con COMKEY3 valorizzato con uno dei lotti offerti nel plico annullato
+			evento = new Event();
+			evento.setUsername(username);
+			evento.setDestination(codice);
+			evento.setLevel(Event.Level.INFO);
+			evento.setEventType(PortGareEventsConstants.ELIMINAZIONE_COMUNICAZIONE);
+			evento.setMessage("Annullamento delle comunicazioni di rettifica");
+			evento.setIpAddress(this.getCurrentUser().getIpAddress());
+
+			// recupera tutte le richieste/invii di rettifica e le risposte (accettata,rifiutata) per l'utente su questa gara
+			daEliminare = new ArrayList<DettaglioComunicazioneType>();
+			
+			List<DettaglioComunicazioneType> richiesteTec = getComunicazioniRettificaBuste(PortGareSystemConstants.BUSTA_TECNICA, comunicazioniBuste);
+			List<DettaglioComunicazioneType> richiesteEco = getComunicazioniRettificaBuste(PortGareSystemConstants.BUSTA_ECONOMICA, comunicazioniBuste);
+
+// DEBUG TO SCREEN
+//richiesteTec.forEach(c -> System.out.println("rettifiche TEC elimina " + c.getApplicativo() + ", " + c.getId() + ", " + c.getModello()));
+//richiesteEco.forEach(c -> System.out.println("rettifiche ECO elimina " + c.getApplicativo() + ", " + c.getId() + ", " + c.getModello()));
+			
+			if(richiesteTec != null)
+				for(DettaglioComunicazioneType r : richiesteTec)
+					daEliminare.add(r);
+			
+			if(richiesteEco != null)
+				for(DettaglioComunicazioneType r : richiesteEco)
+					daEliminare.add(r);
+			
+		} catch (ApsException e) {
+			ApsSystemUtils.getLogger().error(e.getMessage());
+			ApsSystemUtils.logThrowable(e, this, "eliminaRichiesteRettifica");
+			ExceptionUtils.manageExceptionError(e, this);
+			evento.setError(e);
+		} catch (Throwable t) {
+			ApsSystemUtils.getLogger().error(t.getMessage());
+			ApsSystemUtils.logThrowable(t, this, "eliminaRichiesteRettifica");
+			ExceptionUtils.manageExceptionError(t, this);
+			evento.setError(t);
+		} finally {
+			if(evento != null)
+				eventManager.insertEvent(evento);
+		}
+		return daEliminare;
+	}
+	
+	/**
+	 * recupera tutte le comunicazioni di richiesta/invio rettifica e le relative risposte (modello=10,11,12,13,15,16,17,18) 
+	 * relative alle buste (FS11B,FS11C)
+	 */
+	private List<DettaglioComunicazioneType> getComunicazioniRettificaBuste(
+			int tipoBusta
+			, List<DettaglioComunicazioneType> comunicazioniBuste
+	) throws ApsException {
+		List<DettaglioComunicazioneType> daEliminare = new ArrayList<DettaglioComunicazioneType>();
+		
+		// filtra solo le richieste di rettifiche relative alle comunicazioni delle buste
+		List<DettaglioComunicazioneType> comunicazioni = getComunicazioniRettifica(tipoBusta, FasiRettifica.RICHIESTA);
+		final List<DettaglioComunicazioneType> richieste = (comunicazioni != null
+			? comunicazioni.stream()
+					.filter(r -> comunicazioniBuste.stream()
+									.anyMatch(b -> isComunicazioneRettificaBusta(r, b)))
+					.collect(Collectors.toList())
+			: null
+		); 
+		if(comunicazioni != null)
+			comunicazioni.stream()
+				.forEach(r -> daEliminare.add(r));
+		
+		// filtra solo gli invii di rettifiche relative alle comunicazioni delle buste
+		comunicazioni = getComunicazioniRettifica(tipoBusta, FasiRettifica.RETTIFICA);
+		if(comunicazioni != null)
+			comunicazioni.stream()
+				.filter(r -> comunicazioniBuste.stream()
+									.anyMatch(b -> isComunicazioneRettificaBusta(r, b)))
+				.forEach(r -> daEliminare.add(r));
+		
+		// filtra solo le accettazioni relative alle richieste rettifiche
+		comunicazioni = getComunicazioniRisposta(tipoBusta, FasiRettifica.ACCETTAZIONE);
+		if(comunicazioni != null)
+			comunicazioni.stream()
+				.filter(a -> richieste.stream()
+									.anyMatch(r -> isComunicazioneRisposta(a, r)))
+				.forEach(a -> daEliminare.add(a));
+		
+		// filtra solo i rifiuti relative alle richieste rettifiche
+		comunicazioni = getComunicazioniRisposta(tipoBusta, FasiRettifica.RIFIUTO);
+		if(comunicazioni != null)
+			comunicazioni.stream()
+				.filter(ri -> richieste.stream()
+									.anyMatch(r -> isComunicazioneRisposta(ri, r)))
+				.forEach(ri -> daEliminare.add(ri));
+		
+		return daEliminare; 
+	}
+	
+	/**
+	 * recupera tutte le comunicazioni di richiesta o invio rettifica (PA, FS12, modello=10,13,15,18) 
+	 * relative alle buste (FS11B,FS11C)
+	 */
+	private List<DettaglioComunicazioneType> getComunicazioniRettifica(int tipoBusta, FasiRettifica fase) throws ApsException {
+		DettaglioComunicazioneType filtri = new DettaglioComunicazioneType();
+		filtri.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
+		filtri.setTipoComunicazione(PortGareSystemConstants.RICHIESTA_INVIO_COMUNICAZIONE);
+		filtri.setChiave1(getCurrentUser().getUsername());
+		filtri.setChiave2(codice);
+		//filtri.setChiave2(codiceLotto);
+		filtri.setModello(WizardRettificaHelper.getFaseRettifica(tipoBusta, fase));
+		List<DettaglioComunicazioneType> richieste = comunicazioniManager.getElencoComunicazioni(filtri);
+		return richieste; 
+	}
+	
+	/**
+	 * recupera tutte le comunicazioni di risposta delle richieste (PG, modello=11,12,16,17) 
+	 */
+	private List<DettaglioComunicazioneType> getComunicazioniRisposta(int tipoBusta, FasiRettifica fase) throws ApsException {
+		DettaglioComunicazioneType filtri = new DettaglioComunicazioneType();
+		filtri.setApplicativo(CommonSystemConstants.ID_APPLICATIVO_GARE);
+		filtri.setChiave1(codice);
+		//filtri.setChiave2(codiceLotto);
+		filtri.setModello(WizardRettificaHelper.getFaseRettifica(tipoBusta, fase));
+		List<DettaglioComunicazioneType> risposte = comunicazioniManager.getElencoComunicazioni(filtri);
+
+		if(risposte != null) 
+			risposte = risposte.stream()
+				.filter(a -> "3".equals(a.getStato()) || "4".equals(a.getStato()))
+				.collect(Collectors.toList());
+		return risposte;
+	}
+
+	/**
+	 * verifica se una richiesta/invio rettifica e' relativa alla comunicazione della busta (FS12 => FS11B, FS11C)
+	 */
+	private boolean isComunicazioneRettificaBusta(DettaglioComunicazioneType richiesta, DettaglioComunicazioneType busta) {
+		boolean isEqual = false;
+		if(PortGareSystemConstants.RICHIESTA_INVIO_COMUNICAZIONE.equals(richiesta.getTipoComunicazione())) {
+			int tipoBusta = WizardRettificaHelper.getBustaFromModello(richiesta.getModello());
+			String lotto = (StringUtils.isNotEmpty(richiesta.getChiave3()) ? richiesta.getChiave3() : null);
+			boolean isCodiceEqual = (lotto == null && codice.equals(busta.getChiave2())) || (lotto != null && lotto.equals(busta.getChiave2()));
+			
+			if(tipoBusta == PortGareSystemConstants.BUSTA_TECNICA && PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_TECNICA.equals(busta.getTipoComunicazione()))
+				isEqual = isCodiceEqual;
+			else if(tipoBusta == PortGareSystemConstants.BUSTA_ECONOMICA && PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_ECONOMICA.equals(busta.getTipoComunicazione())) 
+				isEqual = isCodiceEqual;
+		}
+		return isEqual;
+	}
+
+	/**
+	 * ...
+	 */
+	private boolean isComunicazioneRisposta(DettaglioComunicazioneType risposta, DettaglioComunicazioneType comunicazione) {
+		String idprgrisp = (risposta.getApplicativoRisposta() != null ? risposta.getApplicativoRisposta() : ""); 
+		long idrisp = (risposta.getIdRisposta() != null ? risposta.getIdRisposta().longValue() : -1L);
+		String idprg = (comunicazione.getApplicativo() != null ? comunicazione.getApplicativo() : ""); 
+		long id = (comunicazione.getId() != null ? comunicazione.getId().longValue() : -1L);
+		return idprgrisp.equals(idprg) && idrisp == id;
+	}
+	
 }

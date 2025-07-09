@@ -38,7 +38,7 @@
 			</div> --%>
 			<!-- TODO href to element -->
 			<div align="right">
-			<a href='<wp:action path="/ExtStr2/do/FrontEnd/PagoPA/dettaglioPagamento.action"/>&amp;model.id=<s:property value="id"/>&amp;${tokenHrefParams}' 
+			<a href='<wp:action path="/ExtStr2/do/FrontEnd/PagoPA/dettaglioPagamento.action"/>&amp;model.id=<s:property value="id"/>' 
 				   title="<wp:i18n key="LINK_VIEW_PAGOPA_DETT" />" class="bkg summary">
 					<wp:i18n key="LINK_VIEW_PAGOPA_DETT" />
 				</a>

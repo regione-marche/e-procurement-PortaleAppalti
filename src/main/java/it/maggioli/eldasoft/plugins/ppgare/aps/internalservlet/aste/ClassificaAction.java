@@ -12,6 +12,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -34,6 +36,7 @@ import com.agiletec.aps.system.services.user.UserDetails;
  * @version 1.0
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class ClassificaAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID 
@@ -168,6 +171,15 @@ public class ClassificaAction extends EncodedDataAction implements SessionAware 
 	public String view() {
 		this.setTarget(SUCCESS);
 
+		String codiceGara = (this.codiceLotto != null && !this.codiceLotto.isEmpty() 
+     			 			 ? this.codiceLotto : this.codice);
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.ASTA, codiceGara) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+		
 		try {
 			this.session.remove(PortGareSystemConstants.SESSION_ID_RILANCIO_PREZZI_UNITARI);
 			this.session.remove(PortGareSystemConstants.SESSION_ID_RILANCIO_PREZZI_UNITARI_NON_SOGGETTE);
@@ -177,11 +189,8 @@ public class ClassificaAction extends EncodedDataAction implements SessionAware 
 			// personali dell'utente 
 			UserDetails userDetails = this.getCurrentUser();
 			if (null != userDetails
-				&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-				
-				String codiceGara = (this.codiceLotto != null && !this.codiceLotto.isEmpty() 
- 			             			 ? this.codiceLotto : this.codice);
-
+				&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+			{
 				// metti in sessione i dati della gara...
 				DettaglioGaraType gara = this.bandiManager.getDettaglioGara(codice);
 				this.session.put(PortGareSystemConstants.SESSION_ID_DETT_GARA, gara);

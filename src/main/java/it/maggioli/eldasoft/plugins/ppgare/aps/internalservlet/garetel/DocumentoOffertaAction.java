@@ -5,6 +5,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaDocumenti;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.helpers.WizardOffertaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -17,6 +19,7 @@ import com.agiletec.aps.system.exception.ApsException;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class DocumentoOffertaAction extends DocumentoBustaAction {
 	/**
 	 * UID
@@ -51,6 +54,7 @@ public class DocumentoOffertaAction extends DocumentoBustaAction {
 	/**
 	 * elimina un allegato richiesto
 	 */
+	@Override
 	public String deleteAllegatoRichiesto() {
 		String target = SUCCESS;
 		try {
@@ -124,6 +128,7 @@ public class DocumentoOffertaAction extends DocumentoBustaAction {
 	/**
 	 * elimina un allegato ulteriore
 	 */
+	@Override
 	public String deleteAllegatoUlteriore() {
 		String target = SUCCESS;
 		try {

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiVariazioniPrezzoScadenza" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiVariazioniPrezzoScadenza" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42" uuid="a45440a3-c7f0-4d6f-8ab0-cbdbaae594b2">
 	<property name="ireport.zoom" value="1.3310000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Wed Feb 05 15:49:26 CET 2014"/>
-	<subDataset name="variazioni_prezzo_scadenza">
+	<subDataset name="variazioni_prezzo_scadenza" uuid="ea3ccd7b-ddae-42b1-80ef-6cb6e8ab12a6">
 		<queryString language="xPath">
 			<![CDATA[/ReportGestioneProdotti/aggiornamenti/prodotto]]>
 		</queryString>
@@ -105,7 +106,9 @@
 	<detail>
 		<band height="50" splitType="Immediate">
 			<subreport>
-				<reportElement x="0" y="0" width="483" height="17"/>
+				<reportElement x="0" y="0" width="483" height="17" uuid="64a31e41-3d36-41b5-8508-ec201680fdc6">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
+				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -113,10 +116,10 @@
 					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "TestataModificheProdotti.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TestataModificheProdotti.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="17" width="483" height="17" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="17" width="483" height="17" isRemoveLineWhenBlank="true" uuid="90a7b6f2-0f0a-48aa-a99a-945278d37071"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -124,15 +127,15 @@
 					<subreportParameterExpression><![CDATA[$P{ROOT_TAG}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti/aggiornamenti/prodotto")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "VariazioniPrezzoScadenza.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "VariazioniPrezzoScadenza.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="34" width="483" height="16"/>
+				<reportElement positionType="Float" x="0" y="34" width="483" height="16" uuid="bcf96626-ceb1-4b4b-bacb-4c53d082a36e"/>
 				<subreportParameter name="CATALOGO">
 					<subreportParameterExpression><![CDATA[$P{CATALOGO}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/ReportGestioneProdotti")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FooterModificheProdotti.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FooterModificheProdotti.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

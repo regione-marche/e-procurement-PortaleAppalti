@@ -35,6 +35,8 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractMul
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDataBean;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
+
 /**
  *  Class used to handle resource objects.
  *    
@@ -53,6 +55,14 @@ public class ResourceAction extends AbstractResourceAction implements IResourceA
 			this.checkFileName();
 			if (this.hasFieldErrors()) return;
 			this.checkDuplicateFile(resourcePrototype);
+			if (this.hasFieldErrors()) return;
+			this.checkContentFileType();
+		}
+	}
+	
+	private void checkContentFileType() {
+		if(!UploadValidator.checkTikaFileContent(_file, _filename, null, null)) {
+			this.addFieldError("upload", this.getText("Resource.file.wrongFormat"));
 		}
 	}
 	

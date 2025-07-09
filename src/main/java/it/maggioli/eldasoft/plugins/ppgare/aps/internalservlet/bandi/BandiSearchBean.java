@@ -6,15 +6,13 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParam
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
-
 /**
  * Bean per la raccolta dei criteri di filtro nelle form di ricerca bandi.
  * 
  * @author Stefano.Sabbadin
  * @since 1.8.0
  */
-public class BandiSearchBean extends BaseSearchBean implements Serializable {
+public class BandiSearchBean extends BaseSearchBean {
 	/**
 	 * 
 	 */

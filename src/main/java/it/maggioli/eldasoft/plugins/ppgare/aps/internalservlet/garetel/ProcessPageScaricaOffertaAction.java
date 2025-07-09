@@ -12,10 +12,11 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -25,6 +26,11 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPageScaricaOffertaAction extends AbstractProcessPageAction { 
 	/**
 	 * UID
@@ -286,51 +292,9 @@ public class ProcessPageScaricaOffertaAction extends AbstractProcessPageAction {
 			return CommonSystemConstants.PORTAL_ERROR;
 		} 
 
-		WizardDatiImpresaHelper datiImpresaHelper = helper.getImpresa();
+		helper.saveFirmatarioMandataria(this.firmatarioSelezionato);
 		
-		SoggettoFirmatarioImpresaHelper firmatario = new SoggettoFirmatarioImpresaHelper();
-		
-		boolean mandatariaTrovata = false;
-		for(int i = 0; i < helper.getListaFirmatariMandataria().size() && !mandatariaTrovata; i++) {
-			ISoggettoImpresa soggettoFromLista = null;
-			
-			String listaFirmatarioSelezionato = StringUtils.substring(
-					this.firmatarioSelezionato, 0, this.firmatarioSelezionato.indexOf("-"));
-			int indiceFirmatarioSelezionato = Integer.parseInt(StringUtils.substring(
-					this.getFirmatarioSelezionato(), 
-					this.getFirmatarioSelezionato().indexOf("-") + 1, 
-					this.getFirmatarioSelezionato().length()));
-			
-			if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_ALTRE_CARICHE)) {
-				soggettoFromLista = datiImpresaHelper.getAltreCaricheImpresa().get(indiceFirmatarioSelezionato);
-			} else if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_DIRETTORI_TECNICI)) {
-				soggettoFromLista = datiImpresaHelper.getDirettoriTecniciImpresa().get(indiceFirmatarioSelezionato);
-			} else {
-				soggettoFromLista = datiImpresaHelper.getLegaliRappresentantiImpresa().get(indiceFirmatarioSelezionato);
-			}
-
-			if(helper.getListaFirmatariMandataria().get(i).getNominativo()
-					.equalsIgnoreCase(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome())) {
-				mandatariaTrovata = true;
-			}
-			
-			firmatario.copyFrom(soggettoFromLista);
-			firmatario.setNominativo(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome());
-
-			helper.setIdFirmatarioSelezionatoInLista(i);
-		}
-
-		// CF,PIVA impresa 
-		firmatario.setCodiceFiscaleImpresa(datiImpresaHelper.getDatiPrincipaliImpresa().getCodiceFiscale());
-		firmatario.setPartitaIvaImpresa(datiImpresaHelper.getDatiPrincipaliImpresa().getPartitaIVA());
-
-		// aggiungi il firmatario all'helper...
-		helper.getComponentiRTI().addFirmatario(datiImpresaHelper.getDatiPrincipaliImpresa(), firmatario);
-		
-		helper.setDatiModificati(true);
 		helper.deleteDocumentoOffertaEconomica(this, this.eventManager);
-		helper.setRigenPdf(true);
-		helper.setPdfUUID(null);
 		
 		return target;
 	}
@@ -381,10 +345,7 @@ public class ProcessPageScaricaOffertaAction extends AbstractProcessPageAction {
 
 		helper.getComponentiRTI().addFirmatario(componente, firmatario);
 		
-		helper.setDatiModificati(true);
 		helper.deleteDocumentoOffertaEconomica(this, this.eventManager);
-		helper.setRigenPdf(true);
-		helper.setPdfUUID(null);
 		
 		return target;
 	}

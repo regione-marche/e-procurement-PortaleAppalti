@@ -35,24 +35,24 @@
 				<s:iterator var="riga" value="comunicazioni.dati" status="status">
 					
 					<s:if test="%{genere == 10}" >
-						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</s:if>
 					<s:elseif test="%{genere == 20}" >
-						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</s:elseif>
 					<s:elseif test="%{genere == 100}" >
-						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewFromLotto.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewFromLotto.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</s:elseif>
 					<%--
  					<s:elseif test="%{genere == 4}" >
- 						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+ 						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/></c:set>
  					</s:elseif>
 					--%>
 					<s:elseif test="%{genere == 11}" >
-						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</s:elseif>
 					<s:else>
-						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set> 							
+						<c:set var ="href"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</s:else>
 
 					<div class="list-item">

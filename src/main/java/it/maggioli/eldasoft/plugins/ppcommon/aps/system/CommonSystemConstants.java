@@ -8,6 +8,9 @@ package it.maggioli.eldasoft.plugins.ppcommon.aps.system;
  */
 public interface CommonSystemConstants {
 
+
+    public static final String STIPULE_MANAGER = "WSStipule";
+
 	/**
 	 * Codice del sender da utilizzare in chiamata al plugin jpmail per l'invio mail.
 	 */

@@ -1,23 +1,17 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.apsadmin.system.BaseAction;
+
+import it.eldasoft.sil.portgare.datatypes.DatiImpresaDocument;
 import it.eldasoft.sil.portgare.datatypes.TipoPartecipazioneDocument;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
+import it.eldasoft.www.sil.WSGareAppalto.ImpresaAusiliariaType;
+import it.eldasoft.www.sil.WSGareAppalto.InvitoGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.LottoGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.TipoPartecipazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
@@ -25,10 +19,24 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IImpresaAusiliaria;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ImpresaAusiliariaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
+
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * ... 
@@ -378,7 +386,7 @@ public class BustaPartecipazione extends BustaGara {
 	 * conferma ed invia la busta al servizio
 	 * @throws Throwable 
 	 */
-	public boolean sendConfirm() throws Throwable {
+	public boolean sendConfirm(InputStream iccFile) throws Throwable {
 		GestioneBuste.traceLog("BustaPartecipazione.sendConfirm " + this.comunicazioneFlusso.getTipoComunicazione() + 
 				   " " +(StringUtils.isNotEmpty(this.codiceLotto) ? this.codiceLotto : this.codiceGara) +
 	               " idCom=" + this.comunicazioneFlusso.getId());
@@ -416,7 +424,10 @@ public class BustaPartecipazione extends BustaGara {
 					saProcedura = this.gestioneBuste.getDettaglioGara().getStazioneAppaltante().getCodice();
 				}
 				
-				Integer tipoProtocollazione = this.gestioneBuste.getAppParamManager().getTipoProtocollazione(saProcedura);
+				Integer tipoProtocollazione =
+						gestioneBuste.isConcorsoProgettazionePubblico() || gestioneBuste.isConcorsoProgettazioneRiservato()
+						? new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA)
+						: this.gestioneBuste.getAppParamManager().getTipoProtocollazione(saProcedura);
 
 				// imposta lo stato della busta...
 				String stato = CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE;
@@ -433,7 +444,7 @@ public class BustaPartecipazione extends BustaGara {
 			
 				// verifica la presenza dell'allegato del PDF di riepilogo
 				// se non esiste viene aggiunto automaticamente agli allegati della comunicazione
-				byte[] pdfRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste();
+				byte[] pdfRiepilogo = bustaRiepilogo.getPdfRiepilogoBuste(iccFile);
 				
 				// ed invia la comunicazione aggiornata...
 				continua = continua && this.send(stato);
@@ -458,6 +469,10 @@ public class BustaPartecipazione extends BustaGara {
 	public XmlObject getBustaDocument() throws XmlException {
 		//return this.helper.getXmlDocumentTipoPartecipazione();
 		return null;
+	}
+	
+	@Override
+	protected void invalidateHelper() throws Throwable {
 	}
 	
 	/**
@@ -568,6 +583,10 @@ public class BustaPartecipazione extends BustaGara {
 	
 				// NB: dal BO per le gare negoziate editRti=False !!! 
 				this.helper.setRtiBO(tipoPartecipazione.isRti());
+				
+				if (invioOfferta && tipoPartecipazione.isRti()) {
+					this.helper.setDenominazioneRTIReadonly(true);		// la denominazione RTI non va resa editabile ma resta editabile solo il codice CNEL
+				}
 			} else {
 				// aperte
 				if(gara.getDatiGeneraliGara().isProceduraTelematica()) {
@@ -643,7 +662,7 @@ public class BustaPartecipazione extends BustaGara {
 			if(caricaDaComunicazione) {
 				String xml = null;
 				if(invioOfferta && ristretta && idPartecipazione > 0 && this.comunicazioneFlusso.getId() <= 0) {
-					// ristretta in fase di offerta senza FS11
+					// ristretta in fase di offerta SENZA FS11
 					xml = this.domandaPartecipazione.getXmlDoc();
 				} else if (this.comunicazioneFlusso.getId() > 0) {
 					xml = this.comunicazioneFlusso.getXmlDoc();
@@ -653,7 +672,21 @@ public class BustaPartecipazione extends BustaGara {
 				}
 				TipoPartecipazioneDocument document = TipoPartecipazioneDocument.Factory.parse(xml);
 				this.helper.fillFromXml(document);
+				
+				// gare RISTRETTE, dato che lato BO alcuni dati potrebbero essere modificati
+				// per qualunque motivo, 
+				// - rileggi codice CNEL da BO
+				// - rileggi gli avvalimenti da BO (PORTAPPALT-1219)
+				if(invioOfferta && ristretta) {
+					getCodiceCNELFromBO();
+					getAvvalimentiFromBO();
+				}
 			} 
+			
+			// recupera il codice CNEL dell'impresa devfinito in BO
+			if(StringUtils.isEmpty(this.helper.getCodiceCNEL())) {
+				this.helper.setCodiceCNEL(impresa.getDatiUlterioriImpresa().getCodiceCNEL());
+			}
 			
 			// configura gli step del wizard
 			this.helper.fillStepsNavigazione();
@@ -665,6 +698,43 @@ public class BustaPartecipazione extends BustaGara {
 		return (this.helper != null);
 	}
 
+	/**
+	 * ...
+	 */
+	public static LottoGaraType[] getLottiGara(
+			String username, 
+			String codiceGara,
+			int operazione,
+			String progOfferta,
+			int tipologiaGara,
+			IBandiManager bandiManager
+	) throws ApsException {
+		// recupera i lotti di gara da BO...
+		LottoGaraType[] lottiGara = null;
+		if(PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA == operazione) {
+			lottiGara = bandiManager.getLottiGaraPerDomandePartecipazione(
+					codiceGara, 
+					progOfferta);
+			
+		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA == operazione) {
+			if( PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_PLICO_UNICO == tipologiaGara ) {
+				lottiGara = bandiManager.getLottiGaraPlicoUnicoPerRichiesteOfferta(
+						username, 
+						codiceGara, 
+						progOfferta);
+			} else {
+				lottiGara = bandiManager.getLottiGaraPerRichiesteOfferta(
+						username, 
+						codiceGara, 
+						progOfferta);
+			}
+			
+		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_COMPROVA_REQUISITI == operazione) {
+			lottiGara = bandiManager.getLottiGaraPerRichiesteCheckDocumentazione(username, codiceGara);
+		}
+		return lottiGara;
+	}
+	
 	/**
 	 * Estrae da BO i lotti ammessi/abilitati per una gara.
 	 *  
@@ -679,8 +749,8 @@ public class BustaPartecipazione extends BustaGara {
 		List<String> oggettiLotti = null;
 		List<String> lottiInterni = null;
 
-		IBandiManager bandiManager = this.gestioneBuste.getBandiManager();
-		DettaglioGaraType gara = this.gestioneBuste.getDettaglioGara();
+//		IBandiManager bandiManager = this.gestioneBuste.getBandiManager();
+//		DettaglioGaraType gara = this.gestioneBuste.getDettaglioGara();
 		
 		// NB: per le gare ristrette in fase di offerta vanno recuperati solo i lotti ammessi in prequalifica
 		//     quindi solo per i plichi che hanno una prequalifica (FS10) 
@@ -692,28 +762,36 @@ public class BustaPartecipazione extends BustaGara {
 		}
 		
 		// recupera i lotti di gara da BO...
-		LottoGaraType[] lottiGara = null;
-		if(PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA == this.operazione) {
-			lottiGara = bandiManager.getLottiGaraPerDomandePartecipazione(
-					this.codiceGara, 
-					progOfferta);
-			
-		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA == this.operazione) {
-			if( PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_PLICO_UNICO == gara.getDatiGeneraliGara().getTipologia() ) {
-				lottiGara = bandiManager.getLottiGaraPlicoUnicoPerRichiesteOfferta(
-						this.username, 
-						this.codiceGara, 
-						progOfferta);
-			} else {
-				lottiGara = bandiManager.getLottiGaraPerRichiesteOfferta(
-						this.username, 
-						this.codiceGara, 
-						progOfferta);
-			}
-			
-		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_COMPROVA_REQUISITI == this.operazione) {
-			lottiGara = bandiManager.getLottiGaraPerRichiesteCheckDocumentazione(this.username, this.codiceGara);
-		}
+//		LottoGaraType[] lottiGara = null;
+//		if(PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA == this.operazione) {
+//			lottiGara = bandiManager.getLottiGaraPerDomandePartecipazione(
+//					this.codiceGara, 
+//					progOfferta);
+//			
+//		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA == this.operazione) {
+//			if( PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_PLICO_UNICO == gara.getDatiGeneraliGara().getTipologia() ) {
+//				lottiGara = bandiManager.getLottiGaraPlicoUnicoPerRichiesteOfferta(
+//						this.username, 
+//						this.codiceGara, 
+//						progOfferta);
+//			} else {
+//				lottiGara = bandiManager.getLottiGaraPerRichiesteOfferta(
+//						this.username, 
+//						this.codiceGara, 
+//						progOfferta);
+//			}
+//			
+//		} else if(PortGareSystemConstants.TIPOLOGIA_EVENTO_COMPROVA_REQUISITI == this.operazione) {
+//			lottiGara = bandiManager.getLottiGaraPerRichiesteCheckDocumentazione(this.username, this.codiceGara);
+//		}
+		LottoGaraType[] lottiGara = getLottiGara(
+				username, 
+				codiceGara,
+				operazione,
+				progOfferta,
+				this.gestioneBuste.getDettaglioGara().getDatiGeneraliGara().getTipologia(),
+				this.gestioneBuste.getBandiManager()
+		);
 		
 		if(lottiGara != null) {
 			lottiAttivi = new ArrayList<String>();
@@ -745,10 +823,10 @@ public class BustaPartecipazione extends BustaGara {
 		List<String> lottiAttivi = new ArrayList<String>();
 		
 		// lotti definiti per la gara
-		if(this.helper != null) {
-			if(this.helper.getLotti() != null && this.helper.getLotti().size() > 0) {
+		if(helper != null) {
+			if(helper.getLotti() != null && helper.getLotti().size() > 0) {
 				lottiAttivi.clear();
-				Iterator<String> lottiIterator = this.helper.getLotti().iterator();
+				Iterator<String> lottiIterator = helper.getLotti().iterator();
 				while(lottiIterator.hasNext()) {
 					lottiAttivi.add(lottiIterator.next());
 				}
@@ -758,18 +836,74 @@ public class BustaPartecipazione extends BustaGara {
 		// NB: 
 		// per le RISTRETTE in fase di offerta i lotti ammessi 
 		// sono quelli presentati in prequalifica 
-		if (this.gestioneBuste.isInvioOfferta() && this.gestioneBuste.isRistretta()) {
-			if(this.lottiAmmessiPrequalifica != null) {
+		if (gestioneBuste.isInvioOfferta() && gestioneBuste.isRistretta()) {
+			if(lottiAmmessiPrequalifica != null) {
 				// preparo l'elenco dei lotti abilitati in fase 
-				// di domanda di prequalifica  
-				lottiAttivi.clear();
-				for(int i = 0; i < this.lottiAmmessiPrequalifica.size(); i++) {
-					lottiAttivi.add(this.lottiAmmessiPrequalifica.get(i));
+				// di domanda di prequalifica
+				// e verifica che il lotto di prequalifica 
+				// sia tra quelli selezionati fase di offerta
+				List<String> lotti = new ArrayList<String>();
+				for(int i = 0; i < lottiAmmessiPrequalifica.size(); i++) {
+					if(lottiAttivi.contains(lottiAmmessiPrequalifica.get(i))) {
+						lotti.add(lottiAmmessiPrequalifica.get(i));
+					}
 				}
+				lottiAttivi = lotti;
 			}
 		}
 		
 		return lottiAttivi;
+	}
+
+	private void getCodiceCNELFromBO() throws ApsException {
+		List<InvitoGaraType> inviti = gestioneBuste.getBandiManager().getElencoInvitiGara(this.username, this.codiceGara);
+		if (inviti != null) {
+			// in caso di gare a lotti il codice CNEL viene memorizzato nei lotti del plico
+			InvitoGaraType invito = inviti.stream()
+				.filter(i -> progressivoOfferta.equals(i.getProgressivoOfferta()) && StringUtils.isNotEmpty(i.getCodiceCNEL()))
+				.findFirst()
+				.orElse(null);
+			if(invito != null) {
+				this.helper.setCodiceCNEL(invito.getCodiceCNEL());
+			}
+		}
+	}
+	
+	private void getAvvalimentiFromBO() throws ApsException {
+		// sincronizza le imprese ausiliare con quelle prensenti in BO (es: caso ristrette in offerta)
+		List<IImpresaAusiliaria> imprese = this.helper.getImpreseAusiliarie();
+		
+		// recupera eventuali imprese ausiliaria in BO
+		List<ImpresaAusiliariaType> impreseBO = gestioneBuste.getBandiManager().getImpreseAusiliarie(
+				this.username, 
+				this.codiceGara,
+				this.progressivoOfferta
+		);
+		if(impreseBO != null && impreseBO.size() > 0) {
+			if(imprese == null)
+				imprese = new ArrayList<IImpresaAusiliaria>();
+			for(ImpresaAusiliariaType ibo : impreseBO) {
+				boolean exists = imprese.stream()
+						.anyMatch(i -> ("2".equals(ibo.getAmbitoTerritoriale()) &&			// =2 OE NON italiano 
+											ibo.getIdFiscaleEstero().equalsIgnoreCase(i.getIdFiscaleEstero())
+									   )
+									   || (!"2".equals(ibo.getAmbitoTerritoriale()) && 		// <>2 OE italiano
+											(StringUtils.trimToEmpty(ibo.getCodiceFiscale()).equalsIgnoreCase(StringUtils.trimToEmpty(i.getCodiceFiscale())) 
+											 && StringUtils.trimToEmpty(ibo.getPartitaIVA()).equalsIgnoreCase(StringUtils.trimToEmpty(i.getPartitaIVA())))
+									   )
+						);
+				if( !exists ) {
+					// se la ditta in BO non e' gia' presente nell'elenco delle imprese ausiliarie, 
+					// aggiungila all'elenco
+					ImpresaAusiliariaHelper impresaAusiliaria = new ImpresaAusiliariaHelper();
+					ImpresaAusiliariaHelper.copyTo(ibo, impresaAusiliaria);
+					imprese.add(impresaAusiliaria);
+				}
+			}
+		}
+			
+		this.helper.setImpreseAusiliarie(imprese);
+		this.helper.setAvvalimento(this.helper.getImpreseAusiliarie() != null && this.helper.getImpreseAusiliarie().size() > 0);
 	}
 
 }

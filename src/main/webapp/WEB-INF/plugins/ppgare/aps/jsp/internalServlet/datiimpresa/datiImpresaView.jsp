@@ -32,10 +32,10 @@
 	<div id="linkCreatePdf">
 		<c:choose>
 			<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-				<s:a href="%{#urlPdf}&amp;%{#attr.tokenHrefParams}" title="%{#labelStampaAnagrafica}"><wp:i18n key="BUTTON_DATI_OE_STAMPA_ANAGRAFICA" /></s:a>
+				<s:a href="%{#urlPdf}" title="%{#labelStampaAnagrafica}"><wp:i18n key="BUTTON_DATI_OE_STAMPA_ANAGRAFICA" /></s:a>
 			</c:when>
 			<c:otherwise>
-				<a href="${urlPdf}&amp;${tokenHrefParams}" title="${labelStampaAnagrafica}" class="bkg download"></a> 
+				<a href="${urlPdf}" title="${labelStampaAnagrafica}" class="bkg download"></a> 
 			</c:otherwise>
 		</c:choose>
 		${labelStampaAnagrafica}.

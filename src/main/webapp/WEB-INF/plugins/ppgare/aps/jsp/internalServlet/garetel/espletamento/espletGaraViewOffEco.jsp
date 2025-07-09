@@ -17,8 +17,6 @@
 
 	<h2><wp:i18n key="TITLE_PAGE_GARETEL_OFFERTA_ECONOMICA" /></h2>
 
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
-
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_OFFERTA_ECONOMICA"/>
 	</jsp:include>
@@ -97,25 +95,65 @@ showAmmissione=${showAmmissione}<br/>
 			<table id="tableOperatori" summary="Tabella operatori" class="info-table">
 				<thead>
 					<tr>
-						<th scope="col"><wp:i18n key="LABEL_NUMERO_PLICO" /></th>
-						<th scope="col"><wp:i18n key="LABEL_CODICE_LOTTO" /></th>
-						<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						<th scope="col">
+							<wp:i18n key="LABEL_NUMERO_PLICO" />
+							<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+								<jsp:param name="identifier" value="PLICO" />
+								<jsp:param name="action" value="espletGaraViewOffEco" />
+							</jsp:include>
+						</th>
+						<s:if test="%{lotto != null}">
+							<th scope="col"><wp:i18n key="LABEL_CODICE_LOTTO" /></th>
+						</s:if>
+						<s:if test="%{!hideFiscalCode}">
+							<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						</s:if>
 						<th scope="col"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></th>
 						<th scope="col"><wp:i18n key="LABEL_BUSTA_ECONOMICA" /></th>
 						<c:if test="${showImportoOfferto}" >
-							<th scope="col"><wp:i18n key="LABEL_IMPORTO_OFFERTO" /></th>
+							<th scope="col">
+								<wp:i18n key="LABEL_IMPORTO_OFFERTO" />
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+									<jsp:param name="identifier" value="IMPORTO" />
+									<jsp:param name="action" value="espletGaraViewOffEco" />
+								</jsp:include>
+							</th>
 						</c:if>
 						<c:if test="${showRibassoOfferto}" >
-							<th scope="col"><wp:i18n key="LABEL_RIBASSO_OFFERTO" /></th> 
+							<th scope="col">
+								<wp:i18n key="LABEL_RIBASSO_OFFERTO" />
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+									<jsp:param name="identifier" value="RIBASSO" />
+									<jsp:param name="action" value="espletGaraViewOffEco" />
+								</jsp:include>
+							</th>
 						</c:if>
 						<c:if test="${showRialzoOfferto}" >
-							<th scope="col"><wp:i18n key="LABEL_RIALZO_OFFERTO" /></th> 
+							<th scope="col">
+								<wp:i18n key="LABEL_RIALZO_OFFERTO" />
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+									<jsp:param name="identifier" value="RIALZO" />
+									<jsp:param name="action" value="espletGaraViewOffEco" />
+								</jsp:include>
+							</th>
 						</c:if>
 						<c:if test="${showPunteggioEconomico}" >
-							<th scope="col"><wp:i18n key="LABEL_PUNTEGGIO_ECONOMICO" /></th>
+							<th scope="col">
+								<wp:i18n key="LABEL_PUNTEGGIO_ECONOMICO" />
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+									<jsp:param name="identifier" value="PUNTEGGIO" />
+									<jsp:param name="action" value="espletGaraViewOffEco" />
+								</jsp:include>
+							</th>
 						</c:if>
 						<c:if test="${showPunteggioRiparametrato}" >
-							<th scope="col"><wp:i18n key="LABEL_PUNTEGGIO_RIPARAMETRATO" /></th> 
+							<th scope="col">
+								<wp:i18n key="LABEL_PUNTEGGIO_RIPARAMETRATO" />
+								<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/espletOrderableColumn.jsp">
+									<jsp:param name="identifier" value="RIPARAMETRATO" />
+									<jsp:param name="action" value="espletGaraViewOffEco" />
+								</jsp:include>
+							</th>
 						</c:if>
 						<c:if test="${showSoccorso}" >
 							<th scope="col"><wp:i18n key="LABEL_SOCCORSO_ISTRUTTORIO_IN_CORSO" /></th>
@@ -137,12 +175,16 @@ showAmmissione=${showAmmissione}<br/>
 							<td>
 								<s:property value="#item.numeroPlico" /> 
 							</td>
-							<td>
-								<s:property value="%{lotto}" />
-							</td>
-							<td>
-								<s:property value="#item.codiceFiscale" />
-							</td>
+							<s:if test="%{lotto != null}">
+								<td>
+									<s:property value="%{codiceLotto}" />
+								</td>
+							</s:if>
+							<s:if test="%{!hideFiscalCode}">
+								<td>
+									<s:property value="#item.codiceFiscale" />
+								</td>
+							</s:if>
 							<td>
 								<s:property value="#item.ragioneSociale" />
 							</td>
@@ -190,7 +232,9 @@ showAmmissione=${showAmmissione}<br/>
 							</c:if>
 							<c:if test="${showPunteggioRiparametrato}" >
 								<td class="money-content">
-									<s:property value="#item.punteggioEconomicoRiparametrato" />
+									<s:if test="%{#item.punteggioEconomicoRiparametrato != null}" >
+										<s:text name="format.money"><s:param value="#item.punteggioEconomicoRiparametrato"/></s:text>
+									</s:if>
 								</td>
 							</c:if>	
 							<c:if test="${showSoccorso}" >
@@ -217,7 +261,7 @@ showAmmissione=${showAmmissione}<br/>
 							--%>
 							<td class="azioni">
 								<s:if test="%{#item.statoBusta == 2}" >
-								<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewOffEcoOperatore.action"/>&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}&amp;codiceOper=<s:property value="%{#item.codiceOperatore}"/>&amp;${tokenHrefParams}</c:set>
+								<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewOffEcoOperatore.action"/>&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}&amp;codiceOper=<s:property value="%{#item.codiceOperatore}"/></c:set>
 								<c:choose>
 									<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 										<a href='${href}' title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PLICO" />'>
@@ -262,13 +306,13 @@ showAmmissione=${showAmmissione}<br/>
 <div class="back-link">
 	<s:if test="%{lottiDistinti}" >
 		<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewOffEcoLotti.action" />
-		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}">
 			<wp:i18n key="LINK_BACK" />
 		</a>
 	</s:if>
 	<s:else>
 		<c:set var="href" value="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />
-		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="${href}" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK" />
 		</a>
 	</s:else>

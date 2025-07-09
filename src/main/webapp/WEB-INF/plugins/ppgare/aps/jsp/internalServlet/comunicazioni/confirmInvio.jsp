@@ -6,6 +6,14 @@
 <s:if test="%{from == 'rispondi'}">
 	<c:set var="pathProcedura" value="/ExtStr2/do/FrontEnd/Comunicazioni/openPageDettaglioComunicazioneRicevuta.action"/>
 </s:if>
+<s:elseif test="%{rettifica}">
+	<s:if test="%{codice2 != null && codice2 != ''}">
+		<c:set var="pathProcedura" value="/ExtStr2/do/FrontEnd/GareTel/riepilogoOfferteDistinte.action"/>
+	</s:if>
+	<s:else>
+		<c:set var="pathProcedura" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogoOfferta.action"/>
+	</s:else>
+</s:elseif>
 <s:else>
 	<c:if test="${sessionScope.comunicazioniEnititaProcedura == 'G1STIPULA'}">
 		<c:set var="pathProcedura" value="/ExtStr2/do/FrontEnd/Contratti/dettaglioStipulaContratti.action"/>
@@ -29,12 +37,15 @@
 		<s:else>
 			<c:set var="pathProcedura" value="/ExtStr2/do/FrontEnd/Bandi/view.action"/>
 		</s:else>
-	</c:if>	
+	</c:if>
 </s:else>
 
-<s:if test="%{soccorsoIstruttorio}" >
-	<c:set var="title"><wp:i18n key="TITLE_SOCCORSO_ISTRUTTORIO_NUOVO" /></c:set>
+<s:if test="%{rettifica}" >
+	<c:set var="title"><wp:i18n key="TITLE_RETTIFICA_OFFERTA" /></c:set>
 </s:if>
+<s:elseif test="%{soccorsoIstruttorio}" >
+	<c:set var="title"><wp:i18n key="TITLE_SOCCORSO_ISTRUTTORIO_NUOVO" /></c:set>
+</s:elseif>
 <s:else>
 	<c:set var="title"><wp:i18n key="TITLE_PAGE_COMUNICAZIONI_CONFERMA_INVIO" /></c:set>
 </s:else>
@@ -69,6 +80,10 @@
 				method="post" class="azione">
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 			<div>
+				<input type="hidden" name="codice2" value="<s:property value="codice2" />"/>
+				<input type="hidden" name="progressivoOfferta" value="<s:property value="progressivoOfferta" />"/>
+				<input type="hidden" name="tipoBusta" value="<s:property value="tipoBusta" />"/>
+				<input type="hidden" name="operazione" value="<s:property value="operazione" />"/>
 				<wp:i18n key="BUTTON_BACK_PREVIOUS_STEP" var="valueBackToStep" />
 				<s:submit value="%{#attr.valueBackToStep}" title="%{#attr.valueBackToStep}" cssClass="button block-ui"/>
 			</div>

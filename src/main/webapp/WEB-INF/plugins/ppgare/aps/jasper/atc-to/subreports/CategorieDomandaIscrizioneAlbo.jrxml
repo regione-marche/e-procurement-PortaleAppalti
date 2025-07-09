@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DocumentiAllegati" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7ae19700-dfb0-47c5-9384-d62310f364d0">
 	<property name="ireport.zoom" value="1.464100000000001"/>
 	<property name="ireport.x" value="20"/>
 	<property name="ireport.y" value="0"/>
@@ -7,6 +8,9 @@
 		<parameterDescription><![CDATA[TRUE stampa le categorie con importo fino a 150.000
 FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescription>
 		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<parameter name="STAMPA" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[true se il report va stampato, false se serve per il calcolo del numero di elementi estratti, da ritornare per aggiornare una variabile globale.]]></parameterDescription>
 	</parameter>
 	<queryString language="xPath">
 		<![CDATA[/categorieIscrizionde/categoria]]>
@@ -23,6 +27,25 @@ FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescripti
 	<field name="nota" class="java.lang.String">
 		<fieldDescription><![CDATA[nota]]></fieldDescription>
 	</field>
+	<variable name="NUM_RECORD" class="java.lang.Integer">
+		<variableExpression><![CDATA[(
+((!$P{IMPORTO_FINO_A} &&
+  !($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+    || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+ ||
+ ($P{IMPORTO_FINO_A} &&
+  ($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
+   || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
+)
+&&
+"1".equals($F{categoria}.substring(
+    $F{categoria}.indexOf( "*", $F{categoria}.indexOf( "*" ) + 1 ) + 1,
+    $F{categoria}.lastIndexOf( "*" )
+))
+	? $V{NUM_RECORD}.intValue()+1 : $V{NUM_RECORD}
+)]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
 	<group name="titoloCategoria">
 		<groupExpression><![CDATA[$F{categoria}.substring( 0, $F{categoria}.indexOf( "*" ) )]]></groupExpression>
 		<groupHeader>
@@ -40,34 +63,23 @@ FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescripti
 	</group>
 	<title>
 		<band height="30">
+			<printWhenExpression><![CDATA[($P{STAMPA} == null || $P{STAMPA})]]></printWhenExpression>
 			<rectangle>
-				<reportElement mode="Opaque" x="0" y="0" width="160" height="30" forecolor="#000000" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="0" y="0" width="251" height="30" forecolor="#000000" backcolor="#999999" uuid="69bfb1f4-0dbd-433a-a6c8-1caad6452bb0"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement mode="Opaque" x="160" y="0" width="251" height="30" forecolor="#000000" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="251" y="0" width="160" height="30" forecolor="#000000" backcolor="#999999" uuid="308fb345-3651-4bc0-9972-0a05cd189354"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement mode="Transparent" x="0" y="0" width="160" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<pen lineWidth="0.0"/>
-					<topPen lineWidth="0.0"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.0"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<text><![CDATA[Categoria dei lavori]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Transparent" x="160" y="0" width="251" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="251" y="0" width="160" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="18bcf35a-b7ad-496c-93e4-6267f3dcd54e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -80,11 +92,30 @@ FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescripti
 				</textElement>
 				<text><![CDATA[Classifica]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="251" height="30" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="a4c59110-9698-4039-b1c6-2fb9750ae262">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<text><![CDATA[Categoria dei lavori]]></text>
+			</staticText>
 		</band>
 	</title>
 	<detail>
 		<band height="30" splitType="Stretch">
-			<printWhenExpression><![CDATA[((!$P{IMPORTO_FINO_A} &&
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[($P{STAMPA} == null || $P{STAMPA})
+&&
+((!$P{IMPORTO_FINO_A} &&
   !($F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150.000")
     || $F{categoria}.substring(0, $F{categoria}.indexOf( "*" )).toLowerCase().contains("fino a 150000")))
  ||
@@ -98,41 +129,54 @@ FALSE stampa le categorie con importo superiore a 150.000]]></parameterDescripti
     $F{categoria}.lastIndexOf( "*" )
 ))]]></printWhenExpression>
 			<rectangle>
-				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="160" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="251" height="30" forecolor="#000000" backcolor="#FFFFFF" uuid="af4187b1-6e15-45ba-b417-ee6d386e93aa"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="160" y="0" width="251" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="251" y="0" width="160" height="30" forecolor="#000000" backcolor="#FFFFFF" uuid="c4434e70-fd58-4648-903c-c733a655591b"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="165" y="0" width="240" height="30"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="256" y="0" width="150" height="30" uuid="f77210aa-e195-42e2-bd2e-184478ed3af1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{classificaMinima} != null ? "" : "") +
-($F{classificaMassima} != null ? "classifica " + $F{classificaMassima} : "") +
+				<textFieldExpression><![CDATA[($F{classificaMinima} != null && $F{classificaMinima} != null 
+	? "da " + $F{classificaMinima} + " fino a " + $F{classificaMassima}
+	: ($F{classificaMinima} != null && $F{classificaMassima} == null 
+		? $F{classificaMinima}
+		: ($F{classificaMinima} == null && $F{classificaMassima} != null 
+			? "fino a " + $F{classificaMassima} 
+			: ""
+		)
+	)
+) +
 ($F{nota} != null && !$F{nota}.isEmpty() ? "" : "")]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="423" y="0" width="118" height="13">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="423" y="0" width="118" height="12" uuid="da8aa233-6dae-4ecd-9453-e830d0245c71">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<printWhenExpression><![CDATA[false]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{categoria}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="5" y="0" width="150" height="30"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="5" y="0" width="240" height="30" uuid="1270cb95-ed02-4225-aa42-8c3adda98805">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 )
+				<textFieldExpression><![CDATA[$F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 )
     .substring(
         1,
         $F{categoria}.substring( $F{categoria}.lastIndexOf("*") + 1 ).indexOf( ")" )

@@ -66,3 +66,7 @@
 		<div style="clear: both;"></div>
 	</div>
 </s:if>
+<s:else>
+	<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+	<input disabled="disabled" type="submit" style="display:none;"/>
+</s:else>

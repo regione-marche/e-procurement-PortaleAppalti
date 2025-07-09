@@ -370,7 +370,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="reportVariables.datiImpresa.impresa.inail.numIscrizione"/>
 	</field>
 	<field name="posizioneAssicurativaINAIL" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="reportVariables.datiImpresa.impresa.inail.posizioneAssicurativa"/>
+		<property name="net.sf.jasperreports.json.field.expression" value="reportVariables.datiImpresa.impresa.inail.posizAssicurativa"/>
 	</field>
 	<field name="localitaIscrizioneINAIL" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="reportVariables.datiImpresa.impresa.inail.localitaIscrizione"/>

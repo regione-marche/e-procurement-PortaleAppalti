@@ -37,7 +37,6 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IA
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomReportManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiUlterioriImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
@@ -45,29 +44,26 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.Wizar
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRAbstractTextDataSource;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.data.JsonDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import net.sf.jasperreports.export.type.PdfaConformanceEnum;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.CalendarValidator;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.xmlbeans.XmlObject;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +121,7 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 	protected String reportHeaderName;		// nome del report header o del custom report header
 	@Validate(EParamValidation.GENERIC)
 	protected String reportFooterName;		// nome del report footer o del custom report footer
+	@Validate(EParamValidation.GENERIC)
 	protected String xmlRootNode;			// nodo radice del documento xml contenente i dati del report
 				
 	protected InputStream inputStream;		// stream associato al pdf generato e restituito dalla action
@@ -136,8 +133,9 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 	protected String urlPage;				// ...
 	@Validate(EParamValidation.DIGIT)
 	protected String currentFrame;			// ...
+	@Validate(EParamValidation.GENERIC)
 	protected String jsonSource;			// dati del report in formato JSON
-	
+	@ValidationNotRequired
 	private String subFolderTemplate; 	// SUBFOLDER_TEMPLATE_JASPER
 	
 	@Override
@@ -460,12 +458,14 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 		    	// JSON SOURCE
 		    	jrds = new JsonDataSource(
 			    		new ByteArrayInputStream(this.jsonSource.getBytes("UTF-8")), 
-			    		selectExpression);
+			    		selectExpression
+			    );
 		    } else {
 		    	// XML SOURCE
 				jrds = new JRXmlDataSource(
 						new ByteArrayInputStream(xmlSource.toString().getBytes("UTF-8")), 
-						selectExpression);
+						selectExpression
+				);
 		    }
 		    jrds.setLocale(Locale.ITALIAN);
 		    jrds.setDatePattern("yyyy-MM-dd");
@@ -475,70 +475,17 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 		    	// ERRORE
 		    	ApsSystemUtils.getLogger().error("Invalid or empty datasource.");
 		    } else {
-				JRPdfExporter exporter = new JRPdfExporter();
-				ByteArrayOutputStream baosJasper = new ByteArrayOutputStream();
-				
-//				// Jasperreport 4.0.0
-//				//exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, filePdf.getAbsolutePath());
-//				exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baosJasper);
-//				exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-//				//exporter.setParameter(JRPdfExporterParameter.METADATA_KEYWORDS, uuid);
-				
-				// Jasperreport 6.16.0
-				if(customConfigManager.isActiveFunction("PDF", "PDF-A")) {
-					//PDF-A Compliance Start
-					/*
-					 * Occorre impostare un font di default che sia embedded
-					 * Occorre impostare un file di tipo icc esterno
-					 * Occorre modificare i jasper in modo che abbiano per il tag font l'attributo fontName=Arial
-					 */
-					ApsSystemUtils.getLogger().debug("PDF-A Abilitato.");
-					JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
-					jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "Arial");
-					jasperReportsContext.setProperty("net.sf.jasperreports.default.pdf.font.name", "Arial");
-					jasperReportsContext.setProperty("net.sf.jasperreports.default.pdf.embedded", "true");
-
-					SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-					configuration.setTagged(true);
-					configuration.setIccProfilePath(ctx.getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-					configuration.setPdfaConformance(PdfaConformanceEnum.PDFA_1A);
-					configuration.setEncrypted(false);
-
-					exporter.setConfiguration(configuration);
-					//PDF-A Compliance END
-				} else {
-					ApsSystemUtils.getLogger().debug("PDF-A NON Abilitato.");
-				}
-
-				List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
-				jasperPrintList.add(print);
-				exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
-				exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baosJasper));
-				//SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-				//configuration.setCreatingBatchModeBookmarks(true);
-				//exporter.setConfiguration(configuration);
-				
-				// genera il pdf...
+		    	// genera il PDF (JasperReport 6.16.0)...
+		    	JRPdfExporterEldasoft exporter = JRPdfExporterEldasoft.newInstance()
+		     			.setReportName(reportName)
+		     			.setPdfACompliance(customConfigManager.isActiveFunction("PDF", "PDF-A", false))
+		     			.setPdfUACompliance(customConfigManager.isActiveFunction("PDF", "PDF-UA", false))
+		     			.setPrint(print)
+		     			.setAction(this);
 				exporter.exportReport();
 				
-				// FASE 3: si protegge il file generato in modo da riconoscerne eventuali manomissioni
-				// FASE 3.1: si estrae il contenuto testuale del file
-				String contenutoFile = StringUtilities.getPdfContentAsString(baosJasper.toByteArray());
-				// FASE 3.2: si calcola un digest sul contenuto testuale
-	            this.uuid = StringUtilities.getSha256(contenutoFile);
-				//FASE 3.3: si imposta il digest dentro le keywords del file
-	            PDDocument doc = PDDocument.load(baosJasper.toByteArray());
-				doc.getDocumentInformation().setCustomMetadataValue(PortGareSystemConstants.PDF_HASH_DICTIONARY, uuid);
-				//doc.save(filePdf);
-				ByteArrayOutputStream baosPdf = new ByteArrayOutputStream();
-				doc.save(baosPdf);
-				doc.close();
-				
-				// FASE 4: si associa il PDF in modo da permetterne il download
-				// generato il report con JasperReport, si memorizza lo stream
-				// per il download e si inserisce una referenza nel bean in
-				// sessione per la rimozione alla rimozione del bean dalla sessione
-				//this.inputStream = new FileInputStream(filePdf);
+		     	this.uuid = exporter.getUuid();
+		     	ByteArrayOutputStream baosPdf = exporter.getOutputStream(); 		     	
 				this.inputStream = new ByteArrayInputStream(baosPdf.toByteArray());
 				
 				this.reportCompleted();
@@ -559,6 +506,41 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 		}
 	}
 	
+	////////////////////////////////////////////////////////////////////////////
+	// esporta un generico report come PDF 
+	// (vedi ProcessPageRiepilogoImpresaAction, ProcessPafeEsitoAction, ...)
+	////////////////////////////////////////////////////////////////////////////
+	public static byte[] createPdf(
+			InputStream jasperStream
+			, String xml
+			, String xmlSelectExpression
+	) throws UnsupportedEncodingException, JRException {
+		
+		//PDFUA Accessibility Compliance
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setTagged(true);
+		configuration.setTagLanguage(Locale.ITALIAN.getLanguage());
+		configuration.setMetadataTitle("Report PDF");
+		//configuration.setMetadataAuthor(ragione sociale ditta);
+		//configuration.setOwnerPassword(...);
+		//configuration.setUserPassword(...)
+		
+		// genera il PDf...
+		ByteArrayOutputStream baosPdf = new ByteArrayOutputStream();
+		JRXmlDataSource jrxmlds = new JRXmlDataSource(new ByteArrayInputStream(xml.getBytes("UTF-8")), xmlSelectExpression);
+		JasperPrint print = JasperFillManager.fillReport(jasperStream, new HashMap<String, Object>(), jrxmlds);
+		
+		List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
+		jasperPrintList.add(print);
+		
+		JRPdfExporterEldasoft exporter = new JRPdfExporterEldasoft();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baosPdf));
+		exporter.setConfiguration(configuration);
+		exporter.exportReport();
+
+		return baosPdf.toByteArray();
+	}
 	
 	////////////////////////////////////////////////////////////////////////////
 	// Metodi generali per la decodifica dei codici dai loro tabellati
@@ -920,7 +902,8 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 	 */
 	protected void addDatiImpresa(
 			WizardDatiImpresaHelper datiImpresaHelper,
-			DatiImpresaType datiImpresa) {
+			DatiImpresaType datiImpresa) 
+	{
 		IDatiPrincipaliImpresa datiPrincipaliImpresa = datiImpresaHelper.getDatiPrincipaliImpresa();
 		IDatiUlterioriImpresa datiUlterioriImpresa = datiImpresaHelper.getDatiUlterioriImpresa();
 		
@@ -957,13 +940,15 @@ public abstract class GenPDFAction extends EncodedDataAction implements SessionA
 		cameraCommercio.setProvinciaIscrizione(datiUlterioriImpresa.getProvinciaIscrizioneCCIAA());
 		
 		INAILType inail = impresa.addNewInail();
-		datiUlterioriImpresa.setNumIscrizioneINAIL(inail.getNumIscrizione());
-		datiUlterioriImpresa.setPosizAssicurativaINAIL(inail.getPosizAssicurativa());
-		datiUlterioriImpresa.setLocalitaIscrizioneINAIL(inail.getLocalitaIscrizione());
+		inail.setNumIscrizione(datiUlterioriImpresa.getNumIscrizioneINAIL());
+		inail.setPosizAssicurativa(datiUlterioriImpresa.getPosizAssicurativaINAIL());
+		inail.setLocalitaIscrizione(datiUlterioriImpresa.getLocalitaIscrizioneINAIL());
 		
+		impresa.setCodiceCNEL(datiUlterioriImpresa.getCodiceCNEL());
+
 		INPSType inps = impresa.addNewInps();
-		datiUlterioriImpresa.setNumIscrizioneINPS(inps.getNumIscrizione());
-		datiUlterioriImpresa.setLocalitaIscrizioneINPS(inps.getLocalitaIscrizione());
+		inps.setNumIscrizione(datiUlterioriImpresa.getNumIscrizioneINPS());
+		inps.setLocalitaIscrizione(datiUlterioriImpresa.getLocalitaIscrizioneINPS());
 	}
 	
 	protected void impostaDatiStazioneAppaltante(DettaglioStazioneAppaltanteType from, StazioneAppaltanteType to) {

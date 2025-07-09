@@ -56,7 +56,7 @@ public class DocumentiSmatAction extends BaseAction implements SessionAware,IDow
 	private String currentFrame;
 	private HttpServletResponse response;
 	private static final FileNameMap MIMETYPES = URLConnection.getFileNameMap();
-	@Validate(EParamValidation.URL)
+	@Validate(EParamValidation.GENERIC)
 	private String urlRedirect;
 	private IURLManager urlManager;
 	private IPageManager pageManager;

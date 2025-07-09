@@ -122,7 +122,7 @@
 				<label for="indirizzo"><wp:i18n key="LABEL_INDIRIZZO" /> : 
 					<span class="required-field">*</span>
 				</label>
-				<s:textfield name="indirizzo" id="indirizzo" value="%{#key.indirizzo}" size="40" maxlength="60" />
+				<s:textfield name="indirizzo" id="indirizzo" value="%{#key.indirizzo}" size="50" maxlength="100" />
 				<label for="numCivico"><wp:i18n key="LABEL_NUM_CIVICO" /> : 
 					<span class="required-field">*</span>
 				</label>

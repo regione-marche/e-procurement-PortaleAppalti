@@ -5,6 +5,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPag
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -16,6 +18,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.ICatalo
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class OpenPageImportProductsAction extends AbstractOpenPageAction {
     /**
      * UID
@@ -43,9 +46,9 @@ public class OpenPageImportProductsAction extends AbstractOpenPageAction {
         this.catalogo = catalogo;
     }
 
-    public Integer getLimiteUploadFile() {
-        return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-    }
+//    public Integer getLimiteUploadFile() {
+//        return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+//    }
 
     /**
      * ...

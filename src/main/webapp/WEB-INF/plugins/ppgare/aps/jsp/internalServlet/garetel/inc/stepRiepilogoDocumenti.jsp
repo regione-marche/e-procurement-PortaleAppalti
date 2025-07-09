@@ -13,6 +13,8 @@ della request, come segue:
  	<jsp:include>
 --%>
 
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
+
 <s:set var="imgCheck"><wp:resourceURL />static/img/check.svg</s:set>
 
 <s:set var="busta" value="#request.busta"/>
@@ -25,20 +27,15 @@ della request, come segue:
 	<s:set var="documentiInseritiSize" value="#documentiInseritiSize - 1" />
 </c:if>
 
-<c:choose>
-	<c:when test="${!param.offertaTelematica}">	
-		<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageDocumenti.action" />&amp;tipoBusta=${param.tipoBusta}&amp;codice=${param.codice}&amp;operazione=${param.operazione}&amp;${tokenHrefParams}</c:set>
-	</c:when>
-	<c:otherwise>
-		<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/initOffTel.action" />&amp;codice=${param.codice}&amp;${tokenHrefParams}</c:set>
-	</c:otherwise>
-</c:choose>
-
+<c:set var="stato" value=""/>
+<c:if test="${param.stato != null}">
+	<c:set var="stato" value="${param.stato.trim()}"/>
+</c:if>
 
 <s:if test="%{#questionarioPresente}">
 	<div class="fieldset-row first-row">
 		<div class="label">
-			<label><wp:i18n key="LABEL_QUESTIONARIO_COMPLETATO" /> : <c:if test='${(param.stato != null && param.stato.trim() == "1") || param.stato == ""}'><a title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" href='${href}'></a></c:if></label>
+			<label><wp:i18n key="LABEL_QUESTIONARIO_COMPLETATO" /> : </label>
 		</div>
 		<div class="element">
 			<s:if test="%{#busta.questionarioCompletato}">
@@ -70,7 +67,7 @@ della request, come segue:
 	<div class="fieldset-row last-row">
 		<div class="label">
 			<label><wp:i18n key="LABEL_DOCUMENTI_OBBLIGATORI_MANCANTI" /> <s:if test="%{#docObbligatoriMancantiSize > 0}">
-				(<s:property value="%{#docObbligatoriMancantiSize}"/>)</s:if> : <c:if test='${(param.stato != null && param.stato.trim() == "1") || param.stato == ""}'><a title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" href='${href}'></a></c:if>
+				(<s:property value="%{#docObbligatoriMancantiSize}"/>)</s:if> :
 			</label>
 		</div>
 		<div class="element">
@@ -87,3 +84,41 @@ della request, come segue:
 		</div>
 	</div>
 </s:if>
+
+<c:if test='${"1".equals(stato) || "".equals(stato)}'>
+	<form action="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/redirectSummaryEnv.action' />" method="post">
+		<div class="azioni">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			
+			<input type="submit" value="Compila" title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="button" name="method:doModify" />
+			<c:if test='${"1".equals(stato)}'>
+				<input type="submit" value="<wp:i18n key='LABEL_ELIMINA' />" title="<wp:i18n key='LABEL_ELIMINA' />" class="button" name="method:doReset" />
+			</c:if>
+			
+			<input type="hidden" name="tipoBusta" value="${param.tipoBusta}" />
+			<input type="hidden" name="codice" value="${param.codice}" />
+			<input type="hidden" name="operazione" value="${param.operazione}" />
+			<input type="hidden" name="offertaTelematica" value="${param.offertaTelematica}" />
+			<input type="hidden" name="backActionPath" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogo.action" />
+		</div>
+	</form>
+</c:if>
+
+<script>
+
+// $("input[name='method:resetEnvelope']").click(function(event) {
+//     event.preventDefault()
+// 	var button = $(this)
+//     showDialog(
+// 		"Conferma", 
+// 		"Sei sicuro di voler cancellare la busta? Non sarà possibile tornare indietro.",
+// 		function() {
+// 			button
+// 				.parent("form")
+// 				.append('<input type="hidden" name="method:resetEnvelope" value="Elimina" />')
+// 				.submit()
+// 		}
+// 	)
+// })
+
+</script>

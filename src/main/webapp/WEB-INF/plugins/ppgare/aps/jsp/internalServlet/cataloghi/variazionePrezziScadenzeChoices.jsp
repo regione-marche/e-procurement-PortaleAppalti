@@ -30,7 +30,7 @@
 		<li>
 			<p>
 				<a class="list-element bkg go important" title='<wp:i18n key="LABEL_SCARICA_XLS_CON_CATALOGO_PRODOTTI" />' 
-					 href='${urlExcelVariazioneScadenzePrezziDownload}&amp;${tokenHrefParams}'>
+					 href='${urlExcelVariazioneScadenzePrezziDownload}'>
 					<wp:i18n key="LABEL_SCARICA_XLS_CON_TUO_CATALOGO_PRODOTTI" />
 				</a>
 				<br/>
@@ -42,7 +42,7 @@
 		<li>
 			<p>
 				<a class="list-element bkg go important" title='<wp:i18n key="LABEL_APRI_WIZARD_MODIFICA_PREZZI" />' 
-					 href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageImportVariazionePrezziScadenze.action"/>&amp;catalogo=${catalogo}&amp;${tokenHrefParams}'>
+					 href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageImportVariazionePrezziScadenze.action"/>&amp;catalogo=${catalogo}'>
 					<wp:i18n key="LABEL_IMPORTA_NUOVI_PREZZI_E_VALIDA" />
 				</a>
 				<br/>
@@ -53,7 +53,7 @@
 		</li>
 	</ul>
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;catalogo=${catalogo}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;catalogo=${catalogo}">
 			<wp:i18n key="LINK_BACK_TO_GESTIONE_PRODOTTI" />
 		</a>
 	</div>

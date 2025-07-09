@@ -31,6 +31,10 @@
 		</action>
 	
 		<action name="logout" class="dispatchAction" method="doLogout">
+			<result name="logout" type="chain">
+				<param name="actionName">${logoutAction}</param>
+            	<param name="namespace">/do/SSO</param>
+			</result>
 			<interceptor-ref name="japsFreeStack" />
 		</action>
 	

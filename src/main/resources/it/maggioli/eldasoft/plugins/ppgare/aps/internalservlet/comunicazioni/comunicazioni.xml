@@ -41,6 +41,9 @@
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
 			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazioneUlteriori</param>
+			</interceptor-ref>
 		</action>
 		
 		<action name="openPageDettaglioSoccorsoIstruttorio" class="dettaglioComunicazioniAction" method="openPageSoccorsoIstruttorio">
@@ -48,6 +51,9 @@
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
 			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazioneUlteriori</param>
+			</interceptor-ref>
 		</action>
 		
 		<action name="openPageDettaglioComunicazioneInviata" class="dettaglioComunicazioniAction" method="openPageInviate">
@@ -55,6 +61,9 @@
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/comunicazioneView.jsp
 			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipiComunicazioneUlteriori</param>
+			</interceptor-ref>
 		</action>
 
 		<action name="testoComunicazione" class="nuovaComunicazioneAction" method="openPage">
@@ -147,7 +156,7 @@
 			<result type="chain">${nextResultAction}</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
-				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>
+				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf,tipiBusta</param>
 			</interceptor-ref>
 		</action>
 		
@@ -376,6 +385,159 @@
 			</result>
 			<result type="chain" name="backToComunicazione">
 				<param name="actionName">openPageDettaglioSoccorsoIstruttorio</param>
+				<param name="namespace">/do/FrontEnd/Comunicazioni</param>
+			</result>
+			 <result type="chain" name="backToDettaglio">
+				<param name="actionName">${actionName}</param>
+				<param name="namespace">${namespace}</param>
+			</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<!-- RETTIFICA -->
+				
+		<action name="testoRettifica" class="nuovaRettificaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+ 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+ 			<interceptor-ref name="encodedData">
+				<param name="types">tipologieComunicazioni, tipiBusta</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="openPageNuovaRettificaAfterError" class="nuovaRettificaAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepTesto.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref> 
+		</action>
+		
+		<action name="openPageConfermaInvioRettifica" class="nuovaRettificaAction" method="confirmInvio">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="documentiRettifica" class="openPageDocumentiNuovaRettificaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepDocumenti.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="inviaRettifica" class="openPageRiepilogoNuovaRettificaAction" method="openPage">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipologieComunicazioni, tipiBusta</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="inviaRettificaAfterError" class="openPageRiepilogoNuovaRettificaAction" method="openPageAfterError">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/stepRiepilogo.jsp
+			</result>
+			<result type="chain" name="backToDettaglio">
+				<param name="actionName">${actionName}</param>
+				<param name="namespace">${namespace}</param>
+			</result> 
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipologieComunicazioni, tipiBusta</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="aggiungiAllegatoRettifica" class="processPageDocumentiNuovaRettificaAction" method="addUltDoc">
+			<result type="chain" name="backToDocumenti">documentiRettifica</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="aggiungiAllegatoRettificaRichiesto" class="processPageDocumentiNuovaRettificaAction" method="addDocRich">
+			<result type="chain" name="backToDocumenti">documentiRettifica</result>
+			<result type="chain">${nextResultAction}</result>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+		
+		<action name="downloadAllegatoRettifica*" class="processPageDocumentiNuovaRettificaAction" method="downloadAllegato{1}">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+			</result>
+		</action>
+		
+		<action name="confirmDeleteAllegatoRettifica*" class="processPageDocumentiNuovaRettificaAction" method="confirmDeleteAllegato{1}">
+			<result type="chain">documentiRettifica</result>
+			<interceptor-ref name="tokenFreeStack"/>
+		</action>
+
+		<action name="deleteAllegatoRettifica*" class="processPageDocumentiNuovaRettificaAction" method="deleteAllegato{1}">
+			<result type="chain" name="backToDocumenti">documentiRettifica</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="cancelDeleteAllegatoRettifica*" class="processPageDocumentiNuovaRettificaAction" method="cancel{1}">
+			<result type="chain" name="cancel">documentiRettifica</result>
+			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageNuovaRettifica" class="processPageNuovaRettificaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovaRettifica</result>
+			<result type="chain" name="input">openPageNuovaRettificaAfterError</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">tipologieComunicazioni, tipiBusta</param>
+			</interceptor-ref>
+		</action>
+		
+		<action name="processPageDocumentiNuovaRettifica" class="processPageDocumentiNuovaRettificaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="cancel">questionCancelNuovaRettifica</result>
+			<result type="chain" name="input">documentiRettifica</result>
+			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
+		</action>
+
+		<action name="processPageRiepilogoNuovaRettifica" class="processPageRiepilogoNuovaRettificaAction">
+			<result type="chain">${nextResultAction}</result>
+			<result type="chain" name="input">inviaRettificaAfterError</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<result type="chain" name="cancel">questionCancelNuovaRettifica</result>
+		</action>
+
+		<action name="*RichiestaRettifica" class="processPageRiepilogoNuovaRettificaAction" method="{1}Richiesta">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmRichiestaRettifica.jsp
+			</result>
+			<result type="chain" name="input">inviaRettificaAfterError</result>
+			<result type="dispatcher" name="successPage">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/confirmInvio.jsp
+			</result>
+			<result type="chain" name="cancel">
+				<param name="actionName">${actionName}</param>
+				<param name="namespace">${namespace}</param>
+			</result>
+		</action>
+		
+		<action name="*ancelNuovaRettifica" class="cancelNuovaRettificaAction" method="{1}ancel">
+			<result type="dispatcher" name="confirm">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/comunicazioni/abortComunicazione.jsp
+			</result>
+			<result type="chain" name="backToComunicazione">
+				<param name="actionName">openPageDettaglioComunicazioneRicevuta</param>
 				<param name="namespace">/do/FrontEnd/Comunicazioni</param>
 			</result>
 			 <result type="chain" name="backToDettaglio">

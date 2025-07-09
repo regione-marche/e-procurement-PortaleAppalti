@@ -4,9 +4,11 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 import org.apache.commons.lang.StringUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IRaggruppamenti;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ProcessPageComponentiAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 /**
@@ -15,6 +17,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageComponentiAction extends it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageComponentiAction {
 	/**
 	 * UID
@@ -77,7 +83,8 @@ public class OpenPageComponentiAction extends it.maggioli.eldasoft.plugins.ppgar
 	 * ...
 	 */
 	public String openPage() {
-		this.setNazione("Italia");
+		if(StringUtils.isNotEmpty(getRagioneSociale()))
+			setNazione("Italia");	// default per l'inserimento di un nuovo componente
 		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, WizardIscrizioneHelper.STEP_DETTAGLI_RTI);
 		return this.getTarget();
 	}
@@ -97,7 +104,7 @@ public class OpenPageComponentiAction extends it.maggioli.eldasoft.plugins.ppgar
 			// la sessione non e' scaduta, per cui proseguo regolarmente.
 			// svuota i dati inseriti nella form in modo da riaprire la
 			// form pulita.
-			ProcessPageComponentiAction.resetComponente(this);
+			ComponenteHelper.reset(this);
 			this.setLiberoProfessionista(false);
 			this.setQuotaRTI(helper.getQuotaRTI());
 			this.setId(null);
@@ -126,7 +133,7 @@ public class OpenPageComponentiAction extends it.maggioli.eldasoft.plugins.ppgar
 				componente = helper.getComponentiRTI().get(
 						Integer.parseInt(this.getId()));
 			}
-			ProcessPageComponentiAction.synchronizeComponente(componente, this);
+			ComponenteHelper.copyTo(componente, this);
 			if (StringUtils.isNotBlank(this.getTipoImpresa())) {
 				this.setLiberoProfessionista(this.getMaps()
 								.get(InterceptorEncodedData.LISTA_TIPI_IMPRESA_LIBERO_PROFESSIONISTA)

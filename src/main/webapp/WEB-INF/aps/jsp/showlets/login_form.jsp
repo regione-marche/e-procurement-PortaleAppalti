@@ -11,7 +11,7 @@
 	<div>
 		<c:choose>
 			<c:when test="${sessionScope.currentUser != 'guest' && !accountAccettazioneConsensi}">
-				<p class="welcome-message"><wp:i18n key="WELCOME" />, <span><c:out value="${sessionScope.currentUser}"/></span>!</p>
+				<p class="welcome-message links"><wp:i18n key="WELCOME" />, <span><c:out value="${sessionScope.currentUser}"/></span>!</p>
 
 				<c:if test="${sessionScope.currentUser.japsUser}">
 					<%-- 

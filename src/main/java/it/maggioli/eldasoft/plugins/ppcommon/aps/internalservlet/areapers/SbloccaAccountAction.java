@@ -29,7 +29,6 @@ public class SbloccaAccountAction extends BaseAction {
 
 	private IUserManager userManager;
 	private IUserRegManager userRegManager;
-//	private IEventManager eventManager;
 
 	/** Login/username utente per il quale procedere con l'assistenza. */
 	@Validate(EParamValidation.USERNAME)
@@ -43,25 +42,28 @@ public class SbloccaAccountAction extends BaseAction {
 		this.userRegManager = userRegManager;
 	}
 
-//	public void setEventManager(IEventManager eventManager) {
-//		this.eventManager = eventManager;
-//	}
-
-	/**
-	 * @param username
-	 *            the username to set
-	 */
 	public void setUsername(String username) {
 		this.username = StringUtils.stripToNull(username);
 	}
 	
-	/**
-	 * @return the username
-	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * validate 
+	 */
+	@Override
+	public void validate() {
+		// funzionalità accessibile sono da amministratore!!!
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
+			redirectToHome();
+			return;
+		} 
+		
+		super.validate();
+	}
+	
 	/**
 	 * Predispone l'apertura della pagina previo controllo autorizzazione (si
 	 * deve essere un utente amministratore).
@@ -74,11 +76,11 @@ public class SbloccaAccountAction extends BaseAction {
 
 		// funzionalita' disponibile solo per l'utente con il ruolo di
 		// amministratore
-		if (this.getCurrentUser() == null
-				|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}
+		
 		return target;
 	}
 
@@ -89,26 +91,14 @@ public class SbloccaAccountAction extends BaseAction {
 	 */
 	public String sbloccaAccount() {
 		String target = SUCCESS;
-
-//		Event evento = new Event();
-//		evento.setLevel(Event.Level.INFO);
-//		evento.setEventType(PortGareEventsConstants.BLOCCO_UTENTE);
-//		evento.setMessage("Ripristino alla normalità per l'utente " + this.id);
-//		evento.setUsername(username);
-//		evento.setSessionId(sessionId);
-//		evento.setIpAddress(ipAddress);
-
+		
 		try {
-			if (this.getCurrentUser() == null
-					|| !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+			if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 				this.addActionError(this.getText("Errors.function.notEnabled"));
 				target = CommonSystemConstants.PORTAL_ERROR;
-//				evento.setLevel(Event.Level.ERROR);
-//				evento.setDetailMessage("Tentato utilizzo di funzione non abilitata");
 			} else {
 				/* --- recupero dell'utenza che necessita di sblocco --- */
 				User user = (User) userManager.getUser(this.username);
-
 				if (user != null) {
 					user.setDisabled(false);
 					user.setLastAccess(new Date());
@@ -119,27 +109,19 @@ public class SbloccaAccountAction extends BaseAction {
 					
 					// si definisce un esito da inviare alla pagina
 					String msgInfo = this.getText("Info.sbloccaAccount.change",
-							new String[] { this.username });
+												  new String[] { this.username });
 					this.addActionMessage(msgInfo);
 				} else {
 //					// se l'utente non esiste allora si genera un errore
-//					evento.setLevel(Event.Level.ERROR);
-//					evento.setDetailMessage(this
-//							.getTextFromDefaultLocale("Errors.sbloccaAccount.notFound"));
-					this.addActionError(this
-							.getText("Errors.sbloccaAccount.notFound"));
+					this.addActionError(this.getText("Errors.sbloccaAccount.notFound"));
 					target = INPUT;
 				}
 			}
-		} catch (ApsSystemException e1) {
-//			evento.setLevel(Level.ERROR);
-//			evento.setError(e1);
+		} catch (ApsSystemException ex) {
 			this.addActionError(this.getText("Errors.sbloccaAccount.notFound"));
 			target = INPUT;
-//		} finally {
-//			eventManager.insertEvent(evento);
 		}
-
+		
 		return target;
 	}
 

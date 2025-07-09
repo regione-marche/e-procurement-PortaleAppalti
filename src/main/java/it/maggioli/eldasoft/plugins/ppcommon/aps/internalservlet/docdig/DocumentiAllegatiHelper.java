@@ -6,8 +6,11 @@ import it.eldasoft.sil.portgare.datatypes.DocumentoType;
 import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.QuestionarioType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario.AnomalieQuestionarioInfo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
@@ -27,26 +30,9 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.security.*;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,11 +40,11 @@ import java.util.stream.Collectors;
  * Cambiata gestione degli allegati richiesti ed ulteriori. <br/>
  * Metodi deprecati da versione 3.24.0-SNAPSHOT<br/>
  * <br/>
- * Volendo è possibile rimpiazzare i metodi di addDocRichiesto e addDocUlteriore con dei metodi generici.<br/>
+ * Nota: Volendo e' possibile rimpiazzare i metodi di addDocRichiesto e addDocUlteriore con dei metodi generici.<br/>
  * <br/>
  * Le mappe di liste contengono i vari field che prime erano presenti e che adesso sono stati convertiti in una singola
- * lista di oggetti (Attachment). Non appena anche le jsp verranno sistemate, è consigliabile rimuovere le mappe e tutti
- * i metodi deprecati (e i suoi utilizzi).
+ * lista di oggetti (Attachment). Non appena anche le jsp verranno sistemate, e' consigliabile rimuovere le mappe e tutti
+ * i metodi deprecati (e i loro utilizzi).
  */
 @SuppressWarnings({ "unchecked", "deprecated" })
 public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Serializable {
@@ -67,26 +53,27 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 */
 	private static final long serialVersionUID = 6159419810289336922L;
 
-	private static final Logger logger = ApsSystemUtils.getLogger();
+	private static final Logger LOGGER = ApsSystemUtils.getLogger();
 
-	public static String QUESTIONARIO_DESCR				=	"questionario";
-	public static String QUESTIONARIO_GARE_FILENAME 	=	"questionario.json";
-	public static String QUESTIONARIO_ELENCHI_FILENAME 	=	"questionario.json";
+	public static final String QUESTIONARIO_DESCR				= "questionario";
+	public static final String QUESTIONARIO_GARE_FILENAME 		= "questionario.json";
+	public static final String QUESTIONARIO_ELENCHI_FILENAME 	= "questionario.json";
+	public static final String QUESTIONARIO_PDFRIEPILOGO		= "PDF Riepilogo";		// solo per quello automatico
 
 	//START - Constanti inserite nelle cache delle liste di allegati (temporanea)
-	private static final String ATTACHMENT_ID = "ID";
-	private static final String ATTACHMENT_FILE = "FILE";
-	private static final String ATTACHMENT_CIFRATI = "CIFRATI";
+	private static final String ATTACHMENT_ID 			= "ID";
+	private static final String ATTACHMENT_FILE 		= "FILE";
+	private static final String ATTACHMENT_CIFRATI 		= "CIFRATI";
 	private static final String ATTACHMENT_CONTENT_TYPE = "CONTENT_TYPE";
-	private static final String ATTACHMENT_FILE_NAME = "FILE_NAME";
-	private static final String ATTACHMENT_SIZE = "SIZE";
-	private static final String ATTACHMENT_SHA1 = "SHA1";
-	private static final String ATTACHMENT_UUID = "UUID";
-	private static final String ATTACHMENT_STATO = "STATO";
-	private static final String ATTACHMENT_IS_VISIBLE = "IS_VISIBLE";
-	private static final String ATTACHMENT_DESC = "DESC";
-	private static final String ATTACHMENT_NASCOSTI = "NASCOSTI";
-	private static final String ATTACHMENT_FIRMA = "FIRMA";
+	private static final String ATTACHMENT_FILE_NAME 	= "FILE_NAME";
+	private static final String ATTACHMENT_SIZE 		= "SIZE";
+	private static final String ATTACHMENT_SHA1 		= "SHA1";
+	private static final String ATTACHMENT_UUID 		= "UUID";
+	private static final String ATTACHMENT_STATO 		= "STATO";
+	private static final String ATTACHMENT_IS_VISIBLE 	= "IS_VISIBLE";
+	private static final String ATTACHMENT_DESC 		= "DESC";
+	private static final String ATTACHMENT_NASCOSTI 	= "NASCOSTI";
+	private static final String ATTACHMENT_FIRMA 		= "FIRMA";
 	//END - Constanti inserite nelle cache delle liste di allegati (temporanea)
 
 
@@ -107,16 +94,19 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	
 	// questionario associato alla busta presente in BO (tabella QFORM)
 	protected QuestionarioType questionarioAssociato;
-	private String questionarioFileName;					// memorizza il nomefile associato all'eventuale questionario associato
+	private String questionarioFileName;					// memorizza il nomefile relativo all'eventuale questionario associato
 
-	//Lista degli allegati richiesti
+	// Lista degli allegati richiesti
 	private List<Attachment> requiredDocs;
-	//Lista degli allegati facoltativi
+	// Lista degli allegati facoltativi
 	private List<Attachment> additionalDocs;
+	
+	// lista di tutti i file temporanei scaricati nella work del file system, da rimuovere a fine sessione
+	private List<File> tempFiles;
 
-	//Taccone utilizzato per mantenere i vari getter degli attachment quando erano liste distinte e non intaccare troppo le performance
-	//Contiene in memoria tutto c'ho che prima veniva restituito da getFileRichiesto, getIdFileRichiesto....
-	//Servono solamente per le jsp, perchè lato java sono stati rimossi tutti i riferimenti ai metodi deprecati
+	// Taccone utilizzato per mantenere i vari getter degli attachment quando erano liste distinte e non intaccare troppo le performance
+	// Contiene in memoria tutto c'ho che prima veniva restituito da getFileRichiesto, getIdFileRichiesto....
+	// Servono solamente per le jsp, perche' lato java sono stati rimossi tutti i riferimenti ai metodi deprecati
 	@Deprecated
 	private final Map<String, List> required_attachment_cache = new HashMap<>();
 	@Deprecated
@@ -140,6 +130,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			requiredDocs.forEach(Attachment::deleteAndNullifyFiles);
 		if (CollectionUtils.isNotEmpty(additionalDocs))
 			additionalDocs.forEach(Attachment::deleteAndNullifyFiles);
+		for(File f : this.tempFiles) { 
+			if(f != null && f.exists()) f.delete();
+		}
 	}
 
 
@@ -156,7 +149,8 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		this.chiaveCifratura = chiaveCifratura;
 		this.chiaveSessione = chiaveSessione;
 		this.username = username;
-		this.tempDir = StrutsUtilities.getTempDir(ServletActionContext.getServletContext());
+		this.tempDir = getTempDir();
+		this.tempFiles = new ArrayList<File>();
 		this.idComunicazione = null;
 		this.questionarioAssociato = null;
 		this.questionarioFileName = null;
@@ -267,17 +261,11 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		return getCachedOrCompute(additional_attachment_cache, additionalDocs, ATTACHMENT_IS_VISIBLE, Attachment::getIsVisible);
 	}
 
-	/**
-	 * @return the docRichiestiFirmaBean
-	 */
 	@Deprecated
 	public List<DocumentiAllegatiFirmaBean> getDocRichiestiFirmaBean() {
 		return required_attachment_cache.computeIfAbsent(ATTACHMENT_FIRMA, key -> requiredDocs.stream().map(Attachment::getFirmaBean).collect(Collectors.toList()));
 	}
 
-	/**
-	 * @return the docUlterioriFirmaBean
-	 */
 	@Deprecated
 	public List<DocumentiAllegatiFirmaBean> getDocUlterioriFirmaBean() {
 		return additional_attachment_cache.computeIfAbsent(ATTACHMENT_FIRMA, key -> additionalDocs.stream().map(Attachment::getFirmaBean).collect(Collectors.toList()));
@@ -299,14 +287,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		this.questionarioAssociato = questionarioAssociato;
 	}
 
-	/**
-	 * ...
-	 */
-	private void clearDocRichiesti() {
-		requiredDocs = new ArrayList<>();
-		clearCache(required_attachment_cache);
-	}
-
 	@Deprecated
 	private void clearCache(Map<String, List> cache) {
 		cache.put(ATTACHMENT_ID, new ArrayList<>());
@@ -318,21 +298,24 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		cache.put(ATTACHMENT_SHA1, new ArrayList<>());
 		cache.put(ATTACHMENT_UUID, new ArrayList<>());
 		cache.put(ATTACHMENT_STATO, new ArrayList<>());
-		cache.put(ATTACHMENT_FIRMA, new ArrayList<>());
-		cache.put(ATTACHMENT_NASCOSTI, new ArrayList<>());
+		cache.put(ATTACHMENT_IS_VISIBLE, new ArrayList<>());
 		cache.put(ATTACHMENT_DESC, new ArrayList<>());
+		cache.put(ATTACHMENT_NASCOSTI, new ArrayList<>());
+		cache.put(ATTACHMENT_FIRMA, new ArrayList<>());
 	}
 
-	/**
-	 * ...
-	 */
+	private void clearDocRichiesti() {
+		requiredDocs = new ArrayList<>();
+		clearCache(required_attachment_cache);
+	}
+	
 	private void clearDocUlteriori() {
 		additionalDocs = new ArrayList<>();
 		clearCache(additional_attachment_cache);
 	}
 
 	/**
-	 * resetta l'elenco dei documenti
+	 * pulisce/resetta l'elenco dei documenti
 	 */
 	public void clear() {
 		this.clearDocRichiesti();
@@ -362,7 +345,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * 		identificativo univoco del documento usato per il download
 	 * 		su richiesta del file dal servizio
 	 * @param stato
-	 * 		1=modificato -1=eliminato, indica se il documento è stato modificato/eliminato
+	 * 		1=modificato -1=eliminato, indica se il documento e' stato modificato/eliminato
 	 *      e quindi va inviato al servizio
 	 *
 	 */
@@ -378,6 +361,8 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			int stato, 
 			DocumentiAllegatiFirmaBean checkFirma
 	) {
+		// per poter aggiungere un documento richiesto 
+		// e' prima necessario che l'utente rimuova quello precedentemente allegato
 		requiredDocs.add(
 				Attachment.AttachmentBuilder
 					.init()
@@ -394,36 +379,76 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 						.withFirmaBean(checkFirma)
 					.build()
 			);		
-		addToCache(required_attachment_cache, id, file, fileCifrato, contentType, fileName, size, sha1, uuid, stato, checkFirma);
+		addToCache(required_attachment_cache, id, null, file, fileCifrato, contentType, fileName, size, sha1, uuid, stato, checkFirma, false);
 	}
 
-	//Non appena possibile questo metodo deve essere dismesso
+	// Non appena possibile questo metodo deve essere dismesso
 	@Deprecated
-	private void addToCache(Map<String, List> cache, Long id, File file, File fileCifrato, String contentType,
-							String fileName, Integer size, String sha1, String uuid, int stato,
-							DocumentiAllegatiFirmaBean checkFirma) {
-		addIfPresent(cache, ATTACHMENT_ID, id);
-		addIfPresent(cache, ATTACHMENT_FILE, file);
-		addIfPresent(cache, ATTACHMENT_CIFRATI, fileCifrato);
-		addIfPresent(cache, ATTACHMENT_CONTENT_TYPE, contentType);
-		addIfPresent(cache, ATTACHMENT_FILE_NAME, fileName);
-		addIfPresent(cache, ATTACHMENT_SIZE, size);
-		addIfPresent(cache, ATTACHMENT_SHA1, sha1);
-		addIfPresent(cache, ATTACHMENT_UUID, uuid);
-		addIfPresent(cache, ATTACHMENT_STATO, stato);
-		addIfPresent(cache, ATTACHMENT_FIRMA, checkFirma);
-		addIfPresent(cache, ATTACHMENT_IS_VISIBLE, isDocVisible(fileName));
+	private void addToCache(
+			Map<String, List> cache, 
+			Long id, 
+			String descrizione,
+			File file, 
+			File fileCifrato, 
+			String contentType,
+			String fileName, 
+			Integer size, 
+			String sha1, 
+			String uuid, 
+			int stato,
+			DocumentiAllegatiFirmaBean checkFirma,
+			boolean nascosto) 
+	{
+		// id >= 0 indica un allegato e' un documento richiesto, altrimenti e' ulteriore
+		boolean isRichiesto = (id != null && id.longValue() >= 0);
+		
+		boolean exists = (isRichiesto
+						  ? cache.get(ATTACHMENT_ID).indexOf(id) >= 0
+						  : cache.get(ATTACHMENT_UUID).indexOf(uuid) >= 0);
+		if( !exists ) {
+			// (QCompiler) aggiorna le mappe mantenendo l'ordinamento relativo a UUID
+			int index = -1;
+			if(!isRichiesto && StringUtils.isNotEmpty(questionarioFileName)) {
+				// cerca la posizione dove inserire l'allegato in ordine di UUID...
+				List<String> uuidList = cache.get(ATTACHMENT_UUID);
+				for(int i = 0; i < uuidList.size(); i++) {
+					if(uuid.compareTo(uuidList.get(i)) < 0) {
+						index = i;
+						break;
+					}
+				}
+			}
+			
+			addIfPresent(cache, ATTACHMENT_ID, id, index);
+			addIfPresent(cache, ATTACHMENT_FILE, file, index);
+			addIfPresent(cache, ATTACHMENT_CIFRATI, fileCifrato, index);
+			addIfPresent(cache, ATTACHMENT_CONTENT_TYPE, contentType, index);
+			addIfPresent(cache, ATTACHMENT_FILE_NAME, fileName, index);
+			addIfPresent(cache, ATTACHMENT_SIZE, size, index);
+			addIfPresent(cache, ATTACHMENT_SHA1, sha1, index);
+			addIfPresent(cache, ATTACHMENT_UUID, uuid, index);
+			addIfPresent(cache, ATTACHMENT_STATO, stato, index);
+			addIfPresent(cache, ATTACHMENT_FIRMA, checkFirma, index);
+			addIfPresent(cache, ATTACHMENT_IS_VISIBLE, isDocVisible(fileName), index);
+			if( !isRichiesto ) {
+				addIfPresent(cache, ATTACHMENT_DESC, descrizione, index);
+				addIfPresent(cache, ATTACHMENT_NASCOSTI, (nascosto ? descrizione : null), index);
+			}
+		}
 	}
 	@Deprecated
-	//Non appena possibile questo metodo deve essere dismesso
-	private void addIfPresent(Map<String, List> cache, String key, Object toAdd) {
-		cache.computeIfPresent(key, (kkey, value) -> {
-			value.add(toAdd);
-			return value;
+	// Non appena possibile questo metodo deve essere dismesso
+	private void addIfPresent(Map<String, List> cache, String key, Object toAdd, int position) {
+		cache.computeIfPresent(key, (kkey, list) -> {
+			if(position >= 0) {
+				list.add(position, toAdd);
+			} else {
+				list.add(toAdd);
+			}
+			return list;
 		});
 	}
-
-
+	
 	/**
 	 * Aggiungi tutte le info relative ad un documento richiesto con un unico metodo
 	 *
@@ -436,7 +461,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * @param fileName
 	 * 		nome file del documento
 	 * @param evento
-	 * 		opzionale, è l'evento da aggiornare in caso di tracciature
+	 * 		opzionale, e' l'evento da aggiornare in caso di tracciature
 	 * @throws GeneralSecurityException
 	 */
 	public void addDocRichiesto(
@@ -450,11 +475,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		if (requiredDocs == null)
 			return;
 
-		File f = new File(file.getParent() +
-				          java.io.File.separatorChar +
-				          FileUploadUtilities.generateFileName());
-		if (!file.renameTo(f))
-			logger.error("Error while renaming the file {} into {}", file.getAbsolutePath(), f.getAbsolutePath());
+		File f = generateTempFile(file);
 
 		String sha = this.getDigest(f, evento);
 
@@ -496,7 +517,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * @param fileName
 	 * 		nome file del documento
 	 * @param evento
-	 * 		opzionale, è l'evento da aggiornare in caso di tracciature
+	 * 		opzionale, e' l'evento da aggiornare in caso di tracciature
 	 * @throws IOException
 	 *
 	 * @throws GeneralSecurityException
@@ -571,7 +592,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			}
 		}
 
-		// è un documento che arriva da un XML, quindi da una comunicazione,
+		// e' un documento che arriva da un XML, quindi da una comunicazione,
 		// quindi dal db...
 		// lo stato dei documenti letti dal servizio dovrebbe essere 0 !!!
 		this.addDocRichiesto(
@@ -583,9 +604,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 				(int) Math.ceil(documento.getDimensione() / 1024.0),
 				sha,
 				documento.getUuid(),
-				PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_NESSUNO,
+				PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_NESSUNO,	//PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_MODIFICATO
 				checkFirma
-		); // .STATO_DOCUMENTO_BUSTA_MODIFICATO);
+		); 
 	}
 
 	/**
@@ -621,7 +642,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * 		identificativo univoco del documento usato per il download
 	 * 		su richiesta del file dal servizio
 	 * @param stato
-	 * 		1=modificato -1=eliminato indica se il documento è stato modificato
+	 * 		1=modificato -1=eliminato indica se il documento e' stato modificato
 	 *      e quindi va inviato al servizio
 	 * @param nascondi
 	 *
@@ -642,7 +663,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			boolean nascondi,
 			DocumentiAllegatiFirmaBean firmaCheck
 	) throws GeneralSecurityException {
-		logger.debug("Aggiorno il doc con index: {}, firmaCheck: {}", index, firmaCheck);
+		LOGGER.debug("Aggiorno il doc con index: {}, firmaCheck: {}", index, firmaCheck);
 
 		Attachment.AttachmentBuilder builder =
 				Attachment.AttachmentBuilder
@@ -659,23 +680,29 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 						.withDesc(descrizione)
 						.withFirmaBean(firmaCheck);
 
-		if(index < 0 || index >= additionalDocs.size())	// aggiungi un documento
+		if(index < 0 || index >= additionalDocs.size())	
+			// aggiungi un documento
 			additionalDocs.add(
 					builder
 						.withNascondi(nascondi)
 					.build()
 			);
-		else 	// modifica un documento
+		else {	
+			// modifica un documento
+			// prima di aggiornare il documento esistente si eliminano dal file system i vecchi files  
+//			additionalDocs.get(index).deleteAndNullifyFiles();
 			additionalDocs.set(
 				index
 				, builder.build()
 			);
+		}
 
 		// se viene aggiunto il documento del json del questionario
 		// memorizza il nome file associato al questionario
 		if (QUESTIONARIO_DESCR.equalsIgnoreCase(descrizione))
 			this.questionarioFileName = fileName;
-		addIfPresent(additional_attachment_cache, ATTACHMENT_NASCOSTI, nascondi ? descrizione : null);
+		
+		addToCache(additional_attachment_cache, -1L, descrizione, file, fileCifrato, contentType, fileName, size, sha1, uuid, stato, firmaCheck, nascondi);
 	}
 
 	private void addDocUlteriore(
@@ -708,7 +735,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * @param uuid
 	 * 		uuid da utilizzare per il documento
 	 * @param evento
-	 * 		opzionale, è l'evento da aggiornare in caso di tracciature
+	 * 		opzionale, e' l'evento da aggiornare in caso di tracciature
 	 *
 	 * @throws GeneralSecurityException
 	 */
@@ -728,9 +755,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		if (StringUtils.isEmpty(uuid))
 			uuid = FileUploadUtilities.generateFileName();
 
-		File f = new File(file.getParent(), FileUploadUtilities.generateFileName());
-		if (!file.renameTo(f))
-			logger.error("Error while renaming the file {} into {}", file.getAbsolutePath(), f.getAbsolutePath());
+		File f = generateTempFile(file);
 
 		File fc = null;
 		if (this.chiaveSessione != null) {
@@ -757,8 +782,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			, false
 			, checkFirma
 		);
-		addToCache(additional_attachment_cache, -1L, f, fc, contentType, fileName, size, sha1, uuid, PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_MODIFICATO, checkFirma);
-		addIfPresent(additional_attachment_cache, ATTACHMENT_DESC, descrizione);
 	}
 
 	public void addDocUlteriore(
@@ -767,7 +790,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			String contentType,
 			String fileName,
 			String uuid,
-			Event evento, DocumentiAllegatiFirmaBean checkFirma) throws GeneralSecurityException, IOException {
+			Event evento, 
+			DocumentiAllegatiFirmaBean checkFirma) throws GeneralSecurityException, IOException 
+	{
 		if (additionalDocs == null)
 			return;
 
@@ -812,7 +837,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		if(additionalDocs == null)
 			return;
 
-
 		File f = null;
 		File fc = null;
 		byte[] contenutoXML = null;
@@ -852,11 +876,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 				sha,
 				documento.getUuid(),
 				PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_NESSUNO, // STATO_DOCUMENTO_BUSTA_MODIFICATO, //documento.getModificato(),
-				nascondi, checkFirma
+				nascondi, 
+				checkFirma
 		);
-		addToCache(additional_attachment_cache, -1L, f, fc, documento.getContentType(), documento.getNomeFile(), size, sha, documento.getUuid(), PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_MODIFICATO, checkFirma);
-		addIfPresent(additional_attachment_cache, ATTACHMENT_DESC, documento.getDescrizione());
-
 	}
 
 	/**
@@ -881,13 +903,24 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		if(attachments == null)
 			return;
 
+		String uuid = attachments.get(index).getUuid();
 		attachments.get(index).deleteAndNullifyFiles();
 		attachments.remove(index);
 		if(attachments == requiredDocs) {
-			removeFromDeprecatedCache(required_attachment_cache, index);
+			//removeFromDeprecatedCache(required_attachment_cache, index);
+			removeFromDeprecatedCache(required_attachment_cache, uuid);
 		} else if(attachments == additionalDocs) {
-			removeFromDeprecatedCache(additional_attachment_cache, index);
+			//removeFromDeprecatedCache(additional_attachment_cache, index);
+			removeFromDeprecatedCache(additional_attachment_cache, uuid);
 		}
+	}
+	
+	@Deprecated
+	//private void removeFromDeprecatedCache(Map<String, List> cache, int index) {
+	private void removeFromDeprecatedCache(Map<String, List> cache, String uuid) {
+		int index = cache.get(ATTACHMENT_UUID).indexOf(uuid);
+		if(index >= 0) 
+			removeFromDeprecatedCache(cache, index);
 	}
 	
 	@Deprecated
@@ -901,9 +934,10 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		removeFromDeprecatedCache(cache, ATTACHMENT_SHA1, index);
 		removeFromDeprecatedCache(cache, ATTACHMENT_UUID, index);
 		removeFromDeprecatedCache(cache, ATTACHMENT_STATO, index);
-		removeFromDeprecatedCache(cache, ATTACHMENT_FIRMA, index);
-		removeFromDeprecatedCache(cache, ATTACHMENT_NASCOSTI, index);
+		removeFromDeprecatedCache(cache, ATTACHMENT_IS_VISIBLE, index);
 		removeFromDeprecatedCache(cache, ATTACHMENT_DESC, index);
+		removeFromDeprecatedCache(cache, ATTACHMENT_NASCOSTI, index);
+		removeFromDeprecatedCache(cache, ATTACHMENT_FIRMA, index);
 	}
 	
 	private void removeFromDeprecatedCache(Map<String, List> cache, String key, int index) {
@@ -923,7 +957,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * @param attachFileContents
 	 * 		indica se trasferire anche il contenuto binario dei file nella lista
 	 * @param applicaCifratura
-	 * 		indica se il contenuto binario è cifrato o meno
+	 * 		indica se il contenuto binario e' cifrato o meno
 	 *
 	 */
 	public void addDocumenti(
@@ -983,8 +1017,8 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		}
 
 //				// NB: lo stato dei documenti non andrebbe registrato nel
-//				// documento xml che andrà inviato al servizio.
-//				// Questo perchè lo stato serve solo lato client per gestire
+//				// documento xml che andrï¿½ inviato al servizio.
+//				// Questo perche' lo stato serve solo lato client per gestire
 //				// quali sono i documenti da inviare o meno al servizio,
 //				// percio' prima di inviare la comunicazione si resettano gli
 //				// stati dei documenti.
@@ -1006,7 +1040,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			ListaDocumentiType listaDocumenti,
 			boolean attachFileContents) throws IOException {
 		// NB: anche se si passa applicaCifratura=true comunque il metodo
-		//     generale addDocumenti(...) verifica se è effettivamente
+		//     generale addDocumenti(...) verifica se e' effettivamente
 		//     presente o meno la cifratura prima di gestire i documenti!!!
 		addDocumenti(listaDocumenti, attachFileContents, true);
 	}
@@ -1020,27 +1054,48 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 */
 	public void documentiToAllegatiComunicazione(
 			//DocumentiAllegatiHelper documenti,
-			List<AllegatoComunicazioneType> allegatiXml)
+			List<AllegatoComunicazioneType> allegatiXml) throws Exception
 	{
-		AllegatoComunicazioneType allegato;
 		boolean cifratura = (this.chiaveCifratura != null);
-//		boolean fileNonCifrato = false;
+		List<AllegatoComunicazioneType> docs = new ArrayList<AllegatoComunicazioneType>();  
 
 		// aggiungi i documenti richiesti
 	    if (requiredDocs != null)
-			requiredDocs.stream().map(it -> attachmentToAllegatoComType(it, cifratura)).forEach(allegatiXml::add);
-
+	    	requiredDocs.stream()
+	    			.map(a -> attachmentToAllegatoComType(a, cifratura))
+	    			.filter(a -> a != null)
+	    			.forEach(docs::add);
+	    
 		// aggiungi i documenti ulteriori
 	    if (additionalDocs != null)
-			additionalDocs.stream().map(it -> attachmentToAllegatoComType(it, cifratura)).forEach(allegatiXml::add);
+	    	additionalDocs.stream()
+				.map(a -> attachmentToAllegatoComType(a, cifratura))
+				.filter(a -> a != null)
+				.forEach(docs::add);
+	    
+	    // verifica se ci sono stati errori nella conversione dei documenti
+	    int n = ((requiredDocs != null ? requiredDocs.size() : 0) + (additionalDocs != null ? additionalDocs.size() : 0));
+	    if(docs.size() < n) {
+	    	String errMsg = "DocumentiAllegatiHelper.documentiToAllegatiComunicazione() errore in fase di conversione dei documenti allegati negli allegati per la comunicazione ("
+						    + "username: " + username 
+						    + ", idcom: " + (idComunicazione != null ? idComunicazione.toString() : "???")
+						    + ")";
+	    	LOGGER.error(errMsg);
+	    	throw new Exception(errMsg);
+	    }
+	    
+	    docs.stream().forEach(allegatiXml::add);
 	}
 
+	/**
+	 * converti un Attachment in un AllegatoComunicazioneType
+	 */
 	private AllegatoComunicazioneType attachmentToAllegatoComType(Attachment attachment, boolean cifratura) {
-		AllegatoComunicazioneType toReturn = new AllegatoComunicazioneType();
-
+		AllegatoComunicazioneType toReturn = null;
+		boolean error = false;
+		
 		// prepara il contenuto in byte dell'allegato da inviare al
-		// servizio; in caso di cifratura si invia il contenuto
-		// cifrato
+		// servizio; in caso di cifratura si invia il contenuto cifrato
 		byte[] contenuto = null;
 		try {
 			File f = attachment.getFile();
@@ -1049,12 +1104,13 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			if (f != null)
 				contenuto = org.apache.commons.io.FileUtils.readFileToByteArray(f);
 			else
-				logger.debug("documentiToAllegatiComunicazione: file nullo docUlteriori "
-							 	+ "desc={}, filename={}, idCom={}"
+				LOGGER.debug("attachmentToAllegatoComType: file nullo docUlteriori "
+							 + "desc={}, filename={}, idCom={}"
 							, attachment.getDesc(), attachment.getFileName(), this.idComunicazione);
 		} catch(Exception ex) {
+			error = true;
 			contenuto = null;
-			ApsSystemUtils.logThrowable(ex, this, "documentiToAllegatiComunicazione");
+			ApsSystemUtils.logThrowable(ex, this, "attachmentToAllegatoComType");
 		}
 
 		//************************************************************************************************************
@@ -1065,9 +1121,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 				String sha1 = attachment.getSha1();
 				String shaCriptato = DigestUtils.shaHex(contenuto);
 				if(shaCriptato.equals(sha1)) {
-					// sha1 == shaHex(file criptato) ==> il file non è cifrato!!!
+					// sha1 == shaHex(file criptato) ==> il file non e' cifrato!!!
 //							fileNonCifrato = true;
-					logger.warn("documentiToAllegatiComunicazione: docUlteriori file non cifrato " +
+					LOGGER.warn("attachmentToAllegatoComType: docUlteriori file non cifrato " +
 										"desc=" + attachment.getDesc() + ", " +
 										"id=" + attachment.getId() + ", " +
 										"filename=" + attachment.getFileName() + ", " +
@@ -1076,27 +1132,31 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 					contenuto = org.apache.commons.io.FileUtils.readFileToByteArray(fc);
 				}
 			} catch(Exception e) {
-				ApsSystemUtils.logThrowable(e, this, "documentiToAllegatiComunicazione", "errore durante la cifratura del file");
+				error = true;
+				ApsSystemUtils.logThrowable(e, this, "attachmentToAllegatoComType", "errore durante la cifratura del file");
 			}
 		}
 
 		// crea ed aggiungi il nuovo allegato per la comunicazione
-		toReturn.setUuid(attachment.getUuid());
-		toReturn.setModificato(attachment.getStato());
-		toReturn.setNomeFile(attachment.getFileName());
-		toReturn.setDescrizione(attachment.getDesc());
-		toReturn.setId(attachment.getId());
-		toReturn.setTipo(attachment.getContentType());
-		toReturn.setFile(contenuto);
-		if (attachment.getFirmaBean() != null) {
-			DocumentiAllegatiFirmaBean firmabean = attachment.getFirmaBean();
-//					logger.debug("firmacheck[{}]: {}",i,firmabean);
-			if (firmabean != null) {
-				toReturn.setFirmacheck(Boolean.TRUE.equals(firmabean.getFirmacheck()) ? "1" : "2");
-				if (firmabean.getFirmacheckts() != null) {
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(firmabean.getFirmacheckts());
-					toReturn.setFirmacheckts(calendar);
+		if( !error ) {
+			toReturn = new AllegatoComunicazioneType();
+			toReturn.setUuid(attachment.getUuid());
+			toReturn.setModificato(attachment.getStato());
+			toReturn.setNomeFile(attachment.getFileName());
+			toReturn.setDescrizione(attachment.getDesc());
+			toReturn.setId(attachment.getId());
+			toReturn.setTipo(attachment.getContentType());
+			toReturn.setFile(contenuto);
+			if (attachment.getFirmaBean() != null) {
+				DocumentiAllegatiFirmaBean firmabean = attachment.getFirmaBean();
+//				logger.debug("firmacheck[{}]: {}",i,firmabean);
+				if (firmabean != null) {
+					toReturn.setFirmacheck(Boolean.TRUE.equals(firmabean.getFirmacheck()) ? "1" : "2");
+					if (firmabean.getFirmacheckts() != null) {
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(firmabean.getFirmacheckts());
+						toReturn.setFirmacheckts(calendar);
+					}
 				}
 			}
 		}
@@ -1126,9 +1186,7 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 */
 	public synchronized void resetStatiInvio(ComunicazioneType comunicazioneInviata) {
 		if(comunicazioneInviata != null && comunicazioneInviata.getAllegato() != null) {
-			// documenti richiesti
 			resetAttachmentStatus(requiredDocs, comunicazioneInviata);
-			// documenti ulteriori
 			resetAttachmentStatus(additionalDocs, comunicazioneInviata);
 		}
 	}
@@ -1156,22 +1214,44 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		File f = null;
 		try {
 			// genera un file temporaneo dello stream binario...
-			f = new File(this.tempDir.getAbsolutePath() +
-					     java.io.File.separatorChar +
-					     FileUploadUtilities.generateFileName());
-			org.apache.commons.io.FileUtils.writeByteArrayToFile(f, file);
+			f = writeByteArrayToFile(file);
 		} catch (OutOfMemoryError e) {
 			throw new IOException(e.getMessage());
 		} finally {
 			// NB: quando viene aggiunto a docRichiesti o docUlteriori
 			//	   viene eliminato automaticamente al termine dell'helper o della sessione
-//			if(f != null && f.exists()) {
-//				f.delete();
-//			}
 		}
 		return f;
 	}
 
+	/**
+	 * crea un nuovo file temporaneo da un byte array 
+	 * 
+	 * @throws IOException 
+	 */
+	private File writeByteArrayToFile(byte[] data) throws IOException {
+		File f = new File(this.tempDir.getAbsolutePath() + 
+						  java.io.File.separatorChar + 
+						  FileUploadUtilities.generateFileName());
+		org.apache.commons.io.FileUtils.writeByteArrayToFile(f, data);
+		this.tempFiles.add(f);
+		return f;
+	}
+
+	/**
+	 * genera un nuovo file temporaneo e rinomina il file originale 
+	 */
+	private static synchronized File generateTempFile(File file) {
+		LOGGER.debug("generateTempFile begin {}", file.getAbsolutePath());
+		File f = new File(file.getParent() + java.io.File.separatorChar + FileUploadUtilities.generateFileName());
+		if (!file.renameTo(f)) {
+			LOGGER.error("Error while renaming the file {} into {}", file.getAbsolutePath(), f.getAbsolutePath());
+			f = file;
+		}
+		LOGGER.debug("generateTempFile end {}", f.getAbsolutePath());
+		return f;
+	}
+	
 	/**
 	 * Cifra un documento nel momento in cui viene allegato
 	 *
@@ -1183,25 +1263,68 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * 			  username dell'utente loggato
 	 *
 	 * @return reference al file cifrato
-	 *
-	 * @throws GeneralSecurityException
+	 * @throws Exception 
 	 */
 	private File cifraDocumento(File allegato, byte[] chiaveSessione, String token)
-		throws GeneralSecurityException {
+		throws GeneralSecurityException 
+	{
 		File fileCifrato = allegato;
+		// verifica se la cifratura e' attiva
 		if (chiaveSessione != null && token != null) {
-			fileCifrato = new File(allegato.getParent(), FileUploadUtilities.generateFileName());
-			try (FileInputStream fis = new FileInputStream(allegato.getPath()); FileOutputStream fos = new FileOutputStream(fileCifrato)) {
+			FileOutputStream fos = null;
+			try (FileInputStream fis = new FileInputStream(allegato.getPath())) {
+				// genera lo stream assocato al file temporaneo del file cifrato
+				Object[] oefs = openEncodedFileStream(allegato);
+				fileCifrato = (File)oefs[0];
+				fos = (FileOutputStream)oefs[1];
+				tempFiles.add(fileCifrato);
 				Cipher cipher = SymmetricEncryptionUtils.getEncoder(chiaveSessione, token);
 				SymmetricEncryptionUtils.translate(cipher, fis, fos);
-			} catch(InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException |
-					InvalidAlgorithmParameterException | IOException e){
+			} catch(Exception e) {
 				throw new GeneralSecurityException(e.getMessage(), e);
+			} finally {
+				if(fos != null) {
+					try {
+						fos.flush();
+						fos.close();
+					} catch (Exception ex) {
+						LOGGER.error("cifraDocumento", "cifraDocumento", ex);
+					}
+				}
 			}
+			
+			// verifica se la dimensione del file cifrato e' compatibile con la dimensione del file in chiaro
+			if(fileCifrato != null && fileCifrato != allegato) {
+				int size = (int) FileUploadUtilities.getFileSize(allegato);
+				int sizefc = (int) FileUploadUtilities.getFileSize(fileCifrato);
+				if(Math.abs(size - sizefc) > 1) {	// |size-sizefc| > 1KB
+					LOGGER.error("cifraDocumento",
+							"La dimensione del file cifrato non e' compatibile con quella del file originario ("
+							+ fileCifrato.getAbsolutePath() + " " + sizefc + ", " 
+							+ allegato.getAbsolutePath() + " " + size +
+							")");
+//					throw new GeneralSecurityException(
+//							"La dimensione del file cifrato non e' compatibile con quella del file originario ("
+//							+ fileCifrato.getAbsolutePath() + " " + sizefc + ", " 
+//							+ allegato.getAbsolutePath() + " " + size + 
+//							")");
+				}
+			}				
 		}
 		return fileCifrato;
 	}
 
+	private static synchronized	Object[] openEncodedFileStream(File allegato) throws FileNotFoundException {
+		// genera il file temporaneo e associalo allo stream come un'operazione atomica!!!
+		LOGGER.debug("openEncodedFileStream begin {}", allegato.getAbsolutePath());
+		Object[] out = new Object[2];  
+		out[0] = new File(allegato.getParent(), FileUploadUtilities.generateFileName());
+		out[1] = new FileOutputStream((File)out[0]);
+		LOGGER.debug("openEncodedFileStream end {}", allegato.getAbsolutePath());
+		return out;
+	}
+	
+	
 	/**
 	 * Estrai l'allegato da un allegato cifrato
 	 *
@@ -1252,9 +1375,9 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 
 	/**
 	 * Restituisce il contenuto binario in chiaro di un documento allegato
-	 * Se il file non è presente in area temporanea, viene richiesto al servizio
+	 * Se il file non e' presente in area temporanea, viene richiesto al servizio
 	 * e scaricato.
-	 * Se viceversa il file è già presente in area temporanea viene restituito
+	 * Se viceversa il file e' gia' presente in area temporanea viene restituito
 	 * il contenuto di tale file.
 	 *
 	 * @param listaAttachments
@@ -1264,7 +1387,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * 		richiedere al servizio
 	 */
 	private byte[] getAllegatoComunicazione(
-			List<Attachment> listaAttachments,
 			Attachment attachment,
 			String idDocumento
 	) {
@@ -1277,53 +1399,53 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			// decifrata
 			File file = attachment.getFile();
 			File fileCifrato = attachment.getFileCifrati();
+			boolean decifra = (chiaveSessione != null);
 
-			// lo stream e' gia' presente in locale o va scaricato ?
-			boolean downloadFile = false;
+			// lo stream e' gia' presente in locale o va scaricato dal WS ?
+			boolean downloadFromWS = false;
 			ApsSystemUtils.getLogger().debug("chiaveSessione.isNull? {}",(chiaveSessione==null));
 			if(chiaveSessione != null) {
-				downloadFile = (file == null && fileCifrato == null);
+				downloadFromWS = (file == null && fileCifrato == null);
 			} else {
-				downloadFile = (file == null);
+				downloadFromWS = (file == null);
 			}
 
-			ApsSystemUtils.getLogger().debug("devo scaricare il file richiesto? downloadFile: {}",downloadFile);
-			if(downloadFile) {
+			ApsSystemUtils.getLogger().debug("devo scaricare il file richiesto? downloadFromWS: {}",downloadFromWS);
+			if(downloadFromWS) {
+				// recupera il contenuto dell'allegato dal WS
 				contenuto = ComunicazioniUtilities.getAllegatoComunicazione(
 						this.idComunicazione,
 						idDocumento);
 			} else {
-				// non e' necessario rileggere il contenuto in chiaro...
-				// ...se file != null significa che il file è già presente
-				// nel filesystem, basta rileggerne il contenuto !!!
-				ApsSystemUtils.getLogger().debug("fileCifrato != null ?: {}",fileCifrato != null);
+				// se file != null (o fileCriptato != null) significa che il file e' gia'presente
+				// nel file system, basta rileggerne il contenuto !!!
 				ApsSystemUtils.getLogger().debug("file != null ?: {}",file != null);
-				if(fileCifrato != null) {
-					contenuto = FileUtils.readFileToByteArray(fileCifrato);
-					ApsSystemUtils.getLogger().debug("contenuto da file cifrato.");
-				} else if(file != null) {
-					ApsSystemUtils.getLogger().debug("restituisco direttamente il contenuto da file NON cifrato.");
-					return FileUtils.readFileToByteArray(file);
+				if(file != null) {
+					ApsSystemUtils.getLogger().debug("contenuto da file NON cifrato.");
+					contenuto = FileUtils.readFileToByteArray(file);
+					decifra = false;
+				} else {				
+					ApsSystemUtils.getLogger().debug("fileCifrato != null ?: {}",fileCifrato != null);
+					if(fileCifrato != null) {
+						ApsSystemUtils.getLogger().debug("contenuto da file cifrato.");
+						contenuto = FileUtils.readFileToByteArray(fileCifrato);
+					}
 				}
 			}
 
 			// se necessario, salva in locale il file cifrato...
-			// se e' gia' presente il file in chiaro non serve decifrare il
-			// file cifrato
-			if(chiaveSessione != null) {
-				ApsSystemUtils.getLogger().debug("Aggiorno il fileCifrato nella busta? {}",(contenuto != null && downloadFile));
-				if(contenuto != null && downloadFile) {
-					fileCifrato = new File(this.tempDir.getAbsolutePath() +
-		        		   	   java.io.File.separatorChar +
-		        		   	   FileUploadUtilities.generateFileName());
+			// se e' gia' presente il file in chiaro non serve recuperare 
+			// il contenuto decifrato dal file cifrato
+			if(chiaveSessione != null && contenuto != null && decifra) {
+				ApsSystemUtils.getLogger().debug("Aggiorno il fileCifrato nella busta? {}",downloadFromWS);
+				if(downloadFromWS) {
+					fileCifrato = writeByteArrayToFile(contenuto);
 					attachment.setFileCifrati(fileCifrato);
-					org.apache.commons.io.FileUtils.writeByteArrayToFile(fileCifrato, contenuto);
 				}
-				// decifra il file...
+				// decifra il contenuto del file...
 				ApsSystemUtils.getLogger().debug("Decifro il file");
 				contenuto = decifraDocumento(contenuto, chiaveSessione, username);
 			}
-
 		} catch (ApsException e) {
 			ApsSystemUtils.logThrowable(e, this, "getAllegatoComunicazione");
 		} catch (IOException e) {
@@ -1340,7 +1462,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	public byte[] getContenutoDocRichiesto(int id) {
 		String uuid = (id < requiredDocs.size() ? requiredDocs.get(id).getUuid() : null);
 		return getAllegatoComunicazione(
-				requiredDocs,
 				requiredDocs.get(id),
 				uuid
 		);
@@ -1348,7 +1469,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	public byte[] getContenutoDocRichiesto(Attachment attachment) {
 		String uuid = attachment.getUuid();
 		return getAllegatoComunicazione(
-				requiredDocs,
 				attachment,
 				uuid
 		);
@@ -1359,7 +1479,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	public byte[] getContenutoDoc(Attachment attachment) {
 		String uuid = (attachment.getUuid());
 		return getAllegatoComunicazione(
-				requiredDocs,
 				attachment,
 				uuid
 		);
@@ -1369,16 +1488,14 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * Recupera lo stream binario del documento ulteriore
 	 */
 	public byte[] getContenutoDocUlteriore(int id) {
-		String uuid = (id < requiredDocs.size() ? requiredDocs.get(id).getUuid() : null);
+		String uuid = (id < additionalDocs.size() ? additionalDocs.get(id).getUuid() : null);
 		byte[] contenuto = this.getAllegatoComunicazione(
-				additionalDocs,
 				additionalDocs.get(id),
 				uuid);
 		return contenuto;
 	}
 	public byte[] getContenutoDocUlteriore(Attachment attachment) {
 		return getAllegatoComunicazione(
-				additionalDocs,
 				attachment,
 				attachment.getUuid()
 		);
@@ -1401,25 +1518,15 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			// ...si sta per creare lo stream sul file gia' esistente!!!
 		} else {
 			// se necessario, decifra e salva in locale il file in chiaro...
-			byte[] contenuto = null;
-//			if(isDocRichiesto) {
-//				contenuto = this.getContenutoDocRichiesto(id);
-//			} else {
-//				contenuto = this.getContenutoDocUlteriore(id);
-//			}
-			contenuto = getContenutoDoc(attachment);
+			byte[] contenuto = getContenutoDoc(attachment);
 			if(contenuto != null) {
-				f = new File(this.tempDir.getAbsolutePath() +
-						     java.io.File.separatorChar +
-						     FileUploadUtilities.generateFileName());
-				org.apache.commons.io.FileUtils.writeByteArrayToFile(f, contenuto);
+				f = writeByteArrayToFile(contenuto);
 				attachment.setFile(f);
 			}
 
-			// informa esplicitamente il Garbage Collector che questa memoria non
-			// serve piu'!!!
+			// informa esplicitamente il Garbage Collector 
+			// che questa memoria non serve piu'!!!
 			contenuto = null;
-			//System.gc();
 		}
 
 		// crea lo stream del file in chiaro...
@@ -1458,9 +1565,37 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		return downloadDocumento(additionalDocs, attachment);
 	}
 
+	/**
+	 * Esegue il download generido di un documento 
+	 */
 	public InputStream downloadDoc(List<Attachment> docs, int id)
 			throws ApsException, IOException, GeneralSecurityException {
 		return downloadDocumento(docs, docs.get(id));
+	}
+
+	/**
+	 * converte l'indice di "additional_attachment_cache"  nell'indice in "additionalDocs"
+	 * NB: utilizzato solo nella pagina di riepilogo dei QForm
+	 */
+	public int getIndexDocumento(int id, Map<String, List> cache, List<Attachment> attachments) {
+		String uuid = (String)cache.get(ATTACHMENT_UUID).get(id);
+		if(StringUtils.isNotEmpty(uuid)) {
+			id = attachments.stream()
+				.map(Attachment::getUuid)
+				.collect(Collectors.toList())
+				.indexOf(uuid);
+		} else {
+			id = -1;
+		}
+		return id;
+	}
+
+	public int getIndexDocRichiesto(int id) {
+		return getIndexDocumento(id, required_attachment_cache, requiredDocs);
+	}
+	
+	public int getIndexDocUlteriore(int id) {
+		return getIndexDocumento(id, additional_attachment_cache, additionalDocs);
 	}
 
 //	/**
@@ -1500,12 +1635,12 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * valida il contentType di un allegato
 	 * il content type viene inserito nella colonna della tabella W_DOCDIG.DOCDIGTIPO VARCHAR[5]
 	 */
-	private String validateContentType(String contentType, DocumentiAllegatiFirmaBean checkFirma, String filename) {
+	public static String validateContentType(String contentType, DocumentiAllegatiFirmaBean checkFirma, String filename) {
 		String fileType = contentType;
 
 		// normalizza il content type in base al tipo di documento (es: pdf/a validato)
 		if(checkFirma != null) {
-			if(checkFirma.isPdfaCompliant()) {
+			if (checkFirma.isPdfaCompliant()) {
 				fileType = "pdf/a";
 			} else if(StringUtils.isNotEmpty(filename) && filename.toUpperCase().endsWith(".PDF")) {
 				fileType = "pdf";
@@ -1536,7 +1671,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 *
 	 * @param listaDocumenti la lista dei documenti da popolare
 	 *
-     *
 	 * @throws IOException
 	 */
 	public void popolaDocumentiFromXml(
@@ -1614,8 +1748,6 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 * - ...
 	 */
 	private Boolean isDocVisible(String filename) {
-		Boolean visible = Boolean.TRUE;
-
 		String ext = FilenameUtils.getExtension(filename);
 		if ("JSON".equalsIgnoreCase(ext)) {
 			return Boolean.FALSE;
@@ -1657,29 +1789,48 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		return attachments.stream()
 				.anyMatch(attachment ->
 						  QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(attachment.getFileName())
-								  || QUESTIONARIO_GARE_FILENAME.equalsIgnoreCase(attachment.getFileName())
+						  || QUESTIONARIO_GARE_FILENAME.equalsIgnoreCase(attachment.getFileName())
 				);
 	}
 
 	/**
-	 * aggiorna il contenuto del documento questionario
+	 * (QCompiler) aggiorna il contenuto del documento questionario
+	 * 
 	 * @throws IOException
 	 * @throws GeneralSecurityException
 	 */
 	public void updateQuestionario(
-			String questionario,
+			String questionarioJson,
 			RiepilogoBusteHelper bustaRiepilogativa)
-		throws IOException, GeneralSecurityException {
-		boolean presente = false;
-		if (CollectionUtils.isNotEmpty(additionalDocs)) {
+		throws IOException, GeneralSecurityException 
+	{
+		if (CollectionUtils.isEmpty(additionalDocs)) 
+			return;
+		
+		// sincronizza il caso in cui un "autosave" ed un'operazione dell'utente possano sovrapporsi  
+		synchronized (this) {			
+			boolean presente = false;
 			for(int i = 0; i < additionalDocs.size(); i++) {
 				if (QUESTIONARIO_GARE_FILENAME.equalsIgnoreCase(additionalDocs.get(i).getFileName()) ||
-				   QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(additionalDocs.get(i).getFileName())) {
-					// crea un file temporaneo per scaricare lo stream binario del file
-					// il temporanero verra' eliminato al termine dell'helper o della sessione
-					File f = generateFileFromBytes(questionario.getBytes());
+				    QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(additionalDocs.get(i).getFileName())) 
+				{
+					// recupera i vecchi temporanei associati a "questionario.json" 
+					// per eliminarli dopo aver aggiunto la nuova versione... 
+					File oldFile = additionalDocs.get(i).getFile();
+					File oldFileCifrato = additionalDocs.get(i).getFileCifrati();
+					if(oldFile != null) this.tempFiles.add(oldFile);
+					if(oldFileCifrato != null) this.tempFiles.add(oldFileCifrato);
 
-					// modifica il contenuto dell'allegato del questionario...
+					// crea un file temporaneo (UTF-8) per scaricare lo stream binario del "questionario.json"
+					// (il temporanero verra' eliminato al termine dell'helper o della sessione)										
+					File f = new File(this.tempDir.getAbsolutePath() + java.io.File.separatorChar + FileUploadUtilities.generateFileName());			
+					PrintWriter w = new PrintWriter(f, "UTF-8");
+					w.print(questionarioJson);
+					w.flush();
+					w.close();
+					this.tempFiles.add(f);
+
+					// aggiorna il contenuto dell'allegato del questionario...
 					addDocUlteriore(
 							i
 							, additionalDocs.get(i).getDesc()
@@ -1691,10 +1842,10 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 							, null
 					);
 
-					// aggiorna il json del questionario...
-					if (questionarioAssociato != null)
-						questionarioAssociato.setOggetto(questionario);
-
+					// elimina i vecchi temporanei associati a "questionario.json"...
+					if(oldFile != null && oldFile.exists()) oldFile.delete();
+					if(oldFileCifrato != null && oldFileCifrato.exists()) oldFileCifrato.delete();
+					
 					presente = true;
 					break;
 				}
@@ -1704,7 +1855,8 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			// se l'allegato del questionario non e' stato trovato
 			// si segnala l'anomalia e si corregge l'errore
 			// aggiungendo un nuovo allegato per il questionario
-			if (!presente) {
+			boolean correggi = false;
+			if ( !presente ) {
 				// traccia il mancato aggiornamento del questionario
 				ApsSystemUtils.getLogger().error("updateQuestionario", "Questionario non trovato tra i documenti allegati (" + this.questionarioFileName + ")");
 
@@ -1714,40 +1866,47 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 
 					this.addDocUlteriore(
 							QUESTIONARIO_DESCR,
-							questionario.getBytes(),
+							questionarioJson.getBytes(),
 							"JSON",
 							this.questionarioFileName,
 							uuid,
 							null,
 							null);
-
-					// riaggiorna il json del questionario...
-					if (this.questionarioAssociato != null)
-						this.questionarioAssociato.setOggetto(questionario);
+					correggi = true;
 
 					ApsSystemUtils.getLogger().warn("updateQuestionario - {}", "Nuovo questionario riallegato alla comunicazione (" + questionarioFileName + ")");
+				}
+			}
+			
+			// riaggiorna il json del questionario...	
+			if (presente || correggi) {
+				if (this.questionarioAssociato != null) {
+					this.questionarioAssociato.setOggetto(questionarioJson);
 				}
 			}
 		}
 	}
 
+	/**
+	 * (QCompiler) aggiorna il contenuto del documento questionario 
+	 */
 	public void updateQuestionario(String questionario) throws IOException, GeneralSecurityException {
 		this.updateQuestionario(questionario, null);
 	}
 
 	/**
-	 *  ...
-	 * @throws GeneralSecurityException
-	 * @throws IOException
-	 * @throws ApsException
+	 * (QCompiler) restituisce il questionario relativo all'allegato "questionario.json" (gare, elenchi, ...)
+	 *  
+	 * @throws Exception
 	 */
-	public QCQuestionario getQuestionarioAllegato(
-			String nomeFile,
-			int tipoBusta) throws ApsException, IOException, GeneralSecurityException
-	{
+	private QCQuestionario getQuestionarioAllegato(String nomeFile, int tipoBusta) {
 		QCQuestionario q = null;
+		
 		for (int i = 0; i < additionalDocs.size(); i++) {
 			if (nomeFile.equalsIgnoreCase(additionalDocs.get(i).getFileName())) {
+				// verifico se esiste gia' una copia dell'allegato su fs 
+				// altrimenti la richiedo al servizio (che restiruisce sempre in UTF-8) 
+				// in caso di cifratura ottengo lo stream viene ricalcolato in chiaro
 				try (InputStream is = this.downloadDocUlteriore(i)) {
 					if (is != null) {
 						try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -1757,13 +1916,19 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 								next = is.read();
 							}
 							bos.flush();
-							String utf8 = bos.toString("UTF-8");
-							if (tipoBusta > 0)
-								q = new QCQuestionario(tipoBusta, new String(utf8.getBytes()));
-							else
-								q = new QCQuestionario(new String(utf8.getBytes()));
+							
+							String json = bos.toString("UTF-8");
+							
+							if (QUESTIONARIO_GARE_FILENAME.equals(nomeFile)) {
+								q = new QCQuestionario(tipoBusta, json);
+							} else if (QUESTIONARIO_ELENCHI_FILENAME.equals(nomeFile)) {
+								q = new QCQuestionario(json);
+							} 
 						}
 					}
+				} catch (Exception e) {
+					// NON DOVREBBE MAI SUCCEDERE
+					ApsSystemUtils.getLogger().error("getQuestionarioAllegato", e);
 				}
 				break;
 			}
@@ -1771,15 +1936,82 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 		return q;
 	}
 
-	public QCQuestionario getQuestionarioAllegato(String nomeFile) throws ApsException, IOException, GeneralSecurityException {
-		return this.getQuestionarioAllegato(nomeFile, -1);
+	/**
+	 * (QCompiler) recupera "questionario.json" per le gare
+	 */
+	public QCQuestionario getQuestionarioGare(int tipoBusta) {
+		return this.getQuestionarioAllegato(QUESTIONARIO_GARE_FILENAME, tipoBusta);
 	}
 
+	/**
+	 * (QCompiler) recupera "questionario.json" per gli elenchi
+	 */
+	public QCQuestionario getQuestionarioElenchi() {
+		return this.getQuestionarioAllegato(QUESTIONARIO_ELENCHI_FILENAME, -1);
+	}
+
+	/**
+	 * (QCompiler) verifica per le gare se i documenti del questionario.json e dell'helper documenti sono sincronizzati
+	 */
+	public List<AnomalieQuestionarioInfo> validaQuestionarioGare(int tipoBusta) {
+		List<AnomalieQuestionarioInfo> anomalie = null;
+		QCQuestionario q = getQuestionarioAllegato(QUESTIONARIO_GARE_FILENAME, tipoBusta);
+		if( !q.validateAllegati(this) )
+			anomalie = q.getValidateInfo();
+		return anomalie;
+	}
+	
+	/**
+	 * (QCompiler) verifica per gli elenchi se i documenti del questionario.json e dell'helper documenti sono sincronizzati
+	 */	
+	public List<AnomalieQuestionarioInfo> validaQuestionarioElenchi() {
+		List<AnomalieQuestionarioInfo> anomalie = null;
+		QCQuestionario q = getQuestionarioAllegato(QUESTIONARIO_ELENCHI_FILENAME, -1);
+		if( !q.validateAllegati(this) )
+			anomalie = q.getValidateInfo();
+		return anomalie;
+	}
+	
+	/**
+	 * (QCompiler) sincronizza gli allegati tra sessione e db
+	 * NB: evita duplicazioni in caso il servizio non riesca a fare persistenza sul db  
+	 */
+	public void questionarioFixAttachments() {
+		// recupera tutti i documenti ulteriori che sono stati variati (modificati/eliminati)
+		// e rimuovili dall'elenco dei documenti in sessione in modo da annullare 
+		// le ultime modifiche ai documenti in sessione ignora l'allegato "questionario"
+		if (CollectionUtils.isNotEmpty(requiredDocs)) {
+			requiredDocs.removeIf(
+					a -> !QUESTIONARIO_DESCR.equalsIgnoreCase(a.getDesc())
+					 	 && a.getStato().intValue() > PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_NESSUNO);
+		}
+		
+		if (CollectionUtils.isNotEmpty(additionalDocs)) {
+			additionalDocs.removeIf(
+					a -> !QUESTIONARIO_DESCR.equalsIgnoreCase(a.getDesc())
+						 && a.getStato().intValue() > PortGareSystemConstants.STATO_DOCUMENTO_BUSTA_NESSUNO);
+		}
+	}
+
+	/**
+	 * (QCompiler) restituisce l'allegato del "pdf di riepilogo" per i questionari con riepilogo automatico   
+	 */
+	public Attachment getQuestionarioPdfRiepilogoAutomatico() {
+		return additionalDocs
+				.stream()
+				.filter(Objects::nonNull)			// restiruisce solo gli oggetti NON nulli
+				.filter(a -> QUESTIONARIO_PDFRIEPILOGO.equalsIgnoreCase(a.getDesc()) && (a.getUuid() != null && a.getUuid().startsWith("999999")))
+				.findFirst()
+				.orElse(null);
+	}
+	
+	
 	public void addAdditionalDoc(Attachment attachment) {
 		additionalDocs.add(attachment);
 		addToCache(
 				additional_attachment_cache
 				, attachment.getId()
+				, attachment.getDesc()
 				, attachment.getFile()
 				, attachment.getFileCifrati()
 				, attachment.getContentType()
@@ -1789,10 +2021,8 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 			    , attachment.getUuid()
 			    , attachment.getStato()
 			    , attachment.getFirmaBean()
+			    , StringUtils.isNotEmpty(attachment.getNascosto())
 		);
-		addIfPresent(additional_attachment_cache, ATTACHMENT_DESC, attachment.getDesc());
-		//TODO: Controllare se è giusto
-		addIfPresent(additional_attachment_cache, ATTACHMENT_NASCOSTI, null);
 	}
 
 	/**
@@ -1811,6 +2041,76 @@ public class DocumentiAllegatiHelper implements HttpSessionBindingListener, Seri
 	 */
 	public List<Attachment> getAdditionalDocs() {
 		return additionalDocs;
+	}
+
+	/**
+	 * restituisce il totale degli allegati richiesti inseriti
+	 * 
+	 * @return totale dei documenti richiesti inseriti
+	 */
+	public int getRequiredDocsCount() {
+		return (requiredDocs != null ? requiredDocs.size() : 0);
+	}
+	
+	/**
+	 * restituisce il totale degli allegati ulteriori inseriti
+	 * 
+	 * @return totale dei documenti ulteriori inseriti
+	 */
+	public int getAdditionalDocsCount() {
+		return (additionalDocs != null ? additionalDocs.size() : 0);
+	}
+
+	/**
+	 * Restituisce il totale di tutti i doucumenti inseriti 
+	 * 
+	 * @return totale dei documenti allegati 
+	 */
+	public int getDocsCount() {
+		return (requiredDocs != null ? requiredDocs.size() : 0) + (additionalDocs != null ? additionalDocs.size() : 0);
+	}
+	/**
+	 * Restituisce la somma delle dimensioni dei documenti allegati 
+	 * 
+	 * @return somma totale dei documenti allegati 
+	 */
+	public int getTotalSize() {
+		return Attachment.sumSize(requiredDocs) + Attachment.sumSize(additionalDocs);
+	}
+
+	/**
+	 * verifica se i documenti richiesti delle busta sono ancora definiti in BO
+	 * Se BO e i documenti richiesti non corrispondono (cancellati o archiviati)
+	 * vanno rimossi dall'helper dei documenti
+	 */
+	public boolean correggiDocumentiRichiestiConBO(List<DocumentazioneRichiestaType> documentiRichiestiDB) { 
+		int correzioni = 0;
+		for(int i = requiredDocs.size() - 1; i >= 0; i--) {
+			Attachment a = requiredDocs.get(i);
+			boolean existsInBO = documentiRichiestiDB.stream()
+									.anyMatch(docBO -> a.getId().longValue() == docBO.getId());
+			if( !existsInBO ) {
+				LOGGER.warn("DocumentiAllegatiHelper: il documento richiesto {} e' stato rimosso in quanto non e' definito in BO", a.getFileName());
+				removeDocRichiesto(i);
+				correzioni++;
+			}
+		}
+		return (correzioni == 0);
+	}
+
+	/**
+	 * restituisce il temporary path della webapp 
+	 */
+	private File getTempDir() {
+		File tmp = null;
+		try {
+			tmp = StrutsUtilities.getTempDir(ServletActionContext.getServletContext());
+		} catch (Throwable t) {
+			tmp = null;
+		}
+		if(tmp == null)
+			tmp = StrutsUtilities.getTempDir(SpringAppContext.getServletContext());
+		return tmp;
 	}
 
 }

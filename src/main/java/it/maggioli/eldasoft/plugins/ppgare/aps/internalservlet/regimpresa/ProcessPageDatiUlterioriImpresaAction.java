@@ -10,9 +10,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
-public class ProcessPageDatiUlterioriImpresaAction
-	extends
-	it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageDatiUlterioriImpresaAction {
+public class ProcessPageDatiUlterioriImpresaAction 
+	extends it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ProcessPageDatiUlterioriImpresaAction {
 
     /**
      * UID
@@ -25,8 +24,9 @@ public class ProcessPageDatiUlterioriImpresaAction
      * @return helper contenente i dati dell'impresa
      */
     protected WizardDatiImpresaHelper getSessionHelper() {
-	WizardDatiImpresaHelper helper = (WizardDatiImpresaHelper) this.session
-		.get(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA);
-	return helper;
+		WizardDatiImpresaHelper helper = (WizardDatiImpresaHelper) this.session
+			.get(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA);
+		return helper;
     }
+    
 }

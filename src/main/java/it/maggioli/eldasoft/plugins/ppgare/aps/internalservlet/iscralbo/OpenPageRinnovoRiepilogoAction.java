@@ -3,11 +3,20 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageRinnovoRiepilogoAction extends OpenPageRiepilogoAction {
 	/**
 	 * UID
@@ -57,11 +66,7 @@ public class OpenPageRinnovoRiepilogoAction extends OpenPageRiepilogoAction {
 		} else {
 			// la sessione non e' scaduta, per cui proseguo regolarmente
 			try {
-				this.documentiRichiesti = this.bandiManager
-						.getDocumentiRichiestiRinnovoIscrizione(
-								rinnovoHelper.getIdBando(), 
-								rinnovoHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-								rinnovoHelper.isRti());
+				this.documentiRichiesti = rinnovoHelper.getDocumentiRichiestiBO();
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "openPage");
 				ExceptionUtils.manageExceptionError(t, this);

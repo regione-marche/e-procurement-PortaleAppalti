@@ -29,7 +29,7 @@
 		<li>
 			<p>
 				<a class="list-element bkg go important" title='<wp:i18n key="LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI" />'
-					 href='${urlExcelVariazionePrezziUnitariDownload}&amp;${tokenHrefParams}'>
+					 href='${urlExcelVariazionePrezziUnitariDownload}'>
 					<wp:i18n key="LABEL_SCARICA_XLS_CON_TUOI_PREZZI_UNITARI" />
 				</a>
 				<br/>
@@ -41,7 +41,7 @@
 		<li>
 			<p>
 				<a class="list-element bkg go important" title='<wp:i18n key="LABEL_IMPORTA_NUOVI_PREZZI_UNITARI_E_VALIDA" />'
-					 href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageImportPrezziUnitari.action"/>&amp;${tokenHrefParams}'>
+					 href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageImportPrezziUnitari.action"/>'>
 					<wp:i18n key="LABEL_IMPORTA_NUOVI_PREZZI_UNITARI_E_VALIDA" />
 				</a>
 				<br/>
@@ -52,7 +52,8 @@
 		</li>
 	</ul>
 	<div class="back-link">
-	    <form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/processPageOffTelOfferta.action" />&amp;${tokenHrefParams}" method="post">
+	    <form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/processPageOffTelOfferta.action" />" method="post">
+	    	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
             <input type="hidden" name="codice" value="${codice}" />
             <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_previous.jsp" />
 		</form>

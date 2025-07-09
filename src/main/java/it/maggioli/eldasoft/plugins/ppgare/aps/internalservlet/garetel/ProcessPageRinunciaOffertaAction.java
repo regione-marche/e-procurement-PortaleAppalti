@@ -1,19 +1,10 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.struts2.interceptor.validation.SkipValidation;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
@@ -28,6 +19,13 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParam
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.Map;
 
 
 /**

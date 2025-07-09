@@ -208,13 +208,13 @@
 									
 										<c:choose>
 											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-												<a href="<wp:action path='${hrefAnnulla}'/>&amp;codice=${codGara}&amp;operazione=${operazione}&amp;progressivoOfferta=<s:property value='%{#item.progressivoOfferta}'/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+												<a href="<wp:action path='${hrefAnnulla}'/>&amp;codice=${codGara}&amp;operazione=${operazione}&amp;progressivoOfferta=<s:property value='%{#item.progressivoOfferta}'/>&amp;ext=${param.ext}" 
 													title='<s:property value="%{#attr.labelElimina}"/>' class='bkg ${clsTipoAnnullamento}'>
 													<s:property value="%{#attr.lblElimina}"/>
 												</a>
 											</c:when>
 											<c:otherwise>
-												<a href="<wp:action path='${hrefAnnulla}'/>&amp;codice=${codGara}&amp;operazione=${operazione}&amp;progressivoOfferta=<s:property value='%{#item.progressivoOfferta}'/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+												<a href="<wp:action path='${hrefAnnulla}'/>&amp;codice=${codGara}&amp;operazione=${operazione}&amp;progressivoOfferta=<s:property value='%{#item.progressivoOfferta}'/>&amp;ext=${param.ext}" 
 													title='<s:property value="%{#attr.labelElimina}"/>' class="bkg ${clsTipoAnnullamento}">
 												</a>
 											</c:otherwise>
@@ -260,7 +260,7 @@
 	</s:if>
 		
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codGara}&amp;idComunicazione=${idComunicazione}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codGara}&amp;idComunicazione=${idComunicazione}">
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

@@ -1,16 +1,20 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 
+import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.apsadmin.system.TokenInterceptor;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.helper.WizardOffertaAstaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardIscrizioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardRinnovoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -22,6 +26,11 @@ import java.util.Map;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class CancelAggiornamentoAction extends BaseAction implements SessionAware {
 	/**
 	 * UID
@@ -29,9 +38,9 @@ public class CancelAggiornamentoAction extends BaseAction implements SessionAwar
 	private static final long serialVersionUID = -7527283479159496491L;
 
 	protected Map<String, Object> session;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String url;
-	@Validate(EParamValidation.ACTION)
+	@ValidationNotRequired
 	private String actionPath;
 	@Validate(EParamValidation.DIGIT)
 	private String currentFrame;
@@ -145,57 +154,61 @@ public class CancelAggiornamentoAction extends BaseAction implements SessionAwar
 		// corretta precedente la chiamata del wizard di aggiornamento
 		// anagrafica, ma consentendo l'aggiornamento dei dati anagrafici nel
 		// wizard da cui si e' partiti
-		this.url = (String) this.session
-			.get(PortGareSystemConstants.SESSION_ID_URL_RITORNO_AGG_ANAGRAFICA_IMPRESA);
-		String fromModule = (String) this.session
-			.get(PortGareSystemConstants.SESSION_ID_MODULO_RITORNO_AGG_ANAGRAFICA_IMPRESA);
-		if (fromModule != null) {
-			String fromAction = (String) this.session
-				.get(PortGareSystemConstants.SESSION_ID_ACTION_RITORNO_AGG_ANAGRAFICA_IMPRESA);
-			if (fromAction == null) {
-				// utilizzo l'unica action prevista nel namespace, action dal nome standard 
-				fromAction = "openPageImpresa";
-			}
-			this.actionPath = "/ExtStr2/do/FrontEnd/" + fromModule + "/"
-				+ fromAction + ".action";
+		try {
+			this.url = (String) this.session
+					.get(PortGareSystemConstants.SESSION_ID_URL_RITORNO_AGG_ANAGRAFICA_IMPRESA);
+			String fromModule = (String) this.session
+					.get(PortGareSystemConstants.SESSION_ID_MODULO_RITORNO_AGG_ANAGRAFICA_IMPRESA);
+			if (fromModule != null) {
+				String fromAction = (String) this.session
+						.get(PortGareSystemConstants.SESSION_ID_ACTION_RITORNO_AGG_ANAGRAFICA_IMPRESA);
+				if (fromAction == null) {
+					// utilizzo l'unica action prevista nel namespace, action dal nome standard
+					fromAction = "openPageImpresa";
+				}
+				this.actionPath = "/ExtStr2/do/FrontEnd/" + fromModule + "/"
+						+ fromAction + ".action";
 
-			WizardDatiImpresaHelper datiImpresaHelper = (WizardDatiImpresaHelper) this.session
-				.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
+				WizardDatiImpresaHelper datiImpresaHelper = (WizardDatiImpresaHelper) this.session
+						.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
 
-			// si aggiorna l'oggetto in sessione presente nel wizard da cui si
-			// proviene
-			if ("RichPartBando".equals(fromModule)) {
+				// si aggiorna l'oggetto in sessione presente nel wizard da cui si
+				// proviene
+				if ("RichPartBando".equals(fromModule)) {
 //				WizardPartecipazioneHelper partecipazioneHelper = (WizardPartecipazioneHelper) this.session
 //						.get(PortGareSystemConstants.SESSION_ID_DETT_PART_GARA);
-				BustaPartecipazione bustaPartecipazione = GestioneBuste.getPartecipazioneFromSession();
-				WizardPartecipazioneHelper partecipazioneHelper = bustaPartecipazione.getHelper(); 
-				partecipazioneHelper.setImpresa(datiImpresaHelper);
-				
-			} else if ("IscrAlbo".equals(fromModule)) {
-				WizardIscrizioneHelper iscrizioneHelper = null;
-				if ("openPageRinnovoImpresa".equals(fromAction)) {
-					iscrizioneHelper = (WizardRinnovoHelper) this.session
-						.get(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
-				} else {
-					iscrizioneHelper = (WizardIscrizioneHelper) this.session
-						.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+					BustaPartecipazione bustaPartecipazione = GestioneBuste.getPartecipazioneFromSession();
+					WizardPartecipazioneHelper partecipazioneHelper = bustaPartecipazione.getHelper();
+					partecipazioneHelper.setImpresa(datiImpresaHelper);
+
+				} else if ("IscrAlbo".equals(fromModule)) {
+					WizardIscrizioneHelper iscrizioneHelper = null;
+					if ("openPageRinnovoImpresa".equals(fromAction)) {
+						iscrizioneHelper = (WizardRinnovoHelper) this.session
+								.get(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
+					} else {
+						iscrizioneHelper = (WizardIscrizioneHelper) this.session
+								.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+					}
+
+					iscrizioneHelper.setImpresa(datiImpresaHelper);
+
+				} else if ("Aste".equals(fromModule)) {
+					WizardOffertaAstaHelper offertaHelper = (WizardOffertaAstaHelper) this.session
+							.get(PortGareSystemConstants.SESSION_ID_DETT_OFFERTA_ASTA);
+					offertaHelper.getOffertaEconomica().setImpresa(datiImpresaHelper);
 				}
-
-				iscrizioneHelper.setImpresa(datiImpresaHelper);
-				
-			}  else if ("Aste".equals(fromModule)) {
-				WizardOffertaAstaHelper offertaHelper = (WizardOffertaAstaHelper) this.session
-					.get(PortGareSystemConstants.SESSION_ID_DETT_OFFERTA_ASTA);
-				offertaHelper.getOffertaEconomica().setImpresa(datiImpresaHelper);
 			}
-		}
-		this.currentFrame = (String) this.session
-			.get(PortGareSystemConstants.SESSION_ID_FRAME_RITORNO_AGG_ANAGRAFICA_IMPRESA);
+			this.currentFrame = (String) this.session
+					.get(PortGareSystemConstants.SESSION_ID_FRAME_RITORNO_AGG_ANAGRAFICA_IMPRESA);
 
-		// prepara il token per il redirect
-		TokenInterceptor.redirectToken();
-		
-		this.clearSession();
+			// prepara il token per il redirect
+			TokenInterceptor.redirectToken();
+
+			this.clearSession();
+		} catch (Exception e) {
+			ApsSystemUtils.logThrowable(e, this, "backAfter");
+		}
 		return SUCCESS;
 	}
 	

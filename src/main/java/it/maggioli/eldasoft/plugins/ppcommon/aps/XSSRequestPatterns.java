@@ -158,7 +158,7 @@ public class XSSRequestPatterns {
 		//descrizioneAggiuntiva  la textarea descrizione aggiuntiva sullo step prodotti
 		if (value.length() <= 2000 || (StringUtils.isNotEmpty(param) && ("testo".equalsIgnoreCase(param) || "descrizioneAggiuntiva".equalsIgnoreCase(param) || "nota".equalsIgnoreCase(param)))) {
 			// unescape all chars to get an explicit value...
-			value = unescapeHtml(value);
+			value = XSSValidation.unescapeHtml(value);
 
 			// remove all sections that match a pattern...
 			for (Pattern scriptPattern : XSSRequestPatterns.XXS_PATTERNS) {
@@ -218,46 +218,6 @@ public class XSSRequestPatterns {
 			valid = url.startsWith("/" + lang + "/") && url.endsWith(".wp");
 		}
 		return valid;
-	}
-
-	/**
-	 * VAPT: unescape dei caratteri codificati in formato %xx o &xnnnn, ... 
-	 */
-	private static String unescapeHtml(String value) {
-		try {
-			// unescape %NN o %NNNN per ripristinare un valore "in chiaro"...
-			StringBuilder sb = new StringBuilder();
-			int j = -1;
-			int i = 0;
-			while(i < value.length()) {
-				char c = value.charAt(i);
-				if(c == '%') {
-					j = i;
-				} else if(j >= 0) {
-					if(c >= '0' && c <= '9') {
-						sb.append(c);
-					} else if(sb.length() > 0) {
-						value = value.substring(0, j) + ((char)Integer.parseInt(sb.toString(), 16)) + value.substring(i);
-						i = j + 1;
-						j = -1;
-					}
-				}
-				i++;
-			}
-			
-			// unescape all chars like &#xNNNN 
-			value = StringEscapeUtils.unescapeHtml4(value);
-			
-			// rimuovi i caratteri invalidi/"speciali" [0-31] eccetto \r \n...
-			for(byte b = 0; b < 32; b++) {
-				if(b != 10 && b != 13) {
-					value = value.replaceAll(new String(new byte[]{b}), "");
-				}
-			}
-		} catch (Exception ex) {
-			value = "";
-		}
-		return value;
 	}
 
 }

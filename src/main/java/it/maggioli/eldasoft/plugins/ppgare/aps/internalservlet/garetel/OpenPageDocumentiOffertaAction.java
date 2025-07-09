@@ -12,8 +12,9 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachme
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -21,18 +22,16 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -8419705084593383421L;
-	private final Logger logger = ApsSystemUtils.getLogger();
 
 	private IBandiManager bandiManager;
 	private IAppParamManager appParamManager;
@@ -116,13 +115,13 @@ public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 		this.documentiMancanti = documentiMancanti;
 	}
 
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-
-	public Integer getLimiteTotaleUploadDocBusta() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
+//	public Integer getLimiteUploadFile() {
+//		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+//	}
+//
+//	public Integer getLimiteTotaleUploadDocBusta() {
+//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+//	}
 
 	public boolean isDocOffertaPresente(){
 		return docOffertaPresente;
@@ -152,19 +151,12 @@ public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 	 * Espone le costanti alle pagine JSP  
 	 */
 	public String getSTEP_PREZZI_UNITARI() { return WizardOffertaEconomicaHelper.STEP_PREZZI_UNITARI; }
-
 	public String getSTEP_OFFERTA() { return WizardOffertaEconomicaHelper.STEP_OFFERTA; }
-
 	public String getSTEP_SCARICA_OFFERTA() { return WizardOffertaEconomicaHelper.STEP_SCARICA_OFFERTA; }
-
 	public String getSTEP_DOCUMENTI() { return WizardOffertaEconomicaHelper.STEP_DOCUMENTI; }
-
 	public int getDOCUMENTO_FORMATO_FIRMATO() { return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO; }
-
 	public int getDOCUMENTO_FORMATO_PDF() {	return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF; }
-
 	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }
-
 	public String getDESCRIZIONE_DOCUMENTO_OFFERTA_ECONOMICA() { return PortGareSystemConstants.DESCRIZIONE_DOCUMENTO_OFFERTA_ECONOMICA; }
 
 	/**
@@ -181,6 +173,7 @@ public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 		WizardDocumentiBustaHelper documentiBustaHelper = helper.getDocumenti();
 		BustaRiepilogo bustaRiepilogo = buste.getBustaRiepilogo();
 		RiepilogoBusteHelper bustaRiepilogativa = bustaRiepilogo.getHelper();
+		getUploadValidator().setHelper(bustaEco);
 		
 		this.codice = (StringUtils.isEmpty(this.codice) ? (String)this.session.get("codice") : this.codice);
 		this.codiceGara = (StringUtils.isEmpty(this.codiceGara) ? (String)this.session.get("codiceGara") : this.codiceGara);
@@ -264,8 +257,8 @@ public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 //				this.dimensioneAttualeFileCaricati += s;
 //			}
 
+			dimensioneAttualeFileCaricati += documentiBustaHelper.getTotalSize();
 			if (CollectionUtils.isNotEmpty(documentiBustaHelper.getRequiredDocs())) {
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getRequiredDocs());
 				esisteFileConFirmaNonVerificata =
 						documentiBustaHelper.getRequiredDocs()
 								.stream()
@@ -273,14 +266,12 @@ public class OpenPageDocumentiOffertaAction extends AbstractOpenPageAction {
 				logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 			}
 			if (CollectionUtils.isNotEmpty(documentiBustaHelper.getAdditionalDocs())) {
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getAdditionalDocs());
 				esisteFileConFirmaNonVerificata =
 						documentiBustaHelper.getAdditionalDocs()
 								.stream()
 								.anyMatch(attachment -> attachment.getFirmaBean() != null && !attachment.getFirmaBean().getFirmacheck());
 				logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 			}
-
 
 			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,
 							 WizardOffertaEconomicaHelper.STEP_DOCUMENTI);

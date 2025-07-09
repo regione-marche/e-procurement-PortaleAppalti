@@ -19,12 +19,19 @@ package com.agiletec.plugins.jacms.aps.system.services.resource.model.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDataBean;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 
 /**
  * Classe Helper per la gestione dei file relativi alle istanze delle risorse.
@@ -32,6 +39,18 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
  */
 public class ResourceInstanceFileHelper implements IResourceInstanceHelper {
 	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			_configManager = (ConfigInterface) ctx.getBean(SystemConstants.BASE_CONFIG_MANAGER);
+		} catch (Exception e) {
+		}
+	}
+
 	@Override
 	public void save(String filePath, ResourceDataBean bean) throws ApsSystemException {
     	try {
@@ -70,6 +89,6 @@ public class ResourceInstanceFileHelper implements IResourceInstanceHelper {
 		this._configManager = configService;
 	}
     
-	private ConfigInterface _configManager;
+	private transient ConfigInterface _configManager;
 	
 }

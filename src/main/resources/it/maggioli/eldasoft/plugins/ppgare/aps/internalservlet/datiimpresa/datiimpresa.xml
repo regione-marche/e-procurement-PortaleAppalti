@@ -8,8 +8,11 @@
 	<package name="portgare_do/FrontEnd/DatiImpr" namespace="/do/FrontEnd/DatiImpr"
 		extends="pp-common">
 
-		<action name="view" class="impresaAction" method="get">
+		<action name="view*" class="impresaAction" method="get{1}">
 			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/datiImpresaView.jsp
+			</result>
+			<result type="dispatcher" name="input">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/datiImpresaView.jsp
 			</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
@@ -161,14 +164,15 @@
 		</action>
 
 		<action name="processPageRiepilogo" class="aggiornamentoImpresaAction">
-			<result name="success" type="dispatcher">
+			<result type="dispatcher" name="success">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/aggiornamentoSuccess.jsp
 			</result>
 			<result type="chain" name="back">openPageDatiUltImpresa</result>
 			<result type="chain" name="backNoDatiUlteriori">openPageSoggettiImpresaClear</result>
 			<result type="chain" name="backNoDatiUlterioriLiberoProf">openPageAltriDatiAnagrImpresa</result>
 			<result type="chain" name="cancel">questionCancelAggiornamento</result>
-			<result name="errorAgg" type="chain">openPageRiepilogo</result>
+			<result type="chain" name="errorAgg">openPageRiepilogo</result>
+			<result type="chain" name="input">openPageRiepilogo</result>
 			<interceptor-ref name="tokenFreeValidationStack"></interceptor-ref>
 		</action>
 
@@ -202,6 +206,7 @@
 			<result type="dispatcher">
 				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/datiimpresa/insertVariazione.jsp
 			</result>
+			<result type="chain" name="input">viewAfterError</result>
 			<interceptor-ref name="tokenFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
 				<param name="types">tipiImpresaDittaIndiv,tipiImpresaLiberoProf,tipiImpresaConsorzio,checkPILiberoProf</param>

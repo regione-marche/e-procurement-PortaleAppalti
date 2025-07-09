@@ -25,7 +25,7 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/search.action" />" method="post" >
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/search.action" />" method="post" >
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 
 		<fieldset>
@@ -36,11 +36,11 @@
 					<label><wp:i18n key="LABEL_SEARCH_FOR" /> : </label>
 				</div>
 				<div class="element">
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/openSearch.action" />&amp;${tokenHrefParams}" title="<wp:i18n key="LABEL_GO_TO_SEARCH_BANDI" />"><wp:i18n key="LABEL_BANDI" /></a>
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/openSearch.action" />" title="<wp:i18n key="LABEL_GO_TO_SEARCH_BANDI" />"><wp:i18n key="LABEL_BANDI" /></a>
 					&nbsp;
 					<span class="important"><wp:i18n key="LABEL_AVVISI" /></span>
 					&nbsp;
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/openSearch.action" />&amp;${tokenHrefParams}" title="<wp:i18n key="LABEL_GO_TO_SEARCH_ESITI" />"><wp:i18n key="LABEL_ESITI" /></a>
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/openSearch.action" />" title="<wp:i18n key="LABEL_GO_TO_SEARCH_ESITI" />"><wp:i18n key="LABEL_ESITI" /></a>
 				</div>
 			</div>
 
@@ -62,7 +62,7 @@
 							<s:select name="model.stazioneAppaltante" id="model.stazioneAppaltante" list="maps['stazioniAppaltanti']" 
 									value="%{#searchForm.stazioneAppaltante}" 
 									headerKey="" headerValue="%{#attr.headerValueStazioneAppaltante}" 
-									cssStyle="width: 100%;" >
+									cssStyle="width: 100%;" autocomplete="off" >
 							</s:select>
 						</c:otherwise>
 					</c:choose>
@@ -75,7 +75,7 @@
 				</div>
 				<div class="element">
 					<s:textfield name="model.oggetto" id="model.oggetto" cssClass="text" value="%{#searchForm.oggetto}" 
-											 size="50" />
+											 size="50" autocomplete="off" />
 				</div>
 			</div>
 	
@@ -86,7 +86,7 @@
 				<div class="element">
 					<wp:i18n key="OPT_CHOOSE_TIPO_AVVISO" var="headerValueTipoAvviso"/>
 					<s:select name="model.tipoAvviso" id="model.tipoAvviso" list="maps['tipiAvviso']" value="%{#searchForm.tipoAvviso}"
-										headerKey="" headerValue="%{#attr.headerValueTipoAvviso}" >
+										headerKey="" headerValue="%{#attr.headerValueTipoAvviso}" autocomplete="off" >
 					</s:select>
 				</div>
 			</div>
@@ -102,11 +102,11 @@
 					<label><wp:i18n key="LABEL_DA_DATA" />: </label>
 					<s:textfield name="model.dataPubblicazioneDa" id="model.dataPubblicazioneDa" cssClass="text" 
 								value="%{#searchForm.dataPubblicazioneDa}" maxlength="10" size="10" 
-								title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueDa}" />
+								title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueDa}" autocomplete="off" />
 					<label><wp:i18n key="LABEL_A_DATA" />: </label>
 					<s:textfield name="model.dataPubblicazioneA" id="model.dataPubblicazioneA" cssClass="text" 
 								value="%{#searchForm.dataPubblicazioneA}" maxlength="10" size="10" 
-								title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueA}" />
+								title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueA}" autocomplete="off" />
 					 (<wp:i18n key="LABEL_FORMATO_DATA" />)
 				</div>
 			</div>
@@ -120,11 +120,11 @@
 					<label><wp:i18n key="LABEL_DA_DATA" />: </label>
 					<s:textfield name="model.dataScadenzaDa" id="model.dataScadenzaDa" cssClass="text" 
 								value="%{#searchForm.dataScadenzaDa}" maxlength="10" size="10" 
-								title="%{#attr.headerValueDataScadenza} %{#attr.headerValueDa}" />
+								title="%{#attr.headerValueDataScadenza} %{#attr.headerValueDa}" autocomplete="off" />
 					<label><wp:i18n key="LABEL_A_DATA" />: </label>
 					<s:textfield name="model.dataScadenzaA" id="model.dataScadenzaA" cssClass="text" 
 								value="%{#searchForm.dataScadenzaA}" maxlength="10" size="10" 
-								title="%{#attr.headerValueDataScadenza} %{#attr.headerValueA}" />
+								title="%{#attr.headerValueDataScadenza} %{#attr.headerValueA}" autocomplete="off" />
 					 (<wp:i18n key="LABEL_FORMATO_DATA" />)
 				</div>
 			</div>
@@ -138,7 +138,7 @@
 					</div>
 					<div class="element">
 						<s:select name="model.altriSoggetti" id="model.altriSoggetti" list="maps['tipoAltriSoggetti']" 
-								value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" >
+								value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" autocomplete="off" >
 						</s:select>
 					</div>
 				</div>

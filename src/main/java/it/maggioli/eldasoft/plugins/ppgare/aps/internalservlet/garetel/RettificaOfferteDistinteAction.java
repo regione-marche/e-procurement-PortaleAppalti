@@ -7,6 +7,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipaz
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -21,6 +23,11 @@ import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class RettificaOfferteDistinteAction extends RettificaOffertaAction {
 	/**
 	 * UID
@@ -62,6 +69,11 @@ public class RettificaOfferteDistinteAction extends RettificaOffertaAction {
 	public String confirmRettifica() {
 		this.setTarget("reopen");
 		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, this.codice) ) {
+			return this.getTarget();
+		}
+
 		this.offerteDistinte = true;
 		// forzo l'operazione dato che non arriva dal submit e gestisco solo questa tipologia
 		this.setOperazione(PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
@@ -151,6 +163,11 @@ public class RettificaOfferteDistinteAction extends RettificaOffertaAction {
 	 */
 	public String rettifica() {
 		this.setTarget("reopen");
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, this.codice) ) {
+			return this.getTarget();
+		}
 		
 		if (null != this.getCurrentUser() && 
 			!this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
@@ -263,6 +280,8 @@ public class RettificaOfferteDistinteAction extends RettificaOffertaAction {
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 		}
+		
+		unlockAccessoFunzione();
 		
 		return this.getTarget(); 
 	}

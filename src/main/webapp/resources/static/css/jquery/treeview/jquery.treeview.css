@@ -202,14 +202,35 @@
 	clear: both;
 	line-height: 2em;
 	overflow: hidden;
+	align-items: flex-start;
+	flex-wrap: wrap;
 }
 
+.item-container-group {
+	width: 100%;
+	align-items: flex-start;
+	flex-direction: row;
+} 
+
 .filetree li .item-check {
-	float: left;
+	width: 66%;
+	flex-direction: row;
+	align-items: flex-start;
 }
 
 .filetree li .item-classifica {
-	float: right;
+	width: 34%;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.filetree li .item-classifica select {
+	width: 80%;
+}
+
+
+.filetree li .item-nota {
+	width: 100%;
 }
 
 .filetree .item-selected {

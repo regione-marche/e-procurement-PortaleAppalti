@@ -23,7 +23,7 @@
 			<p>
 				<a class="list-element bkg go important" 
 					title="<wp:i18n key='TITLE_WIZARD_INSERIMENTO_NUOVO_PRODOTTO' />" 
-					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/initProdottoWizard.action"/>&amp;catalogo=${catalogo}&amp;${tokenHrefParams}'>
+					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/initProdottoWizard.action"/>&amp;catalogo=${catalogo}'>
 					<wp:i18n key="LABEL_INSERISCI_UN_PRODOTTO" />
 				</a>
 				<br/>
@@ -36,7 +36,7 @@
 			<p>
 				<a class="list-element bkg go important" 
 					title="<wp:i18n key='TITLE_WIZARD_EXPORT_ARTICOLI_CATALOGO' />" 
-					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageSelezioneArticoli.action"/>&amp;catalogo=${catalogo}&amp;${tokenHrefParams}'>
+					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageSelezioneArticoli.action"/>&amp;catalogo=${catalogo}'>
 					<wp:i18n key="LABEL_SCARICA_FILE_XLS" />
 				</a>
 				<br/>
@@ -49,7 +49,7 @@
 			<p>
 				<a class="list-element bkg go important" 
 					title="<wp:i18n key='TITLE_WIZARD_IMPORT_MASSIVO_PRODOTTI' />" 
-					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageImportProducts.action"/>&amp;catalogo=${catalogo}&amp;${tokenHrefParams}'>
+					href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openPageImportProducts.action"/>&amp;catalogo=${catalogo}'>
 					<wp:i18n key="LABEL_INSERISCI_PRODOTTI_CARICATI_DA_XLS" /> 
 				</a>
 				<br/>
@@ -60,7 +60,7 @@
 		</li>
 	</ul>
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;catalogo=${catalogo}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;catalogo=${catalogo}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_GESTIONE_PRODOTTI" />
 		</a>
 	</div>

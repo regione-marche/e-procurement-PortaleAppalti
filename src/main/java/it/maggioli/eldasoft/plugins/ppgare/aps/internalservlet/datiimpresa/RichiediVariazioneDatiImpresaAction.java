@@ -3,6 +3,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.apsadmin.system.BaseAction;
 import it.eldasoft.sil.portgare.datatypes.RichiestaGenericaType;
 import it.eldasoft.sil.portgare.datatypes.RichiestaVariazioneDocument;
@@ -15,6 +16,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -32,6 +35,11 @@ import java.util.Map;
  * @author Stefano.Sabbadin
  * @since 1.2.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class RichiediVariazioneDatiImpresaAction extends BaseAction implements
 		SessionAware {
 
@@ -88,10 +96,15 @@ public class RichiediVariazioneDatiImpresaAction extends BaseAction implements
 	 */
 	public String send() {
 		String target = SUCCESS;
-		if (null != this.getCurrentUser().getProfile()
-				&& !this.getCurrentUser().getUsername()
-						.equals(SystemConstants.GUEST_USER_NAME)) {
 
+		if (!hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return target;
+		}
+
+		if (null != this.getCurrentUser().getProfile()
+			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
 			WizardDatiImpresaHelper helper = (WizardDatiImpresaHelper) this.session
 					.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
 			if (helper != null) {
@@ -117,6 +130,9 @@ public class RichiediVariazioneDatiImpresaAction extends BaseAction implements
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}
+		
+		unlockAccessoFunzione();
+		
 		return target;
 	}
 

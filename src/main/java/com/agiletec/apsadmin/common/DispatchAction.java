@@ -32,6 +32,8 @@ import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.agiletec.apsadmin.system.BaseAction;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
@@ -61,6 +63,7 @@ public class DispatchAction extends BaseAction implements IDispatchAction,
 	private IPageManager pageManager;
 	private HttpServletResponse response;
 	private String urlRedirect;
+	private String logoutAction;
 
 	public int getStatus() {
 		return status;
@@ -72,6 +75,14 @@ public class DispatchAction extends BaseAction implements IDispatchAction,
 
 	public void setUrlRedirect(String urlRedirect) {
 		this.urlRedirect = urlRedirect;
+	}
+	
+	public String getLogoutAction() {
+		return logoutAction;
+	}
+
+	public void setLogoutAction(String logoutAction) {
+		this.logoutAction = logoutAction;
 	}
 
 	public void setStatus(int status) {
@@ -181,6 +192,33 @@ public class DispatchAction extends BaseAction implements IDispatchAction,
 
 	@Override
 	public String doLogout() {
+		// verifica se c'e' un login con SSO ed eventualmente invia la richiesta di logout SSO
+		AccountSSO accountSSO = AccountSSO.getFromSession(); 
+		if(accountSSO != null) {
+			// prepara la action di logout SSO in base al sistema di autenticazione 
+			logoutAction = "logoutSSO";
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO_BUSINESS.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_COHESION_SSO.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_SHIBBOLETH_SSO.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_GATEWAY_SSO.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+//			if(PortGareSystemConstants.TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_FORM.equals(accountSSO.getTipologiaLogin())) {
+//				logoutAction = "logoutSSO";
+//			}
+			return "logout";
+		}
+		
+		// logout standard 
 		this.getSession().invalidate();
 		return "homepage";
 	}

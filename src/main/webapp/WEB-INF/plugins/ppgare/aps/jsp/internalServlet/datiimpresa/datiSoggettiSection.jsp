@@ -457,7 +457,9 @@
 											headerKey="" headerValue="%{#attr.headerValueProvincia}" aria-required="true" >
 						</s:select>
 					</s:else>
-					<div class="note"><wp:i18n key="LABEL_NOTA_PROVINCIA_SOLO_PER_ITALIA" /></div>
+				</div>
+				<div class="note">
+					<wp:i18n key="LABEL_NOTA_PROVINCIA_SOLO_PER_ITALIA" />
 				</div>
 			</div>
 		</div>
@@ -625,12 +627,15 @@
 			$("#obbProv").show();
 			$('.cap').show();
 			$('.provincia').show();
+			$('[id="codiceFiscale"]').prop('maxLength', 16);
 		} else {
 			$('#obbCap').hide();
 			$("#obbProv").hide();
 			$('#provincia').val("");
 			$('.cap').hide();
 			$('.provincia').hide();
+			$('.provincia').hide();
+			$('[id="codiceFiscale"]').prop('maxLength', 30);
 		} 
 		if(newval != oldval && oldval != null) {
 			$('[id="cap"]').val("");

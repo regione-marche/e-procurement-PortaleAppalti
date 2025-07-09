@@ -3,7 +3,7 @@
 
 <%--
 IE10		Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)
-			Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)
+????		Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)
 IE11		MOZILLA/5.0 (WINDOWS NT 10.0; WOW64; TRIDENT/7.0; RV:11.0) LIKE GECKO
 EDGE		MOZILLA/5.0 (WINDOWS NT 10.0; WIN64; X64) APPLEWEBKIT/537.36 (KHTML, LIKE GECKO) CHROME/64.0.3282.140 SAFARI/537.36 EDGE/18.17763
 --%>
@@ -26,8 +26,12 @@ EDGE		MOZILLA/5.0 (WINDOWS NT 10.0; WIN64; X64) APPLEWEBKIT/537.36 (KHTML, LIKE 
 			String s = userAgent.substring(userAgent.indexOf("RV:") + 3);
 			s = s.substring(0, s.indexOf("."));
 			IEVer = Integer.parseInt(s);
-		} else if(userAgent.indexOf("EDGE") > 0) {
+		} else if(userAgent.indexOf("EDGE/") > 0) {
 			String s = userAgent.substring(userAgent.indexOf("EDGE/") + 5);
+			s = s.substring(0, s.indexOf("."));
+			IEVer = Integer.parseInt(s);
+		} else if(userAgent.indexOf("EDG/") > 0) {
+			String s = userAgent.substring(userAgent.indexOf("EDG/") + 4);
 			s = s.substring(0, s.indexOf("."));
 			IEVer = Integer.parseInt(s);
 		}

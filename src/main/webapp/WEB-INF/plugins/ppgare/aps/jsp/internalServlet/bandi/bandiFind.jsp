@@ -34,7 +34,7 @@
 		
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_SEARCH_CRITERIA" /></legend>
-
+			
 			<div class="fieldset-row first-row special">
 				<div class="label">
 					<label><wp:i18n key="LABEL_SEARCH_FOR" /> : </label>
@@ -42,9 +42,9 @@
 				<div class="element">
 					<span class="important"><wp:i18n key="LABEL_BANDI" /></span>
 					&nbsp;
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/openSearch.action" />&amp;${tokenHrefParams}" title="<wp:i18n key="LABEL_GO_TO_SEARCH_AVVISI" />"><wp:i18n key="LABEL_AVVISI" /></a>
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/openSearch.action" />" title="<wp:i18n key="LABEL_GO_TO_SEARCH_AVVISI" />"><wp:i18n key="LABEL_AVVISI" /></a>
 					&nbsp;
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/openSearch.action" />&amp;${tokenHrefParams}" title="<wp:i18n key="LABEL_GO_TO_SEARCH_ESITI" />"><wp:i18n key="LABEL_ESITI" /></a>
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/openSearch.action" />" title="<wp:i18n key="LABEL_GO_TO_SEARCH_ESITI" />"><wp:i18n key="LABEL_ESITI" /></a>
 				</div>
 			</div>
 
@@ -66,10 +66,10 @@
 							<s:select name="model.stazioneAppaltante" id="model.stazioneAppaltante" list="maps['stazioniAppaltanti']" 
 									value="%{#searchForm.stazioneAppaltante}" 
 									headerKey="" headerValue="%{#attr.headerValueStazioneAppaltante}" 
-									cssStyle="width: 100%;" >		
+									cssStyle="width: 100%;" >
 							</s:select>
 						</c:otherwise>
-					</c:choose>				
+					</c:choose>
 				</div>
 			</div>
 
@@ -172,7 +172,7 @@
 				</div>
 			</div>
 			--%>
-	
+				
 			<div class="fieldset-row">
 				<div class="label">
 					<label for="model.stato"><wp:i18n key="LABEL_STATO_GARA" /> : </label>
@@ -181,7 +181,7 @@
 					<wp:i18n key="OPT_CHOOSE_STATO_GARA" var="headerValueStatoGara" />
 					<s:select name="model.stato" id="model.stato" list="maps['statiGara']" value="%{#searchForm.stato}"
 										headerKey="" headerValue="%{#attr.headerValueStatoGara}" >
-					</s:select>		
+					</s:select>
 				</div>
 			</div>
 
@@ -209,25 +209,25 @@
 					</s:select>
 				</div>
 			</div>
-			                <div class="fieldset-row  last-row">
-                                <div class="label">
-                                    <label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
-                                </div>
-                                <div class="element">
-                                    <s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
-                                            value="%{#searchForm.orderCriteria}"
-                                            headerKey="" headerValue="" >
-
-                                    </s:select>
-                                </div>
-                            </div>
+			
+			<div class="fieldset-row  last-row">
+            	<div class="label">
+                	<label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
+ 				</div>
+                <div class="element">
+                	<s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
+                    					value="%{#searchForm.orderCriteria}"
+                                        headerKey="" headerValue="" >
+					</s:select>
+           		</div>
+            </div>
 
 			<div class="azioni">
 				<wp:i18n key="BUTTON_SEARCH" var="valueSearchButton" />
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui"/>
 			</div>
 		</fieldset>
-					
+		
 		<c:if test="${listaBandi ne null}">
 			<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/inc/listaBandi.jsp" >
 				<jsp:param name="cigVisibile" value="${cigVisibile}" />	

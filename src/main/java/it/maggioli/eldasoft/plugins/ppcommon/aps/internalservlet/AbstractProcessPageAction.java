@@ -113,11 +113,11 @@ public abstract class AbstractProcessPageAction extends EncodedDataAction
 	/**
 	 * Inizializza l'helper dell'action e la navigazione "next", "back"
 	 */
-	protected AbstractWizardHelper helper;	// helper associato al wizard
-	protected String sessionKeyHelperId;	// id di sessione associato all'helper
-	protected String currentStep;			// step corrente del wizard
-	protected boolean doValidate;			// indica se eseguire il metodo "validate()"
-	protected boolean validated;			// indica il risultato del medoto "validate()"
+	protected AbstractWizardHelper sessionHelper;	// helper associato al wizard
+	protected String sessionKeyHelperId;			// id di sessione associato all'helper
+	protected String currentStep;					// step corrente del wizard
+	protected boolean doValidate;					// indica se eseguire il metodo "validate()"
+	protected boolean validated;					// indica il risultato del medoto "validate()"
 	protected String validateErrorMessageId;
 	private int tipoBusta;	
 	 
@@ -184,12 +184,12 @@ public abstract class AbstractProcessPageAction extends EncodedDataAction
 		
 		this.validated = true;
 				
-		this.helper = this.getHelper();
+		this.sessionHelper = this.getHelper();
 		
 		if(null != this.getCurrentUser() 
 		   && !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
 			
-			if(this.helper != null && this.currentStep != null) {
+			if(this.sessionHelper != null && this.currentStep != null) {
 				if(this.doValidate) {
 				this.validate();
 				} else {
@@ -202,8 +202,8 @@ public abstract class AbstractProcessPageAction extends EncodedDataAction
 					target = INPUT;
 				} else {
 					String newTarget = (direction 
-						? this.helper.getNextStepTarget(this.currentStep)
-						: this.helper.getPreviousStepTarget(this.currentStep));
+						? this.sessionHelper.getNextStepTarget(this.currentStep)
+						: this.sessionHelper.getPreviousStepTarget(this.currentStep));
 					if(newTarget != null) {
 						target = newTarget;
 					}

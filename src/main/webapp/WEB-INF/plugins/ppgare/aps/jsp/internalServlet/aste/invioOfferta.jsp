@@ -32,8 +32,14 @@
 	
 	<div class="back-link">
 		<c:set var="urlBack"><wp:action path="/ExtStr2/do/FrontEnd/Aste/openAsta.action"/></c:set>	
-		<a href="${urlBack}&amp;codice=<s:property value="codice"/>&amp;codiceLotto=<s:property value="codiceLotto"/>&amp;${tokenHrefParams}">
-			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
-		</a>
+		<form action='${urlBack}' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value='<s:property value="codice"/>' />
+			<input type="hidden" name="codiceLotto" value='<s:property value="codiceLotto"/>' />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
+			</a>
+		</form>
 	</div>
 </div>

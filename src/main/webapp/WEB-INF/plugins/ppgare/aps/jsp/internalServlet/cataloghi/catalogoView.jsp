@@ -187,7 +187,7 @@
 	<div class="back-link">
 		<c:choose>
 			<c:when test="${sessionScope.fromPage != null && sessionScope.fromPage eq 'news'}">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>">
 					<wp:i18n key="LINK_BACK_TO_NEWS" />
 				</a>
 			</c:when>
@@ -198,12 +198,12 @@
                 <s:else>
                     <c:set var="backUrl" value="/ExtStr2/do/FrontEnd/Cataloghi/listAllCataloghiArchiviati.action" />
                 </s:else>
-				<a href='<wp:action path="${backUrl}" />&amp;${tokenHrefParams}'>
+				<a href='<wp:action path="${backUrl}" />'>
 					<wp:i18n key="LINK_BACK_TO_LIST" />
 				</a>
 			</c:when>
 			<c:otherwise>
-				<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}'>
+				<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>'>
 					<wp:i18n key="LINK_BACK_TO_AVVISO" />
 				</a>
 			</c:otherwise>

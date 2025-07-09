@@ -1,7 +1,7 @@
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 <%@ taglib prefix="wp" uri="aps-core.tld" %>
 
-<s:set var="page" value="%{#session['page']" />
+<s:set var="page" value="%{#session['page']}" />
 <s:set var="sessionId">offertaEconomica</s:set>
 <!-- OBSOLETO <s:set var="helper" value="%{#session[#sessionId]}" /> -->
 <s:set name="helper" value="%{#session['dettaglioOffertaGara'].bustaEconomica.helper}" />

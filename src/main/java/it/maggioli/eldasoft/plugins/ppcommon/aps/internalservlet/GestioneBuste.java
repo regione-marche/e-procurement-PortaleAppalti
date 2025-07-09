@@ -29,10 +29,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -47,12 +50,13 @@ import com.opensymphony.xwork2.ActionContext;
 /**
  * gestore delle buste di una domanda di partecipazione/invio offerta 
  */
-public class GestioneBuste implements Serializable {
+public class GestioneBuste implements HttpSessionBindingListener, Serializable {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 1109032304924164653L;
 
+	private static final Logger LOGGER = ApsSystemUtils.getLogger();
 	
 	/**
 	 * id di sessione per memorizzare l'offerta o la domanda prequalifica  
@@ -94,12 +98,14 @@ public class GestioneBuste implements Serializable {
 	private String codiceGara;
 	private String progressivoOfferta;
 	private int operazione;
-	private boolean ristretta;
-	private boolean negoziata; 
-	private boolean indagineMercato;
 	private boolean domandaPartecipazione;
 	private boolean invioOfferta;
 	private boolean garaLotti;
+	private boolean ristretta;							// itergara = 2|4
+	private boolean negoziata; 							// itergara = 3|5|6|8
+	private boolean indagineMercato;					// itergara = 7
+	private boolean concorsoProgettazionePubblico;		// itergara = 9
+	private boolean concorsoProgettazioneRiservato;		// itergara = 10
 	
 	private BustaPartecipazione bustaPartecipazione;	// FS10 / FS11
 	private BustaPrequalifica bustaPrequalifica;		// FS10A
@@ -144,18 +150,6 @@ public class GestioneBuste implements Serializable {
 		return operazione;
 	}
 
-	public boolean isRistretta() {
-		return ristretta;
-	}
-
-	public boolean isNegoziata() {
-		return negoziata;
-	}
-		
-	public boolean isIndagineMercato() {
-		return indagineMercato;
-	}
-
 	public boolean isDomandaPartecipazione() {
 		return domandaPartecipazione;
 	}
@@ -168,6 +162,26 @@ public class GestioneBuste implements Serializable {
 		return garaLotti;
 	}
 
+	public boolean isRistretta() {
+		return ristretta;
+	}
+
+	public boolean isNegoziata() {
+		return negoziata;
+	}
+		
+	public boolean isIndagineMercato() {
+		return indagineMercato;
+	}
+
+	public boolean isConcorsoProgettazionePubblico() {
+		return concorsoProgettazionePubblico;
+	}
+
+	public boolean isConcorsoProgettazioneRiservato() {
+		return concorsoProgettazioneRiservato;
+	}
+	
 	public BustaPartecipazione getBustaPartecipazione() {
 		return bustaPartecipazione;
 	}
@@ -212,7 +226,10 @@ public class GestioneBuste implements Serializable {
 	}
 
 	public static BaseAction getAction() {
-		return (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+		return (BaseAction) (ActionContext.getContext() != null && ActionContext.getContext().getActionInvocation() != null
+				? ActionContext.getContext().getActionInvocation().getAction()
+				: null
+		);
 	}
 	
 	public static Map<String, Object> getSession() {
@@ -223,8 +240,8 @@ public class GestioneBuste implements Serializable {
 	 * tracciature di un messaggio di debug
 	 */
 	public static void traceLog(String msg) {
-		if(ApsSystemUtils.getLogger().isDebugEnabled()) {
-			ApsSystemUtils.getLogger().debug(msg);
+		if(LOGGER.isDebugEnabled()) {
+			LOGGER.debug(msg);
 		}
 	}
 
@@ -249,54 +266,58 @@ public class GestioneBuste implements Serializable {
 		this.codiceGara = codiceGara;
 		this.progressivoOfferta = (StringUtils.isEmpty(progressivoOfferta) ? "1" : progressivoOfferta);
 		this.operazione = operazione;
-		this.domandaPartecipazione = (operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA); 
-		this.invioOfferta = !this.domandaPartecipazione; //(operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
-		this.garaLotti = false; 
-		this.impresa = null;
-		this.dettaglioGara = null;
-		this.negoziata = false;
-		this.ristretta = false;
-		this.indagineMercato = false;
-		this.bustaPartecipazione = null;
-		this.bustaPrequalifica = null;
-		this.bustaAmministrativa = null;
-		this.bustaTecnica = null;
-		this.bustaEconomica = null;
-		this.bustaRiepilogo = null;
+		domandaPartecipazione = (operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA); 
+		invioOfferta = !this.domandaPartecipazione; //(operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA);
+		garaLotti = false; 
+		impresa = null;
+		dettaglioGara = null;
+		negoziata = false;
+		ristretta = false;
+		indagineMercato = false;
+		bustaPartecipazione = null;
+		bustaPrequalifica = null;
+		bustaAmministrativa = null;
+		bustaTecnica = null;
+		bustaEconomica = null;
+		bustaRiepilogo = null;
 
 		// recupera action ed i manager necessari
-		this.tempDir = (File)GestioneBuste.getAction().getRequest().getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
-		this.initManagerBeans();
+		tempDir = (File)GestioneBuste.getAction().getRequest().getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
+		initManagerBeans();
 		
 		// inizializza le buste
 		try {
 			// recupera i dati dell'impresa e della gara
-			this.impresa = this.getLastestDatiImpresa();
-			this.refreshDettaglioGara();
+			impresa = this.getLastestDatiImpresa();
+			refreshDettaglioGara();
 			
-			this.garaLotti = false;
-			if(this.dettaglioGara.getLotto() != null && this.dettaglioGara.getLotto().length > 0)	{
-				this.garaLotti = true;
-				if(this.dettaglioGara.getLotto().length == 1 && 
-				   this.codiceGara.equals(this.dettaglioGara.getLotto()[0].getCodiceLotto())) 
+			garaLotti = false;
+			if(dettaglioGara.getLotto() != null && dettaglioGara.getLotto().length > 0)	{
+				garaLotti = true;
+				if(dettaglioGara.getLotto().length == 1 && 
+				   codiceGara.equals(dettaglioGara.getLotto()[0].getCodiceLotto())) 
 				{
-					this.garaLotti = false;
+					garaLotti = false;
 				}
-			} 
+			}
+//			if(!isGaraLottiDistinti())	// SERVE ??? <= gara a lotti plico unico offerta unica !!!
+//				garaLotti = false;
 			
 			// inizializza le buste 
-			if(this.domandaPartecipazione) {
+			if(domandaPartecipazione) {
 				// inizializza riepilogo e buste per la domanda di partecipazione (prequalifica)
-				this.bustaRiepilogo = new BustaRiepilogo(this, BustaGara.BUSTA_RIEPILOGO_PRE);
-				this.bustaPartecipazione = new BustaPartecipazione(this, BustaGara.BUSTA_PARTECIPAZIONE);				
-				this.bustaPrequalifica = new BustaPrequalifica(this);
+				bustaRiepilogo = new BustaRiepilogo(this, BustaGara.BUSTA_RIEPILOGO_PRE);
+				bustaPartecipazione = new BustaPartecipazione(this, BustaGara.BUSTA_PARTECIPAZIONE);
+				bustaPrequalifica = new BustaPrequalifica(this);
 			} else {
 				// inizializza riepilogo e buste per l'invio offerta  
-				this.bustaRiepilogo = new BustaRiepilogo(this, BustaGara.BUSTA_RIEPILOGO);
-				this.bustaPartecipazione = new BustaPartecipazione(this, BustaGara.BUSTA_INVIO_OFFERTA);
-				this.bustaAmministrativa = new BustaAmministrativa(this);
-				this.bustaTecnica = new BustaTecnica(this);
-				this.bustaEconomica = new BustaEconomica(this);
+				bustaRiepilogo = new BustaRiepilogo(this, BustaGara.BUSTA_RIEPILOGO);
+				bustaPartecipazione = new BustaPartecipazione(this, BustaGara.BUSTA_INVIO_OFFERTA);
+				bustaAmministrativa = new BustaAmministrativa(this);
+				bustaTecnica = new BustaTecnica(this);
+				if(!concorsoProgettazionePubblico && !concorsoProgettazionePubblico) {
+					bustaEconomica = new BustaEconomica(this);
+				}
 			}
 			
 			// salva in sessione la gestione buste
@@ -307,30 +328,43 @@ public class GestioneBuste implements Serializable {
 		}
 	}
 	
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		// propaga l'evento di rimozione dalla sessione agli helper delle buste
+		if(bustaPrequalifica != null) bustaPrequalifica.valueUnbound(event);
+		if(bustaAmministrativa != null) bustaAmministrativa.valueUnbound(event);
+		if(bustaTecnica != null) bustaTecnica.valueUnbound(event);
+		if(bustaEconomica != null) bustaEconomica.valueUnbound(event);
+	}
+
 	/**
 	 * inizializza i bean dei manager
 	 */
 	private void initManagerBeans() {
-		this.bandiManager = null;
-		this.comunicazioniManager = null;
-		this.appParamManager = null;
-		this.eventManager = null;
+		bandiManager = null;
+		comunicazioniManager = null;
+		appParamManager = null;
+		eventManager = null;
 		try {
 			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
-			this.bandiManager = (IBandiManager) ctx.getBean(PortGareSystemConstants.BANDI_MANAGER);
-			this.comunicazioniManager = (IComunicazioniManager) ctx.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER);
-			this.appParamManager = (IAppParamManager) ctx.getBean(PortGareSystemConstants.APPPARAM_MANAGER);
-			this.eventManager = (IEventManager) ctx.getBean(PortGareSystemConstants.EVENTI_MANAGER);
+			bandiManager = (IBandiManager) ctx.getBean(PortGareSystemConstants.BANDI_MANAGER);
+			comunicazioniManager = (IComunicazioniManager) ctx.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER);
+			appParamManager = (IAppParamManager) ctx.getBean(CommonSystemConstants.APP_PARAM_MANAGER);
+			eventManager = (IEventManager) ctx.getBean(PortGareSystemConstants.EVENTI_MANAGER);
 		} catch (Throwable t) {
-			ApsSystemUtils.getLogger().equals(t);
+			ApsSystemUtils.getLogger().error("initManagerBeans", t);
 		}
 		
-		if(this.bustaPartecipazione != null) this.bustaPartecipazione.gestioneBuste = this;
-		if(this.bustaPrequalifica != null) this.bustaPrequalifica.gestioneBuste = this;
-		if(this.bustaAmministrativa != null) this.bustaAmministrativa.gestioneBuste = this;
-		if(this.bustaTecnica != null) this.bustaTecnica.gestioneBuste = this;
-		if(this.bustaEconomica != null) this.bustaEconomica.gestioneBuste = this;
-		if(this.bustaRiepilogo != null) this.bustaRiepilogo.gestioneBuste = this;
+		if(bustaPartecipazione != null) bustaPartecipazione.gestioneBuste = this;
+		if(bustaPrequalifica != null) bustaPrequalifica.gestioneBuste = this;
+		if(bustaAmministrativa != null) bustaAmministrativa.gestioneBuste = this;
+		if(bustaTecnica != null) bustaTecnica.gestioneBuste = this;
+		if(bustaEconomica != null) bustaEconomica.gestioneBuste = this;
+		if(bustaRiepilogo != null) bustaRiepilogo.gestioneBuste = this;
 	}
 
 	/**
@@ -343,7 +377,7 @@ public class GestioneBuste implements Serializable {
 		
 		// leggi dalle comunicazioni i dati delle buste
 		try {
-			this.resetSession();
+			resetSession();
 
 //			// se la lista degli stati e' vuota, usa gli stati standard...
 //			if(stati == null) {
@@ -354,22 +388,23 @@ public class GestioneBuste implements Serializable {
 //				//stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
 //			}
 			
-//			// recupera i dati dell'impresa e della gara...
-//			this.impresa = this.getLastestDatiImpresa();
-			this.refreshDettaglioGara();
+			// recupera i dati dell'impresa e della gara...
+			//impresa = getLastestDatiImpresa();
+			refreshDettaglioGara();
 		 
-			if(this.domandaPartecipazione) {
+			continua = continua && bustaPartecipazione.get(stati);
+			if(domandaPartecipazione) {
 				// inizializza riepilogo e buste per la domanda di partecipazione (prequalifica)...
-				continua = continua && this.bustaPartecipazione.get(stati);
-				continua = continua && this.bustaPrequalifica.get(stati);
+				continua = continua && bustaPrequalifica.get(stati);
 			} else {
 				// inizializza riepilogo e buste per l'invio offerta...
-				continua = continua && this.bustaPartecipazione.get(stati);
-				continua = continua && this.bustaAmministrativa.get(stati);
-				continua = continua && this.bustaTecnica.get(stati);
-				continua = continua && this.bustaEconomica.get(stati);
+				continua = continua && bustaAmministrativa.get(stati);
+				continua = continua && bustaTecnica.get(stati);
+				if(bustaEconomica != null) {
+					continua = continua && bustaEconomica.get(stati);
+				}
 			}
-			continua = continua && this.bustaRiepilogo.get(stati);
+			continua = continua && bustaRiepilogo.get(stati);
 	
 		} catch (Throwable t) {
 			continua = false;
@@ -378,16 +413,16 @@ public class GestioneBuste implements Serializable {
 
 		// riallinea l'helper del riepilogo alle buste...
 		if(continua) {
-			if(this.bustaPartecipazione.getComunicazioneFlusso().getId() > 0 &&
-			   this.bustaRiepilogo.getComunicazioneFlusso().getId() <= 0) 
+			if(bustaPartecipazione.getComunicazioneFlusso().getId() > 0 &&
+			   bustaRiepilogo.getComunicazioneFlusso().getId() <= 0) 
 			{
 				// la comunicazione del riepilogo NON esiste
 				// aggiorna il riepilogo ed invia la comunicazione FS10R/FS11R
-				continua = continua && this.bustaRiepilogo.riallineaDocumenti(this.bustaPrequalifica);
-				continua = continua && this.bustaRiepilogo.riallineaDocumenti(this.bustaAmministrativa);
-				continua = continua && this.bustaRiepilogo.riallineaDocumenti(this.bustaTecnica);
-				continua = continua && this.bustaRiepilogo.riallineaDocumenti(this.bustaEconomica);
-				continua = continua && this.bustaRiepilogo.send(null);
+				continua = continua && bustaRiepilogo.riallineaDocumenti(bustaPrequalifica);
+				continua = continua && bustaRiepilogo.riallineaDocumenti(bustaAmministrativa);
+				continua = continua && bustaRiepilogo.riallineaDocumenti(bustaTecnica);
+				continua = continua && bustaRiepilogo.riallineaDocumenti(bustaEconomica);
+				continua = continua && bustaRiepilogo.send(null);
 			}
 		}
 		
@@ -404,7 +439,7 @@ public class GestioneBuste implements Serializable {
 	 * @throws Exception 
 	 */	
 	public boolean get() throws Throwable {
-		return this.get(null); 
+		return get(null); 
 	}
 	
 	/**
@@ -414,6 +449,15 @@ public class GestioneBuste implements Serializable {
 	 */
 	protected boolean send() throws Exception {
 		GestioneBuste.traceLog("GestioneBuste.send not implemented");
+		// MIGLIORIA: implementare qui il "Conferma ed invia"
+//		if(this.domandaPartecipazione) {
+//			continua = continua && this.bustaPrequalifica.sendConfirm(...)
+//		} else {
+//			continua = continua && this.bustaAmministrativa.sendConfirm(...);
+//			continua = continua && this.bustaTecnica.sendConfirm(...);
+//			continua = continua && this.bustaEconomica.sendConfirm(...);
+//		}
+//		boolean continua = this.bustaPartecipazione.sendConfirm();
 		return false;
 	}
 
@@ -423,7 +467,7 @@ public class GestioneBuste implements Serializable {
 	public WizardDatiImpresaHelper getLastestDatiImpresa() throws ApsException, XmlException {
 		GestioneBuste.traceLog("GestioneBuste.getLastestDatiImpresa");
 		return ImpresaAction.getLatestDatiImpresa(
-				this.username, 
+				username, 
 				(EncodedDataAction)GestioneBuste.getAction());
 	}
 
@@ -433,38 +477,17 @@ public class GestioneBuste implements Serializable {
 	 */
 	private boolean refreshDettaglioGara() {
 		try {
-			this.dettaglioGara = this.bandiManager.getDettaglioGara(this.codiceGara);
-			this.ristretta = WizardPartecipazioneHelper.isGaraRistretta(this.dettaglioGara.getDatiGeneraliGara().getIterGara());
-			this.negoziata = WizardPartecipazioneHelper.isGaraNegoziata(this.dettaglioGara.getDatiGeneraliGara().getIterGara());
-			this.indagineMercato = "7".equals(this.dettaglioGara.getDatiGeneraliGara().getIterGara());
+			dettaglioGara = bandiManager.getDettaglioGara(this.codiceGara);
+			ristretta = WizardPartecipazioneHelper.isGaraRistretta(dettaglioGara.getDatiGeneraliGara().getIterGara());
+			negoziata = WizardPartecipazioneHelper.isGaraNegoziata(dettaglioGara.getDatiGeneraliGara().getIterGara());
+			indagineMercato = "7".equals(dettaglioGara.getDatiGeneraliGara().getIterGara());			
+			concorsoProgettazionePubblico = "9".equals(dettaglioGara.getDatiGeneraliGara().getIterGara());
+			concorsoProgettazioneRiservato= "10".equals(dettaglioGara.getDatiGeneraliGara().getIterGara());
 		} catch(Throwable t) {
-			// NON DOVREBBE MAI ACCADERE!!!
-			this.dettaglioGara = null;
+			dettaglioGara = null;
 			ApsSystemUtils.getLogger().error("GestioneBuste", "refreshDettaglioGara", t);
 		}
-		return (this.dettaglioGara != null);
-	}
-
-	/**
-	 * ricava la comunicazione della busta  
-	 * @throws ApsException 
-	 */
-	protected DettaglioComunicazioneType retriveComunicazioneBusta(BustaGara busta) throws ApsException {
-		DettaglioComunicazioneType dettCom = busta.getComunicazioneFlusso().find(
-				this.username, 
-				busta.getCodiceGara(), 
-				busta.getProgressivoOfferta(), 
-				busta.getComunicazioneFlusso().getTipoComunicazione(), 
-				CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA); 
-		if (dettCom == null) {
-			dettCom  = busta.getComunicazioneFlusso().find(
-					this.username, 
-					busta.getCodiceGara(), 
-					busta.getProgressivoOfferta(), 
-					busta.getComunicazioneFlusso().getTipoComunicazione(), 
-					CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE);
-		}
-		return dettCom;
+		return (dettaglioGara != null);
 	}
 
 	/**
@@ -472,12 +495,10 @@ public class GestioneBuste implements Serializable {
 	 */
 	public boolean isBustaAmministrativaPresente() {
 		boolean noBustaAmministrativa = false;
-		if(this.dettaglioGara != null &&
-		   this.dettaglioGara.getDatiGeneraliGara() != null)  
-		{
-			noBustaAmministrativa = this.dettaglioGara.getDatiGeneraliGara().isNoBustaAmministrativa();
+		if(dettaglioGara != null && dettaglioGara.getDatiGeneraliGara() != null) {
+			noBustaAmministrativa = dettaglioGara.getDatiGeneraliGara().isNoBustaAmministrativa();
 		}
-		return noBustaAmministrativa;
+		return !noBustaAmministrativa;
 	}
 	
 	/**
@@ -485,7 +506,7 @@ public class GestioneBuste implements Serializable {
 	 * @throws ApsException 
 	 */
 	public boolean isGaraConOffertaTecnica() throws ApsException {
-		return (boolean) this.bandiManager.isGaraConOffertaTecnica(this.codiceGara);
+		return (boolean) bandiManager.isGaraConOffertaTecnica(codiceGara);
 	}
 	
 	/**
@@ -494,13 +515,13 @@ public class GestioneBuste implements Serializable {
 	public BustaDocumenti getBusta(int tipoBusta) throws Exception {
 		BustaDocumenti busta = null;
 		if( tipoBusta == BustaGara.BUSTA_PRE_QUALIFICA) {
-			busta = this.getBustaPrequalifica();
+			busta = getBustaPrequalifica();
 		} else if(tipoBusta == BustaGara.BUSTA_AMMINISTRATIVA) {
-			busta = this.getBustaAmministrativa();
+			busta = getBustaAmministrativa();
 		} else if( tipoBusta == BustaGara.BUSTA_TECNICA) {
-			busta = this.getBustaTecnica();
+			busta = getBustaTecnica();
 		} else if( tipoBusta == BustaGara.BUSTA_ECONOMICA) {
-			busta = this.getBustaEconomica();
+			busta = getBustaEconomica();
 		} else {
 			throw new Exception("getBusta() Tipologia di busta non valida");
 		}
@@ -512,7 +533,7 @@ public class GestioneBuste implements Serializable {
 	 */
 	public WizardDocumentiBustaHelper getDocumentiBustaHelper(int tipoBusta) throws Exception {
 		WizardDocumentiBustaHelper helper = null;
-		BustaDocumenti busta = this.getBusta(tipoBusta);
+		BustaDocumenti busta = getBusta(tipoBusta);
 		if(busta != null) {
 			helper = busta.getHelperDocumenti();
 		} else {
@@ -522,30 +543,14 @@ public class GestioneBuste implements Serializable {
 	}
 
 	/**
-	 * reset di tutti i dati in sessione 
-	 */
-	public void resetSession() {
-		GestioneBuste.traceLog("GestioneBuste.resetSession");
-		HttpSession session = GestioneBuste.getAction().getRequest().getSession();
-		session.removeAttribute(SESSION_ID_OFFERTA_GARA);
-		
-		// dati in sessione per retrocompatibilita' con le JSP!!!
-		session.removeAttribute(SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
-//		session.removeAttribute(SESSION_ID_DETT_PART_GARA);				// helper partecipazione
-//		session.removeAttribute(SESSION_ID_DETT_BUSTA_PRE_QUALIFICA);	// helper busta preq
-//		session.removeAttribute(SESSION_ID_DETT_BUSTA_AMMINISTRATIVA);	// helper busta amm
-//		session.removeAttribute(SESSION_ID_DETT_BUSTA_TECNICA);			// helper busta tec
-//		session.removeAttribute(SESSION_ID_DETT_BUSTA_ECONOMICA);		// helper busta eco
-//		session.removeAttribute(SESSION_ID_DETT_BUSTA_RIEPILOGATIVA);	// helper busta di riepilogo
-	}
-	
-	/**
 	 * recupera dalla sessione l'oggetto per codice lotto 
 	 */
 	public static GestioneBuste getFromSession(String codiceLotto) {
 		GestioneBuste.traceLog("GestioneBuste.getFromSession");
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
 		GestioneBuste buste = (GestioneBuste)action.getRequest().getSession().getAttribute(SESSION_ID_OFFERTA_GARA);
+		
+		// se e' una gara a lotti, inizializza il codice lotto nell'helper dei documenti per la busta TEC/ECO
 		if(buste != null && StringUtils.isNotEmpty(codiceLotto)) {
 			if(buste.getBustaEconomica() != null) {
 				buste.getBustaEconomica().codiceLotto = codiceLotto;
@@ -573,6 +578,7 @@ public class GestioneBuste implements Serializable {
 				}
 			}
 		}
+		
 		return buste;
 	}
 	
@@ -590,13 +596,20 @@ public class GestioneBuste implements Serializable {
 		GestioneBuste.traceLog("GestioneBuste.putToSession");
 		HttpSession session = GestioneBuste.getAction().getRequest().getSession();
 		session.setAttribute(SESSION_ID_OFFERTA_GARA, this);
-
 		// si salvano i seguenti dati in sessione per retrocompatibilita' con le JSP!!!
 		session.setAttribute(SESSION_ID_DETT_ANAGRAFICA_IMPRESA, this.getImpresa());
-		
-//		// forza il garbage collector esplicitamente
-//		System.gc();
 	}	
+	
+	/**
+	 * reset di tutti i dati in sessione 
+	 */
+	public static void resetSession() {
+		GestioneBuste.traceLog("GestioneBuste.resetSession");
+		HttpSession session = GestioneBuste.getAction().getRequest().getSession();
+		session.removeAttribute(SESSION_ID_OFFERTA_GARA);
+		// dati in sessione per retrocompatibilita' con le JSP!!!
+		session.removeAttribute(SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
+	}
 	
 	/**
 	 * deserializzazione dell'oggetto  
@@ -607,7 +620,7 @@ public class GestioneBuste implements Serializable {
 	private void readObject(ObjectInputStream is) throws ClassNotFoundException, IOException {
 		GestioneBuste.traceLog("GestioneBuste.readObject -> deserialization");
 		// recupera i bean dei manager e poi deserializza le buste...
-		this.initManagerBeans();
+		initManagerBeans();
 		// deserializza l'oggetto... 
 	    is.defaultReadObject();	    
 	}
@@ -695,13 +708,13 @@ public class GestioneBuste implements Serializable {
 	public Long getNumeroDecimaliRibasso() throws ApsException {
 		GestioneBuste.traceLog("GestioneBuste.getNumeroDecimaliRibasso");
 		Long numDecimaliRibasso = null;
-		if(this.dettaglioGara.getDatiGeneraliGara() != null && 
-		   this.dettaglioGara.getDatiGeneraliGara().getNumDecimaliRibasso() != null) 
+		if(dettaglioGara.getDatiGeneraliGara() != null && 
+		   dettaglioGara.getDatiGeneraliGara().getNumDecimaliRibasso() != null) 
 		{
-			numDecimaliRibasso = this.dettaglioGara.getDatiGeneraliGara().getNumDecimaliRibasso();
+			numDecimaliRibasso = dettaglioGara.getDatiGeneraliGara().getNumDecimaliRibasso();
 		}
 		if(numDecimaliRibasso == null) {
-			numDecimaliRibasso = this.bandiManager.getNumeroDecimaliRibasso();
+			numDecimaliRibasso = bandiManager.getNumeroDecimaliRibasso();
 		}
 		return numDecimaliRibasso;
 	}
@@ -714,7 +727,7 @@ public class GestioneBuste implements Serializable {
 		EncodedDataAction action = (EncodedDataAction)GestioneBuste.getAction();
 		try {
 			INtpManager ntpManager = (INtpManager) ApsWebApplicationUtils
-				.getBean(PortGareSystemConstants.NTP_MANAGER,
+				.getBean(CommonSystemConstants.NTP_MANAGER,
 						 ServletActionContext.getRequest());
 			dta = ntpManager.getNtpDate();
 		} catch (SocketTimeoutException e) {
@@ -762,40 +775,40 @@ public class GestioneBuste implements Serializable {
 	public List<DettaglioComunicazioneType> getListaComunicazioni(List<String> stati) throws Throwable {
 		List<DettaglioComunicazioneType> lista = new ArrayList<DettaglioComunicazioneType>();
 		
-		this.bustaAmministrativa.get(stati);	// <= forse questa non serve
-		if(this.bustaAmministrativa != null && this.bustaAmministrativa.getComunicazioneFlusso().getId() > 0) {			
-			lista.add(this.bustaAmministrativa.getComunicazioneFlusso().getDettaglioComunicazione());
+		bustaAmministrativa.get(stati);	// <= forse questa non serve
+		if(bustaAmministrativa != null && bustaAmministrativa.getComunicazioneFlusso().getId() > 0) {			
+			lista.add(bustaAmministrativa.getComunicazioneFlusso().getDettaglioComunicazione());
 		}
 		
-		List<String> lotti = this.bustaRiepilogo.getHelper().getListaCompletaLotti();
+		List<String> lotti = bustaRiepilogo.getHelper().getListaCompletaLotti();
 		if(lotti != null && lotti.size() > 0) {
 			// GARA A LOTTI
 			for(String lotto : lotti) {
-				if(this.bustaTecnica != null) {
-					this.bustaTecnica.get(stati, lotto);
-					if(this.bustaTecnica.getComunicazioneFlusso().getId() > 0) {
-						lista.add(this.bustaTecnica.getComunicazioneFlusso().getDettaglioComunicazione());
+				if(bustaTecnica != null) {
+					bustaTecnica.get(stati, lotto);
+					if(bustaTecnica.getComunicazioneFlusso().getId() > 0) {
+						lista.add(bustaTecnica.getComunicazioneFlusso().getDettaglioComunicazione());
 					}
 				}	
-				if(this.bustaEconomica != null) {
-					this.bustaEconomica.get(stati, lotto);
-					if(this.bustaEconomica.getComunicazioneFlusso().getId() > 0) {
-						lista.add(this.bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione());
+				if(bustaEconomica != null) {
+					bustaEconomica.get(stati, lotto);
+					if(bustaEconomica.getComunicazioneFlusso().getId() > 0) {
+						lista.add(bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione());
 					}
 				}
 			}
 		} else {
 			// GARA SENZA LOTTI
-			if(this.bustaTecnica != null) {
-				this.bustaTecnica.get(stati);	// <= forse questa non serve
-				if(this.bustaTecnica.getComunicazioneFlusso().getId() > 0) {
-					lista.add(this.bustaTecnica.getComunicazioneFlusso().getDettaglioComunicazione());
+			if(bustaTecnica != null) {
+				bustaTecnica.get(stati);	// <= forse questa non serve
+				if(bustaTecnica.getComunicazioneFlusso().getId() > 0) {
+					lista.add(bustaTecnica.getComunicazioneFlusso().getDettaglioComunicazione());
 				}
 			}
-			if(this.bustaEconomica != null) {
-				this.bustaEconomica.get(stati);	// <= forse questa non serve
-				if(this.bustaEconomica.getComunicazioneFlusso().getId() > 0) {
-					lista.add(this.bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione());
+			if(bustaEconomica != null) {
+				bustaEconomica.get(stati);	// <= forse questa non serve
+				if(bustaEconomica.getComunicazioneFlusso().getId() > 0) {
+					lista.add(bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione());
 				}
 			}
 		}
@@ -807,7 +820,7 @@ public class GestioneBuste implements Serializable {
 	 * verifica la correttezza della modalita' di aggiudicazione di una gara
 	 */
 	public boolean isModalitaAggiudicazioneValida() {
-		return (this.dettaglioGara.getDatiGeneraliGara().getModalitaAggiudicazione() != null);
+		return (dettaglioGara.getDatiGeneraliGara().getModalitaAggiudicazione() != null);
 	}
 
 	/**
@@ -815,6 +828,7 @@ public class GestioneBuste implements Serializable {
 	 */
 	public long getIdDgueRequestDocument() {
 		long id = -1; 
+		
 		// cerca un documento marcato idstampa="dgue" tra i documenti della gara...
 		if (dettaglioGara.getDocumento() != null) {
 			for (DocumentoAllegatoType doc : dettaglioGara.getDocumento()) {
@@ -825,7 +839,8 @@ public class GestioneBuste implements Serializable {
 				}
 			}
 		}
-		// eventualmente cerca nel lotto fittizzio o nei lotti...
+		
+		// se non si trova nella documentazione di gara, cerca nel lotto fittizio o nei lotti...
 		if (id <= 0) {
 			if (dettaglioGara.getLotto() != null) {
 				for (LottoDettaglioGaraType lotto : dettaglioGara.getLotto()) {
@@ -844,7 +859,80 @@ public class GestioneBuste implements Serializable {
 				}
 			}
 		}
+		
+		// se non si trova nel lotto fittizio/lotti, cerca nella documentazione di invito (per le negoziate)...
+		if (id <= 0) {
+			if (dettaglioGara.getInvito() != null) {
+				for (DocumentoAllegatoType doc : dettaglioGara.getInvito()) {
+					ApsSystemUtils.getLogger().debug("id: {}, idfacsimile: {}, idstampa(): {}", doc.getId(), doc.getId(), doc.getIdStampa());
+					if (DGUEREQUEST.equalsIgnoreCase(doc.getIdStampa())) {
+						id = doc.getId();        // "iddoc" equivale al facsimile
+						break;
+					}
+				}
+			}
+		}
+		
 		return id;
 	}
 
+	/**
+	 * indica se la busta di prequalifica e' prevista per la gara 
+	 */
+	public boolean isBustaPrequalificaPrevista() {
+		return (bustaPrequalifica != null && domandaPartecipazione);
+	}
+	
+	/**
+	 * indica se la busta amministrativa e' prevista per la gara 
+	 */
+	public boolean isBustaAmministrativaPrevista() {
+		return (bustaAmministrativa != null && isBustaAmministrativaPresente());
+	}
+	
+	/**
+	 * indica se la busta(lotto) tecnica e' prevista per la gara 
+	 */
+	public boolean isBustaTecnicaPrevista() {
+		boolean prevista = true;
+		try {
+			prevista = isGaraConOffertaTecnica();
+		} catch (ApsException e) {
+			//...
+		}
+		return (prevista || bustaRiepilogo.isAlmenoUnaBustaTecnica());
+	}
+	
+	/**
+	 * indica se la busta(lotto) economica e' prevista per la gara 
+	 */
+	public boolean isBustaEconomicaPrevista() {
+		boolean costoFisso = (dettaglioGara.getDatiGeneraliGara().getCostoFisso() == 1);
+		return (!costoFisso || bustaRiepilogo.isAlmenoUnaBustaEconomica());
+	}
+	
+	/**
+	 * restituisce True se e' una gara a lotti distinti e buste distinte 
+	 */
+	public boolean isGaraLottiDistinti() {
+		boolean garaLottiDistinti = false;
+		
+		// ATTENZIONE 
+		// datiGeneraliGara.Tipologia e' sempre 3 sia per 
+		// sia per le gare a lotti, plico unico, offerte distinte  
+		// sia per le gare a lotti, plico unico, offerta unica
+		// per sapere se e' una gara a offerte distine o offerta unica va usato datiGeneraliGara.BusteDistinte !!!
+		boolean busteDistinte = (dettaglioGara.getDatiGeneraliGara().getBusteDistinte() != null
+								 && dettaglioGara.getDatiGeneraliGara().getBusteDistinte().booleanValue());		
+		if (dettaglioGara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_OFFERTE_DISTINTE) {
+			garaLottiDistinti = true;
+		} else if(dettaglioGara.getDatiGeneraliGara().getTipologia() == PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_PLICO_UNICO && busteDistinte) {
+			garaLottiDistinti = true;
+		} else {
+			// SERVE ??? 
+		}
+		
+		return garaLottiDistinti;
+	}
+	
 }

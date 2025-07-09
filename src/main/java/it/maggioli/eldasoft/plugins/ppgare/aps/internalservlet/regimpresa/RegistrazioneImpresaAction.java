@@ -7,6 +7,7 @@ import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.GenPDFAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
@@ -16,10 +17,11 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StrutsUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.ws.EsitoOutType;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -27,12 +29,6 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.IRegistrazioneImpresaManager;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRXmlDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.xmlbeans.XmlObject;
@@ -41,11 +37,9 @@ import org.apache.xmlbeans.XmlValidationError;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +48,7 @@ import java.util.Map;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class RegistrazioneImpresaAction extends BaseAction implements SessionAware {
     /**
      * UID
@@ -114,6 +109,11 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 	 */
 	public String send() {
 		String target = SUCCESS;
+		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return target;
+		}
 
 		WizardRegistrazioneImpresaHelper registrazioneHelper = (WizardRegistrazioneImpresaHelper) this.session
 				.get(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA);
@@ -214,6 +214,9 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 				}
 			}
 		}
+		
+		unlockAccessoFunzione();
+		
 		return target;
 	}
 
@@ -237,41 +240,19 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 		    target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 		    // la sessione non e' scaduta, per cui proseguo regolarmente
-	
-		    // si determina il nome del file di destinazione nell'area
-		    // temporanea
-		    String nomePdf = FileUploadUtilities.generateFileName() + ".pdf";
-		    File filePdf = new File(this.getTempDir().getAbsolutePath()
-			    + File.separatorChar + nomePdf);
-	
+		    try {
+		    	// crea l'xml da passare al report
 		    StringBuilder xml = new StringBuilder();
 		    xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		    // qui si deve creare la stringa XML da passare al report
 	
-		    try {
-		    	// si carica il report jasper, lo si filla con i dati e si
-		    	// genera il pdf
-		    	InputStream isJasper = this.getRequest().getSession()
-		    	.getServletContext().getResourceAsStream(
-		    			PortGareSystemConstants.GARE_JASPER_FOLDER
-		    			+ "AnagraficaImpresa.jasper");
-		    	JRXmlDataSource jrxmlds = new JRXmlDataSource(
-		    			new ByteArrayInputStream(xml.toString().getBytes()),
-		    			"/rich_partecipazione/lotto");
-		    	JasperPrint print = JasperFillManager.fillReport(isJasper,
-		    			new HashMap<String, Object>(), jrxmlds);
-		    	JRExporter exporter = new JRPdfExporter();
-		    	exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME,
-		    			filePdf.getAbsolutePath());
-		    	exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-		    	exporter.exportReport();
-
-		    	// generato il report con JasperReport, si memorizza lo stream
-		    	// per il download e si inserisce una referenza nel bean in
-		    	// sessione per la rimozione alla rimozione del bean dalla
-		    	// sessione
-		    	this.inputStream = new FileInputStream(filePdf);
-		    	registrazioneHelper.getTempFiles().add(filePdf);
+			    
+		    	this.inputStream = new ByteArrayInputStream(
+		    			GenPDFAction.createPdf(
+			    			getRequest().getSession().getServletContext().getResourceAsStream(PortGareSystemConstants.GARE_JASPER_FOLDER + "AnagraficaImpresa.jasper") 
+			    			, xml.toString() 
+			    			, "/rich_partecipazione/lotto"
+			    		)
+		    	);
 
 		    } catch (JRException e) {
 		    	ApsSystemUtils.logThrowable(e, this, "createPdf");
@@ -341,7 +322,7 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 			// FASE 2: 
 			// costruzione del contenitore della comunicazione e popolamento della testata
 			if(verificaManuale) {
-				// verifica se esiste gi� la comunicazione di registrazione in stato BOZZA
+				// verifica se esiste gia' la comunicazione di registrazione in stato BOZZA
 				DettaglioComunicazioneType criteri = new DettaglioComunicazioneType();
 				criteri.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
 				criteri.setChiave1(username);
@@ -357,7 +338,7 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 								comunicazioni.get(0).getId());
 						comunicazione.getDettaglioComunicazione().setStato(statoComunicazione);
 					} else if(comunicazioni.size() > 1) {
-						// ERRORE: pi� comunicazioni trovate o comunicazione non trovata
+						// ERRORE: piu' comunicazioni trovate o comunicazione non trovata
 						throw new Exception("piu' comunicazioni trovate o comunicazione non trovata");
 					}
 				}
@@ -421,7 +402,8 @@ public class RegistrazioneImpresaAction extends BaseAction implements SessionAwa
 	private void setAllegatoComunicazione(
 			ComunicazioneType comunicazione, 
 			XmlObject xmlDocument,
-			String nomeFile, String descrizioneFile) 
+			String nomeFile, 
+			String descrizioneFile) 
 	{	
 		AllegatoComunicazioneType allegatoReg = ComunicazioniUtilities
 				.createAllegatoComunicazione(

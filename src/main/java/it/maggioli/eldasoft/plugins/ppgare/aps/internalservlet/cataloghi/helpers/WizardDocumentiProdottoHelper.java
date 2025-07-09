@@ -301,5 +301,26 @@ public class WizardDocumentiProdottoHelper implements Serializable {
 		
 		return clone;
 	}
-	
+
+	/**
+	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
+	 *
+	 * @param helper helper dei documenti
+	 *
+	 * @return totale in KB dei file caricati
+	 */
+	public int getActualTotalSize() {
+		int total = 0;
+		if (immagine != null) {
+			total += immagineSize;
+		}
+		for (Integer s : certificazioniRichiesteSize) {
+			total += s;
+		}
+		for (Integer s : schedeTecnicheSize) {
+			total += s;
+		}
+		return total;
+	}
+
 }

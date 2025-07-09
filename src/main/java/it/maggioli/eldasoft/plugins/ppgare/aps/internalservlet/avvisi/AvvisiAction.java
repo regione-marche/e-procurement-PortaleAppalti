@@ -77,39 +77,22 @@ public class AvvisiAction extends EncodedDataAction implements SessionAware {
 		this.bandiManager = bandiManager;
 	}
 
-	/**
-	 * @return the codice
-	 */
 	public String getCodice() {
 		return codice;
 	}
 
-	/**
-	 * @param codice
-	 *            the codice to set
-	 */
 	public void setCodice(String codice) {
 		this.codice = codice;
 	}
 
-	/**
-	 * @return the dettaglioAvviso
-	 */
 	public DettaglioAvvisoType getDettaglioAvviso() {
 		return dettaglioAvviso;
 	}
 
-	/**
-	 * @param dettaglioAvviso
-	 *            the dettaglioAvviso to set
-	 */
 	public void setDettaglioAvviso(DettaglioAvvisoType dettaglioAvviso) {
 		this.dettaglioAvviso = dettaglioAvviso;
 	}
 	
-	/**
-	 * @return the menuElenchiVisibile
-	 */
 	public boolean isMenuElenchiVisibile() {
 		return menuElenchiVisibile;
 	}
@@ -197,32 +180,37 @@ public class AvvisiAction extends EncodedDataAction implements SessionAware {
 	public String view() {
 		// se si proviene dall'EncodedDataAction di InitIscrizione con un
 		// errore, devo resettare il target tanto va riaperta la pagina stessa
-		if ("block".equals(this.getTarget()))
+		if ("block".equals(this.getTarget()) || "successAvviso".equalsIgnoreCase(this.getTarget()))
 			this.setTarget(SUCCESS);
 		try {
-			DettaglioAvvisoType gara = this.avvisiManager
-					.getDettaglioAvviso(this.codice);
+			DettaglioAvvisoType gara = this.avvisiManager.getDettaglioAvviso(this.codice);
 			this.setDettaglioAvviso(gara);
 			
-			IPage page = this.pageManager.getPage("ppgare_oper_economici");
-			this.menuElenchiVisibile = page.isShowable();
-
-			// comunicazioni ricevute, archiviate, inviate, ...
-			StatisticheComunicazioniPersonaliType stat = this.bandiManager
-				.getStatisticheComunicazioniPersonali(this.getCurrentUser().getUsername(), this.codice,null, null);			
-			 
-			this.setNumComunicazioniRicevute(stat.getNumComunicazioniRicevute());
-			this.setNumComunicazioniRicevuteDaLeggere(stat.getNumComunicazioniRicevuteDaLeggere());
-			this.setNumComunicazioniArchiviate(stat.getNumComunicazioniArchiviate());
-			this.setNumComunicazioniArchiviateDaLeggere(stat.getNumComunicazioniArchiviateDaLeggere());
-			this.setNumComunicazioniInviate(stat.getNumComunicazioniInviate());
-			
-			this.setGenere(this.bandiManager.getGenere(this.codice));
-
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA, this.codice);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
-			this.session.put("dettaglioPresente", true);
-
+			if(gara == null) {
+				addActionMessage(getText("avviso.inDefinizione"));
+				setTarget(CommonSystemConstants.PORTAL_ERROR);
+			} else {
+				IPage page = this.pageManager.getPage("ppgare_oper_economici");
+				this.menuElenchiVisibile = page.isShowable();
+				
+				// comunicazioni ricevute, archiviate, inviate, ...
+				StatisticheComunicazioniPersonaliType stat = this.bandiManager
+					.getStatisticheComunicazioniPersonali(this.getCurrentUser().getUsername(), this.codice,null, null);
+				 
+				this.setNumComunicazioniRicevute(stat.getNumComunicazioniRicevute());
+				this.setNumComunicazioniRicevuteDaLeggere(stat.getNumComunicazioniRicevuteDaLeggere());
+				this.setNumComunicazioniArchiviate(stat.getNumComunicazioniArchiviate());
+				this.setNumComunicazioniArchiviateDaLeggere(stat.getNumComunicazioniArchiviateDaLeggere());
+				this.setNumComunicazioniInviate(stat.getNumComunicazioniInviate());
+				
+				this.setGenere(this.bandiManager.getGenere(this.codice));
+				
+				this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA, this.codice);
+				this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
+				this.session.put("dettaglioPresente", true);
+				
+				this.setTarget(SUCCESS);
+			}
 		} catch (ApsException t) {
 			ApsSystemUtils.logThrowable(t, this, "view");
 			ExceptionUtils.manageExceptionError(t, this);

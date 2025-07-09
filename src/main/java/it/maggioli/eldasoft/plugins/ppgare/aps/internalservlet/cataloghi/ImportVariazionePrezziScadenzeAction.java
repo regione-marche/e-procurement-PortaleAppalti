@@ -11,7 +11,6 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CarrelloProdottiSessione;
@@ -19,9 +18,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.C
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ImportProdottiResultBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ProdottiCatalogoSessione;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.ICataloghiManager;
 import org.apache.commons.io.FileUtils;
@@ -40,6 +40,7 @@ import java.util.*;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ImportVariazionePrezziScadenzeAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -145,24 +146,19 @@ public class ImportVariazionePrezziScadenzeAction extends EncodedDataAction impl
 			} else {
 				int allegatoSize = FileUploadUtilities.getFileSize(this.allegato);
 				
-				// traccia l'evento di upload di un file...
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(this.catalogo);
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage("Import variazione prezzi scadenze:"
-								  + " file="+this.allegatoFileName
-								  + ", dimensione=" + allegatoSize + "KB");
-	
-				boolean controlliOk =
-						checkFileSize(allegato, allegatoFileName, allegatoSize, appParamManager, evento)
-						&& checkFileName(allegatoFileName, evento)
-						&& checkFileFormat(allegato, allegatoFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL, evento, false);
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setActualTotalSize(allegatoSize)
+						.setDocumento(allegato)
+						.setDocumentoFileName(allegatoFileName)
+						.setDocumentoFormato(PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL)
+						.setOnlyP7m(false)
+						.setEventoDestinazione(catalogo)
+						.setEventoMessaggio("Import variazione prezzi scadenze:"
+								  			+ " file=" + this.allegatoFileName
+								  			+ ", dimensione=" + allegatoSize + "KB");
 
-				if (!controlliOk) {
+				if ( !getUploadValidator().validate() ) {
 					actionErrorToFieldError();
 					this.setTarget(INPUT);
 				} else {
@@ -190,7 +186,7 @@ public class ImportVariazionePrezziScadenzeAction extends EncodedDataAction impl
 					try {
 						String dstFileName = this.allegato.getAbsolutePath() + "." + 
 											 FilenameUtils.getExtension(this.allegatoFileName);
-						FileUtils.copyFile(this.allegato, new File(dstFileName));												
+						FileUtils.copyFile(this.allegato, new File(dstFileName));
 			            
 						this.allegatoFileName = dstFileName;
 						
@@ -200,7 +196,8 @@ public class ImportVariazionePrezziScadenzeAction extends EncodedDataAction impl
 						this.setTarget(INPUT);
 					}
 				}
-				this.eventManager.insertEvent(evento);
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 			
 			}catch (Throwable t) {

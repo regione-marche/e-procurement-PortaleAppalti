@@ -1,18 +1,20 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet;
 
-import it.eldasoft.sil.portgare.datatypes.FirmatarioType;
-import it.eldasoft.sil.portgare.datatypes.RiepilogoBustaType;
-import it.eldasoft.sil.portgare.datatypes.RiepilogoBusteOffertaDocument;
-import it.eldasoft.sil.portgare.datatypes.RiepilogoBustePartecipazioneDocument;
-import it.eldasoft.sil.portgare.datatypes.RiepilogoLottoBustaType;
-import it.eldasoft.utils.utility.UtilityStringhe;
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.agiletec.apsadmin.system.BaseAction;
+import com.opensymphony.xwork2.ActionContext;
+
+import it.eldasoft.sil.portgare.datatypes.*;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.QuestionarioType;
-import it.maggioli.eldasoft.digitaltimestamp.beans.DigitalTimeStampResult;
+import it.maggioli.eldasoft.digitaltimestamp.model.ITimeStampResult;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
@@ -26,25 +28,15 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.Wiz
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.DocumentazioneRichiestaGaraPlicoUnico;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.aps.util.ApsWebApplicationUtils;
-import com.agiletec.apsadmin.system.BaseAction;
-import com.lowagie.text.DocumentException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * ...
@@ -161,6 +153,10 @@ public class BustaRiepilogo extends BustaGara {
 		return continua;
 	}
 	
+	@Override
+	protected void invalidateHelper() throws Throwable {
+	}
+
 	/**
 	 * inizializza l'helper associato al riepilogo 
 	 */
@@ -505,39 +501,17 @@ public class BustaRiepilogo extends BustaGara {
 	protected boolean riallineaDocumenti(BustaDocumenti busta) {
 		GestioneBuste.traceLog("BustaRiepilogo.riallineaDocumenti");
 		boolean continua = true;
-		if(busta != null) {
+		if (busta != null) {
 			try {
+				// Quando in stato 99 devo cancellare tutto e recuperarlo nuovamente
+				if ("99".equals(busta.getComunicazioneFlusso().getStato()))
+					this.helper.reset(busta, busta.getCodiceLotto());
+
 				// riallinea i documenti del riepilogo in base alla busta...
-				if(busta.getTipoBusta() == BUSTA_PRE_QUALIFICA) {
-					this.helper.getBustaPrequalifica().riallineaDocumenti( busta.getHelperDocumenti() );
-					
-				} else if(busta.getTipoBusta() == BUSTA_AMMINISTRATIVA) {
-					this.helper.getBustaAmministrativa().riallineaDocumenti( busta.getHelperDocumenti() );				
-	
-				} else if(busta.getTipoBusta() == BUSTA_TECNICA) {
-					if(this.helper.getBustaTecnica() != null) {
-						// gara senza lotti
-						this.helper.getBustaTecnica().riallineaDocumenti( busta.getHelperDocumenti() );
-					} else {
-						// gara a lotti
-						RiepilogoBustaBean r = this.helper.getBusteTecnicheLotti().get(busta.getCodiceLotto());
-						if(r != null) {
-							r.riallineaDocumenti( busta.getHelperDocumenti() );
-						}
-					}
-					
-				} else if(busta.getTipoBusta() == BUSTA_ECONOMICA) {
-					if(this.helper.getBustaEconomica() != null) {
-						// gara senza lotti
-						this.helper.getBustaEconomica().riallineaDocumenti( busta.getHelperDocumenti() );
-					} else {
-						// gara a lotti
-						RiepilogoBustaBean r = this.helper.getBusteEconomicheLotti().get(busta.getCodiceLotto());
-						if(r != null) {
-							r.riallineaDocumenti( busta.getHelperDocumenti() );
-						}
-					}
-				}
+				RiepilogoBustaBean riepilogoBusta = helper.getRiepilogoBusta(busta.getTipoBusta(), busta.getCodiceLotto());
+				if(riepilogoBusta != null)
+					riepilogoBusta.riallineaDocumenti( busta.getHelperDocumenti() );
+				
 			} catch (Throwable t) {
 				continua = false;
 				ApsSystemUtils.getLogger().error("BustaRiepilogo", "riallineaDocumenti", t);
@@ -867,7 +841,7 @@ public class BustaRiepilogo extends BustaGara {
 	 * In caso di marcatura temporale restituisce il file con marcatura temporale 
 	 * @throws Exception 
 	 */
-	public byte[] getPdfRiepilogoBuste() throws Exception {
+	public byte[] getPdfRiepilogoBuste(InputStream iccFile) throws Exception {
 		byte[] fileRiepilogo = null;
 
 		EncodedDataAction action = (EncodedDataAction)GestioneBuste.getAction();
@@ -891,23 +865,33 @@ public class BustaRiepilogo extends BustaGara {
 			}
 		}
 
-		// se non esiste il pdf di riepilogo, lo creo...
-		if( !existPdfRiepilogo ) {
-			fileRiepilogo = this.createPdfRiepilogoBuste();
-		}
-
-		// se e' attiva la marcatura temporale, 
+		// se e' attiva la marcatura temporale,
 		// applico la marcatura temporale al pdf di riepilogo...
 		ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
-			.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
-					 ServletActionContext.getRequest());
-		boolean marcaturaTemporaleAttiva = customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE"); 
+				.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
+						 ServletActionContext.getRequest());
+		
+		// PDF-A, PDF-UA
+		boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A", false);
+		boolean isActiveFunctionPdfUA = customConfigManager.isActiveFunction("PDF", "PDF-UA", false);
+		
+		// se non esiste il pdf di riepilogo, lo creo...
+		if( !existPdfRiepilogo ) {
+			// icc path e PDF-A enabled
+			fileRiepilogo = this.createPdfRiepilogoBuste(
+					isActiveFunctionPdfA
+					, isActiveFunctionPdfUA
+					, iccFile
+			);
+		}
+
+		boolean marcaturaTemporaleAttiva = customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE");
 		if(marcaturaTemporaleAttiva) {
 			if( !existsFileMarcatura ) {
 				// crea un nuovo file di riepilogo...
 				try {
 					//DigitalTimeStampResult resultMarcatura = this.getFileMarcatoTemporalmente(riepilogo);					
-					DigitalTimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(fileRiepilogo, appParamManager);
+					ITimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(fileRiepilogo, appParamManager);
 					if( !resultMarcatura.getResult() ) {
 						ApsSystemUtils.getLogger().error(
 								"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage=" + resultMarcatura.getErrorMessage(),
@@ -934,7 +918,7 @@ public class BustaRiepilogo extends BustaGara {
 				pdfRiepilogo.setDescrizione("File di riepilogo allegati con marcatura temporale");
 			} else {
 				pdfRiepilogo.setNomeFile(PortGareSystemConstants.FILENAME_RIEPILOGO_BUSTE);
-				pdfRiepilogo.setTipo("pdf");
+				pdfRiepilogo.setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
 				pdfRiepilogo.setDescrizione("File di riepilogo allegati");
 			}
 			
@@ -953,13 +937,15 @@ public class BustaRiepilogo extends BustaGara {
 	}
 
 	/**
-	 * crea il pdf di riepilogo dei documenti delle buste (preq, amm, tec, eco)  
-	 * @throws IOException 
-	 * @throws DocumentException 
+	 * crea il pdf di riepilogo dei documenti delle buste (preq, amm, tec, eco)
+	 *
+	 * @throws Exception 
 	 */
-	private byte[] createPdfRiepilogoBuste() 
-		throws DocumentException, IOException 
-	{
+	private byte[] createPdfRiepilogoBuste(
+			boolean isActiveFunctionPdfA
+			, boolean isActiveFunctionPdfUA
+			, InputStream iccFile
+	) throws Exception	{
 		StringBuilder sb = new StringBuilder();
 
 		boolean garaLotti = (this.helper.getBusteEconomicheLotti() != null || this.helper.getBusteTecnicheLotti() != null); 
@@ -1049,9 +1035,16 @@ public class BustaRiepilogo extends BustaGara {
 //				}
 //			}
 		}
-				
-		byte[] contenutoPdf = UtilityStringhe.string2Pdf(sb.toString());
-		return contenutoPdf;
+		
+		byte[] riepilogoPdf = JRPdfExporterEldasoft.textToPdf(
+				sb.toString()
+				, "Riepilogo allegati"
+				, isActiveFunctionPdfA
+				, isActiveFunctionPdfUA
+				, gestioneBuste.getAction()
+		);
+		
+		return riepilogoPdf;
 	}
 	
 	/**

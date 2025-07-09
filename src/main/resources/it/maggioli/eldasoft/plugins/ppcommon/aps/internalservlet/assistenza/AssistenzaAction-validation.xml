@@ -31,10 +31,4 @@
 		</field-validator>
 	</field>
 		
-	<field name="captchaConferma">
-		<field-validator type="requiredstring">
-			<message key="localstrings.requiredstring" />
-		</field-validator>
-	</field>
-		
 </validators>

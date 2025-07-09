@@ -16,7 +16,7 @@ import java.util.Random;
 public class FileUploadUtilities {
 
 	public static final int MAX_LUNGHEZZA_NOME_FILE = 100;
-	public static final String VALID_FILE_NAME_CHARS   = "A-Za-z0-9-_()\\s\\.\\[\\]";
+	public static final String VALID_FILE_NAME_CHARS   = "A-Za-z0-9-_\\s\\.";
 	public static final String INVALID_FILE_NAME_REGEX = "[^" + VALID_FILE_NAME_CHARS + "]";
 
 	/**

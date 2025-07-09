@@ -254,10 +254,24 @@
 			</div>
 		</div>
 		
+		<c:if test="${not empty model.importoAggiudicazione and not empty model.importoSommeLiquidate}">
+		<div class="fieldset-row">
+			<div class="label">
+				<label><wp:i18n key="LABEL_IMPORTO_SCOSTAMENTO" /> : </label>
+			</div>
+			<div class="element">
+				<span>
+					<s:set var="importoScostamento" value="%{model.importoAggiudicazione - model.importoSommeLiquidate}"/>
+					<s:text name="format.money"><s:param value="%{#importoScostamento}"/></s:text>
+				</span>
+			</div>
+		</div>
+		</c:if>
+
 	</fieldset>
 
 	<div class="back-link">
-		<a href='<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchContratti.action" />&amp;last=1&amp;${tokenHrefParams}'>
+		<a href='<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchContratti.action" />&amp;last=1'>
 			<wp:i18n key="LINK_BACK_TO_LIST" />
 		</a>
 	</div> 

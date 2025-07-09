@@ -17,6 +17,7 @@
 */
 package com.agiletec.plugins.jacms.aps.system.services.resource.model.util;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResourceDimension;
@@ -26,7 +27,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ImageResour
  * delle dimensioni per il redimensionamento delle immagini.
  * @author E.Santoboni
  */
-public interface IImageDimensionReader {
+public interface IImageDimensionReader extends Serializable {
 	
 	/**
      * Restituisce la mappa delle dimensioni di resize delle immagini, 

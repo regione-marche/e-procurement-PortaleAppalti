@@ -1,7 +1,10 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps;
 
 import com.agiletec.apsadmin.system.TokenInterceptor;
+
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ParamValidationResult;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ParamValidator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
@@ -20,7 +23,7 @@ public class XSSValidation {
      * sulla validazione controllo se il parametro con nome header \u00E8 presente nella mappa. Se esiste, utilizzo
      * la funzione (il validatore) ritornata dalla mappa per validare il valore dell'header
      */
-    public static final Map<String, Function<String, Boolean>> PARAMS_VALIDATOR = new HashMap<>();
+    public static final Map<String, Function<String, ParamValidationResult>> PARAMS_VALIDATOR = new HashMap<>();
 
     /*
       Inizializzo la lista di validatori
@@ -84,15 +87,18 @@ public class XSSValidation {
      * Controlla se esiste il campo richiesto \u00E8 valido
      * @param key
      * @param value
-     * @return
+     * @return true se il valore del campo NON e' valido, false viceversa 
      */
     private static boolean checkField(String key, Object value) {
-        return value == null || !PARAMS_VALIDATOR.get(key).apply(unescapeHtml(value.toString()));
+		// NB: PARAMS_VALIDATOR.get(key).apply(function) 
+		//     applica la funzione di validazione in base ad una regex o ad un altro tipo di validazione
+		//     ed in caso di errore la funzione restituisce la porzione della stringa che genera l'errore di validazione
+    	ParamValidationResult ret = PARAMS_VALIDATOR.get(key).apply(unescapeHtml(value.toString()));
+    	return value != null && ret != null && StringUtils.isNotEmpty(ret.getInvalidPart());
     }
 
     /**
-     * unescape copiato da un'altra classe.
-     *
+     * unescape del payload contenuto in un parametro
      * @param value valore su cui effettuare l'escape
      */
     public static String unescapeHtml(String value) {

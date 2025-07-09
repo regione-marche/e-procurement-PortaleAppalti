@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DatiIscrizioneAlbo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="42" uuid="79c37cbd-344f-46bc-b8ce-270936178766">
 	<property name="ireport.zoom" value="1.1269722013523664"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -23,7 +24,7 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="dsLR">
+	<subDataset name="dsLR" uuid="163bd809-4f7a-4f8f-9456-e19ccd24ede9">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -40,7 +41,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsDT">
+	<subDataset name="dsDT" uuid="42f9e25f-ae04-4b23-beaf-5761524eec2b">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -57,7 +58,7 @@
 			<fieldDescription><![CDATA[comuneNascita]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsAltreCariche">
+	<subDataset name="dsAltreCariche" uuid="f7991d7d-64f2-4f89-ae83-60b7d56734a4">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -77,7 +78,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCollaboratori">
+	<subDataset name="dsCollaboratori" uuid="6b37e63b-332d-4755-9870-768f1fe4da54">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='']]]>
 		</queryString>
@@ -97,7 +98,7 @@
 			<fieldDescription><![CDATA[qualifica]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="dsCategorie">
+	<subDataset name="dsCategorie" uuid="2daea81d-8e80-4ffd-8678-e5ef1073f357">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria]]>
 		</queryString>
@@ -111,7 +112,7 @@
 			<fieldDescription><![CDATA[classificaMassima]]></fieldDescription>
 		</field>
 	</subDataset>
-	<subDataset name="firmatariRTI">
+	<subDataset name="firmatariRTI" uuid="d3267878-a018-484e-b54b-fab0065550df">
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneElencoOperatori/firmatario]]>
 		</queryString>
@@ -295,45 +296,46 @@
 	</field>
 	<detail>
 		<band height="237" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="313" y="0" width="170" height="63"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="313" y="0" width="170" height="63" uuid="3b95f201-8591-4573-8476-fe832ff22825"/>
 				<textElement textAlignment="Left" markup="none">
 					<font fontName="Arial" size="11" isBold="false" pdfFontName="Helvetica"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["All'Università degli Studi di Padova\n" +
+				<textFieldExpression><![CDATA["All'Università degli Studi di Padova\n" +
 "Ufficio acquisti\n" +
 "Piazza Antenore, 3\n" +
 "35123 Padova"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="284" y="62" width="199" height="21"/>
+				<reportElement positionType="Float" x="284" y="62" width="199" height="21" uuid="1ab45b8a-07c2-4d44-8655-9da2ca17850c"/>
 				<textElement>
 					<font fontName="Arial"/>
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="83" width="483" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="83" width="483" height="15" uuid="235cb6b4-3208-4dca-b586-dded07498967"/>
 				<textElement textAlignment="Left" markup="none">
 					<font fontName="Arial" size="11" isBold="false" pdfFontName="Helvetica"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Domanda di Abilitazione al Mercato Elettronico - Sezione Revisori Contabili"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Domanda di Abilitazione al Mercato Elettronico - Sezione Revisori Contabili"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="98" width="483" height="15"/>
+				<reportElement positionType="Float" x="0" y="98" width="483" height="15" uuid="56f20d19-71d5-4aa4-8bf6-bbc4945a2e8b"/>
 				<textElement>
 					<font fontName="Arial"/>
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="119" width="483" height="78" isRemoveLineWhenBlank="true">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="119" width="483" height="78" isRemoveLineWhenBlank="true" uuid="7fb8c69f-ad52-4429-8b60-18329b22efe4">
 					<printWhenExpression><![CDATA[$P{RTI}==false]]></printWhenExpression>
 				</reportElement>
-				<textElement textAlignment="Justified" verticalAlignment="Bottom" lineSpacing="Single" markup="html">
+				<textElement textAlignment="Justified" verticalAlignment="Bottom" markup="html">
 					<font fontName="Arial" size="11"/>
+					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
+				<textFieldExpression><![CDATA["Il/La sottoscritto/a "
 +
 ($P{LIBERO_PROFESSIONISTA}
     ? $F{ragioneSociale}
@@ -367,18 +369,18 @@ $F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} +
 ($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale} + ") ")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="197" width="483" height="40"/>
+				<reportElement positionType="Float" x="0" y="197" width="483" height="40" uuid="20aac2e2-7c63-4696-8932-bf4d83417129"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
 				<text><![CDATA[inoltra]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="116" width="483" height="81">
+				<reportElement positionType="Float" x="0" y="116" width="483" height="81" uuid="6c192baf-573d-4889-89de-41b84ef03d4b">
 					<printWhenExpression><![CDATA[$P{RTI}==true]]></printWhenExpression>
 				</reportElement>
 				<subreport>
-					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="3" width="483" height="75" isRemoveLineWhenBlank="true">
+					<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="3" width="483" height="75" isRemoveLineWhenBlank="true" uuid="c340f16c-d7b3-422a-974c-30f01e04b6e0">
 						<printWhenExpression><![CDATA[$P{RTI}==true]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="INDIRIZZO">
@@ -390,366 +392,386 @@ $F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} +
 						<subreportParameterExpression><![CDATA[$F{denominazioneRTI}]]></subreportParameterExpression>
 					</subreportParameter>
 					<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/firmatario")]]></dataSourceExpression>
-					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FirmatariDomanda.jasper"]]></subreportExpression>
 				</subreport>
 			</frame>
 		</band>
 		<band height="243" splitType="Prevent">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="75" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="75" width="16" height="15" uuid="599ae201-f9a9-4531-b565-f5ef5798ed9f"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="75" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="75" width="445" height="15" uuid="ad6c0e22-cd5d-4c53-a648-5327ac13c079"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{assunzioniObbligate}  == "1" ?
-"che l'Interessato è soggetto a quanto previsto dalla L. n. 68/1999 Norme per il diritto al lavoro dei disabili;"
+				<textFieldExpression><![CDATA[($F{assunzioniObbligate}  == "1" ?
+"che l'Impresa è soggetto a quanto previsto dalla L. n. 68/1999 Norme per il diritto al lavoro dei disabili;"
 :
-"che l'Interessato non è soggetto a quanto previsto dalla L. n. 68/1999 Norme per il diritto al lavoro dei disabili;")]]></textFieldExpression>
+"che l'Impresa non è soggetto a quanto previsto dalla L. n. 68/1999 Norme per il diritto al lavoro dei disabili;")]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="122" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="122" width="483" height="5" uuid="9eea30e2-d361-4166-8c75-3a7b90866f73"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="95" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="95" width="445" height="15" uuid="9d8ee110-d55f-4783-9d03-969c2902b74f"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["che sono stati regolarmente assolti tutti gli obblighi relativi al pagamento dei contributi previdenziali ed assistenziali a favore dei lavoratori secondo la vigente normativa;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["che sono stati regolarmente assolti tutti gli obblighi relativi al pagamento dei contributi previdenziali ed assistenziali a favore dei lavoratori secondo la vigente normativa;"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="164" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="164" width="445" height="15" uuid="cc8c1e7c-6f9d-4c65-94e3-566d307a3d03"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["che i dati personali del richiedente e i dati dell'Interessato contenuti nella Domanda di Abilitazione, dichiarati a Sistema e riportati nel Prospetto \"Dati riepilogativi dell'operatore economico\" sono esatti e veritieri;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["che i dati personali del richiedente e i dati dell'Impresa contenuti nella Domanda di Abilitazione, dichiarati a Sistema e riportati nel Prospetto \"Dati riepilogativi dell'operatore economico\" sono esatti e veritieri;"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="95" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="95" width="16" height="15" uuid="eaba9c43-b826-421b-b666-1b42ba880f7c"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="127" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="127" width="16" height="15" uuid="4a8fe986-c32b-40c8-9b2c-42fe4c480de0"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="127" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="127" width="445" height="15" uuid="b0449249-7885-4768-8c9a-38741b4c2d97"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["che l'Impresa rispetta gli obblighi di cui alla normativa vigente in materia di sicurezza;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["che l'Impresa rispetta gli obblighi di cui alla normativa vigente in materia di sicurezza;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="70" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="70" width="483" height="5" uuid="5501bb8f-d182-4dbe-a3f6-b869d4b05801"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="110" width="483" height="2"/>
+				<reportElement positionType="Float" x="0" y="110" width="483" height="2" uuid="b0cb9f1f-f004-430f-943c-770f9df22d98"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="55" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="55" width="445" height="15" uuid="9932a548-f649-4cc1-a680-a69ce0956d19"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["che nei confronti dell'Impresa non sussiste alcuna delle circostanze di esclusione di cui all'art. 80 del D.Lgs. n. 50/2016 e ssmmi;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["che nei confronti dell'Impresa non sussiste alcuna delle circostanze di esclusione di cui agli artt. 94 e 95 del D.Lgs 36/2023 e ssmmi;"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="164" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="164" width="16" height="15" uuid="e6ed62e1-2a6d-4aa5-b241-ea31d27db504"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="22" y="112" width="461" height="10" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="22" y="112" width="461" height="10" isRemoveLineWhenBlank="true" uuid="d70ff9b7-9b41-4c92-9be0-a1b853fed109">
 					<printWhenExpression><![CDATA[($F{numIscrizioneINAIL} == null || "".equals($F{numIscrizioneINAIL}.trim()))]]></printWhenExpression>
 				</reportElement>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="0" y="0" width="16" height="10"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="0" y="0" width="16" height="10" uuid="c5861364-c080-4f2b-ab1f-5ceed1abedf5"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="16" y="0" width="445" height="10"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="16" y="0" width="445" height="10" uuid="dbf56334-5cf0-445e-b234-e4a855957abb"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["che l'Interessato non è soggetto a iscrizione all'INAIL; "]]></textFieldExpression>
+					<textFieldExpression><![CDATA["che l'Interessato non è soggetto a iscrizione all'INAIL; "]]></textFieldExpression>
 				</textField>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="183" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="183" width="16" height="15" uuid="0be6a6b3-1f03-41e6-ae8e-c3ecd9efb5d7"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="142" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="142" width="483" height="5" uuid="c6ae8c54-ef19-4432-986c-315c68544e87"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="3" width="483" height="52"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="3" width="483" height="52" uuid="eae4d34d-b6f7-414d-b3e4-1b152e164572"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Domanda di Abilitazione al Mercato Elettronico - Sezione Revisori Contabili dell'Università degli Studi di Padova, e consapevole delle sanzioni penali previsti dall'art. 76 del D.P.R. 445/2000 e ss.mm., per le ipotesi di falsità in atti e dichiarazioni mendaci ivi indicate, dichiara quanto segue:"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Domanda di Abilitazione al Mercato Elettronico dell'Università degli Studi di Padova, e consapevole delle sanzioni penali previsti dall'art. 76 del D.P.R. 445/2000 e ss.mm., per le ipotesi di falsità in atti e dichiarazioni mendaci ivi indicate, dichiara quanto segue:"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="183" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="183" width="445" height="15" uuid="be1fb525-596e-4cfd-a4b1-fe8dcd172751"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di essere in possesso dei poteri necessari a richiedere l'abilitazione, rendere le dichiarazioni a ciò necessarie e, in generale, a partecipare al Mercato Elettronico, concludendo i relativi contratti con i Punti Ordinanti;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di essere in possesso dei poteri necessari a richiedere l'abilitazione, rendere le dichiarazioni a ciò necessarie e, in generale, a partecipare al Mercato Elettronico, concludendo i relativi contratti con i Punti Ordinanti;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="90" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="90" width="483" height="5" uuid="b1379649-ac7a-49ef-a872-43a98eb4adfa"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="55" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="55" width="16" height="15" uuid="49551f45-f76a-441e-8c9b-01cee9abedfd"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="179" width="483" height="4"/>
+				<reportElement positionType="Float" x="0" y="179" width="483" height="4" uuid="47b1178d-2bd3-4a74-ba81-05b97df4cb78"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="203" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="203" width="16" height="15" uuid="f914960e-5310-42bb-836c-86d14c05324b"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="198" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="198" width="483" height="5" uuid="4ce6a582-65bc-4fb1-9f93-350b3d27d92b"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="203" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="203" width="445" height="15" uuid="409ac974-4a2c-4e6d-b0f8-19afda960930"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di essere in possesso di capacità tecnico-professionale adeguata e delle necessarie risorse umane, mezzi e attrezzature, materiali per una regolare esecuzione della prestazione relativamente alla categoria/e merceologica/che di iscrizione;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di essere in possesso di capacità tecnico-professionale adeguata e delle necessarie risorse umane, mezzi e attrezzature, materiali per una regolare esecuzione della prestazione relativamente alla categoria/e merceologica/che di iscrizione;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="218" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="218" width="483" height="5" uuid="59de5c01-5202-4f2d-8701-0c6cea1be0c2"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="223" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="223" width="16" height="15" uuid="1ede38cd-ca31-466c-a76f-447ef5b25433"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="223" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="223" width="445" height="15" uuid="23ac8c66-9189-446b-bcd1-96481467d2d2"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di avere attentamente preso visione, e dunque di conoscere e di accettare le clausole, le condizioni, ed in generale tutto il contenuto della Manifestazione di interesse, del Disciplinare per l'Abilitazione al Mercato Elettronico, inclusi i relativi Allegati e di aver verificato il possesso di tutti i requisiti ivi richiesti ai fini dell'Abilitazione al Mercato Elettronico - Sezione Revisori Contabili;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di avere attentamente preso visione, e dunque di conoscere e di accettare le clausole, le condizioni, ed in generale tutto il contenuto della Manifestazione di interesse, del Disciplinare per l'Abilitazione al Mercato Elettronico, inclusi i relativi Allegati e di aver verificato il possesso di tutti i requisiti ivi richiesti ai fini dell'Abilitazione al Mercato Elettronico - Sezione Revisori Contabili;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="238" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="238" width="483" height="5" uuid="883005ca-61ef-4ef0-82eb-b4b52bd2cccd"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="145" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="145" width="16" height="15" uuid="2d6c8ecf-8dd7-456e-a9da-7ef7ee38e795"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="145" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="145" width="445" height="15" uuid="1eca6cde-4d37-4eb7-8c93-ddc9826c4b4e"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["che l’Impresa non si trova nella condizione prevista dall'art. 53, comma 16-ter, del D.Lgs. n. 165/2001;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["che l’Impresa non si trova nella condizione prevista dall'art. 53, comma 16-ter, del D.Lgs. n. 165/2001;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="160" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="160" width="483" height="5" uuid="a6fa421b-c760-4706-a145-828cfa76a216"/>
 			</frame>
 		</band>
 		<band height="224" splitType="Prevent">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="41" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="41" width="16" height="15" uuid="7f23f634-84e5-4603-ac8e-7b2b8cdfefd7"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="41" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="41" width="445" height="15" uuid="df7723fb-d24a-4ebb-8146-2f35c72d14c7"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di eleggere il proprio domicilio nell’Area comunicazioni del Portale e di essere a conoscenza e di accettare che ogni eventuale comunicazione inerente la procedura di abilitazione e la permanenza nel Mercato Elettronico e/o le richieste di chiarimento e/o di integrazione della documentazione presentata, nonché qualsiasi comunicazione si rendesse necessaria per la partecipazione dell'Interessato alle procedure telematiche di acquisto si intende validamente effettuata all'indirizzo di posta elettronica e/o al numero di fax riportati nella propria anagrafica e alle apposite aree telematiche ad accesso riservato nel Sistema;"]]></textFieldExpression>
-			</textField>
-			<frame>
-				<reportElement positionType="Float" x="0" y="57" width="483" height="5"/>
-			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="65" width="16" height="15"/>
-				<textElement textAlignment="Justified" markup="html">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="65" width="445" height="15"/>
-				<textElement textAlignment="Justified" markup="html">
-					<font fontName="Arial" size="11"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di accedere, verificare e tenere sotto controllo assiduamente, e comunque tutte le volte che si rivelerà necessario in funzione della propria partecipazione al Mercato Elettronico - Sezione Revisori Contabili, le aree ad esso riservate nel Sistema e la casella di posta elettronica riportata nel Sistema stesso;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di eleggere il proprio domicilio nell’Area comunicazioni del Portale e di essere a conoscenza e di accettare che ogni eventuale comunicazione inerente la procedura di abilitazione e la permanenza nel Mercato Elettronico e/o le richieste di chiarimento e/o di integrazione della documentazione presentata, nonché qualsiasi comunicazione si rendesse necessaria per la partecipazione dell'Interessato alle procedure telematiche di acquisto si intende validamente effettuata all'indirizzo di posta elettronica e/o al numero di fax riportati nella propria anagrafica e alle apposite aree telematiche ad accesso riservato nel Sistema;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="80" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="19" width="483" height="5" uuid="71177ba5-4c22-410f-81f0-e68ad1fc089b">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="22" y="41" width="16" height="15" uuid="ddab98a9-3421-4c03-a7ab-8eabb3b7d44c"/>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="38" y="41" width="445" height="15" uuid="b0f7a818-79bd-4c32-a4b9-12fa8865e371"/>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA["di impegnarsi ad offrire Prodotti conformi alle caratteristiche e specifiche tecniche indicate nel Catalogo e nel Capitolato Tecnico nonché a quanto stabilito nelle eventuali Richieste di Offerta (RDO); "]]></textFieldExpression>
+				</textField>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="85" width="16" height="15"/>
+			<frame>
+				<reportElement positionType="Float" x="0" y="72" width="483" height="5" uuid="f55cccbc-f4a5-474b-993a-05d203390f82"/>
+			</frame>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="80" width="16" height="15" uuid="e89ab9dd-9443-466e-a92a-be2cae2164dc"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="85" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="80" width="445" height="15" uuid="a9649610-808e-467a-8daf-d1db487ffbff"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di esonerare l'Università degli Studi di Padova da ogni responsabilità e/o richiesta di risarcimento danni derivante dall'utilizzo del Sistema o degli altri strumenti telematici ed elettronici utilizzati nella procedura, nonché da malfunzionamenti o difetti ai servizi di connettività necessari a raggiungere attraverso la rete pubblica di telecomunicazioni il Sistema;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di accedere, verificare e tenere sotto controllo assiduamente, e comunque tutte le volte che si rivelerà necessario in funzione della propria partecipazione al Mercato Elettronico - Sezione Revisori Contabili, le aree ad esso riservate nel Sistema e la casella di posta elettronica riportata nel Sistema stesso;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="100" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="95" width="483" height="5" uuid="ee8f1d18-e317-4838-bdef-d7e886516016"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="105" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="100" width="16" height="15" uuid="e27a9597-9949-4e49-83cc-15dade821808"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="105" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="100" width="445" height="15" uuid="d8e245ab-b6cf-4866-99ce-c384a53a7ab7"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di impegnarsi a rispettare le norme in materia di tutela della concorrenza e i relativi divieti di intese e/o pratiche restrittive della concorrenza e del mercato, ivi inclusi gli articoli 81 e ss. del Trattato CE e gli articoli 2 e ss. della Legge n. 287/1990 e s.m.i.;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di esonerare l'Università degli Studi di Padova da ogni responsabilità e/o richiesta di risarcimento danni derivante dall'utilizzo del Sistema o degli altri strumenti telematici ed elettronici utilizzati nella procedura, nonché da malfunzionamenti o difetti ai servizi di connettività necessari a raggiungere attraverso la rete pubblica di telecomunicazioni il Sistema;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="120" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="115" width="483" height="5" uuid="b1543652-6ede-4ace-9263-bbd712e03d45"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="144" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="120" width="16" height="15" uuid="856ce487-719e-4ef7-aefe-a0f83a1829cc"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="144" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="120" width="445" height="15" uuid="d6e90106-4592-41fb-9e67-787dab17b9af"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di essere a conoscenza che i dati personali sono trattati in conformità all’informativa ai sensi degli artt. 13 e 14 del Regolamento UE pubblicata nella sezione Privacy del sito istituzionale e consultabile all’indirizzo https://www.unipd.it/informativa-contratti-appalti;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di impegnarsi a rispettare le norme in materia di tutela della concorrenza e i relativi divieti di intese e/o pratiche restrittive della concorrenza e del mercato, ivi inclusi gli articoli 81 e ss. del Trattato CE e gli articoli 2 e ss. della Legge n. 287/1990 e s.m.i.;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="159" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="135" width="483" height="5" uuid="351769bc-9acd-4f88-a7e2-69d16e66a86b"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="164" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="159" width="16" height="15" uuid="b8557939-de21-45fd-8294-78c4cf13eff1"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="164" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="159" width="445" height="15" uuid="ad304633-2b93-4798-ab90-3468c834bb20"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di autorizzare l'Università a rendere pienamente disponibili, anche in formato elettronico, i dati inseriti dall'Impresa alle Amministrazioni legittimate ad utilizzare il Mercato Elettronico dell'Università stessa, nonché ai soggetti che effettuano delle attività comunque connesse al Mercato Elettronico."]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di essere a conoscenza che i dati personali sono trattati in conformità all’informativa ai sensi degli artt. 13 e 14 del Regolamento UE pubblicata nella sezione Privacy del sito istituzionale e consultabile all’indirizzo https://www.unipd.it/informativa-contratti-appalti;"]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="174" width="483" height="5" uuid="0b89f01e-d1de-442b-9745-f0875353a82a"/>
+			</frame>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="179" width="16" height="15" uuid="c5bcf79d-fcf7-4416-b04f-3b03c7e331b6"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="179" width="445" height="15" uuid="a3dc6cf7-28e8-41af-a33c-0ca1d85c5a9f"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="Arial" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["di autorizzare l'Università a rendere pienamente disponibili, anche in formato elettronico, i dati inseriti dall'Impresa alle Amministrazioni legittimate ad utilizzare il Mercato Elettronico dell'Università stessa, nonché ai soggetti che effettuano delle attività comunque connesse al Mercato Elettronico."]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="179" width="483" height="42"/>
+				<reportElement positionType="Float" x="0" y="179" width="483" height="42" uuid="be17ae15-cfde-4df4-9fb9-58ad36794026"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="15" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="15" width="483" height="5" uuid="d1a61407-15b6-421d-bd84-8a8597ae025b"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="0" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="0" width="445" height="15" uuid="57bce824-10eb-4215-877a-659b2e09a047"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di non aver subito, da parte di una Pubblica Amministrazione, risoluzione di contratto per inadempienza negli ultimi cinque anni, compreso il presente;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di non aver subito, da parte di una Pubblica Amministrazione, risoluzione di contratto per inadempienza negli ultimi cinque anni, compreso il presente;"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="0" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="0" width="16" height="15" uuid="ca52a1cf-6b93-410e-946d-1628e0f565ae"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="20" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="20" width="445" height="15" uuid="6f8c4c12-cf62-4f2a-b744-22085f148c54"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["l’assenza di conflitto di interesse con l’Ateneo nello svolgimento del servizio di certificazione;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["l’assenza di conflitto di interesse con l’Ateneo nello svolgimento del servizio di certificazione;"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="35" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="35" width="483" height="5" uuid="1986a2c9-c052-4081-b734-7b4a00ee1ce2"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="20" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="20" width="16" height="15" uuid="eacf38b7-4387-4dbb-8be7-71935064413d"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="140" width="483" height="4"/>
+				<reportElement positionType="Float" x="0" y="155" width="483" height="4" uuid="a2189b18-dce4-48c5-9658-bbf87c8843b4"/>
 			</frame>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="22" y="125" width="16" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="22" y="140" width="16" height="15" uuid="17d7ff65-d706-4ff5-8f95-8154e338b015"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="38" y="125" width="445" height="15"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="38" y="140" width="445" height="15" uuid="c29ae247-c8d2-414a-b8e8-aaedbaafab19"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["di essere a conoscenza che i dati personali, ai sensi e per gli effetti del Regolamento UE 2016/679 e dal D.L.vo n. 196/2003, saranno trattati anche con strumenti informatici, nell’ambito del procedimento per il quale la presente dichiarazione viene resa, come dettagliato all’art. 14 del Disciplinare per l’Abilitazione al Mercato elettronico dell’Università degli Studi di Padova;"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["di essere a conoscenza che i dati personali, ai sensi e per gli effetti del Regolamento UE 2016/679 e dal D.L.vo n. 196/2003, saranno trattati anche con strumenti informatici, nell’ambito del procedimento per il quale la presente dichiarazione viene resa, come dettagliato all’art. 14 del Disciplinare per l’Abilitazione al Mercato elettronico dell’Università degli Studi di Padova;"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="53">
 			<staticText>
-				<reportElement positionType="Float" x="22" y="0" width="461" height="28"/>
+				<reportElement positionType="Float" x="22" y="0" width="461" height="28" uuid="b445be65-6dac-4df3-8fda-5004b8f31527"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[e pertanto CHIEDE l'iscrizione nelle seguenti macro categorie come dettagliate a sistema nella scheda "riepilogo categorie"]]></text>
 			</staticText>
 			<subreport runToBottom="false">
-				<reportElement x="22" y="28" width="461" height="4"/>
+				<reportElement x="22" y="28" width="461" height="4" uuid="d936cc21-80b0-44e8-a0ea-0ffddf8a5bba"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -787,26 +809,26 @@ $F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} +
 					<subreportParameterExpression><![CDATA[$P{VISUALIZZA_SA}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/categorieIscrizione/categoria")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizioneMercato.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizioneMercato.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="147">
 			<textField>
-				<reportElement positionType="Float" x="0" y="23" width="483" height="17"/>
+				<reportElement positionType="Float" x="0" y="23" width="483" height="17" uuid="a158c187-9f39-4339-b8eb-2329b88277c2"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Data " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Data " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="71" width="483" height="20"/>
+				<reportElement positionType="Float" x="0" y="71" width="483" height="20" uuid="4c5757f8-7458-4a6a-b402-bc174c077e56"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="91" width="483" height="20"/>
+				<reportElement positionType="Float" x="0" y="91" width="483" height="20" uuid="7b94f213-dbf6-4a76-b01c-ac69eac105c9"/>
 				<box>
 					<pen lineWidth="0.5" lineStyle="Dashed"/>
 					<topPen lineWidth="0.0"/>
@@ -819,30 +841,30 @@ $F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} +
 				</textElement>
 				<text><![CDATA[----------------------------------------------------------]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="111" width="483" height="35"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="111" width="483" height="35" uuid="33fc9594-c07c-48fb-9662-1e266ada7d17"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["ATTENZIONE: QUESTO DOCUMENTO NON HA VALORE SE PRIVO DELLA SOTTOSCRIZIONE A MEZZO FIRMA DIGITALE"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["ATTENZIONE: QUESTO DOCUMENTO NON HA VALORE SE PRIVO DELLA SOTTOSCRIZIONE A MEZZO FIRMA DIGITALE"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<pageFooter>
 		<band height="36">
 			<textField>
-				<reportElement x="390" y="16" width="81" height="20"/>
+				<reportElement x="390" y="16" width="81" height="20" uuid="82916987-43e3-4bf2-8a5e-72e2809fd07b"/>
 				<textElement textAlignment="Right">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Pagina " + $V{PAGE_NUMBER} + " di "]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Pagina " + $V{PAGE_NUMBER} + " di "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="471" y="16" width="12" height="20"/>
+				<reportElement x="471" y="16" width="12" height="20" uuid="3b2f07bb-cd0f-4e13-9fba-912d4c28a399"/>
 				<textElement textAlignment="Right">
 					<font fontName="Arial" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

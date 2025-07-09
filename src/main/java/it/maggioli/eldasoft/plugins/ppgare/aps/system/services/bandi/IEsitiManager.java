@@ -106,6 +106,20 @@ public interface IEsitiManager {
 	    throws ApsException;
 
     /**
+     * Restituisce il dettaglio di un esito a partire dal cig.
+     * 
+     * @param cig
+     *            cig associato alla gara
+     * 
+     * @return dettaglio dell'esito, costituito dai suoi dati generali, quelli
+     *         della stazione appaltante, ed i documenti
+     * @throws ApsException
+     *             In caso di errori in accesso al servizio web.
+     */
+	public DettaglioEsitoType getDettaglioEsitoByCig(String cig)
+	    throws ApsException;
+
+    /**
      * Restituisce i lotti di un esito a partire dalla sua chiave
      * 
      * @param codiceGara

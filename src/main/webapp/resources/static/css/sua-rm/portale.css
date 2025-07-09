@@ -1,0 +1,236 @@
+/* =LAYOUT */
+
+html,
+button,
+input,
+select,
+textarea {
+	font-family: Tahoma,Arial,Helvetica,sans-serif;
+}
+
+body {
+	background-color: #EDEDED;
+	border: 2px solid #FFF;
+	font-size: .8em;
+	margin: 20px auto;
+	width: 1000px;
+}
+
+#ext-container {
+	position: relative;
+}
+
+/* =FOOTER */
+
+#footer {
+	background: #A1C5B7;
+	color: #FFF;
+	margin: 0;
+	padding: 5px;
+}
+
+#footer a {
+	color: #FFF;
+	text-decoration: underline;
+}
+
+/* =MAIN-CONTENT */
+
+.container {
+	background: #FFF;
+	padding-top: 5px;
+}
+
+.content {
+	padding-top: 40px;
+}
+
+/* =2-COLUMN-LAYOUT-LEFT-MENU */
+
+.two-columns-left-menu .menu {
+	left: 1%;
+	margin-left: 10px;
+}
+
+.two-columns-left-menu .content {
+	border-left: 2px solid #A0C4B6;
+	left: 100.8%;
+}
+
+/* =2-COLUMN-LAYOUT-RIGHT-MENU */
+
+.two-columns-right-menu .content {
+	border-right: 2px solid #A0C4B6;
+}
+
+.two-columns-right-menu .menu {
+	left: 21%;
+	margin-right: 10px;
+}
+
+/* =3-COLUMNS-LAYOUT */
+
+.three-columns .left-menu {
+	left: 21.6%;
+}
+
+.three-columns .content {
+	border-left: 2px solid #A0C4B6;
+	border-right: 2px solid #A0C4B6
+}
+
+/* =ELEMENTS */
+
+h1, h2 {
+	color: #A0C4B6;
+	font-size: 1.1em;
+	padding-left: 20px;
+	padding-top: 10px;
+	text-transform: uppercase;
+}
+
+/* =LINKS */
+
+a {
+	color: #333;
+}
+
+/* =INPUTS-AND-BUTTONS */
+
+.button {
+	background-color: #A0C4B6;
+	border: 1px solid #FFF;
+	border-radius: 6px;
+	color: #FFF;
+}
+
+.text {
+	border: 1px solid #333;
+}
+
+/* =TABLES */
+
+table {
+	border: 0;
+	border-collapse: separate;
+	border-spacing: 2px;
+	color: #404040;
+}
+
+th {
+	background-color: #ADD8D2;
+	border: 0;
+}
+
+td {
+	background-color: #E5ECFA;
+	border: 0;
+}
+
+/* =HEADER-MENU */	
+
+#menu {
+	background-color: #A1C5B7;
+	font-family: "Segoe UI Symbol";
+	position: static;
+}
+
+#menu, 
+#menu a {
+	color: #FFF;
+}
+
+#menu a {
+	text-decoration: underline;
+}
+
+.sub-menu {
+	margin: 0;
+	padding: 5px 0 0 0;
+}
+
+#date-sub-menu {	
+	float: left;
+	padding-left: .5em;
+	position: static;
+}
+
+#style-sub-menu {
+	margin: 0;
+	position: static;
+}
+
+#style-sub-menu ul {
+	margin-bottom: 3px;
+	padding-right: .5em;
+}
+
+#search-sub-menu {
+	background-color: transparent;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	right: 5px;
+	top: 72px;
+	width: auto;
+	z-index: 8;
+}
+
+/* =LATERAL-MENU */
+
+.menu-box {
+	font-family: Verdana,arial,sans-serif;
+}
+
+.menu-box span {
+	display: block;
+	font-weight: normal;
+	padding: .2em 0 .2em 15px;
+}
+
+.menu-box h2 {
+	background-color: #A0C4B6;
+	color: #FFF;
+	font-family: Verdana;
+	padding: 0 5px 0 10px;
+	text-transform: uppercase;
+}
+
+.navigation-box ul {
+	padding-top: 10px;
+}
+
+.navigation-box li {
+	color: #303030;
+	background: url("../../img/sua-rm/menu-arrow.jpg") no-repeat scroll left center transparent;
+}
+
+.navigation-box li:last-child {
+	border: 0;
+}
+
+/* =BREADCRUMBS */
+
+#breadcrumbs-wrapper {
+	border-bottom: 2px solid #c1d2d2;
+	border-top: 2px solid #c1d2d2;
+	font-family: Verdana;
+	font-size: .85em;
+	left: 24%;
+	margin-top: 5px;
+	padding: 8px 0 0 0;
+	position: absolute;
+	text-transform: uppercase;
+	width: 75%;
+	z-index: 2;
+}
+
+#breadcrumbs-wrapper.two-columns-right-menu {
+	left: 2%;
+}
+
+#breadcrumbs-wrapper.three-columns {
+	left: 23%;
+	width: 55%;
+}

@@ -9,6 +9,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDati
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -16,12 +18,18 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * ... 
+ */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageScaricaDomandaRinnovoAction extends OpenPageScaricaDomandaIscrizioneAction {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 4986431262361969763L;
-
 	
 	/**
 	 * ... 

@@ -22,8 +22,9 @@ public class FieldValidatorBuilder {
 
         if (field.getType().isArray())
             builder.instance = new ValidateArray(classInstance, field);
-        else if (field.getType().isAssignableFrom(Collection.class))
-            builder.instance = new ValidateList(classInstance, field);
+//		  // NON DOVREBBERO MAI ESSERCI INPUT DI TIPO COLLECTION (O LISTE)
+//        else if (field.getType().isAssignableFrom(Collection.class))
+//            builder.instance = new ValidateList(classInstance, field);
         else
             builder.instance = new ValidateField(classInstance, field);
 
@@ -42,6 +43,11 @@ public class FieldValidatorBuilder {
         return this;
     }
 
+    /**
+     *
+     * @param parentName
+     * @return
+     */
     public FieldValidatorBuilder setParentName(String parentName) {
         instance.setParentName(parentName);
         return this;
@@ -56,10 +62,31 @@ public class FieldValidatorBuilder {
     }
 
     /**
+     * Bundle del messaggio da mostrare a video in caso sia stato trovato un valore non consono.
+     *
+     * @param error
+     * @return
+     */
+    public FieldValidatorBuilder setErrorMessage(String error) {
+        instance.setErrorMessage(error);
+        return this;
+    }
+    /**
      * Se passato a true, in caso il field non sia valido, ripulisco il campo e lo stack.
      */
     public FieldValidatorBuilder cleanFieldIfNotValid(boolean hasToCleanField) {
         instance.setHasToCleanField(hasToCleanField);
+        return this;
+    }
+
+    /**
+     * Label del nome del field da mandare in output in caso di errore di validazione.
+     *
+     * @param errorFieldLabel
+     * @return
+     */
+    public FieldValidatorBuilder setErrorFieldLabel(String errorFieldLabel) {
+        instance.setErrorFieldLabel(errorFieldLabel);
         return this;
     }
 

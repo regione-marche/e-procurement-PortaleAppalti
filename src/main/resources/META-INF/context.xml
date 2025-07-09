@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Context path="/${nomeWebapp}" docBase="./${nomeWebapp}" debug="1" reloadable="true" useHttpOnly="true">
-	
+<Context reloadable="true" useHttpOnly="true">
+
 	<Environment name="logName" value="entando" type="java.lang.String" override="false" />
 	
 	<Environment name="configVersion" value="production" type="java.lang.String" override="false" />
@@ -25,5 +25,7 @@
 		maxTotal="8" maxIdle="4" 
 		username="${pg_username_serv}" password="${pg_password_serv}" 
 		url="jdbc:postgresql://${pg_host}:${pg_port}/${nomeWebapp}Serv" />
+	
+	<Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
 	
  </Context>

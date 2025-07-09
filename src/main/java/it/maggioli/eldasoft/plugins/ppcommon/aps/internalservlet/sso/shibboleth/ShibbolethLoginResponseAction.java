@@ -8,7 +8,9 @@ import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.ActionContext;
+
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.HeaderParamsSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -26,6 +28,8 @@ public class ShibbolethLoginResponseAction extends BaseAction implements Servlet
 	 * UID
 	 */
 	private static final long serialVersionUID = 976187490508141028L;
+	
+	private static final String SESSION_OBJECT_SHIBBOLETH_HEDEAD_PARMAS = "shibbolethHeaderParams";
 	
 	private IAppParamManager appParamManager;
 	private IURLManager urlManager;
@@ -69,32 +73,93 @@ public class ShibbolethLoginResponseAction extends BaseAction implements Servlet
 		this.token = token;
 	}
 
+	
 	/**
-	 * ... 
-	 */
-	public static AccountSSO validateLogin(
-			IAppParamManager appParamManager) 
-	{
-		AccountSSO accountShibboleth = null;
-		
+	 * recupera dall'header della risposta di Shibboleth i parametri del login 
+	 */	
+	private static HeaderParamsSSO getNormalizedShibbolethAccount(IAppParamManager appParamManager) {
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
+		
 		String attributoNome = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.nome");
 		String attributoCognome = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.cognome");
 		String attributoAzienda = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.azienda");
 		String attributoLoginCodiceFiscale = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.login");
 		String attributoPartitaIVA = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.partitaIVA");
 		String attributoEmail = (String) appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.email");
+
+		// ATTENZIONE! 
+		// Shibboleth potrebbe restituire al posto di NULL delle stringhe "(null)" o "null" che vanno normalizzate
+		String nome = ShibbolethLoginResponseAction.getHeaderValue(action, attributoNome);
+		String cognome = ShibbolethLoginResponseAction.getHeaderValue(action, attributoCognome);
+		String azienda = ShibbolethLoginResponseAction.getHeaderValue(action, attributoAzienda);
+		String codiceFiscale = ShibbolethLoginResponseAction.getHeaderValue(action, attributoLoginCodiceFiscale);
+		String partitaIVA = ShibbolethLoginResponseAction.getHeaderValue(action, attributoPartitaIVA);
+		String email = ShibbolethLoginResponseAction.getHeaderValue(action, attributoEmail);
+
+		// ATTENZIONE! 
+		// SPID di Poste Italiane, per persone fisiche, passa "-" nei campi shib-companyName e shib-ivaCode per persone fisiche
+		// per essere un nome azienda valido deve avere almeno 3 caratteri (scarto quindi "-" di Poste Italiane)
+		azienda = (StringUtils.isNotEmpty(azienda) && azienda.length() <= 2 ? "" : azienda);
 		
-		String nome    = ShibbolethLoginResponseAction.getHeaderValue(action,attributoNome);
-		String cognome = ShibbolethLoginResponseAction.getHeaderValue(action,attributoCognome);
-		String azienda = ShibbolethLoginResponseAction.getHeaderValue(action,attributoAzienda);
-		String codiceFiscale = ShibbolethLoginResponseAction.getHeaderValue(action,attributoLoginCodiceFiscale);
-		String partitaIVA = ShibbolethLoginResponseAction.getHeaderValue(action,attributoPartitaIVA);
-		String email   = ShibbolethLoginResponseAction.getHeaderValue(action,attributoEmail);
+		// completa le info di login restituite dal sistema di autenticazione remoto
+		HeaderParamsSSO header = HeaderParamsSSO.getFromSession();
+		header = new HeaderParamsSSO(
+				nome, 
+				cognome, 
+				azienda, 
+				codiceFiscale, 
+				partitaIVA, 
+				email, 
+				(header != null ? header.getCallback() : null)
+		);
+		header.putToSession();
+		
+		return header;
+	}
+	
+	/**
+	 * recupera un parametro di configurazione dall'header della request d risposta di shibbolet 
+	 */
+	private static String getHeaderValue(BaseAction action, String attributo) {
+		String value = null;
+		if(StringUtils.isNotEmpty(attributo)) {
+			value = action.getRequest().getHeader(attributo);
+			
+			// in caso di valori vuoti/nulli Shibboleth potrebbe rispondere con stringhe "(null)", "null" al posto di null 
+			// quindi valore va verificato e normalizzato
+			if( "null".equalsIgnoreCase(value) || "(null)".equalsIgnoreCase(value) ) {
+				LOG.warn("ShibbolethLoginResponseAction.getHeaderValue({}) = '{}' normalizzato come null", attributo, value);
+				value = null;
+			}
+			
+			value = StringUtils.stripToNull(value);
+		} else {
+			// traccia warning o errore ???
+			// "parametro " + attributo + " vuoto o nullo" ???
+			//LOG.warn("ShibbolethLoginResponseAction.getHeaderValue('{}') paremeter is empty", attributo);
+		}
+		return value;
+	}
+
+	/**
+	 * ... 
+	 */
+	public static AccountSSO getSSOLogin(IAppParamManager appParamManager) {
+		AccountSSO accountShibboleth = null;
+		
+		HeaderParamsSSO header = HeaderParamsSSO.getFromSession();
+		String nome = header.getNome();
+		String cognome = header.getCognome();
+		String azienda = header.getAzienda();
+		String codiceFiscale = header.getCodiceFiscale();
+		String partitaIVA = header.getPartitaIVA();
+		String email = header.getEmail();
+
+		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
 		
 		// calcolo di alcune variabili in seguito all'autenticazione SPID
 		// integrata in Shibboleth e valida anche per soggetti giuridici
-		// ATTENZIONE! SPID di Poste Italiane passa "-" nei campi shib-companyName e shib-ivaCode per persone fisiche
+		// ATTENZIONE! SPID di Poste Italiane, per persone fisiche, passa "-" nei campi shib-companyName e shib-ivaCode per persone fisiche
 		//
 		//per essere un nome azienda valido deve avere almeno 3 caratteri (scarto quindi "-" di Poste Italiane)
 		boolean isPersonaFisica = azienda != null && azienda.length() > 2 ? false : true;
@@ -141,23 +206,18 @@ public class ShibbolethLoginResponseAction extends BaseAction implements Servlet
 	public String login() {
 		String target = SUCCESS;
 		
+		HeaderParamsSSO header = getNormalizedShibbolethAccount(appParamManager);
+		String nome = header.getNome();
+		String cognome = header.getCognome();
+		String azienda = header.getAzienda();
+		String codiceFiscale = header.getCodiceFiscale();
+		String partitaIVA = header.getPartitaIVA();
+		String email = header.getEmail();
+
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
-		String attributoNome = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.nome");
-		String attributoCognome = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.cognome");
-		String attributoAzienda = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.azienda");
-		String attributoLoginCodiceFiscale = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.login");
-		String attributoPartitaIVA = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.partitaIVA");
-		String attributoEmail = (String) this.appParamManager.getConfigurationValue("auth.sso.shibboleth.mapping.email");
-		
-		String nome    = ShibbolethLoginResponseAction.getHeaderValue(action,attributoNome);
-		String cognome = ShibbolethLoginResponseAction.getHeaderValue(action,attributoCognome);
-		String azienda = ShibbolethLoginResponseAction.getHeaderValue(action,attributoAzienda);
-		String codiceFiscale = ShibbolethLoginResponseAction.getHeaderValue(action,attributoLoginCodiceFiscale);
-		String partitaIVA = ShibbolethLoginResponseAction.getHeaderValue(action,attributoPartitaIVA);
-		String email   = ShibbolethLoginResponseAction.getHeaderValue(action,attributoEmail);
-		
-		AccountSSO accountShibboleth = ShibbolethLoginResponseAction.validateLogin(this.appParamManager);
-		
+
+		AccountSSO accountShibboleth = ShibbolethLoginResponseAction.getSSOLogin(this.appParamManager);
+
 		// se e' presente il parametro "token" aggiungilo agli attributi della request per la successiva action...
 		if(StringUtils.isNotEmpty(this.token)) {
 			action.getRequest().setAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO_TOKEN, this.token);
@@ -188,9 +248,10 @@ public class ShibbolethLoginResponseAction extends BaseAction implements Servlet
 					login, 
 					DateFormatUtils.format(new Date(), "dd/MM/yyyy HH:mm:ss"));
 		} else {
-			this.addActionError(this.getText(
-					"Errors.sso.insufficientData",
-					new String[] { "Shibboleth", nome, cognome, azienda, codiceFiscale, partitaIVA, email }));
+			// NB: il messaggio di errore viene inserito da getSSOLogin() !!!
+			//this.addActionError(this.getText(
+			//		"Errors.sso.insufficientData",
+			//		new String[] { "Shibboleth", nome, cognome, azienda, codiceFiscale, partitaIVA, email }));
 			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
 			target = INPUT;
 		}
@@ -216,20 +277,6 @@ public class ShibbolethLoginResponseAction extends BaseAction implements Servlet
 	
 		url.addParam(RequestContext.PAR_REDIRECT_FLAG, "1");
 		return url.getURL();
-	}
-	
-	/**
-	 *  
-	 */
-	private static String getHeaderValue(BaseAction action, String attributo) {
-		String value = null;
-		if(StringUtils.isNotEmpty(attributo)) {
-			value = StringUtils.stripToNull(action.getRequest().getHeader(attributo));
-		} else {
-			// traccia warning o errore ???
-			// "parametro " + attributo + " vuoto o nullo" ???
-		}
-		return value;
 	}
 	
 }

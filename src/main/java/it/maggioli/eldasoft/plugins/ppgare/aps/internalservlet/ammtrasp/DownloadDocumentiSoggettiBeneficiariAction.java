@@ -1,5 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.apsadmin.system.BaseAction;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.FileType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
@@ -10,6 +13,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ZipUtilit
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.ILeggeTrasparenzaManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,13 +22,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.SessionAware;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-import com.agiletec.apsadmin.system.BaseAction;
 
 /**
  * Action per la gestione del download di documenti allegati all'esito nel

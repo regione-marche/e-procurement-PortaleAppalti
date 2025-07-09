@@ -55,7 +55,6 @@ public class DgueAction extends BaseDgueAction {
 	protected String json;
 	protected InputStream inputStream;
 
-	protected IBandiManager bandiManager;
 	protected IComunicazioniManager comunicazioniManager;
 	protected WSOperazioniGeneraliWrapper opGenerali;
 
@@ -96,8 +95,8 @@ public class DgueAction extends BaseDgueAction {
 			}
 			
 			AbilitazioniGaraType agt = bandiManager.getAbilitazioniGara(username, codice);
-			log.info("agt.isRichInvioOfferta(): {}", agt.isRichInvioOfferta());
-			log.info("agt.isRichPartecipazione(): {}", agt.isRichPartecipazione());
+			log.debug("agt.isRichInvioOfferta(): {}", agt.isRichInvioOfferta());
+			log.debug("agt.isRichPartecipazione(): {}", agt.isRichPartecipazione());
 			if (agt == null || (!agt.isRichInvioOfferta() && !agt.isRichPartecipazione())) {
 				log.warn("Utente con Username '{}' ha cercato di accedere ai dati di una gara, con codice {}, cui non ha abilitazione.", username, codice);
 				throw new Exception("Accesso ai dati di una gara senza abilitazione per DGUE .");
@@ -171,7 +170,7 @@ public class DgueAction extends BaseDgueAction {
 					}
 				};
 			}
-			log.info("DgueAction - Time execution: {} ms",(System.currentTimeMillis() - start));
+			log.debug("DgueAction - Time execution: {} ms",(System.currentTimeMillis() - start));
 		}
 
 		return SUCCESS;
@@ -279,7 +278,8 @@ public class DgueAction extends BaseDgueAction {
 
 		if (mainData.getNazioneSedeLegale() != null)
 			anagraficaOE.setNazione(opGenerali.getProxyWSOPGenerali().getNazioniCodificateDGUE(mainData.getNazioneSedeLegale()));
-		anagraficaOE.setPartitaIva(mainData.getPartitaIVA());
+		if (StringUtils.equalsIgnoreCase(mainData.getNazioneSedeLegale(), "ITALIA"))
+			anagraficaOE.setPartitaIva(mainData.getPartitaIVA());
 		if (StringUtils.equalsIgnoreCase(mainData.getNazioneSedeLegale(), "ITALIA"))
 			anagraficaOE.setCodiceFiscale(mainData.getCodiceFiscale());
 		anagraficaOE.setRagioneSociale(mainData.getRagioneSociale());
@@ -329,16 +329,15 @@ public class DgueAction extends BaseDgueAction {
 	protected void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
+	
 	public InputStream getInputStream() {
 		return this.inputStream;
 	}
+	
 	public String getJson() {
 		return json;
 	}
 
-	public void setBandiManager(IBandiManager bandiManager) {
-		this.bandiManager = bandiManager;
-	}
 	public void setComunicazioniManager(IComunicazioniManager comunicazioniManager) {
 		this.comunicazioniManager = comunicazioniManager;
 	}

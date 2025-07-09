@@ -12,14 +12,21 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Metodi per validare i vari parametri.
+ *
+ * I metodi devono ritornare la porzione di codice errata in caso di Pattern
+ * o l'intera stringa in input in caso di FullMatch
  */
 public final class ParamValidator {
 
+	// ********************************************************************************    
     //START - Pattern
+	// ********************************************************************************
     private static final Pattern ONLY_DIGIT         = Pattern.compile("\\d+");    
     private static final Pattern ALPHA_AND_DIGIT    = Pattern.compile("[A-Za-z\\d]+");
     private static final Pattern CIVIC_NUMBER       = Pattern.compile("[\\da-zA-Z\\/\\-]+");
@@ -28,11 +35,14 @@ public final class ParamValidator {
 //    private static final Pattern CODICE_BICCC       = Pattern.compile("^[a-zA-Z0-9]+$");  //Regex a codice
     private static final Pattern INTEGER 			= Pattern.compile("^[-+]?\\d+$");
     private static final Pattern FIRMATARIO			= Pattern.compile("[a-zA-Z0-9_-]+");		//es: LEGALI_RAPPRESENTANTI-0
+    private static final Pattern COGNOME_NOME		= Pattern.compile("[\\p{IsLatin}'\\s]+");
+    private static final Pattern COMUNE				= Pattern.compile("[\\p{IsLatin}'\\s]+");
+    private static final Pattern INDIRIZZO			= Pattern.compile("[\\p{IsLatin}'\\s]+");
     
     /**
      * Regex presa direttamente dall'xsd di FatturaPA
      */
-    private static final Pattern CODICE_BICCC       = Pattern.compile("[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?");
+    private static final Pattern CODICE_BICCC       = Pattern.compile("^[a-zA-Z0-9]+$");
 
     private static final Pattern SPEC_SOG_QUALIFICA = Pattern.compile("\\d+-\\d+");
     private static final Pattern FILE_NAME          = Pattern.compile("^[^<>:;,?\"*|/']+$");
@@ -45,7 +55,7 @@ public final class ParamValidator {
 //    private static final Pattern FISCAL_CODE        = Pattern.compile("[A-Za-z0-9]{11,16}");
     //I caratteri: . e - ; Sono per gli identificativi esteri.
     private static final Pattern FISCAL_CODE        = Pattern.compile("[A-Za-z0-9.-]+");
-    private static final Pattern UUID               = Pattern.compile("^[A-Za-z0-9\\-]+$");
+    private static final Pattern UUID               = Pattern.compile("^[A-Za-z0-9\\-_.]+$");
     private static final Pattern SERIAL_NUMBER      = Pattern.compile("(?i)[a-z.\\d]+");
     private static final Pattern QUANTITA           = Pattern.compile("^\\d+(?:\\.\\d{0,5})?$");
     private static final Pattern ALPHA              = Pattern.compile("[A-Za-z]+");
@@ -56,7 +66,16 @@ public final class ParamValidator {
     private static final Pattern PASSWORD           = Pattern.compile("^[a-zA-Z0-9" + UserManager.SPECIAL_CHARS + "]+$");
     private static final Pattern TELEPHONE          = Pattern.compile("[\\d+\\-_/\\s]*"); //Controllo non preciso, in modo da non cancellare perforza il contenuto
     private static final Pattern ENTITA             = Pattern.compile("[A-Za-z\\s\\-\\_\\d]+");
-    private static final Pattern STATO_PRODOTTO             = Pattern.compile("[A-Za-z\\s_\\d]+");
+    private static final Pattern STATO_PRODOTTO     = Pattern.compile("[A-Za-z\\s_\\d]+");
+    private static final Pattern NUMERO_CONTO       = Pattern.compile("[A-Za-z\\d]+");
+    private static final Pattern CODICE_CNEL        = Pattern.compile("[A-Za-z\\d]+|n.a.");
+
+    private static final Pattern URL_RESTRICTED     = Pattern.compile("(?i)https?://(www.)?[a-z.\\d/:_-]+\\??(&?[a-z\\d]+=[a-z/\\.\\d]*)*");
+    private static final Pattern EMAIL_ADDRESS		= Pattern.compile("^[\\w-.]+@[\\w-.]+");
+    private static final Pattern DOMAIN_USER         = Pattern.compile("^[\\w.-]+$");
+
+    private static final Pattern ACTION_PATH     	= Pattern.compile("(?i)[a-z./\\d]+");
+
 
     /**
      * 10.5 (Valido)
@@ -75,356 +94,623 @@ public final class ParamValidator {
     private static final Pattern FLOAT              = Pattern.compile("^[\\-+]?\\d+(?:[.,]\\d+)?\\s*$");
 
     private static SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd");
-
+    
+    // ********************************************************************************
     //END - Pattern
+    // ********************************************************************************
+    
+    
+    /**
+     * Classe statica, quindi, elimina la possibilita' di istanziarla
+     */
+    private ParamValidator() { }
 
-
-    private ParamValidator() { }    //Classe statica, quindi, tolgo la possibilit� di istanziarla
-
+    // ********************************************************************************
     //START - Validatori
-
-    public static boolean isRagioneSocialeValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 2000) && xssRegexCheck(toValidate);
+    // ********************************************************************************
+    
+    public static ParamValidationResult isRagioneSocialeValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 2000)
+                , () -> xssRegexCheck(toValidate));
     }
-    public static boolean isNaturaGiuridicaValid(String toValidate) {
+    
+    public static ParamValidationResult isNaturaGiuridicaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_NATURA_GIURIDICA);
     }
-    public static boolean isTipoImpresaValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoImpresaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_IMPRESA_PER_ISCRIZ_ALBO);
     }
-    public static boolean isAmbitoTerritorialeValid(String toValidate) {
+    
+    public static ParamValidationResult isAmbitoTerritorialeValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_AMBITO_TERRITORIALE);
     }
-    public static boolean isCodiceFiscaleValid(String toValidate) {
+    
+    public static ParamValidationResult isCodiceFiscaleValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, FISCAL_CODE, 16);
     }
-    public static boolean isPartitaIVAValid(String toValidate) {
-        return isEmptyOrMatchingAndInSize(toValidate, ALPHA_AND_DIGIT, 16);
+    
+    public static ParamValidationResult isPartitaIVAValid(String toValidate) {
+        //return isEmptyOrMatchingAndInSize(toValidate, ALPHA_AND_DIGIT, 16);
+    	// adeguato com per CF per le nazioni extra EU (cina)
+        return isEmptyOrMatchingAndInSize(toValidate, ALPHA_AND_DIGIT, 30);	
     }
-    public static boolean isSiNoValid(String toValidate) {
+    
+    public static ParamValidationResult isSiNoValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_SINO);
     }
-    public static boolean isNumCivicoValid(String toValidate) {
+    
+    public static ParamValidationResult isIndirizzoValid(String toValidate) {
+    	return isEmptyOrMatchingAndInSize(toValidate, INDIRIZZO, 100);
+    }
+    
+    public static ParamValidationResult isNumCivicoValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, CIVIC_NUMBER, 10);
     }
-    public static boolean isCapValid(String toValidate) {
+    
+    public static ParamValidationResult isCapValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, ONLY_DIGIT, 5);
     }
-    public static boolean isComuneValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 100) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isComuneValid(String toValidate) {
+    	return isEmptyOrMatchingAndInSize(toValidate, COMUNE, 100);
     }
-    public static boolean isProvinciaValid(String toValidate) {
+    
+    public static ParamValidationResult isProvinciaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_PROVINCE);
     }
-    public static boolean isNazioneValid(String toValidate) {
+    
+    public static ParamValidationResult isNazioneValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_NAZIONI);
     }
-    public static boolean isTelefonoValid(String toValidate) {
+    
+    public static ParamValidationResult isTelefonoValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, TELEPHONE, 50);
     }
-    public static boolean isFaxValid(String toValidate) {
+    
+    public static ParamValidationResult isFaxValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, TELEPHONE, 20);
     }
-    public static boolean isDateInDDMMYYYYValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || (toValidate.length() <= 10
-                && isValidDateFromDateFormat(toValidate, WizardDatiImpresaHelper.DDMMYYYY));
+    
+    public static ParamValidationResult isDateInDDMMYYYYValid(String toValidate) {
+        return isValidDateFromDateFormat(toValidate, WizardDatiImpresaHelper.DDMMYYYY);
     }
-    public static boolean isGenderValid(String toValidate) {
+    
+    public static ParamValidationResult isGenderValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_SESSI);
     }
-    public static boolean isAddressTypeValid(String toValidate) {
+    
+    public static ParamValidationResult isAddressTypeValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_INDIRIZZO);
     }
-    public static boolean isCassaPrevidenzialeValid(String toValidate) {
+    
+    public static ParamValidationResult isCassaPrevidenzialeValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_CASSA_PREVIDENZA);
     }
-    public static boolean isTechnicalTitleValid(String toValidate) {
+    
+    public static ParamValidationResult isTechnicalTitleValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_TITOLO_TECNICO);
     }
-    public static boolean isEmptyOrLowerOrEqualTo16(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 16) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo16(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 16)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isEmptyOrLowerOrEqualTo50(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 50) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo50(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 50)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isCodiceGaraValid(String toValidate) {
+    
+    public static ParamValidationResult isCodiceGaraValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, CODICE, 20);
     }
-    public static boolean isCodiceCategoriaValid(String toValidate) {
-        return isEmptyOrMatchingAndInSize(toValidate, CODICE_CATEGORIA, 20);
+    
+    public static ParamValidationResult isCodiceCategoriaValid(String toValidate) {
+        return isEmptyOrMatchingAndInSize(toValidate, CODICE_CATEGORIA, 30);
+    }
+    
+    public static ParamValidationResult isIBANValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, IBAN);
+    }
+    
+    public static ParamValidationResult isCognomeNomeValid(String toValidate) {
+        return isEmptyOrMatchingAndInSize(toValidate, COGNOME_NOME, 80);
+    }
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo80(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 80)
+                , () -> xssRegexCheck(toValidate)
+        );
+    }
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo100(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 100)
+                , () ->  xssRegexCheck(toValidate)
+        );
     }    
-    public static boolean isIBANValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || IBAN.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo300(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 300)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isEmptyOrLowerOrEqualTo80(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 80) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo2000(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 2000)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isEmptyOrLowerOrEqualTo100(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 100) && xssRegexCheck(toValidate);
-    }
-    public static boolean isEmptyOrLowerOrEqualTo300(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 300) && xssRegexCheck(toValidate);
-    }
-    public static boolean isEmptyOrLowerOrEqualTo2000(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 2000) && xssRegexCheck(toValidate);
-    }
-    public static boolean isNumeroDipendentiValid(String toValidate) {
+    
+    public static ParamValidationResult isNumeroDipendentiValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, NUMERO_DIPENDENTI, 5);
     }
-    public static boolean isCodiceBICCCValid(String toValidate) {
+    
+    public static ParamValidationResult isCodiceBICCCValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, CODICE_BICCC, 11);
     }
-    public static boolean isSettoreProduttivoValid(String toValidate) {
+    
+    public static ParamValidationResult isSettoreProduttivoValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_SETTORI_PRODUTTIVI);
     }
-    public static boolean isLocalitaValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 100) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isLocalitaValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 100)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isPosizContribInpsValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 10) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isPosizContribInpsValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 10)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isPosizAssicInailValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 9) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isPosizAssicInailValid(String toValidate) {
+        return concatIfValid(isEmptyOrLowerEqualOf(toValidate, 9)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isCodiceCassaEdileValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 4) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isCodiceCassaEdileValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 4)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isNumIscrSOA(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 20) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isNumIscrSOA(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 20)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isOrganismoCertificatoreSOA(String toValidate) {
+    
+    public static ParamValidationResult isOrganismoCertificatoreSOA(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_CERTIFICATORI_SOA);
     }
-    public static boolean isOrganismoCertificatoreISO(String toValidate) {
+    
+    public static ParamValidationResult isOrganismoCertificatoreISO(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_CERTIFICATORI_ISO);
     }
-    public static boolean isRatingLegalitaValid(String toValidate) {
+    
+    public static ParamValidationResult isRatingLegalitaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_RATING_LEGALE);
     }
-    public static boolean isRegimeFiscaleValid(String toValidate) {
+    
+    public static ParamValidationResult isRegimeFiscaleValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_REGIME_FISCALE);
     }
-    public static boolean isSettoreAttivitaEconomica(String toValidate) {
+    
+    public static ParamValidationResult isSettoreAttivitaEconomica(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_SETTORE_ATTIVITA_ECONOMICA);
     }
-    public static boolean isClasseDimensioneValid(String toValidate) {
+    
+    public static ParamValidationResult isClasseDimensioneValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_CLASSI_DIMENSIONE);
-    }    
-    public static boolean isAlphaNumeric(String toValidate) {
-    	return StringUtils.isEmpty(toValidate) || ALPHA_AND_DIGIT.matcher(toValidate).matches();
     }
-    public static boolean isDigit(String toValidate) {
-        return StringUtils.isEmpty(toValidate) || ONLY_DIGIT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isAlphaNumeric(String toValidate) {
+    	return isEmptyOrMatching(toValidate, ALPHA_AND_DIGIT);
     }
-    public static boolean isInteger(String toValidate) {
-        return StringUtils.isEmpty(toValidate) || INTEGER.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isDigit(String toValidate) {
+        return isEmptyOrMatching(toValidate, ONLY_DIGIT);
     }
-    public static boolean isQualificaValid(String toValidate) {
-        return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_SOGGETTO)
-                || isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_ALTRA_CARICA)
-                || isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_COLLABORAZIONE);
+    
+    public static ParamValidationResult isInteger(String toValidate) {
+        return isEmptyOrMatching(toValidate, INTEGER);
     }
-    public static boolean isSpecSogQualificaValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || SPEC_SOG_QUALIFICA.matcher(toValidate).matches();
+    
+//    public static ParamValidationResult isQualificaValid(String toValidate) {
+//    	return concatIfValid(
+//    			isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_SOGGETTO)
+//    			, () -> isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_ALTRA_CARICA)
+//    		    , () -> isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_COLLABORAZIONE)
+//    			);
+//    }
+    
+    public static ParamValidationResult isSpecSogQualificaValid(String toValidate) {
+        //return isEmptyOrMatching(toValidate, SPEC_SOG_QUALIFICA);
+		return firstNull(
+			() -> isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_SOGGETTO)			// (1-, 2-)
+			, () -> isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_ALTRA_CARICA)		// (3-1, 3-2, ...)
+		    , () -> isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_COLLABORAZIONE)	// (4-1, 4-2, ...)
+			);
     }
-    public static Boolean isTipoImportValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
+    
+    public static ParamValidationResult isTipoImportValid(String toValidate) {
+        String errorIn = StringUtils.isEmpty(toValidate)
                 || OpenPageImportImpresaAction.XML_IMPORT_PORTALE.equals(toValidate)
-                || OpenPageImportImpresaAction.XML_IMPORT_DGUE.equals(toValidate);
+                || OpenPageImportImpresaAction.XML_IMPORT_DGUE.equals(toValidate)
+                ? null
+                : toValidate;
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.build();
     }
-    public static Boolean isFileNameValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate) || FILE_NAME.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isFileNameValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, FILE_NAME);
     }
-    public static Boolean isContentType(String toValidate) {
+    
+    public static ParamValidationResult isContentType(String toValidate) {
     	return isUnlimitedTextValid(toValidate);
-    }    
-    public static Boolean isUsernameValid(String toValidate) {
+    }
+    
+    public static ParamValidationResult isUsernameValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, USERNAME, 20);
     }
-    public static Boolean isTokenValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate) || TOKEN.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isTokenValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, TOKEN);
     }
-    public static Boolean isProgressivoInvioValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 10) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isProgressivoInvioValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 10)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isDateYYYYMMDDValid(String toValidate) {
+    
+    public static ParamValidationResult isDateYYYYMMDDValid(String toValidate) {
         return isValidDateFromDateFormat(toValidate, sdfISO8601);
     }
-    public static Boolean isEmptyOrLowerOrEqualTo5(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 5) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo5(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 5)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isFloatPercentValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || FLOAT_PERCENT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isFloatPercentValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, FLOAT_PERCENT);
     }
-    public static Boolean isFloatValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || FLOAT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isFloatValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, FLOAT);
     }
-    public static Boolean isDatCassaRitenutaValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
+    
+    public static ParamValidationResult isDatCassaRitenutaValid(String toValidate) {
+        String errorIn = StringUtils.isEmpty(toValidate)
                 || Arrays.stream(DatiCassaPrevidenzialeType.RitenutaEnum.values())
-                    .anyMatch(it -> it.getValue().equals(toValidate));
+                    .anyMatch(it -> it.getValue().equals(toValidate))
+                ? null
+                : toValidate;
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.build();
     }
-    public static Boolean isDatCassaNatura(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
+    
+    public static ParamValidationResult isDatCassaNatura(String toValidate) {
+    	String errorIn = StringUtils.isEmpty(toValidate)
                 || Arrays.stream(DatiCassaPrevidenzialeType.NaturaEnum.values())
-                    .anyMatch(it -> it.getValue().equals(toValidate));
-
+                    .anyMatch(it -> it.getValue().equals(toValidate))
+                ? null
+                : toValidate;
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.build();
     }
 
-    public static Boolean isDatCassaTipoCassa(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
+    public static ParamValidationResult isDatCassaTipoCassa(String toValidate) {
+    	String errorIn = StringUtils.isEmpty(toValidate)
                 || Arrays.stream(DatiCassaPrevidenzialeType.TipoCassaEnum.values())
-                    .anyMatch(it -> it.getValue().equals(toValidate));
+                    .anyMatch(it -> it.getValue().equals(toValidate))
+                ? null
+                : toValidate;
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.build();
     }
-    public static Boolean isCIGValid(String toValidate) {
+    
+    public static ParamValidationResult isCIGValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, ALPHA_AND_DIGIT, 10);
     }
-    public static Boolean isMotivoRifiutoValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 2000) && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isMotivoRifiutoValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 2000)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isModuleNameValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ALPHA_AND_DIGIT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isModuleNameValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ALPHA_AND_DIGIT);
     }
-    public static Boolean isTipoRichiestaValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoRichiestaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPOLOGIE_ASSISTENZA);
     }
-    public static Boolean isTipoAppaltoValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoAppaltoValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_APPALTO);
     }
-    public static Boolean isTipoAltriSoggettiValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoAltriSoggettiValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPO_ALTRI_SOGGETTI);
     }
+    
     //Le classifica hanno sempre valore numerico (positivo o negativo). Fanno parte di pi� tabellati.
-    public static Boolean isClasseValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || INTEGER.matcher(toValidate).matches();
+    public static ParamValidationResult isClasseValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, INTEGER);
     }
 
-    public static Boolean isUUIDDValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || UUID.matcher(toValidate).matches();
+    public static ParamValidationResult isUUIDDValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, UUID);
     }
-    public static Boolean isPassOEValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 30)
-                && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isPassOEValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 30)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isSerialNumberValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || SERIAL_NUMBER.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isSerialNumberValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, SERIAL_NUMBER);
     }
 
-    public static Boolean isCodiceProdottoValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 30)
-                && xssRegexCheck(toValidate);
+    public static ParamValidationResult isCodiceProdottoValid(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 30)
+                ,() -> xssRegexCheck(toValidate)
+        );
     }
-    public static Boolean isNomeCommercialeValid(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 250);
+    
+    public static ParamValidationResult isNomeCommercialeValid(String toValidate) {
+    	return isEmptyOrLowerEqualOf(toValidate, 250);
     }
-    public static boolean isEmptyOrLowerOrEqualTo60(String toValidate) {
-        return isEmptyOrLowerEqualOf(toValidate, 60)
-                && xssRegexCheck(toValidate);
+    
+    public static ParamValidationResult isEmptyOrLowerOrEqualTo60(String toValidate) {
+        return concatIfValid(
+                isEmptyOrLowerEqualOf(toValidate, 60)
+                , () -> xssRegexCheck(toValidate)
+        );
     }
-    public static boolean isQuantitaValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || QUANTITA.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isQuantitaValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, QUANTITA);
     }
-    public static Boolean isTipoComunicazioneValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoComunicazioneValid(String toValidate) {
         return isEmptyOrMatchingAndInSize(toValidate, ALPHA_AND_DIGIT, 5);
     }   //Alphanumerico
-    public static Boolean isCodiceImpresaValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ALPHA_AND_DIGIT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isCodiceImpresaValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ALPHA_AND_DIGIT);
     }   //Alphanumerico
-    public static Boolean isUrlValid(String toValidate) {
-        return isUnlimitedTextValid(toValidate);
+    
+    public static ParamValidationResult isUrlValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, URL_RESTRICTED);
     }
-    public static Boolean isAutenticazioniValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || AUTENTICAZIONE.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isEmailValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, EMAIL_ADDRESS);
+    }
+    
+    public static ParamValidationResult isDomainUserValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, DOMAIN_USER);
+    }
+    
+    public static ParamValidationResult isAutenticazioniValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, AUTENTICAZIONE);
     }   //alfanumerico e punti
-    public static Boolean isIdComunicazioneValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ONLY_DIGIT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isIdComunicazioneValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ONLY_DIGIT);
     }
+    
 //    public static Boolean isActionValid(String toValidate) {
 //        return StringUtils.isEmpty(toValidate)
 //                || ALPHA_AND_DIGIT.matcher(toValidate).matches();
 //    }   //Alphanumerico
-    public static Boolean isActionValid(String toValidate) {
+    
+    public static ParamValidationResult isActionValid(String toValidate) {
         return isUnlimitedTextValid(toValidate);
     }
-    public static Boolean isTitoloGaraValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || TITOLO_GARA.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isTitoloGaraValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, TITOLO_GARA);
     }
-    public static Boolean isStatoValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ALPHA_AND_DIGIT.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isStatoValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ALPHA_AND_DIGIT);
     }   //Alphanumerico
-    public static Boolean isStatoProdottoValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || STATO_PRODOTTO.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isStatoProdottoValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, STATO_PRODOTTO);
     }   //Alphanumerico
 
-    public static Boolean isEsitoGaraValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ALPHA_AND_DIGIT.matcher(toValidate).matches();
+    public static ParamValidationResult isEsitoGaraValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ALPHA_AND_DIGIT);
     }   //Come stato
-    public static Boolean isCodiceStipulaValid(String toValidate) {
+    
+    public static ParamValidationResult isCodiceStipulaValid(String toValidate) {
         return isUnlimitedTextValid(toValidate);
     }
-    public static Boolean isCodiceContrattoValid(String toValidate) {
+    
+    public static ParamValidationResult isCodiceContrattoValid(String toValidate) {
         return isUnlimitedTextValid(toValidate);
     }
-    public static Boolean isEntitaValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || ENTITA.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isEntitaValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, ENTITA);
     }
-    public static Boolean isTipoAvvisoValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoAvvisoValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_AVVISO);
     }
-    public static boolean isFirmatario(String toValidate) {
-    	return StringUtils.isEmpty(toValidate) || FIRMATARIO.matcher(toValidate).matches();
+    
+    public static ParamValidationResult isTipoAvvisoGeneraliValid(String toValidate) {
+        return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_AVVISO_GENERALI);
+    }
+    
+    public static ParamValidationResult isFirmatario(String toValidate) {
+    	return isEmptyOrMatching(toValidate, FIRMATARIO);
     }    
-    public static Boolean isTipoProceduraValid(String toValidate) {
+    public static ParamValidationResult isTipoProceduraValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPI_PROCEDURA);
     }
 
-    public static Boolean isPasswordValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate)
-                || PASSWORD.matcher(toValidate).matches();
+    public static ParamValidationResult isPasswordValid(String toValidate) {
+        return isEmptyOrMatching(toValidate, PASSWORD);
     }
-    public static Boolean isTipoSocietaCooperativaValid(String toValidate) {
+    
+    public static ParamValidationResult isTipoSocietaCooperativaValid(String toValidate) {
         return isEmptyOrInInterceptor(toValidate, InterceptorEncodedData.LISTA_TIPOLOGIE_SOCIETA_COOPERATIVE);
     }
-    public static Boolean isCodFiscOIdentificativo(String toValidate) {
-        return isEmptyOrMatchingAndInSize(toValidate, FISCAL_CODE, 16);
+    
+    public static ParamValidationResult isCodFiscOIdentificativo(String toValidate) {
+        return isEmptyOrMatchingAndInSize(toValidate, FISCAL_CODE, 30);
     }
-    //START - NON ANCORA BEN DEFINITI
+    
+    public static ParamValidationResult isValidNumeroConto(String toValidate) {
+        return isEmptyOrMatchingAndInSize(toValidate, NUMERO_CONTO, 50);
+    }
+    
+    public static ParamValidationResult isCNELValid(String toValidate) {
+        return isEmptyOrMatchingAndInSize(toValidate, CODICE_CNEL, 4);
+    }
+    
+    public static ParamValidationResult isValidOrderCriteria(String toValidate) {
+        String errorIn = StringUtils.isEmpty(toValidate) || falseOnThrows(() -> {
+            OrderCriteria.fromString(toValidate);
+            return true;
+        }) ? null : toValidate;
+        return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.build();
+    }
 
-    //END - NON ANCORA BEN DEFINITI
+    public static ParamValidationResult isActionPathValid(String s) {
+        return isEmptyOrMatching(s, ACTION_PATH);
+    }
 
+    /**
+     * Determines if the given string is a valid orderable identifier.
+     *
+     * @param s the string to be checked
+     * @return a String representing the not valid portion of the string or null if valid.
+     */
+    public static ParamValidationResult isOrderableIdentifierValid(String s) {
+        return isEmptyOrMatching(s, ALPHA_AND_DIGIT);
+    }
+
+    public static ParamValidationResult isUnlimitedTextValid(String toValidate) {
+    	return xssRegexCheck(toValidate);
+    }
+
+    // ********************************************************************************
     //END - Validatori
-
-
-    public static Boolean isUnlimitedTextValid(String toValidate) {
-        return StringUtils.isEmpty(toValidate) || xssRegexCheck(toValidate);
-    }
-
+    // ********************************************************************************
+    
     /**
      * Validazione el parametro tramite le regex di validazione
      *
      * @param toValidate
      * @return
      */
-    private static boolean xssRegexCheck(String toValidate) {
-        return Arrays.stream(XSSRequestPatterns.XXS_PATTERNS).noneMatch(xss -> xss.matcher(toValidate).find());
+    private static ParamValidationResult xssRegexCheck(String toValidate) {
+        String errorIn = null;
+        if (StringUtils.isNotEmpty(toValidate))
+            for (Pattern pattern : XSSRequestPatterns.XXS_PATTERNS) {
+                Matcher matcher = pattern.matcher(toValidate);
+                if (matcher.find()) {
+                    errorIn = matcher.group(0);
+                    break;
+                }
+            }
+    	return ParamValidationResultBuilder.newValidator()
+    			.setMessageError(WithError.DEFAULT_TEXT_ERROR_MALWARE)
+    			.setInvalidPart(errorIn)
+				.build();
+    }
+
+    /**
+     * Utilizzato un concat con Supplier per rendere l'evaluation delle "condizioni" Lazy.
+     *
+     * @param firstCheck La prima condizione
+     * @param otherChecks Evaluation lazy di ulteriori condizioni
+     * @return
+     */
+    @SafeVarargs
+	private static ParamValidationResult concatIfValid(ParamValidationResult firstCheck, Supplier<ParamValidationResult> ... otherChecks) {
+        return firstCheck != null
+                ? firstCheck
+                : firstNotNull(otherChecks);
+    }
+    
+	private static ParamValidationResult firstNotNull(Supplier<ParamValidationResult>[] otherChecks) {
+        String errorIn = null;
+        String msgError = null; 
+
+        for (Supplier<ParamValidationResult> expression : otherChecks) {
+        	ParamValidationResult current = expression.get();
+        	if(current != null)
+	            if (StringUtils.isNotEmpty(current.getInvalidPart())) {
+	                errorIn = current.getInvalidPart();
+	                msgError = current.getMessageError();
+	                break;
+	            }
+        }
+
+        return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+    			.setMessageError(msgError != null ? msgError : WithError.DEFAULT_TEXT_ERROR)
+    			.build();
+    }
+
+    @SafeVarargs
+	private static ParamValidationResult firstNull(Supplier<ParamValidationResult> ... otherChecks) {
+    	ParamValidationResult errorIn = null;
+        for (Supplier<ParamValidationResult> expression : otherChecks) {
+        	ParamValidationResult current = expression.get();
+        	if(current != null) { 
+	            if (StringUtils.isEmpty(current.getInvalidPart())) {
+	                errorIn = null;
+	                break;
+	            }
+	            // traccia solo l'ultimo errore trovato
+	            errorIn = current;
+        	}
+        }
+    	return ParamValidationResultBuilder.newValidator()
+			.setInvalidPart( errorIn != null ? errorIn.getInvalidPart() : null )
+			.setInvalidPart( errorIn != null ? errorIn.getMessageError() : null )
+			.build();
     }
 
     /**
@@ -435,15 +721,24 @@ public final class ParamValidator {
      * @param maxLength
      * @return
      */
-    private static boolean isEmptyOrMatchingAndInSize(String toValidate, Pattern regex, int maxLength) {
-        return StringUtils.isEmpty(toValidate)
-                || (toValidate.length() <= maxLength
-                && regex.matcher(toValidate).matches());
+    private static ParamValidationResult isEmptyOrMatchingAndInSize(String toValidate, Pattern regex, int maxLength) {
+        String errorIn = null;
+        if (StringUtils.isNotEmpty(toValidate)) {
+            if (toValidate.length() > maxLength)
+                errorIn = toValidate.substring(maxLength);
+            else {
+            	ParamValidationResult res = isEmptyOrMatching(toValidate, regex);
+                errorIn = (res != null ? res.getInvalidPart() : null); 
+            }
+        }
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+				.build();
     }
 
     /**
      * Se vuoto o se la linkedhashmap ritornata dall'interceptor contiene il valore passato come parametro
-     * il parametro � valido, altrimenti, se la linkedhashmap non contiene il valore, o se c'� un errore durante
+     * il parametro e' valido, altrimenti, se la linkedhashmap non contiene il valore, o se c'e' un errore durante
      * il recupero dei dati dall'interceptor, ritorno false.
      * NB: il falseOnThrows ritorna false in caso l'espressione inserita come parametro ritorni errore.
      *
@@ -451,9 +746,14 @@ public final class ParamValidator {
      * @param listNameOnInterceptor
      * @return
      */
-    private static boolean isEmptyOrInInterceptor(String toValidate, String listNameOnInterceptor) {
-        return StringUtils.isEmpty(toValidate)
-                || falseOnThrows(() -> InterceptorEncodedData.get(listNameOnInterceptor).containsKey(toValidate));
+    private static ParamValidationResult isEmptyOrInInterceptor(String toValidate, String listNameOnInterceptor) {
+        String errorIn = StringUtils.isEmpty(toValidate)
+                || falseOnThrows(() -> InterceptorEncodedData.get(listNameOnInterceptor).containsKey(toValidate))
+                ? null				// il valore e' nella lista
+                : toValidate;		// il valore NON e' nella lista
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+				.build();
     }
 
     /**
@@ -463,9 +763,31 @@ public final class ParamValidator {
      * @param maxLength
      * @return
      */
-    private static boolean isEmptyOrLowerEqualOf(String toValidate, int maxLength) {
-        return StringUtils.isEmpty(toValidate)
-                || toValidate.length() <= maxLength;
+    private static ParamValidationResult isEmptyOrLowerEqualOf(String toValidate, int maxLength) {
+        String errorIn = StringUtils.isNotEmpty(toValidate) && toValidate.length() > maxLength
+                ? toValidate.substring(maxLength)
+                : null;
+        return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+				.build();
+    }
+
+    private static ParamValidationResult isEmptyOrMatching(String toValidate, Pattern regex) {
+        String errorIn = null;
+        if (StringUtils.isNotEmpty(toValidate)) {
+            Matcher matcher = regex.matcher(toValidate);
+            if (!matcher.matches())
+                errorIn = getNotMatching(toValidate, matcher);
+        }
+        return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+				.build();
+    }
+
+    private static String getNotMatching(String input, Matcher matcher) {
+    	return !matcher.find()
+    			? input
+    			: matcher.replaceAll("");
     }
 
     /**
@@ -476,18 +798,14 @@ public final class ParamValidator {
      * @param dateFormat
      * @return
      */
-    private static boolean isValidDateFromDateFormat(String toValidate, SimpleDateFormat dateFormat) {
-        return falseOnThrows(() -> {
+    private static ParamValidationResult isValidDateFromDateFormat(String toValidate, SimpleDateFormat dateFormat) {
+        String errorIn = StringUtils.isEmpty(toValidate) || falseOnThrows(() -> {
             Date parsed = dateFormat.parse(toValidate);
             return parsed != null && StringUtils.equals(dateFormat.format(parsed), toValidate);
-        });
-    }
-
-    public static Boolean isValidOrderCriteria(String s) {
-        return StringUtils.isEmpty(s) || falseOnThrows(() -> {
-            OrderCriteria.fromString(s);
-            return true;
-        });
+        }) ? null : toValidate;
+    	return ParamValidationResultBuilder.newValidator()
+    			.setInvalidPart(errorIn)
+				.build();
     }
 
     /**

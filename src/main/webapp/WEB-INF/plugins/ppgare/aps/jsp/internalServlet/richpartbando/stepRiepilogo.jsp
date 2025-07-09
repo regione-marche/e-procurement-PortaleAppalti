@@ -139,17 +139,17 @@ invioOfferta: ${invioOfferta}=<s:property value="%{#invioOfferta}"/><br/>
 				</div>
 			</div>
 			
-			<!-- liste partecipanti RTI (mandanti/consorziate esecutrici)-->
-			<s:if test="%{#partecipazione.rti}">
+			<!-- lista partecipanti RTI (mandanti/consorziate esecutrici) -->
+			<s:if test="%{#partecipazione.rti || #partecipazione.impresa.consorzio}">
 				<s:if test="%{#partecipazione.componenti != null && #partecipazione.componenti.size() > 0}">
 					<div class="fieldset-row">
 						<div class="label">
 							<label>
-								<s:if test="%{#partecipazione.impresa.consorzio}">
-									<wp:i18n key="LABEL_CONSORZIATE_ESECUTRICI"/>
+								<s:if test="%{#partecipazione.rti}">
+									<wp:i18n key="LABEL_MANDANTI"/>
 								</s:if>
 								<s:else>
-									<wp:i18n key="LABEL_MANDANTI"/>
+									<wp:i18n key="LABEL_CONSORZIATE_ESECUTRICI"/>
 								</s:else>
 							</label>
 						</div>
@@ -165,6 +165,49 @@ invioOfferta: ${invioOfferta}=<s:property value="%{#invioOfferta}"/><br/>
 					</div>
 				</s:if>
 			</s:if>	
+			
+			<div class='fieldset-row'>
+				<div class="label">
+					<label><wp:i18n key="LABEL_AVVALIMENTO" /></label>
+				</div>
+				<div class="element">
+					<s:if test="%{#partecipazione.avvalimento}"><wp:i18n key="LABEL_YES" /></s:if>
+					<s:else><wp:i18n key="LABEL_NO" /></s:else>
+				</div>
+			</div>
+		
+			<!-- lista imprese ausiliarie -->
+			<s:if test="%{#partecipazione.avvalimento}">
+				<s:if test="%{#partecipazione.impreseAusiliarie != null && #partecipazione.impreseAusiliarie.size() > 0}">
+					<div class="fieldset-row">
+						<div class="label">
+							<label>
+								<wp:i18n key="LABEL_ELENCO_IMPRESE_AUSILIARIE"/>
+							</label>
+						</div>
+						<div class="element">
+							<ul class="list">
+								<s:iterator value="%{#partecipazione.impreseAusiliarie}" var="impresaAusiliaria" status="status">
+									<li class='<s:if test="%{#status.first}">first</s:if> <s:if test="%{#status.last}">last</s:if>'>
+										<s:property value="%{#impresaAusiliaria.ragioneSociale}" />
+									</li>
+								</s:iterator>
+							</ul>
+						</div>
+					</div>
+				</s:if>
+			</s:if>
+			
+			<s:if test="%{#invioOfferta}">
+				<div class="fieldset-row">
+					<div class="label">
+						<label for="codiceCNEL" ><wp:i18n key='LABEL_CODICE_CNEL'/></label>
+					</div>
+					<div class="element">
+						<s:property value="%{#partecipazione.codiceCNEL}" />
+					</div>
+				</div>
+			</s:if>
 
 			<s:if test="%{#partecipazione.lottiDistinti || #partecipazione.plicoUnicoOfferteDistinte}">
 				<%-- 

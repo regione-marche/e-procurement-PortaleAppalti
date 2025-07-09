@@ -22,11 +22,11 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
-	<s:if test="%{dettaglioAvviso.datiGenerali.dataUltimoAggiornamento != null}">					
+	<s:if test="%{dettaglioAvviso.datiGenerali.dataUltimoAggiornamento != null}">
 		<div class="align-right important last-update-detail">
 			<wp:i18n key="LABEL_LAST_UPDATE" />	<s:date name="dettaglioAvviso.datiGenerali.dataUltimoAggiornamento" format="dd/MM/yyyy" />
 		</div>
-	</s:if> 		
+	</s:if>
 
 	<div class="detail-section first-detail-section">
 		<h3 class="detail-section-title"><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /></h3>
@@ -40,7 +40,7 @@
 				</c:when>
 				<c:otherwise>
 					<s:iterator value="maps['stazioniAppaltanti']">
-								<s:if test="%{key == dettaglioAvviso.stazioneAppaltante.codice}"><s:property value="%{value}"/></s:if>
+						<s:if test="%{key == dettaglioAvviso.stazioneAppaltante.codice}"><s:property value="%{value}"/></s:if>
 					</s:iterator>
 				</c:otherwise>
 			</c:choose>
@@ -64,9 +64,9 @@
 		 						</li>	 
 							</s:iterator>
 		 				</ul>
-					</div>					
+					</div>
 				</div>
-			</s:if>			
+			</s:if>
 		</c:if>
 	</div>
 		
@@ -76,8 +76,8 @@
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_TIPO_AVVISO" /> : </label>
 			<s:iterator value="maps['tipiAvviso']">
-			<s:if test="%{key == dettaglioAvviso.datiGenerali.tipoAvviso}"><s:property value="%{value}"/></s:if>
-			</s:iterator>	
+				<s:if test="%{key == dettaglioAvviso.datiGenerali.tipoAvviso}"><s:property value="%{value}"/></s:if>
+			</s:iterator>
 		</div>
 		
 		<div class="detail-row">
@@ -88,8 +88,8 @@
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_AVVISO_PER" /> : </label>
 			<s:iterator value="maps['tipiElencoOperatori']">
-			<s:if test="%{key == dettaglioAvviso.datiGenerali.tipoAppalto}"><s:property value="%{value}"/></s:if>
-			</s:iterator>	
+				<s:if test="%{key == dettaglioAvviso.datiGenerali.tipoAppalto}"><s:property value="%{value}"/></s:if>
+			</s:iterator>
 		</div>
 
 		<div class="detail-row">
@@ -101,20 +101,27 @@
 			<label><wp:i18n key="LABEL_DATA_SCADENZA_AVVISO" /> : </label>
 			<s:date name="dettaglioAvviso.datiGenerali.dataScadenza" format="dd/MM/yyyy" />
 			<s:if test="%{dettaglioAvviso.datiGenerali.oraScadenza != null}">
-			 <wp:i18n key="LABEL_ENTRO_LE_ORE" /> <s:property value="dettaglioAvviso.datiGenerali.oraScadenza" />
-			 </s:if> 
+				<wp:i18n key="LABEL_ENTRO_LE_ORE" /> <s:property value="dettaglioAvviso.datiGenerali.oraScadenza" />
+			</s:if> 
 		</div>
 
 		<div class="detail-row">
 			<label><wp:i18n key="LABEL_RIFERIMENTO_PROCEDURA" /> : </label>
-				<s:property value="dettaglioAvviso.datiGenerali.codice" />
+			<s:property value="dettaglioAvviso.datiGenerali.codice" />
+		</div>
+		
+		<div class="detail-row">
+			<label><wp:i18n key="LABEL_STATO_GARA" /> : </label>
+			<s:iterator value="maps['statiAvviso']">
+				<s:if test="%{key == dettaglioAvviso.datiGenerali.stato}"><s:property value="%{value}"/></s:if>
+			</s:iterator>
 		</div>
 		
 		<!-- ALTRI DOCUMENTI -->
 		<div class="detail-row">
 			<ul class="list">
 				<li class='first last'>
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/viewAltriDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/viewAltriDocumenti.action"/>&amp;codice=${codice}&amp;ext=${param.ext}"
 					   class="bkg-big go" 
 					   title='<wp:i18n key="LABEL_ALTRI_DOCUMENTI" />' >
 						<wp:i18n key="LABEL_ALTRI_DOCUMENTI" />
@@ -140,7 +147,6 @@
 			</s:if>
 		</div>
 	</div>
-
 
 	<div class='detail-section <c:if test="${sessionScope.currentUser == 'guest'}">last-detail-section</c:if>'>
 		<h3 class="detail-section-title"><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_COMUNICAZIONI_PUBBLICHE_SA" /></h3>
@@ -191,21 +197,21 @@
 	<c:choose>
 		<c:when test="${sessionScope.fromPage != null && sessionScope.fromPage eq 'news'}"> 
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>">
 					<wp:i18n key="LINK_BACK_TO_NEWS" />
 				</a>
 			</div>
 		</c:when>
 		<c:when test="${sessionScope.fromSearch}">
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/search.action" />&amp;last=1&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/search.action" />&amp;last=1">
 					<wp:i18n key="LINK_BACK_TO_SEARCH" />
 				</a>
 			</div>
 		</c:when>
 		<c:when test="${dettaglioComunicazioneInviata || dettaglioComunicazioneRicevuta}">
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromAvviso=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromAvviso=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}">
 				
 					<c:choose>
 						<c:when test="${dettaglioComunicazioneInviata}">
@@ -220,7 +226,7 @@
 		</c:when>
 		<c:otherwise>
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/${sessionScope.fromPage}.action" />${last}&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/${sessionScope.fromPage}.action" />${last}">
 					<wp:i18n key="LINK_BACK_TO_LIST" />
 				</a>
 			</div>

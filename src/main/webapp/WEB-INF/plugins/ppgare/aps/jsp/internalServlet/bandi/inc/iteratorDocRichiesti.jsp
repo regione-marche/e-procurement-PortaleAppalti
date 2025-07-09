@@ -22,19 +22,19 @@
                                 <c:set var="urlFileApriFileFirmato"><wp:action path="/ExtStr2/do/FrontEnd/DocDig/downloadDocumentoPubblico.action"/>&amp;id=${idfacsimile}</c:set>
                                 <form action='${urlFileApriFileFirmato}' method="post" style="display:inline;">
                                     <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
-                                    <a href="javascript:;" onclick="parentNode.submit();" title="<wp:i18n key="LABEL_INFO_FIRMA_DIGITALE" />" class='bkg <s:property value="cssClass"/>'>
-                                        <s:property value="nome" />
-                                    </a>
                                     <input type="hidden" name="codice" value="${param.codice}" />
                                     <c:if test="${not empty ext}">
                                         <input type="hidden" name="ext" value="${param.ext}" />
                                     </c:if>
+                                    <a href="javascript:;" onclick="parentNode.submit();" title="<wp:i18n key="LABEL_INFO_FIRMA_DIGITALE" />" class='bkg <s:property value="cssClass"/>'>
+                                        <s:property value="nome" />
+                                    </a>
                                 </form>
                             </s:if>
 
                             <s:else>
                                 <%-- DOCUMENTO SENZA FIRMA --%>
-                                <a href="${urlFileDownload}?id=${idfacsimile}&amp;${tokenHrefParams}" title="<wp:i18n key="LABEL_DOWNLOAD_FILE" />" class='bkg <s:property value="cssClass"/>'>
+                                <a href="${urlFileDownload}?id=${idfacsimile}" title="<wp:i18n key="LABEL_DOWNLOAD_FILE" />" class='bkg <s:property value="cssClass"/>'>
                                     <s:property value="nome" />
                                 </a>
                             </s:else>

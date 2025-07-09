@@ -49,16 +49,16 @@
 			)
 		</p>
 		<p>
-			<label><s:text
-					name="ppcommon.searchEvents.label.search.username" />:</label><br />
-			<s:textfield name="model.user" id="model.user" value="%{model.user}"
-				cssClass="text" />
+			<label><s:text name="ppcommon.searchEvents.label.search.username" />:</label><br />
+			<s:textfield name="model.user" id="model.user" value="%{model.user}" cssClass="text" />
 		</p>
 		<p>
-			<label><s:text
-					name="ppcommon.searchEvents.label.search.destination" />:</label><br />
-			<s:textfield name="model.destination" id="model.destination"
-				value="%{model.destination}" cssClass="text" />
+			<label><s:text name="ppcommon.searchEvents.label.search.delegate" />:</label><br />
+			<s:textfield name="model.delegate" id="model.delegate" value="%{model.delegate}" cssClass="text" />
+		</p>
+		<p>
+			<label><s:text name="ppcommon.searchEvents.label.search.destination" />:</label><br />
+			<s:textfield name="model.destination" id="model.destination" value="%{model.destination}" cssClass="text" />
 		</p>
 		<p>
 			<label><s:text name="ppcommon.searchEvents.label.search.type" />:</label><br />
@@ -124,6 +124,9 @@
 				<option <s:if test="model.type=='SAVECOM'">selected="selected"</s:if>
 					value="SAVECOM"><s:text
 						name="ppcommon.searchEvents.label.search.type.SAVECOM" /></option>
+				<option <s:if test="model.type=='DELETECOM'">selected="selected"</s:if>
+					value="DELETECOM"><s:text
+						name="ppcommon.searchEvents.label.search.type.DELETECOM" /></option>
 				<option <s:if test="model.type=='INVCOM'">selected="selected"</s:if>
 					value="INVCOM"><s:text
 						name="ppcommon.searchEvents.label.search.type.INVCOM" /></option>
@@ -193,6 +196,14 @@
 					<s:if test="model.type=='CHECKFIRMA'">selected="selected"</s:if>
 					value="CHECKFIRMA"><s:text
 						name="ppcommon.searchEvents.label.search.type.CHECKFIRMA" /></option>
+				<option
+					<s:if test="model.type=='LOCK'">selected="selected"</s:if>
+					value="LOCK"><s:text
+						name="ppcommon.searchEvents.label.search.type.LOCK" /></option>
+				<option
+					<s:if test="model.type=='UNLOCK'">selected="selected"</s:if>
+					value="UNLOCK"><s:text
+						name="ppcommon.searchEvents.label.search.type.UNLOCK" /></option>
 			</select>
 		</p>
 		<p>
@@ -214,15 +225,13 @@
 		</p>
 
 		<p>
-			<label><s:text
-					name="ppcommon.searchEvents.label.search.message" />:</label><br />
+			<label><s:text name="ppcommon.searchEvents.label.search.message" />:</label><br />
 			<s:textfield name="model.message" id="model.message" value="%{model.message}"
 				cssClass="text" />
 		</p>
 		
 		<p>
-			<label><s:text
-					name="ppcommon.searchEvents.label.search.rowsperpage" />:</label><br />
+			<label><s:text name="ppcommon.searchEvents.label.search.rowsperpage" />:</label><br />
 			<select name="rowsPerPage" id="rowsPerPage" class="text">
 				<option <s:if test="%{rowsPerPage==10}">selected="selected"</s:if> value="10">10</option>
 				<option <s:if test="%{rowsPerPage==20}">selected="selected"</s:if> value="20">20</option>
@@ -252,6 +261,7 @@
 					<th width="140px"><s:text name="ppcommon.searchEvents.label.result.date" /></th>
 					<th><s:text name="ppcommon.searchEvents.label.search.ipAddress" /></th>
 					<th><s:text name="ppcommon.searchEvents.label.search.username" /></th>
+					<th><s:text name="ppcommon.searchEvents.label.search.delegate" /></th>
 					<th><s:text name="ppcommon.searchEvents.label.search.sessionId" /></th>
 					<th><s:text name="ppcommon.searchEvents.label.search.destination" /></th>
 					<th><s:text name="ppcommon.searchEvents.label.search.type" /></th>
@@ -272,6 +282,7 @@
 						<td><s:date name="%{#event.eventDate}" format="dd/MM/yyyy HH:mm:ss" /></td>
 						<td><s:property value="%{#event.ipAddress}" /></td>
 						<td><s:property value="%{#event.username}" /></td>
+						<td><s:property value="%{#event.delegate}" /></td>
 						<td><s:property value="%{#event.sessionId}" /></td>
 						<td><s:property value="%{#event.destination}" /></td>
 						<td><s:property value="%{#event.eventType}" /></td>

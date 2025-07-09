@@ -2,6 +2,12 @@
 @font-face {
     font-family: 'Titillium Web';
     font-style: normal;
+    font-weight: 200;
+    src: url(./titillium-web/TitilliumWeb-ExtraLight.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
     font-weight: 300;
     src: url(./titillium-web/TitilliumWeb-Regular.ttf) format('truetype');
 }
@@ -74,6 +80,18 @@
         url('./montserrat/montserrat-light-webfont.ttf') format('truetype'),
         url('./montserrat/montserrat-light-webfont.svg#montserratextralight') format('svg');
     font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'montserrat';
+    src: url('./montserrat/montserrat-bold-webfont.eot');
+    src: url('./montserrat/montserrat-bold-webfont.eot?#iefix') format('embedded-opentype'),
+        url('./montserrat/montserrat-bold-webfont.woff2') format('woff2'),
+        url('./montserrat/montserrat-bold-webfont.woff') format('woff'),
+        url('./montserrat/montserrat-bold-webfont.ttf') format('truetype'),
+        url('./montserrat/montserrat-bold-webfont.svg#montserratextralight') format('svg');
+    font-weight: bold;
     font-style: normal;
 }
 

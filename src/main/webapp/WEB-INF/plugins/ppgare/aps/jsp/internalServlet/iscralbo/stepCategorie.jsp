@@ -9,6 +9,7 @@
 <es:checkCustomization var="obblAClassifica" objectId="ISCRALBO-CATEG" attribute="ACLASSIFICA" feature="MAN" />
  --%>
 <es:checkCustomization var="obblNotaNonLavori" objectId="ISCRALBO-CATEG" attribute="NOTA" feature="MAN" />
+<es:checkCustomization var="noteVisibili" objectId="ISCRALBO-CATEG" attribute="NOTA" feature="VIS" />
 
 <%-- escape di "catErrata" --%>
 <c:set var="categoriaErrata" value=""/>
@@ -18,8 +19,8 @@
 </s:iterator>
 
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
+
 <script type="text/javascript">	
 <!--//--><![CDATA[//><!--
 $(document).ready(function(){
@@ -40,6 +41,7 @@ $(document).ready(function(){
 	    }
 	});
 	
+	<c:if test="${noteVisibili}">
 	// gestisci l'espansione/contrazione delle note
 	$('[id^="funznota"]').on("click", function(){
 		var cat = $(this).attr('id').substring(8);
@@ -58,6 +60,7 @@ $(document).ready(function(){
 	    	$(this).attr('title', '<wp:i18n key="LABEL_NOTA_CATEGORIA_ESPANDI" />');
 	    }
 	});
+	</c:if>
 	
 	// tutti gli alberi compressi
 	$(".filetree").treeview({collapsed: true});
@@ -127,7 +130,6 @@ $(document).ready(function(){
 				$("#funznota"+cat).click();
 			}
 			</c:if>
-			
 		}
 		// per ogni nodo sopra la foglia si riaggiornano i contatori
 		$(this).parents('li').last().find("span.folder").each(function( index ) {
@@ -137,6 +139,23 @@ $(document).ready(function(){
 			$(this).children('em').html("[" + selected + " selezionati su " + count + "]");
 		});
 	});
+	
+	// se necessario, in fase di apertura della pagina, visualizza le note che sono state inserite	
+	<c:if test="${noteVisibili}">
+	$('textarea[id^="nota"]').each(function( index ) {
+		// NB: "expand" del pulsante per la visualizzazione delle note, 
+		// 		indica che l'azione che verra' eseguita se si clicca e' "espandi" 
+		// 		mentre se e' "collapse" indica che l'azione che verra' eseguita e' "collassa"
+		var note = $(this).val();
+		if(note != null && note != '') {
+			var cat = $(this).attr('id').substring(4);
+			if ($("#funznota"+cat).hasClass('expand') ) {
+				$("#funznota"+cat).click();
+			}
+		}
+	});
+	</c:if>
+	
 });
 //--><!]]></script>
 
@@ -307,20 +326,23 @@ $(document).ready(function(){
 				
 					<s:if test="foglia">
 						<div class="item-container">
-							<div class="item-check">
-								<s:if test="%{#session.dettIscrAlbo.categorie.categorieBloccate.contains(codice)}">
-									<s:checkbox name="descCatSelezionata" fieldValue="%{codice}" id="descCatSelezionata%{codice}" 
-															value="%{checkCategoria[#status.index]}" disabled="true" title="%{codice} - %{descrizione}"> </s:checkbox>
-									<s:hidden name="catSelezionata" value="%{codice}" id="catSelezionata%{codice}"></s:hidden>
-								</s:if>
-								<s:else>
-									<s:checkbox name="catSelezionata" fieldValue="%{codice}" id="catSelezionata%{codice}" 
-															value="%{checkCategoria[#status.index]}" cssClass="%{'Lavori'.equals(#labelTipoAppalto) ? 'cat-lavori' : ''}"
-															title="%{codice} - %{descrizione}"></s:checkbox>
-								</s:else>
-								<span class="item"><s:property value="codice" /> - <s:property value="descrizione" /></span>
-								<span id="funznota${codice}" class="bkg vertical-middle expand" title="<wp:i18n key="LABEL_NOTA_CATEGORIA_ESPANDI" />" ><c:if test="${skin == 'highcontrast' || skin == 'text'}">(Visualizza la nota)</c:if></span>
-							</div>
+							<div class="item-container-group">
+								<div class="item-check">
+									<s:if test="%{#session.dettIscrAlbo.categorie.categorieBloccate.contains(codice)}">
+										<s:checkbox name="descCatSelezionata" fieldValue="%{codice}" id="descCatSelezionata%{codice}" 
+																value="%{checkCategoria[#status.index]}" disabled="true" title="%{codice} - %{descrizione}"> </s:checkbox>
+										<s:hidden name="catSelezionata" value="%{codice}" id="catSelezionata%{codice}"></s:hidden>
+									</s:if>
+									<s:else>
+										<s:checkbox name="catSelezionata" fieldValue="%{codice}" id="catSelezionata%{codice}" 
+																value="%{checkCategoria[#status.index]}" cssClass="%{'Lavori'.equals(#labelTipoAppalto) ? 'cat-lavori' : ''}"
+																title="%{codice} - %{descrizione}"></s:checkbox>
+									</s:else>
+									<span class="item"><s:property value="codice" /> - <s:property value="descrizione" /></span>
+									<c:if test="${noteVisibili}">
+										<span id="funznota${codice}" class="bkg vertical-middle expand" title="<wp:i18n key="LABEL_NOTA_CATEGORIA_ESPANDI" />" ><c:if test="${skin == 'highcontrast' || skin == 'text'}">(Visualizza la nota)</c:if></span>
+									</c:if>
+								</div>
 					</s:if>
 					<s:else>
 						<span class="folder"><s:property value="codice" /> - <s:property value="descrizione" /></span>
@@ -433,6 +455,8 @@ $(document).ready(function(){
 									<input type="hidden" name="obblNota" value="${obblNotaNonLavori && !('Lavori' eq labelTipoAppalto)}"/>
 								</s:else>
 							</div>
+							
+							</div>	<%-- class="item-container-group" --%>
 						</s:if>
 						<%-- si inseriscono i campi hidden nel caso di nodo interno in modo da garantirne la presenza nella struttura anche se non utilizzati --%>
 						<s:else>
@@ -441,10 +465,17 @@ $(document).ready(function(){
 							<!-- <input type="hidden" name="obblAClassifica" value="false"/> -->
 							<input type="hidden" name="obblNota" value="${obblNotaNonLavori && !('Lavori' eq labelTipoAppalto)}"/>
 						</s:else>
-						<div class="clear item-nota">
-							<wp:i18n key="LABEL_ULTERIORI_INFO" var="titleUlterioriInformazioni" />
-							<s:textarea name="nota" value="%{nota[#status.index]}" id="nota%{codice}" rows="3" cols="68" title="%{#attr.titleUlterioriInformazioni}"></s:textarea>
-						</div>
+						<c:choose>
+							<c:when test="${noteVisibili}">
+								<div class="clear item-nota">
+									<wp:i18n key="LABEL_ULTERIORI_INFO" var="titleUlterioriInformazioni" />
+									<s:textarea name="nota" value="%{nota[#status.index]}" id="nota%{codice}" rows="3" cols="68" title="%{#attr.titleUlterioriInformazioni}"></s:textarea>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<input type="hidden" name="nota" value=""/>	
+							</c:otherwise>
+						</c:choose>
 						</div>
 						<%-- fine nodo/foglia --%>
 					</s:if>

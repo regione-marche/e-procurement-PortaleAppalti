@@ -60,10 +60,10 @@
 				<c:set var="url" value="" />
 				<c:choose>
 					<c:when test="${dataEsito != null}">
-						<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Esiti/view.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</c:when>
 					<c:when test="${dataPubblicazione != null}">
-						<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}</c:set>
+						<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/></c:set>
 					</c:when>
 				</c:choose>
 		

@@ -1,22 +1,26 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni;
 
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardNuovaComunicazioneHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
 
-public class OpenPageDocumentiNuovaComunicazioneAction extends AbstractOpenPageAction {
+/**
+ * ... 
+ * 
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.COMUNICAZIONE, EFlussiAccessiDistinti.COMUNICAZIONE_STIPULA })
+public class OpenPageDocumentiNuovaComunicazioneAction extends AbstractOpenPageComunicazioneAction {
 	/**
 	 * UID
 	 */
@@ -46,11 +50,7 @@ public class OpenPageDocumentiNuovaComunicazioneAction extends AbstractOpenPageA
 	protected String testo;
 	@Validate(EParamValidation.ACTION)
 	protected String from;
-
-	public Map<String, Object> getSession() {
-		return session;
-	}
-
+	
 	public void setAppParamManager(IAppParamManager appParamManager) {
 		this.appParamManager = appParamManager;
 	}
@@ -155,46 +155,35 @@ public class OpenPageDocumentiNuovaComunicazioneAction extends AbstractOpenPageA
 		this.testo = testo;
 	}
 
-	// "costanti" per la pagina jsp
-	public String getSTEP_TESTO_COMUNICAZIONE() {
-		return WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE;
-	}
 
-	public String getSTEP_DOCUMENTI() {
-		return WizardNuovaComunicazioneHelper.STEP_DOCUMENTI;
-	}
-
-	public String getSTEP_INVIO_COMUNICAZIONE() {
-		return WizardNuovaComunicazioneHelper.STEP_INVIO_COMUNICAZIONE;
+	/**
+	 * costruttore
+	 */
+	public OpenPageDocumentiNuovaComunicazioneAction() {
+		this(new WizardNuovaComunicazioneHelper());
 	}
 	
-	/**
-	 * ...
-	 */
-	public Integer getLimiteTotaleUpload() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(this.appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE);
+	public OpenPageDocumentiNuovaComunicazioneAction(WizardNuovaComunicazioneHelper helper) {
+		super(helper, PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
 	}
-
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_UPLOAD_FILE);
-	}
-
-//	// VIENE ANCORA UTILIZZATO ?
-//	public Integer getLimiteTotaleUploadDocIscrizione() {
-//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-//	}
 
 	/**
 	 * ... 
 	 */
 	@Override
 	public String openPage() {
-		WizardNuovaComunicazioneHelper helper = (WizardNuovaComunicazioneHelper) session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		helper = (WizardNuovaComunicazioneHelper) getWizardFromSession();
+		
+		getUploadValidator()
+			.setHelper(helper.getDocumenti())
+			.setLimiteUploadFile( FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_UPLOAD_FILE) )
+			.setLimiteTotaleUploadFile( FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE) );
+
 		from = (String)session.get(ComunicazioniConstants.SESSION_ID_FROM);
 
-		dimensioneAttualeFileCaricati += Attachment.sumSize(helper.getDocumenti().getAdditionalDocs());
-		session.put(PortGareSystemConstants.SESSION_ID_PAGINA, WizardNuovaComunicazioneHelper.STEP_DOCUMENTI);
+		dimensioneAttualeFileCaricati = helper.getDocumenti().getTotalSize();
+		
+		session.put(PortGareSystemConstants.SESSION_ID_PAGINA, helper.STEP_DOCUMENTI);
 
 		return SUCCESS;
 	}

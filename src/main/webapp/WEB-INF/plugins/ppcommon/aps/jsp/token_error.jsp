@@ -14,7 +14,7 @@
 	<wp:i18n key="LABEL_MESSAGE_TOKEN_ERROR"/>
 	
 	<div class="back-link">
-		<c:set var="urlhome"><wp:url page="homepage" />?${tokenHrefParams}</c:set>
+		<c:set var="urlhome"><wp:url page="homepage" /></c:set>
 		<a href="${urlhome}"><wp:i18n key="LINK_GO_TO_HOMEPAGE"/></a>
 	</div>
 

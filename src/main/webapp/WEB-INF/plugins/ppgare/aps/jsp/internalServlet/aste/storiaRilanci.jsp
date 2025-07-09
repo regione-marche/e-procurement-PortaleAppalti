@@ -36,14 +36,27 @@
 		
 	<div class="back-link">
 		<c:if test="${fromPage == 'classifica'}">
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Aste/classifica.action"/>&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}&amp;${tokenHrefParams}">
-				<wp:i18n key='LINK_BACK_TO_DETTAGLIO_ASTA'/>
-			</a>
+			<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/classifica.action"/>' method="post">
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+				<input type="hidden" name="codice" value="${param.codice}" />
+				<input type="hidden" name="codiceLotto" value="${param.codiceLotto}" />
+				
+				<a href="javascript:;" onclick="parentNode.submit();" >
+					<wp:i18n key='LINK_BACK_TO_DETTAGLIO_ASTA'/>
+				</a>
+				
+			</form>
 		</c:if>
 		<c:if test="${fromPage == 'riepilogo'}">
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Aste/riepilogo.action"/>&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}&amp;${tokenHrefParams}">
-				<wp:i18n key='LINK_BACK_TO_DETTAGLIO_ASTA'/>
-			</a>
+			<form action='<wp:action path="/ExtStr2/do/FrontEnd/Aste/riepilogo.action"/>' method="post">
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+				<input type="hidden" name="codice" value="${param.codice}" />
+				<input type="hidden" name="codiceLotto" value="${param.codiceLotto}" />
+				
+				<a href="javascript:;" onclick="parentNode.submit();" >
+					<wp:i18n key='LINK_BACK_TO_DETTAGLIO_ASTA'/>
+				</a>
+			</form>
 		</c:if>
 	</div>
 </div>

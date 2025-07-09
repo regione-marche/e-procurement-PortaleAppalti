@@ -18,6 +18,7 @@
 <c:set var="statoTecnica"><s:property value="%{statoTecnica}"/></c:set>
 <c:set var="statoPrequalifica"><s:property value="%{statoPrequalifica}"/></c:set>
 
+
 <jsp:include page="/WEB-INF/aps/jsp/models/inc/skin.jsp" >
 	<jsp:param name="skin" value="${param.skin}" />
 	<jsp:param name="cssName" value="application" />
@@ -29,6 +30,7 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/field_errors.jsp" />
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
+    <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_messages.jsp" />
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="${codiceBalloon}"/>
@@ -140,6 +142,17 @@
 			</s:if>
 		</s:if>	
 		
+		<s:if test="%{#buste.invioOfferta}">
+			<div class="fieldset-row">
+				<div class="label">
+					<label><wp:i18n key='LABEL_CODICE_CNEL'/> : </label>
+				</div>
+				<div class="element">
+					<s:property value="%{#partecipazione.codiceCNEL}" />
+				</div>
+			</div>
+		</s:if>
+		
 	</fieldset>
 	
 	<s:if test="%{operazione == presentaPartecipazione}" >
@@ -249,7 +262,7 @@
 	</s:else>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBuste.action" />&amp;codice=${codice}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBuste.action" />&amp;codice=${codice}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}">
 			<wp:i18n key="BUTTON_WIZARD_BACK_TO_MENU" />
 		</a>
 	</div>

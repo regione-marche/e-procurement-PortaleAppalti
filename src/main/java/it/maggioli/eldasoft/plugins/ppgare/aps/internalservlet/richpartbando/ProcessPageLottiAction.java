@@ -4,6 +4,8 @@ import com.agiletec.aps.system.SystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 
@@ -18,6 +20,11 @@ import java.util.TreeSet;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageLottiAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -99,7 +106,7 @@ public class ProcessPageLottiAction extends AbstractProcessPageAction {
 				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME))) 
 		{	
 			String newTarget = partecipazioneHelper.getPreviousStepTarget(WizardPartecipazioneHelper.STEP_LOTTI);
-			target = (newTarget != null ? newTarget : target); 					
+			target = (newTarget != null ? newTarget : target);
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));
 			target = CommonSystemConstants.PORTAL_ERROR;

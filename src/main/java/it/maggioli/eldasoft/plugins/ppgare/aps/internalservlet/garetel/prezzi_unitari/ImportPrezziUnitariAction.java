@@ -5,15 +5,21 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaEconomica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.excel.GenericImportExcel;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardOffertaEconomicaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_unitari.PrezziUnitariFields.PrezziUnitariFieldsBuilder;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static it.eldasoft.utils.utility.UtilityExcel.*;
 import static it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_unitari.GenExcelPrezziUnitariAction.RIGA_INIZIALE;
@@ -23,27 +29,44 @@ import static it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.pr
  * Consente la generazione del PDF di riepilogo delle modifiche ai prodotti.
  *
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ImportPrezziUnitariAction extends GenericImportExcel {
+    /**
+	 * UID
+	 */
+	private static final long serialVersionUID = 7721750721543297269L;
 
-    private static final Logger log = LoggerFactory.getLogger(ImportPrezziUnitariAction.class);
 
-
+	private static final Logger log = LoggerFactory.getLogger(ImportPrezziUnitariAction.class);
+	
     private int importCase = 0;
     private final ImportPrezziUnitariResultBean result = new ImportPrezziUnitariResultBean();
+    private BustaEconomica bustaEco;
+    private Double totPrezziUnitariBaseGara;
+    
+    private static final NumberFormat NUMBER_WITH_DECIMALS = new DecimalFormat("#0.0#");
+
+    @Override
+    public boolean isCurrentSessionExpired() {
+        return GestioneBuste.getBustaEconomicaFromSession() == null || GestioneBuste.getBustaEconomicaFromSession().getHelper() == null;
+    }
 
     @Override
     public void init() {
         log.trace("Start - init");
 
+        bustaEco = GestioneBuste.getBustaEconomicaFromSession();
+        totPrezziUnitariBaseGara = 0.0d; 
+		if(bustaEco != null && bustaEco.getHelper() != null && bustaEco.getHelper().getVociDettaglio() != null) 
+			totPrezziUnitariBaseGara = bustaEco.getHelper().getVociDettaglio().stream()
+	                .map(voce -> voce.getPrezzoUnitarioBaseGara())
+	                .filter(Objects::nonNull)
+	                .reduce(0.0d, Double::sum);
+
         importCase = GenExcelPrezziUnitariAction.getExportCase();
         log.debug("The current unitprice on session is of the type {}", importCase);
 
         log.trace("END - init");
-    }
-
-    @Override
-    public boolean isCurrentSessionExpired() {
-        return GestioneBuste.getBustaEconomicaFromSession() == null || GestioneBuste.getBustaEconomicaFromSession().getHelper() == null;
     }
 
     @Override
@@ -108,10 +131,12 @@ public class ImportPrezziUnitariAction extends GenericImportExcel {
     public ExcelResultBean getResult() {
         return result;
     }
+    
     @Override
     protected int getStartingRowIndex() {
         return RIGA_INIZIALE;
     }
+    
     @Override
     protected void doOnSuccesfullyCompleted() {
         try {
@@ -219,14 +244,23 @@ public class ImportPrezziUnitariAction extends GenericImportExcel {
         boolean hasReadErrors = columnNameWithError.contains("Prezzo");
 
         if (!hasReadErrors) {
-            if (fields.getPrezzo() == null || fields.getPrezzo() == 0.0d)
+        	// calcola il totale dei prezzi delle righe importate fino ad ora
+        	Double totPrezzo = 0.0d; 
+    		if(rows != null)
+    	        totPrezzo = rows.stream()
+    	                .map(row -> ((PrezziUnitariFields)row).getPrezzo())
+    	                .filter(Objects::nonNull)
+    	                .reduce(0.0d, Double::sum);
+        	totPrezzo = totPrezzo + (fields.getPrezzo() != null ? fields.getPrezzo() : 0.0d);
+        	
+        	// valida il prezzo
+        	if (fields.getPrezzo() == null || fields.getPrezzo() == 0.0d)
                 rowErrors.add(getText("Errors.sheet.requiredFiled", new String[]{"Prezzo"}));
             else if (fields.getPrezzo() < 0.0d)
                 rowErrors.add(getText("Errors.mustBeAbove", new String[]{"Prezzo", "0"}));
-            else if (fields.getPrezzoBase() != null && fields.getPrezzo() > fields.getPrezzoBase())
-                rowErrors.add(getText("Errors.mustBeUnder", new String[]{"Prezzo", fields.getPrezzoBase().toString()}));
+            else if (totPrezziUnitariBaseGara != null && totPrezzo > totPrezziUnitariBaseGara)
+                rowErrors.add(getText("Errors.mustBeUnder", new String[]{"Prezzo", NUMBER_WITH_DECIMALS.format(totPrezziUnitariBaseGara)}));
         }
-
 
         return !hasReadErrors && previousErrorsNumber == rowErrors.size();
     }

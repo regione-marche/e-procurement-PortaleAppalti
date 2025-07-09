@@ -2,6 +2,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni;
 
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.user.UserDetails;
 import com.opensymphony.xwork2.ModelDriven;
 import it.eldasoft.www.sil.WSGareAppalto.ComunicazioneType;
@@ -12,6 +13,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.bea
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniSearchBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.SearchResult;
 import org.apache.commons.lang.StringUtils;
@@ -25,9 +27,13 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 	 * UID
 	 */
 	private static final long serialVersionUID = -1479643031996378000L;
+
+	// tipi di comunicaizioni (ricevuta, archiviate, soccorsi) 
+	private static final String COMUNICAZIONI_RICEVUTE 		= "ricevute";
+	private static final String COMUNICAZIONI_ARCHIVIATE	= "archiviate";
+	private static final String COMUNICAZIONI_SOCCORSI 		= "soccorsiIstruttori";
 	
 	private static final int MAX_NUM_RECORD = 10;
-	private static final String COMUNICAZIONI_ENTITA_LFS	= "APPA";
 	
 	private Map<String, Object> session;
 	private IBandiManager bandiManager;
@@ -163,19 +169,109 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 		this.idDestinatario = idDestinatario;
 	}
 	
+	
 	/**
-	 * ... 
+	 * restituisce la lista delle comunicazioni ricevute/archiviate/soccorsi isrtuttori
+	 * 
+	 * @throws ApsException 
 	 */
-	public String openPageComunicazioniRicevute() {
+	private SearchResult<ComunicazioneType> getListaComunicazioni(String tipoComunicazione) 
+			throws ApsException 
+	{
+		this.setTipoComunicazione(tipoComunicazione);
 		
-		UserDetails userDetails = this.getCurrentUser();
-		int startIndex = 0;
+		boolean ricevute = COMUNICAZIONI_RICEVUTE.equalsIgnoreCase(tipoComunicazione);
+		boolean archiviate = COMUNICAZIONI_ARCHIVIATE.equalsIgnoreCase(tipoComunicazione);
+		boolean soccorsiIstruttori = COMUNICAZIONI_SOCCORSI.equalsIgnoreCase(tipoComunicazione);
+		boolean riservata =  PortGareSystemConstants.ENTITA_GENERICA_RISERVATA.equalsIgnoreCase(
+					(String)this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA));
 		
-		//gestione del ritorno alla pagina aperta partendo dal dettaglio
+		// imposta la pagina corrente da visualizzare
 		if(this.getPagina() > 0) {
 			this.model.setCurrentPage(this.getPagina());
 		}
+		
+		// imposta l'indice relativo alla prima comunicazione per il gruppo di comunicazioni visualizzabili nella pagina corrente
+		int startIndex = (this.model.getCurrentPage() > 0
+						  ? MAX_NUM_RECORD * (this.model.getCurrentPage() - 1)
+						  : 0);
+		
+		// recupera dalla sessione "codiceProcedura" (se esiste) 
+		String codiceProcedura = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA);
+		if(StringUtils.isNotEmpty(this.comunicazioniCodiceProcedura)) {
+			codiceProcedura = this.comunicazioniCodiceProcedura;
+		}
+		this.comunicazioniCodiceProcedura = codiceProcedura;
+		
+		// recupera dalla sessione "codice2"
+		this.codice2 = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE2_PROCEDURA);
+		
+		// recupera dalla sessione "genereProcedura" (se esiste)
+		Long genereProcedura = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);
+		if(this.comunicazioniGenere != null && this.comunicazioniGenere.longValue() > 0) {
+			genereProcedura = this.comunicazioniGenere;
+		}
+		this.genere = genereProcedura;
 
+		// recupera la lista delle comunicazioni...
+		// (genere = 1 quando area personale -> ricevute -> comunicazione -> vai a procedura -> ricevute)
+		boolean garaLotti = (this.genere != null && (this.genere == 100 || this.genere == 1));
+		
+		SearchResult<ComunicazioneType> comunicazioni = null;
+		if( ricevute || soccorsiIstruttori ) {
+			// comunicazioni ricevute / soccorsi istruttori
+			if(garaLotti) {
+				comunicazioni = this.bandiManager.getComunicazioniPersonaliRicevuteGaraLotti(
+						this.getCurrentUser().getUsername(),  
+						StringUtils.stripToNull(comunicazioniCodiceProcedura),
+						soccorsiIstruttori,
+						this.entita,
+						startIndex, MAX_NUM_RECORD);
+			} else {
+				comunicazioni = this.bandiManager.getComunicazioniPersonaliRicevute(
+						this.getCurrentUser().getUsername(),  
+						StringUtils.stripToNull(comunicazioniCodiceProcedura),
+						null,
+						soccorsiIstruttori,
+						this.entita,
+						startIndex, MAX_NUM_RECORD);
+			}	
+		} else if( archiviate ) {
+			// comunicazioni archiviate
+			if(garaLotti) {
+				comunicazioni = this.bandiManager.getComunicazioniPersonaliArchiviateGaraLotti(
+						this.getCurrentUser().getUsername(),  
+						StringUtils.stripToNull(comunicazioniCodiceProcedura),
+						false,
+						this.entita,
+						startIndex, MAX_NUM_RECORD);
+			} else {
+				comunicazioni = this.bandiManager.getComunicazioniPersonaliArchiviate(
+						this.getCurrentUser().getUsername(),  
+						StringUtils.stripToNull(comunicazioniCodiceProcedura),
+						null,
+						false,
+						this.entita,
+						startIndex, MAX_NUM_RECORD);
+			}
+		}
+		
+		// aggiorna il modello della pagina 
+		this.model.processResult(comunicazioni.getNumTotaleRecord(), comunicazioni.getNumTotaleRecordFiltrati());
+		// aggiorna la sessione
+		this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO, this.tipoComunicazione);
+		this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA, this.model.getCurrentPage());
+		this.session.put(ComunicazioniConstants.SESSION_ID_ACTION_NAME, this.actionName);
+		this.session.put(ComunicazioniConstants.SESSION_ID_NAMESPACE, this.namespace);
+		this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
+			
+		return comunicazioni;
+	}
+	
+	/**
+	 * restituisce la lista delle comunicazioni ricevute 
+	 */
+	public String openPageComunicazioniRicevute() {
 		try {
 			// in caso si torni dal Dettaglio Comunicazioni premendo il link "Torna alla lista"...
 			// i seguenti parametri non vengono passati tra i parametri delle request e response...
@@ -183,58 +279,13 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 				this.actionName = (String) this.session.get(ComunicazioniConstants.SESSION_ID_ACTION_NAME);
 				this.namespace = (String) this.session.get(ComunicazioniConstants.SESSION_ID_NAMESPACE);
 			}
-			this.codice2 = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE2_PROCEDURA);
-			if(this.model.getCurrentPage() > 0) {
-				startIndex = MAX_NUM_RECORD * (this.model.getCurrentPage() - 1);
-			}
-
+			
 			String e = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);
-			if(COMUNICAZIONI_ENTITA_LFS.equalsIgnoreCase(e)) {
-				this.entita = COMUNICAZIONI_ENTITA_LFS;
-			}
-			//this.entita = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);			
-			String codiceProcedura = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA);
-			Long genereProcedura = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);						
-			if(StringUtils.isNotEmpty(this.comunicazioniCodiceProcedura)) {
-				codiceProcedura = this.comunicazioniCodiceProcedura;
-			}
-			
-			if(this.comunicazioniGenere != null && this.comunicazioniGenere.longValue() > 0) {
-				genereProcedura = this.comunicazioniGenere;
-			}
+			this.entita = (PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equalsIgnoreCase(e) ? PortGareSystemConstants.ENTITA_CONTRATTO_LFS : null);
 
-			this.comunicazioniCodiceProcedura = codiceProcedura;
-			this.genere = genereProcedura;
+			// recupera l'elenco delle comunicazioni
+			this.setComunicazioni(getListaComunicazioni(COMUNICAZIONI_RICEVUTE));
 			
-			
-			// genere = 1 quando area personale -> ricevute -> comunicazione -> vai a procedura -> ricevute 
-			if(this.genere != null && (this.genere == 100 || this.genere == 1)) {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliRicevuteGaraLotti(
-								userDetails.getUsername(), 
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								false,
-								this.entita, 
-								startIndex, MAX_NUM_RECORD));
-			} else {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliRicevute(
-								userDetails.getUsername(),
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								null,
-								false,
-								this.entita, 
-								startIndex, MAX_NUM_RECORD));
-			}
-
-			this.model.processResult(this.getComunicazioni().getNumTotaleRecord(), this.getComunicazioni().getNumTotaleRecordFiltrati());
-			this.setTipoComunicazione("ricevute");
-			
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO, this.tipoComunicazione);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA, this.model.getCurrentPage());
-			this.session.put(ComunicazioniConstants.SESSION_ID_ACTION_NAME, this.actionName);
-			this.session.put(ComunicazioniConstants.SESSION_ID_NAMESPACE, this.namespace);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
 			if(this.genere != null) {
 				this.entita = null;
 				this.session.remove(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);
@@ -250,62 +301,12 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 	}
 	
 	/**
-	 * ... 
+	 * restituisce la lista delle comunicazion archivitate
 	 */
 	public String openPageComunicazioniArchiviate() {
-
-		UserDetails userDetails = this.getCurrentUser();
-		int startIndex = 0;
-		
-		//gestione del ritorno alla pagina aperta partendo dal dettaglio
-		if(this.getPagina() > 0) {
-			this.model.setCurrentPage(this.getPagina());
-		}
-		
 		try {
-			if(this.model.getCurrentPage() > 0 ) {
-				startIndex = MAX_NUM_RECORD * (this.model.getCurrentPage() - 1);
-			}
-			
-			String codiceProcedura = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA);
-			this.codice2 = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE2_PROCEDURA);
-			Long genereProcedura = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);						
-			if(StringUtils.isNotEmpty(this.comunicazioniCodiceProcedura)) {
-				codiceProcedura = this.comunicazioniCodiceProcedura;
-			}
-			if(this.comunicazioniGenere != null && this.comunicazioniGenere.longValue() > 0) {
-				genereProcedura = this.comunicazioniGenere;
-			}
-			this.comunicazioniCodiceProcedura = codiceProcedura;
-			this.genere = genereProcedura;
-			this.entita = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);
-			if(genere != null && (genere == 100 || genere == 1)) {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliArchiviateGaraLotti(
-								userDetails.getUsername(),  
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								false,
-								this.entita,
-								startIndex, MAX_NUM_RECORD));
-			} else {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliArchiviate(
-								userDetails.getUsername(),  
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								null,
-								false,
-								this.entita,
-								startIndex,	MAX_NUM_RECORD));
-			}
-
-			this.model.processResult(this.getComunicazioni().getNumTotaleRecord(), this.getComunicazioni().getNumTotaleRecordFiltrati());
-			this.setTipoComunicazione("archiviate");
-			
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO, this.tipoComunicazione);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA, this.model.getCurrentPage());
-			this.session.put(ComunicazioniConstants.SESSION_ID_ACTION_NAME, this.actionName);
-			this.session.put(ComunicazioniConstants.SESSION_ID_NAMESPACE, this.namespace);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
+			// recupera l'elenco delle comunicazioni
+			this.setComunicazioni(getListaComunicazioni(COMUNICAZIONI_ARCHIVIATE));
 			
 		} catch (Throwable e) {
 			ApsSystemUtils.logThrowable(e, this, "openPageComunicazioniArchiviate");
@@ -317,18 +318,9 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 	}	
 
 	/**
-	 * ... 
+	 * restiruisce la lista delle comunicazioni di soccorso istruttorio
 	 */
 	public String openPageSoccorsiIstruttori() {
-	
-		UserDetails userDetails = this.getCurrentUser();
-		int startIndex = 0;
-		
-		// gestione del ritorno alla pagina aperta partendo dal dettaglio
-		if(this.getPagina() > 0) {
-			this.model.setCurrentPage(this.getPagina());
-		}
-
 		try {
 			// in caso si torni dal Dettaglio Comunicazioni premendo il link "Torna alla lista"...
 			// i seguenti parametri non vengono passati tra i parametri delle request e response...
@@ -337,50 +329,10 @@ public class ComunicazioniRicevuteAction extends EncodedDataAction implements Mo
 				this.namespace = (String) this.session.get(ComunicazioniConstants.SESSION_ID_NAMESPACE);
 			}
 			
-			if(this.model.getCurrentPage() > 0) {
-				startIndex = MAX_NUM_RECORD * (this.model.getCurrentPage() - 1);
-			}
+			this.entita = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA);
 
-			String codiceProcedura = (String) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA);
-			Long genereProcedura = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);						
-			if(StringUtils.isNotEmpty(this.comunicazioniCodiceProcedura)) {
-				codiceProcedura = this.comunicazioniCodiceProcedura;
-			}
-			if(this.comunicazioniGenere != null && this.comunicazioniGenere.longValue() > 0) {
-				genereProcedura = this.comunicazioniGenere;
-			}
-			this.comunicazioniCodiceProcedura = codiceProcedura;
-			this.genere = genereProcedura;
-			
-			
-			// genere = 1 quando area personaele -> ricevute -> comunicazione -> vai a procedura -> ricevute 
-			if(this.genere != null && (this.genere == 100 || this.genere == 1)) {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliRicevuteGaraLotti(
-								userDetails.getUsername(), 
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								true,
-								this.entita,
-								startIndex, MAX_NUM_RECORD));
-			} else {
-				this.setComunicazioni(this.bandiManager
-						.getComunicazioniPersonaliRicevute(
-								userDetails.getUsername(),
-								StringUtils.stripToNull(this.comunicazioniCodiceProcedura),
-								null,
-								true,
-								this.entita,
-								startIndex, MAX_NUM_RECORD));
-			}
-
-			this.model.processResult(this.getComunicazioni().getNumTotaleRecord(), this.getComunicazioni().getNumTotaleRecordFiltrati());
-			this.setTipoComunicazione("soccorsiIstruttori");
-			
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_TIPO, this.tipoComunicazione);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_PAGINA, this.model.getCurrentPage());
-			this.session.put(ComunicazioniConstants.SESSION_ID_ACTION_NAME, this.actionName);
-			this.session.put(ComunicazioniConstants.SESSION_ID_NAMESPACE, this.namespace);
-			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA, this.genere);
+			// recupera l'elenco delle comunicazioni
+			this.setComunicazioni(getListaComunicazioni(COMUNICAZIONI_SOCCORSI));
 			
 		} catch (Throwable e) {
 			ApsSystemUtils.logThrowable(e, this, "openPageComunicazioniRicevute");

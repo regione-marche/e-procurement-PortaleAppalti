@@ -1,30 +1,26 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -33,6 +29,10 @@ import java.util.Date;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageRinnovoAction extends AbstractProcessPageAction 
 	implements SessionAware {
 	/**
@@ -175,17 +175,6 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 		this.formato = formato;
 	}
 
-	
-	/**
-	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
-	 *
-	 * @param helper helper dei documenti
-	 *
-	 * @return totale in KB dei file caricati
-	 */
-	private int getActualTotalSize(WizardDocumentiHelper helper) {
-		return Attachment.sumSize(helper.getRequiredDocs()) + Attachment.sumSize(helper.getRequiredDocs());
-	}
 
 	/**
 	 * ... 
@@ -206,66 +195,45 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 
 		try {
 			if (rinnovoHelper != null) {
-				boolean controlliOk = true;
-				boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(docRichiesto);
-	
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(rinnovoHelper.getIdBando());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(FUNZIONE + ": documento richiesto"
-								  	+ " con id="+this.docRichiestoId
-									+ ", file="+this.docRichiestoFileName
-									+ ", dimensione="+dimensioneDocumento + "KB");
-	
-				controlliOk =
-						checkFileSize(docRichiesto, docRichiestoFileName, getActualTotalSize(rinnovoHelper.getDocumenti()), appParamManager, evento)
-						&& checkFileName(docRichiestoFileName, evento)
-						&& checkFileFormat(docRichiesto, docRichiestoFileName, formato, evento, onlyP7m);
 				
-				if (controlliOk) {
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(rinnovoHelper)
+						.setDocumento(docRichiesto)
+						.setDocumentoFileName(docRichiestoFileName)
+						.setDocumentoFormato(formato)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(rinnovoHelper.getIdBando())
+						.setEventoMessaggio(FUNZIONE + ": documento richiesto"
+							  				+ " con id=" + this.docRichiestoId
+							  				+ ", file=" + this.docRichiestoFileName
+							  				+ ", dimensione=" + FileUploadUtilities.getFileSize(docRichiesto) + "KB");
+				
+				if ( getUploadValidator().validate() ) {
 					if (Attachment.indexOf(rinnovoHelper.getDocumenti().getRequiredDocs(), Attachment::getId, docRichiestoId) == -1) {
 						// in questo modo evito che si ripeta un inserimento
 						// effettuando F5 con il browser in quanto controllo se
 						// esiste gia' il documento con tale id, dato che posso
 						// inserirlo solo se non e' tra quelli inseriti in
 						// precedenza
-						
-						Date checkDate = Date.from(Instant.now());
-						DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-								docRichiesto
-								, docRichiestoFileName
-								, formato
-								, checkDate
-								, evento
-								, onlyP7m
-								, appParamManager
-								, customConfigManager
-						);
-
 						rinnovoHelper.getDocumenti().addDocRichiesto(
 								docRichiestoId,
 								docRichiesto,
 								docRichiestoContentType,
 								docRichiestoFileName,
-								evento,checkFirma);
-						boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-						InputStream iccFilePath = null;
-						if(isActiveFunctionPdfA) {
-							iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-						}
-						if( !aggiornaAllegato(isActiveFunctionPdfA, iccFilePath) ) {
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma());
+						
+						if( !aggiornaAllegato() ) {
 							target = CommonSystemConstants.PORTAL_ERROR;
 						}
 					}
 				} else {
 					target = INPUT;
 				}
-				this.eventManager.insertEvent(evento);
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
+				
 			} else {
 				// la sessione e' scaduta, occorre riconnettersi
 				this.addActionError(this.getText("Errors.sessionExpired"));
@@ -298,35 +266,26 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 	
 		try {
 			if (rinnovoHelper != null) {
-				boolean controlliOk = true;
-
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docUlteriore);
-	
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(rinnovoHelper.getIdBando());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(FUNZIONE + ": documento ulteriore"
-						+ ", file="+this.docUlterioreFileName
-						+ ", dimensione="+dimensioneDocumento + "KB");
-	
-				controlliOk =
-						checkFileDescription(docUlterioreDesc, evento)
-						&& checkFileSize(docUlteriore, docUlterioreFileName, getActualTotalSize(rinnovoHelper.getDocumenti()), appParamManager, evento)
-						&& checkFileName(docUlterioreFileName, evento)
-						&& checkFileExtension(docUlterioreFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-						&& checkFileFormat(docUlteriore, docUlterioreFileName, null, evento, false);
-				
-				if (controlliOk) {
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(rinnovoHelper)
+						.setDocumentoDescrizione(docUlterioreDesc)
+						.setDocumento(docUlteriore)
+						.setDocumentoFileName(docUlterioreFileName)
+						.setOnlyP7m(false)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(rinnovoHelper.getIdBando())
+						.setEventoMessaggio(FUNZIONE + ": documento ulteriore"
+											+ ", file=" + this.docUlterioreFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docUlteriore) + "KB");
+  				
+				if ( getUploadValidator().validate() ) {
 					if (Attachment.indexOf(rinnovoHelper.getDocumenti().getAdditionalDocs(), Attachment::getDesc, docUlterioreDesc) != -1) {
 						this.addActionError(this.getText("Errors.docUlteriorePresent"));
-						evento.setLevel(Event.Level.ERROR);
-						evento.setDetailMessage("Il file "
+						getUploadValidator().getEvento().setLevel(Event.Level.ERROR);
+						getUploadValidator().getEvento().setDetailMessage("Il file "
 								+ this.docUlterioreFileName
-								+ " viene scartato in quanto esiste giï¿½ un documento ulteriore caricato con la stessa descrizione ("
+								+ " viene scartato in quanto esiste già un documento ulteriore caricato con la stessa descrizione ("
 								+ this.docUlterioreDesc + ")");
 					} else {
 						// in questo modo evito che si ripeta un inserimento
@@ -334,43 +293,25 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 						// esiste gia' il documento con tale id, dato che posso
 						// inserirlo solo se non e' tra quelli inseriti in
 						// precedenza
-						Date checkDate = Date.from(Instant.now());
-						DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-								docUlteriore
-								, docUlterioreFileName
-								, null
-								, checkDate
-								, evento
-								, false
-								, appParamManager
-								, customConfigManager
-						);
-
-						evento.setMessage(FUNZIONE + ": documento ulteriore, " + 
-										  "file=" + this.docUlterioreFileName + ", " + 
-										  "dimensione=" + dimensioneDocumento + "KB");
-						
 						rinnovoHelper.getDocumenti().addDocUlteriore(
 								docUlterioreDesc,
 								docUlteriore,
 								docUlterioreContentType,
 								docUlterioreFileName,
-								evento,checkFirma);
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma()
+						);
 						
 						this.docUlterioreDesc = null;
-						boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-						InputStream iccFilePath = null;
-						if(isActiveFunctionPdfA) {
-							iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-						}
-						if( !aggiornaAllegato(isActiveFunctionPdfA, iccFilePath) ) {
+						if( !aggiornaAllegato() ) {
 							target = CommonSystemConstants.PORTAL_ERROR;
 						}
 					}
 				} else {
 					target = INPUT;
 				}
-				this.eventManager.insertEvent(evento);
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		} catch (GeneralSecurityException e) {
 			ApsSystemUtils.logThrowable(e, this, "addUltDoc", "Errore durante la cifratura dell'allegato ulteriore " + this.docUlterioreFileName);
@@ -380,16 +321,16 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 			ApsSystemUtils.logThrowable(t, this, "addUltDoc");
 			ExceptionUtils.manageExceptionError(t, this);
 			target = CommonSystemConstants.PORTAL_ERROR;
-		}					
+		}
 		return target;
 	}
 
 	/**
-	 * aggiorna un documento allegato per una domanda di rinnovo 
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
+	 * aggiorna un documento allegato per una domanda di rinnovo
+	 *  
+	 * @throws Exception 
 	 */
-	private boolean aggiornaAllegato(boolean isActiveFunctionPdfA, InputStream iccFilePath) throws ApsException {
+	private boolean aggiornaAllegato() throws Exception {
 		String target = SUCCESS;
 
 		WizardRinnovoHelper helper = (WizardRinnovoHelper) session
@@ -400,10 +341,11 @@ public class ProcessPageRinnovoAction extends AbstractProcessPageAction
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			target = RinnovoAction.saveDocumenti(
-					helper,
-					session, 
-					this,
-					new Date(), isActiveFunctionPdfA, iccFilePath);
+					helper
+					, session 
+					, this
+					, new Date()
+			);
 		}
 		
 		return (SUCCESS.equalsIgnoreCase(target));

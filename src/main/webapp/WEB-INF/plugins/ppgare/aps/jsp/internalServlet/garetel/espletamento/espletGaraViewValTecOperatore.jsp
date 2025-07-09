@@ -14,9 +14,14 @@
 
 <div class="portgare-view">
 
-	<h2><wp:i18n key="LABEL_VALUTAZIONE_TECNICA" /></h2>
-
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
+	<h2>
+		<s:if test="%{isConcorsoPrimoGrado() && isWith2Phase()}">
+			<wp:i18n key="LABEL_VALUTAZIONE_TECNICA_PRIMO_GRADO" />
+		</s:if>
+		<s:else>
+			<wp:i18n key="LABEL_VALUTAZIONE_TECNICA" />
+		</s:else>
+	</h2>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_VALUTAZIONE_TECNICA_OP"/>
@@ -34,7 +39,7 @@
 		</div>
  	</div> 	
  	
- 	<s:if test="%{!operatoreEconomico.rti}">
+ 	<s:if test="%{!operatoreEconomico.rti && !hideFiscalCode}">
  	 	<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_CODICE_FISCALE" />: </label>
@@ -48,7 +53,7 @@
  	<div class="fieldset-row">
 		<div class="label">
 			<label>
-				<s:if test="%{!operatoreEconomico.rti}"><wp:i18n key="LABEL_RAGIONE_SOCIALE" />:</s:if>
+				<s:if test="%{!operatoreEconomico.rti || hideFiscalCode}"><wp:i18n key="LABEL_RAGIONE_SOCIALE" />:</s:if>
 				<s:else><wp:i18n key="LABEL_DENOMINAZIONE_RTI" /></s:else>
 			</label>			
 		</div>
@@ -58,7 +63,7 @@
  	</div>
  	
  	<%-- solo se l'operatore partecipa in RTI --%>
- 	<s:if test="%{operatoreEconomico.rti}">
+ 	<s:if test="%{operatoreEconomico.rti && !hideFiscalCode}">
 	 	<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_RAGGRUPPAMENTO_COMPOSTO_DA" />: </label>
@@ -69,7 +74,9 @@
 					<table id="tableOperatori" summary="Tabella operatori" class="info-table">
 						<thead>
 							<tr>
-								<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+								<s:if test="%{!hideFiscalCode}">
+									<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+								</s:if>
 								<th scope="col"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></th>
 								<th scope="col"><wp:i18n key="LABEL_MANDATARIA" /></th>
 							</tr>
@@ -77,14 +84,16 @@
 						<tbody>						
 							<s:iterator var="item" value="operatoreEconomico.componentiRTI" status="stat">
 								<tr>
-									<td>				
-										<s:if test="%{#item.partitaIva != null}" >					
-											<s:property value="#item.partitaIva" />
-										</s:if>
-										<s:else>
-											<s:property value="#item.codiceFiscale" />
-										</s:else>
-									</td>
+									<s:if test="%{!hideFiscalCode}">
+										<td>				
+											<s:if test="%{#item.partitaIva != null}" >					
+												<s:property value="#item.partitaIva" />
+											</s:if>
+											<s:else>
+												<s:property value="#item.codiceFiscale" />
+											</s:else>
+										</td>
+									</s:if>
 									<td>								
 										<s:property value="#item.ragioneSociale" />
 									</td>							
@@ -134,7 +143,9 @@
 					<label><wp:i18n key="LABEL_PUNTEGGIO_TECNICO_TOTALE" /> : </label>
 				</div>
 				<div class="element">
-					<s:text name="format.money"><s:param value="operatoreEconomico.punteggioTecnico"/></s:text>
+					<s:if test="%{operatoreEconomico.punteggioTecnico != null}">
+						<s:text name="format.money"><s:param value="operatoreEconomico.punteggioTecnico"/></s:text>
+					</s:if>
 				</div>
 		 	</div>
 		 	
@@ -166,7 +177,7 @@
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewValTec.action" />&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewValTec.action" />&amp;codice=${param.codice}&amp;codiceLotto=${param.codiceLotto}">
 		<wp:i18n key="LINK_BACK" />
 	</a>
 </div>

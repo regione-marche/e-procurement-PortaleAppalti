@@ -3,6 +3,8 @@
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
 
+<%-- BUSTA AMMINISTRATIVA --%>
+
 <s:if test="%{ !dettGara.datiGeneraliGara.noBustaAmministrativa }" >
 	<div class="fieldset-row first-row">
 		<div class="label">
@@ -41,9 +43,13 @@
 					<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 				</s:else>
 			</s:else>
+			
+			<!-- RETTIFICA NON PREVISTA -->
 		</div>
 	</div>
 </s:if>
+
+<%-- BUSTA TECNICA --%>
 
 <s:if test="%{offertaTecnica}">
 	<div class="fieldset-row">
@@ -76,17 +82,24 @@
 			<s:else>
 				<s:if test="%{bustaRiepilogativa.bustaTecnica.documentiInseriti.size() > 0}">
 					<c:set var="busta" scope="request" value="${bustaRiepilogativa.bustaTecnica}"/>
-					<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/iteratorDocumentiInseriti.jsp"/>				
+					<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/iteratorDocumentiInseriti.jsp"/>
 				</s:if>
 				<s:else>
 					<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 				</s:else>
 			</s:else>
+			
+			<s:if test="%{!abilitaRettifica && bustaTecnicaRettifica != null}">
+				<s:set var="richiestaRettifica" value="bustaTecnicaRettifica"/>
+				<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/infoRichiestaRettifica.jsp"/>
+			</s:if>
 		</div>
 	</div>
 </s:if>
 
-<!-- OEPV costoFisso=1 ==> non c'e' offerta economica -->
+<%-- BUSTA ECONOMICA --%>
+
+<%-- OEPV costoFisso=1 ==> non c'e' offerta economica --%>
 <s:set var="costoFisso" value="0"/>
 <s:if test="%{dettGara.datiGeneraliGara.costoFisso != null && dettGara.datiGeneraliGara.costoFisso == 1}" >
 	<s:set var="costoFisso" value="%{dettGara.datiGeneraliGara.costoFisso}"/>
@@ -123,12 +136,18 @@
 			<s:else>
 				<s:if test="%{bustaRiepilogativa.bustaEconomica.documentiInseriti.size() > 0}">
 					<c:set var="busta" scope="request" value="${bustaRiepilogativa.bustaEconomica}"/>
-					<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/iteratorDocumentiInseriti.jsp"/>			
+					<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/iteratorDocumentiInseriti.jsp"/>
 				</s:if>
 				<s:else>
 					<wp:i18n key="LABEL_NO_DOCUMENTS_ATTACHED" />
 				</s:else>
 			</s:else>
+			
+			<s:if test="%{!abilitaRettifica && bustaEconomicaRettifica != null}">
+				<s:set var="richiestaRettifica" value="bustaEconomicaRettifica"/>
+				<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/garetel/inc/infoRichiestaRettifica.jsp"/>
+			</s:if>
+			
 		</div>
 	</div>
 </s:if>

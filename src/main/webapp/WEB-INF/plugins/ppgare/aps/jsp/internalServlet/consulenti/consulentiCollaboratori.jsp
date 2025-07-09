@@ -45,9 +45,10 @@
 	<s:url id="urlDownloadAllegato" namespace="/do/FrontEnd/Consulenti" action="downloadDocumenti" />
 
 	<%-- MASCHERA DI RICERCA --%>
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Consulenti/find.action" />" method="post">
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Consulenti/find.action" />" method="post" >
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
-		<fieldset>
+		
+		<fieldset >
 			<legend>
 				<wp:i18n key="LABEL_SEARCH_CRITERIA" />
 			</legend>
@@ -80,7 +81,7 @@
 					<label for="model.soggettoPercettore"><wp:i18n key="LABEL_SOGGETTO_PERCETTORE" /> : </label>
 				</div>
 				<div class="element">
-					<s:textfield name="model.soggettoPercettore" id="model.soggettoPercettore" value="%{#helper.soggettoPercettore}" maxLength="100" size="100" cssClass="text" />
+					<s:textfield name="model.soggettoPercettore" id="model.soggettoPercettore" value="%{#helper.soggettoPercettore}" maxLength="100" cssClass="text" style="width: 100%"/>
 				</div>
 			</div>
 			<div class="fieldset-row">
@@ -135,7 +136,7 @@
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button"></s:submit>
 			</div>
 		</fieldset>
-
+		
 		<!-- LISTA RISULTATI RICERCA -->
 		<c:if test="${lista ne null}">
 		 	<s:if test="%{lista.size() > 0}">
@@ -193,12 +194,12 @@
 										<c:if test="${not empty url}">
 											<c:choose>
 												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-													<s:a href="%{#urlDownloadAllegato}?codice=%{codice}&codiceSoggetto=%{codiceSoggetto}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaAllegato}">
+													<s:a href="%{#urlDownloadAllegato}?codice=%{codice}&codiceSoggetto=%{codiceSoggetto}" title="%{#attr.valueScaricaAllegato}">
 														<wp:i18n key="LABEL_SCARICA_ALLEGATO" />
 													</s:a>
 												</c:when>
 												<c:otherwise>
-													<s:a href="%{#urlDownloadAllegato}?codice=%{codice}&codiceSoggetto=%{codiceSoggetto}&amp;%{#attr.tokenHrefParams}" cssClass="bkg zip" title="%{#attr.valueScaricaAllegato}">
+													<s:a href="%{#urlDownloadAllegato}?codice=%{codice}&codiceSoggetto=%{codiceSoggetto}" cssClass="bkg zip" title="%{#attr.valueScaricaAllegato}">
 													</s:a>
 												</c:otherwise>
 											</c:choose>
@@ -213,7 +214,7 @@
 					<s:param name="last" value="1"></s:param>
 				</s:url>
 				<p>
-					<a href='<s:property value="%{#urlExport}" />&amp;${tokenHrefParams}' class="important">
+					<a href='<s:property value="%{#urlExport}" />' class="important">
 						<wp:i18n key="LINK_EXPORT_CSV" />
 					</a>
 				</p>

@@ -167,9 +167,9 @@ public interface IUserDAO {
 	 *  
 	 * @return 0=ok, -1=login gia' effettuato per lo username da una postazione diversa (pc/nodo cluster) 
 	 */
-	public int logLogin(String username, String ipAddress, String sessionId);
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId);
 
-	public boolean logLogout(String username, String ipAddress, String sessionId);
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId);
 
 	public void logWrongAccess(String username, String ipAddress, String sessionId);
 
@@ -193,4 +193,25 @@ public interface IUserDAO {
 
 	public void setAcceptanceVersion(String username, Integer acceptanceVersion);
 
+	/**
+	 * gestione dei soggetti impresa associati ad un operatore economico con account SSO
+	 */
+	public List<DelegateUser> loadProfiliSSO(String username, String delegate);
+	
+	public DelegateUser loadProfiloSSO(String username, String delegate);
+	
+	public void deleteProfiloSSO(String username, String delegate);
+	
+	public void addProfiloSSO(DelegateUser delegateUser);
+	
+	public void updateProfiloSSO(DelegateUser delegateUser);
+	
+	public boolean lockProfiloSSOAccess(String username, String delegate, String functionId);
+	
+	public boolean unlockProfiloSSOAccess(String username, String delegate);
+	
+	public DelegateUser loadProfiloSSOAccess(String username, String delegate);
+	
+	public List<DelegateUser> loadProfiliSSOAccesses(String username);
+	
 }

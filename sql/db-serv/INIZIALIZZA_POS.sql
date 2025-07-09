@@ -152,7 +152,7 @@ INSERT INTO authusers (username, passwd, registrationdate, lastaccess, lastpassw
 -- personalizzazioni rispetto allo standard jAPS+plugin ufficiali
 ------------------------------------------------------------------------
 
-ALTER TABLE authusers ADD delegateuser character varying(40) NULL;
+ALTER TABLE authusers ADD delegateuser character varying(320) NULL;
 ALTER TABLE authusers ADD crc VARCHAR(64);
 ALTER TABLE authusers ADD acceptance_version integer;
 ALTER TABLE authusers ALTER COLUMN passwd TYPE VARCHAR(64); 
@@ -240,19 +240,45 @@ CREATE TABLE ppcommon_events (
   id integer NOT NULL DEFAULT NEXTVAL('ppcommon_events_id_seq'),
   eventtime timestamp NOT NULL DEFAULT now(),
   eventlevel numeric(1) NOT NULL,
-  username character varying(40) NULL,
+  username character varying(320) NULL,
   destination character varying(40) NULL,
   eventtype character varying(20) NOT NULL,
   message character varying(500) NOT NULL,
   detailmessage character varying(4000) NULL,
   ipaddress character varying(40) NULL,
-  sessionid character varying(100) NULL
+  sessionid character varying(100) NULL,
+  delegate character varying(320) NULL,
+  exporttime timestamp NULL
 );
 
 ALTER TABLE ONLY ppcommon_events
     ADD CONSTRAINT ppcommon_events_pk PRIMARY KEY (id);
 
+-------------------------------------------------------
+-- NUOVE TABELLA PER LA GESTIONE DEI PROFILI UTENTE SSO
+-------------------------------------------------------
 
+CREATE TABLE authusers_delegates (
+  username character varying(40) NOT NULL,
+  delegate character varying(320) NOT NULL,
+  rolename character varying(20),
+  description character varying(40),
+  email character varying(320)
+);
+
+ALTER TABLE ONLY authusers_delegates
+    ADD CONSTRAINT authusers_delegates_pk PRIMARY KEY (username, delegate);
+
+CREATE TABLE ppcommon_delegate_accesses (
+  username character varying(40) NOT NULL,
+  delegate character varying(320) NOT NULL,
+  functionid character varying(50),
+  logintime timestamp without time zone NOT NULL DEFAULT now(),
+  logouttime timestamp without time zone
+);
+
+ALTER TABLE ONLY ppcommon_delegate_accesses
+    ADD CONSTRAINT ppcommon_delegate_accesses_pk PRIMARY KEY (username, delegate, functionid);
 
 ------------------------------------------
 -- POPOLAMENTO TABELLE STANDARD JAPS 2.0.10
@@ -337,6 +363,8 @@ INSERT INTO authrolepermissions(rolename, permissionname) VALUES ('cms', 'enterB
 -- autorizzazioni di altri utenti standard
 ------------------------------------------------------------------------
 
+<profile id="15301551006" typecode="PFI" typedescr="Profilo impresa"><descr /><groups /><categories /><attributes><attribute name="Nome" attributetype="Monotext"><monotext>Service Appalti</monotext></attribute><attribute name="email" attributetype="Monotext"><monotext>helpdesk.adadvice@gmail.com</monotext></attribute></attributes></profile>', 0);
+
 --------------------------------------------------
 -- ALLINEAMENTO DELLE VERSIONI DEI PLUGIN
 --------------------------------------------------
@@ -344,4 +372,4 @@ INSERT INTO authrolepermissions(rolename, permissionname) VALUES ('cms', 'enterB
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('japs', '2.0.10', CURRENT_TIMESTAMP);
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('jpuserreg', '1.1', CURRENT_TIMESTAMP);
 INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('jpuserprofile', '1.5', CURRENT_TIMESTAMP);
-INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '3.24.0', CURRENT_TIMESTAMP);
+INSERT INTO ppcommon_ver(plugin, version, lastupdate) VALUES ('ppcommon', '4.8.0', CURRENT_TIMESTAMP);

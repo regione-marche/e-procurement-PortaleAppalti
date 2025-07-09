@@ -81,7 +81,7 @@ public class DgueRtiAction extends DgueAction {
 					}
 				};
 
-			log.info("DgueRtiAction - Time execution: {} ms", (System.currentTimeMillis() - start));
+			log.debug("DgueRtiAction - Time execution: {} ms", (System.currentTimeMillis() - start));
 		}
 
 		return SUCCESS;

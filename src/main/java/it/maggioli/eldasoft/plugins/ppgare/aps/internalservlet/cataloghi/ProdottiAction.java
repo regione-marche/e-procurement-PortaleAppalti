@@ -3,6 +3,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.inject.Inject;
@@ -29,6 +30,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.P
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -58,6 +61,7 @@ import java.util.Map;
  * @author Marco Perazzetta
  * @since 1.8.6
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -411,6 +415,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return il target a cui andare
 	 */
 	public String confirmDeleteProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		try {
 			if (null != this.getCurrentUser() 
 				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
@@ -449,6 +460,12 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 */
 	public String undoProdotto() {
 		boolean procedi = true;
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
 		
 		if (null != this.getCurrentUser() 
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
@@ -521,6 +538,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return Il codice del risultato dell'azione.
 	 */
 	public String deleteProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		try {
 			if (null != this.getCurrentUser() 
 				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
@@ -700,7 +724,7 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 			}
 		}
 		
-		return comunicazione;			
+		return comunicazione;
 	}
 
 	/**
@@ -710,6 +734,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return il target a cui andare
 	 */
 	public String cancelUndoProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		this.undo = false;
 		if (this.fromDetail) {
 			this.setTarget("dettaglioProdotto");
@@ -725,6 +756,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return il target a cui andare
 	 */
 	public String cancelDeleteProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		this.delete = false;
 		this.setTarget("prodottiSistema");
 		return this.getTarget();
@@ -737,6 +775,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 */
 	public String confirmReinsertProdotto() {
 		this.setTarget("dettaglioProdotto");
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		try {
 			if (null != this.getCurrentUser() 
 				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
@@ -765,6 +810,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return Il codice del risultato dell'azione.
 	 */
 	public String reinsertProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+		
 		try {
 			boolean controlliOk = true;
 			if (null != this.getCurrentUser() 
@@ -858,6 +910,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return il target a cui andare
 	 */
 	public String cancelReinsertProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		this.reinsert = false;
 		this.setTarget("dettaglioProdotto");
 		return this.getTarget();
@@ -871,6 +930,12 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 */
 	public String confirmUndoAllProdotto() {
 		this.setTarget("prodottiCarrello");
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
 		
 		CarrelloProdottiSessione carrelloProdotti = (CarrelloProdottiSessione) session
 			.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI);
@@ -897,6 +962,12 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	public String undoAllProdotto() {
 		this.setTarget("gestioneProdotti");
 		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		Event evento = null;
 		
 		CarrelloProdottiSessione carrelloProdotti = (CarrelloProdottiSessione) session
@@ -930,7 +1001,7 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 //				evento.setLevel(Event.Level.INFO);
 //				evento.setEventType(PortGareEventsConstants.???);
 //				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-//				evento.setSessionId(this.getRequest().getSession().getId()); 				
+//				evento.setSessionId(this.getRequest().getSession().getId());
 				
 			} catch (Throwable ex) {
 				ApsSystemUtils.logThrowable(ex, this, "undoAllProdotto");
@@ -939,7 +1010,7 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 			} finally {
 //				if(evento != null) {
 //					this.eventManager.insertEvent(evento);
-//				}				
+//				}
 			}
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));
@@ -956,6 +1027,13 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 	 * @return il target a cui andare
 	 */
 	public String cancelUndoAllProdotto() {
+		
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		this.undoAll = false;
 		this.setTarget("prodottiCarrello");
 		return this.getTarget();
@@ -1047,10 +1125,10 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 				comunicazione, 
 				datiModificheProdotti, 
 				nomeFile, 
-				descrizioneFile, 				
+				descrizioneFile,
 				riepilogoFirmato, 
 				descrizioneFileRiepilogoFirmato, 
-				tipoOperazione);		
+				tipoOperazione);
 
 		// FASE 4: invio comunicazione
 		comunicazione.getDettaglioComunicazione().setId(comunicazioniManager.sendComunicazione(comunicazione));
@@ -1102,7 +1180,7 @@ public class ProdottiAction extends EncodedDataAction implements SessionAware {
 			allegati = new AllegatoComunicazioneType[] { allegatoXml };
 		}
 
-		comunicazione.setAllegato(allegati);		
+		comunicazione.setAllegato(allegati);
 	}
 
 }

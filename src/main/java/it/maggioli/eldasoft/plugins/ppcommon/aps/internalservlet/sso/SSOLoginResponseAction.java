@@ -4,18 +4,22 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
+import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.system.services.controller.control.Authenticator;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
-import com.agiletec.aps.util.DefaultApsEncrypter;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.IUserProfileManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AbilitaAccessoSSOAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.AccessoSimultaneoBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
@@ -23,15 +27,19 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event.Level;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.regimpresa.IRegistrazioneImpresaManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +58,7 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 	private IURLManager urlManager;
 	private IEventManager eventManager;
 	private IUserProfileManager userProfileManager;
+	private ConfigInterface configManager;
 
 	private String urlRedirect;
 	private String id;
@@ -68,10 +77,6 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		this._registrazioneImpresaManager = registrazioneImpresaManager;
 	}
 
-	public void setUserManager(IUserManager userManager) {
-		this.userManager = userManager;
-	}
-	
 	public void setPageManager(IPageManager pageManager) {
 		this.pageManager = pageManager;
 	}
@@ -88,8 +93,16 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		this.userProfileManager = userProfileManager;
 	}
 
+	public void setUserManager(IUserManager userManager) {
+		this.userManager = userManager;
+	}
+
+	public void setConfigManager(ConfigInterface configManager) {
+		this.configManager = configManager;
+	}
+
 	public String getUrlRedirect() {
-		return this.urlRedirect ;
+		return this.urlRedirect;
 	}
 
 	public String getId() {
@@ -112,6 +125,7 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		evento.setLevel(Level.INFO);
 		evento.setEventType(PortGareEventsConstants.LOGIN_SSO);
 		try {
+			HeaderParamsSSO header = HeaderParamsSSO.getFromSession(); 
 			AccountSSO accountSSO = (AccountSSO) this.getRequest().getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 			String token = (String) this.getRequest().getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO_TOKEN);
 			boolean redirectCollegaUtenza = false; 
@@ -153,29 +167,37 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 					redirectCollegaUtenza = true;
 				} else {
 					// Recupero lista delle imprese associate a questo soggetto fisico
-					List<UserDetails> impreseAssociate  = new ArrayList<UserDetails>();
+					List<UserDetails> impreseAssociate = accountSSO.getImpresaAssociateAttive();
 
-					impreseAssociate.addAll(this._registrazioneImpresaManager.getImpreseAssociate(accountSSO.getLogin()));					
+					// se esiste un'unica impresa associata effettua il login... 
+					if(impreseAssociate.size() == 1) {
+						UserDetails user = impreseAssociate.get(0);
 
-					// UNICA IMPRESA ASSOCIATA
-					if(isUnicaImpresaAttiva(impreseAssociate)){
+						// aggiorna in sessione il profilo SSO del soggetto impresa ed esegui il login
+						accountSSO.loadProfilo(user.getUsername());
 
-						User user = getUnicaImpresaAttiva(impreseAssociate);
-
+						// aggiorna i parametri (username, password) per il login 
 						this.getRequest().getSession().setAttribute("username", user.getUsername());
 						this.getRequest().getSession().setAttribute("password", Authenticator.PASSE_PARTOUT);
 
 						// registrazione dell'evento di login come impresa da parte del soggetto fisico
 						evento.setEventType(PortGareEventsConstants.LOGIN_AS);
 						evento.setMessage("Accesso del soggetto " + accountSSO.getLogin() +
-								" autenticato mediante single sign on come " +
-								impreseAssociate.get(0).getUsername());
+										  " autenticato mediante single sign on come " + impreseAssociate.get(0).getUsername());
 					}
 				}
 			}
-			if(redirectCollegaUtenza) {
-				this.urlRedirect = getPageURL("ppgare_registr") +
-					"?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openCollegaUtenzaSSO.action&currentFrame=7&token=" + token;
+			
+			// in caso si arrivi da AbilitaAccessoSSOaction 
+			// si fa il redirect a "do/FrontEnd/AreaPers/shibboletLoginResponse.action"
+			// per concludere l'aggiornamento del delegate user
+			boolean fromAbilitaAccessoSSO = (header != null && AbilitaAccessoSSOAction.class.getName().equalsIgnoreCase(header.getCallback()));
+			if(fromAbilitaAccessoSSO) {
+				this.urlRedirect = configManager.getParam(SystemConstants.PAR_APPL_BASE_URL)
+						+ "do/FrontEnd/AreaPers/shibboletLoginResponse.action";
+			} else if(redirectCollegaUtenza) {
+				this.urlRedirect = getPageURL("ppgare_registr")
+					+ "?actionPath=/ExtStr2/do/FrontEnd/RegistrImpr/openCollegaUtenzaSSO.action&currentFrame=7&token=" + token;
 			} else {
 				this.urlRedirect = getPageURL(paginaDestinazione);
 			}
@@ -192,7 +214,9 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		return target;
 	}
 
-	/** Metodo che mi permette di effettuare il login "nei panni" di un operatore economico. */
+	/** 
+	 * Metodo che mi permette di effettuare il login "nei panni" di un operatore economico. 
+	 */
 	public String loginAs() {
 		String target = SUCCESS;
 
@@ -200,18 +224,32 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		evento.setLevel(Event.Level.INFO);
 		evento.setEventType(PortGareEventsConstants.LOGIN_AS);
 
-		AccountSSO delegateUser = (AccountSSO)this.session.get(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
+		AccountSSO accountSSO = (AccountSSO)this.session.get(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 
 		try {
-			evento.setIpAddress(delegateUser.getIpAddress());
+			evento.setIpAddress(accountSSO.getIpAddress());
 			evento.setSessionId(this.getRequest().getSession().getId());
 
 			// recupero dell'utenza per conto della quale ci si deve loggare
-			User user = (User)userManager.getUser(this.id);
+			User user = (User)this.userManager.getUser(this.id);
+
+			// recupera il profilo del soggetto impresa ed esegui il login del profilo
+			DelegateUser profilo = accountSSO.loadProfilo(this.id);
+			
+			// verifica le 2 modalita' di login, login come OWNER o login come soggetto abilitato dall'owner per la ditta
+			String delegateUser = (user != null && StringUtils.isNotEmpty(user.getDelegateUser()) 
+									? user.getDelegateUser() : null);
+			String ssoLogin = (delegateUser != null && StringUtils.isNotEmpty(accountSSO.getLogin()) 
+									? accountSSO.getLogin() : null);
+			String username = (profilo != null && StringUtils.isNotEmpty(profilo.getUsername()) 
+									? profilo.getUsername() : null);
+			
+			boolean loginAsSoggettoOwner = (delegateUser != null && delegateUser.equalsIgnoreCase(ssoLogin));
+			boolean loginAsSoggettoAbilitato = (username != null && username.equalsIgnoreCase(this.id));
 
 			// si entra esclusivamente se l'utente risulta associato come utente delegato sul soggetto in input
 			// nota: si blocca in questo modo eventuali manipolazioni dei dati per accedere ad altri utenti
-			if (user != null && user.getDelegateUser() != null && delegateUser != null && user.getDelegateUser().equals(delegateUser.getLogin())) {
+			if (loginAsSoggettoOwner || loginAsSoggettoAbilitato) {
 				// nel caso di autenticazione mediante single sign on si
 				// demandano al sistema esterno di autenticazione la gestione
 				// della scadenza dell'utente per inattivita' e della durata
@@ -221,31 +259,34 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 				IUserProfile profiloImpresa = (IUserProfile)this.userProfileManager.getProfile(user.getUsername());
 
 				evento.setUsername(user.getUsername());
-				evento.setMessage("Accesso del soggetto " + delegateUser.getLogin() +
-						" come " +
-						(String) profiloImpresa.getValue("Nome"));
+				evento.setMessage("Accesso del soggetto " + accountSSO.getLogin() +
+								  " come " + (String) profiloImpresa.getValue("Nome"));
 				session.put("username", user.getUsername());
 				session.put("password", Authenticator.PASSE_PARTOUT);
 				this.urlRedirect = getPageURL("ppcommon_area_personale");
-			}else{
+			} else {
 			    if (user != null) {
 	                evento.setUsername(user.getUsername());
 			    }
 			    evento.setLevel(Level.ERROR);
-				evento.setMessage("Operatore economico non associato al soggetto " + delegateUser.getLogin());
+				evento.setMessage("Operatore economico non associato al soggetto " + accountSSO.getLogin());
 				this.addActionError(this.getText("Errors.unexpected"));
 				this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
 				target = INPUT;
 			}
-		} catch (ApsSystemException e1) {
-			evento.setLevel(Level.ERROR);
-			evento.setError(e1);
-			evento.setMessage("Autenticazione del soggetto " + delegateUser.getLogin() +
-						" come operatore economico");
-            this.addActionError(this.getText("Errors.unexpected"));
+		} catch (Exception ex) {
+			if(ex instanceof NullPointerException) {
+				// sessione invalidata...
+				getRequest().getSession().invalidate();
+			} else {
+				evento.setLevel(Level.ERROR);
+				evento.setError(ex);
+				evento.setMessage("Autenticazione del soggetto " + accountSSO.getLogin() + " come operatore economico");
+			}
+			this.addActionError(this.getText("Errors.unexpected"));
             this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
 			target = INPUT;
-		} finally{
+		} finally {
 			eventManager.insertEvent(evento);
 		}
 
@@ -259,7 +300,6 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 	 */
 	private String getPageURL(String page) {
 		RequestContext reqCtx = new RequestContext();
-//		Lang currentLang = this.getLangManager().getDefaultLang();
 		IPage pageDest = this.pageManager.getPage(page);
 		reqCtx.setRequest(this.getRequest());
 		reqCtx.setResponse(this._response);
@@ -274,33 +314,12 @@ public class SSOLoginResponseAction extends BaseAction implements SessionAware, 
 		return param;
 	}
 
-	private boolean isUnicaImpresaAttiva(List<UserDetails> impreseAssociate) {
-		int countImpreseAttive = 0;
-		for(int i = 0; i < impreseAssociate.size() && countImpreseAttive <=1;i++) {
-			if(!impreseAssociate.get(i).isDisabled()){
-				countImpreseAttive++;
-			}
-		}
-		return countImpreseAttive == 1;
-	}
-
-	private User getUnicaImpresaAttiva(List<UserDetails> impreseAssociate) {
-		for(int i = 0; i < impreseAssociate.size();i++){
-			User impresaCorrente =(User)impreseAssociate.get(i); 
-			if(!impresaCorrente.isDisabled()){
-				return impresaCorrente;
-			}
-		}
-		return null;
-	}
-	
     public String getUrlErrori() {
         HttpServletRequest request = this.getRequest(); 
         RequestContext reqCtx = new RequestContext();
         reqCtx.setRequest(request);
 
         reqCtx.setResponse(_response);
-//        Lang currentLang = this.getLangManager().getDefaultLang();
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_LANG, getCurrentLang());
         IPage pageDest = pageManager.getPage("portalerror");
         reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, pageDest);

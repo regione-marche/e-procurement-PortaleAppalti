@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn"   uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <es:checkCustomization var="visTabIndicizzazione" objectId="TABINF-INDICIZZAZIONE" attribute="TAB" feature="VIS" />
+<es:checkCustomization var="visExport" objectId="GARE" attribute="EXPORT" feature="VIS" />
 <es:getAppParam name = "denominazioneStazioneAppaltanteUnica" var = "stazAppUnica" scope = "page"/> 	
 
 <c:set var="cigVisibile"  value="${param.cigVisibile}"/>
@@ -24,26 +25,9 @@
 	</div>
 		
 	<s:iterator var="bando" value="listaBandi.dati" status="status">
+	
 		<div class="list-item">
-			
 			<div class="list-item-row">
-				<c:choose>
-					<c:when test="${skin != 'highcontrast' && skin != 'text'}">
-						<s:if test='%{#bando.isPnrr == "1"}'>
-							<img src="<wp:imgURL />/PNRR.svg" alt="<wp:i18n key='LABEL_IS_PNRR' />" title="<wp:i18n key='LABEL_IS_PNRR' />" style="float:right;width:40px;height:auto;" />
-						</s:if>
-						<s:if test='%{#bando.isGreen == "1"}'>
-							<img src="<wp:imgURL />/green-leaf.png" alt="<wp:i18n key='LABEL_IS_GREEN' />" title="<wp:i18n key='LABEL_IS_GREEN' />" style="float:right;width:60px;height:auto;" />
-						</s:if>
-						<s:if test='%{#bando.isRecycle == "1"}'>
-							<img src="<wp:imgURL />/green-recycle.png" alt="<wp:i18n key='LABEL_IS_RECYCLE' />" title="<wp:i18n key='LABEL_IS_RECYCLE' />" style="float:right;width:50px;height:auto;" />
-						</s:if>
-					</c:when>
-					<c:otherwise>
-						
-					</c:otherwise>
-				</c:choose>
-				
 				<label><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /> : </label>
 				<c:choose>
 					<c:when test="${! empty stazAppUnica }">
@@ -54,6 +38,23 @@
 						<s:property value="stazioneAppaltante" />
 					</c:otherwise>
 				</c:choose>
+				<div style="margin-left: auto;">
+					<c:choose>
+						<c:when test="${skin != 'highcontrast' && skin != 'text'}">
+							<s:if test='%{#bando.isPnrr == "1"}'>
+								<img src="<wp:imgURL />/PNRR.svg" alt="<wp:i18n key='LABEL_IS_PNRR' />" title="<wp:i18n key='LABEL_IS_PNRR' />" style="float:right;width:40px;height:auto;" />
+							</s:if>
+							<s:if test='%{#bando.isGreen == "1"}'>
+								<img src="<wp:imgURL />/green-leaf.png" alt="<wp:i18n key='LABEL_IS_GREEN' />" title="<wp:i18n key='LABEL_IS_GREEN' />" style="float:right;width:60px;height:auto;" />
+							</s:if>
+							<s:if test='%{#bando.isRecycle == "1"}'>
+								<img src="<wp:imgURL />/green-recycle.png" alt="<wp:i18n key='LABEL_IS_RECYCLE' />" title="<wp:i18n key='LABEL_IS_RECYCLE' />" style="float:right;width:50px;height:auto;" />
+							</s:if>
+						</c:when>
+						<c:otherwise>
+						</c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 
 			<div class="list-item-row">
@@ -143,13 +144,13 @@
 			<div class="list-action">
 				<c:choose>
 					<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>' 
 						   title='<wp:i18n key="LINK_VIEW_DETAIL" />'>
 							<wp:i18n key="LINK_VIEW_DETAIL" />
 						</a>
 					</c:when>
 					<c:otherwise>
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>' 
 						   title='<wp:i18n key="LINK_VIEW_DETAIL" />' class="bkg detail-very-big">
 							<wp:i18n key="LINK_VIEW_DETAIL" />
 						</a>
@@ -158,16 +159,17 @@
 
 				<c:if test="${visTabIndicizzazione && 
 				              (bando.iterGara != 3 && bando.iterGara != 5 && bando.iterGara != 6 && bando.iterGara != 8) && 
-							  (sessionScope.fromPage eq 'listAllInCorso' || sessionScope.fromPage eq 'listAllScaduti' || sessionScope.fromPage eq 'search')}">
+							  (sessionScope.fromPage eq 'listAllInCorso' || sessionScope.fromPage eq 'listAllScaduti' 
+							   || sessionScope.fromPage eq 'search' || sessionScope.fromPage eq 'listAllBandi')}">
 					<c:choose>
 						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Bando&amp;${tokenHrefParams}' 
+							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Bando' 
 							   title="<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />">
 								<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />
 							</a>
 						</c:when>
 						<c:otherwise>
-							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Bando&amp;${tokenHrefParams}' 
+							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Bando' 
 							   title="<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />" class="bkg table">
 								<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />
 							</a>
@@ -182,9 +184,21 @@
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
 </s:if>
 <s:else>
+	<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+	<input disabled="disabled" type="submit" style="display:none;"/>
 	<div class="list-summary">
 		<wp:i18n key="SEARCH_RESULTS_INTRO" />
 		<s:property value="model.iTotalDisplayRecords" />
 		<wp:i18n key="SEARCH_RESULTS_OUTRO" />.
 	</div>
 </s:else>
+
+<%-- export CSV excel --%>
+<s:url id="urlExport" namespace="/do/FrontEnd/Bandi" action="exportGare">
+	<s:param name="last" value="1"></s:param>
+</s:url>
+<c:if test="${visExport}">
+	<p>
+		<a href='<s:property value="%{#urlExport}" />' class="important"><wp:i18n key="LINK_EXPORT_CSV" /></a>
+	</p>
+</c:if>

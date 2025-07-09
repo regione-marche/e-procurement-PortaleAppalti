@@ -3,10 +3,22 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.prezzi_u
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageImportPrezziUnitariAction extends AbstractImportOpenPage {
+    /**
+	 * UID
+	 */
+	private static final long serialVersionUID = 4754095480598861043L;
 
-    private IAppParamManager appParamManager;
+	private IAppParamManager appParamManager;
+
     private String codice;
 
     public void setAppParamManager(IAppParamManager appParamManager) {
@@ -20,12 +32,9 @@ public class OpenPageImportPrezziUnitariAction extends AbstractImportOpenPage {
         this.codice = codice;
     }
 
-    public Integer getLimiteUploadFile() {
-        return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-    }
-
     @Override
     protected boolean isCurrentSessionExpired() {
         return GestioneBuste.getBustaEconomicaFromSession().getHelper() == null;
     }
+
 }

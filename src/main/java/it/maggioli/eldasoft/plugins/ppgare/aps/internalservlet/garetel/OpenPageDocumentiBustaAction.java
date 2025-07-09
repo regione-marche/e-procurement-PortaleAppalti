@@ -13,28 +13,31 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaDocumenti;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.dgue.DgueBuilder;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsConstants;
+
 import java.util.List;
 
+
 /**
- * Action di apertura delle pagine "busta amministrativa", "busta economica",
- * "busta tecnica".
+ * Action di apertura delle pagine "busta di prequalifica", "busta amministrativa", "busta economica", "busta tecnica".
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 	/**
 	 * UID
@@ -56,29 +59,15 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 	private IAppParamManager appParamManager;
 	private ConfigInterface configManager;
 
-	/**
-	 * Codice del bando per elenco operatori economici per il quale gestire un'iscrizione
-	 */
 	@Validate(EParamValidation.CODICE)
-	private String codice;			// codice lotto o codice gara
+	private String codice;				// codice lotto o codice gara
 	@Validate(EParamValidation.CODICE)
-	private String codiceGara;		// codice gara
+	private String codiceGara;			// codice gara
 	private int operazione;
-
-	private int dimensioneAttualeFileCaricati;
-
-	private List<DocumentazioneRichiestaType> documentiRichiesti;
-	private List<DocumentazioneRichiestaType> documentiInseriti;
-	private List<DocumentazioneRichiestaType> documentiMancanti;
-
 	private Long docRichiestoId;
 	@Validate(EParamValidation.GENERIC)
 	private String docUlterioreDesc;
 	private int tipoBusta;
-
-	/**
-	 * Store state of StrutsConstants.STRUTS_MULTIPART_SAVEDIR setting.
-	 */
 	@Validate(EParamValidation.GENERIC)
 	private String multipartSaveDir;
 	private Long iddocdig;
@@ -87,10 +76,17 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 	@Validate(EParamValidation.GENERIC)
 	private String dgueLinkThird;
 
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String url;
 
-	private boolean esisteFileConFirmaNonVerificata = Boolean.FALSE;	
+	private boolean esisteFileConFirmaNonVerificata = Boolean.FALSE;
+
+	private int dimensioneAttualeFileCaricati;
+
+	private List<DocumentazioneRichiestaType> documentiRichiesti;
+	private List<DocumentazioneRichiestaType> documentiInseriti;
+	private List<DocumentazioneRichiestaType> documentiMancanti;
+
 
 	public String getUrl() {
 		return url;
@@ -207,18 +203,9 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 	public void setTipoBusta(int tipoBusta) {
 		this.tipoBusta = tipoBusta;
 	}
-
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-
-	public Integer getLimiteTotaleUploadDocBusta() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
-	
 	
 	/**
-	 * Espone la costante 
+	 * Espone la costante per le pagine JSP 
 	 * 		PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO
 	 * 		PortGareSystemConstants.DOCUMENTO_FORMATO_PDF
 	 *  	PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL
@@ -226,42 +213,23 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 	 *  	PortGareSystemConstants.BUSTA_TECNICA 
 	 *  	PortGareSystemConstants.BUSTA_ECONOMICA 
 	 *  	PortGareSystemConstants.BUSTA_PRE_QUALIFICA 
-	 * alle pagine JSP  
 	 */ 
-	public int getDOCUMENTO_FORMATO_FIRMATO() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO;
-	}
-	
-	public int getDOCUMENTO_FORMATO_PDF() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF;
-	}
-
-	public int getDOCUMENTO_FORMATO_EXCEL() {
-		return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL;
-	}
-	
-	public int getBUSTA_AMMINISTRATIVA() {
-		return PortGareSystemConstants.BUSTA_AMMINISTRATIVA;
-	}
-	
-	public int getBUSTA_TECNICA() {
-		return PortGareSystemConstants.BUSTA_TECNICA;
-	}
-	
-	public int getBUSTA_ECONOMICA() {
-		return PortGareSystemConstants.BUSTA_ECONOMICA;
-	}
-
-	public int getBUSTA_PRE_QUALIFICA() {
-		return PortGareSystemConstants.BUSTA_PRE_QUALIFICA;
-	}
-
+	public int getDOCUMENTO_FORMATO_FIRMATO() { return PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO; }	
+	public int getDOCUMENTO_FORMATO_PDF() { return PortGareSystemConstants.DOCUMENTO_FORMATO_PDF; }
+	public int getDOCUMENTO_FORMATO_EXCEL() { return PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL; }	
+	public int getBUSTA_AMMINISTRATIVA() { return PortGareSystemConstants.BUSTA_AMMINISTRATIVA; }	
+	public int getBUSTA_TECNICA() { return PortGareSystemConstants.BUSTA_TECNICA; }	
+	public int getBUSTA_ECONOMICA() { return PortGareSystemConstants.BUSTA_ECONOMICA; }
+	public int getBUSTA_PRE_QUALIFICA() { return PortGareSystemConstants.BUSTA_PRE_QUALIFICA; }
 	
 	/**
 	 * Setta la pagina del wizard in base alla busta
 	 */
 	private void setPage() {
 		switch (this.tipoBusta) {
+			case PortGareSystemConstants.BUSTA_PRE_QUALIFICA:
+				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, PortGareSystemConstants.WIZARD_PAGINA_DOC_BUSTA_PREQ);
+				break;
 			case PortGareSystemConstants.BUSTA_AMMINISTRATIVA:
 				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, PortGareSystemConstants.WIZARD_PAGINA_DOC_BUSTA_AMM);
 				break;
@@ -270,9 +238,6 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 				break;
 			case PortGareSystemConstants.BUSTA_ECONOMICA:
 				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, PortGareSystemConstants.WIZARD_PAGINA_DOC_BUSTA_ECO);
-				break;
-			case PortGareSystemConstants.BUSTA_PRE_QUALIFICA:
-				this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, PortGareSystemConstants.WIZARD_PAGINA_DOC_BUSTA_PREQ);
 				break;
 			default:
 				break;
@@ -316,7 +281,6 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 							codGara, 
 							null,
 							this.operazione);
-					
 					gestioneBuste.get();
 				}
 				
@@ -327,7 +291,10 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 				WizardPartecipazioneHelper partecipazione = gestioneBuste.getBustaPartecipazione().getHelper();
 				RiepilogoBusteHelper riepilogo = gestioneBuste.getBustaRiepilogo().getHelper();
 				BustaDocumenti busta = gestioneBuste.getBusta(this.tipoBusta);
+				getUploadValidator().setHelper(busta);
+				
 				busta.get();
+				
 				WizardDocumentiBustaHelper documentiBustaHelper = busta.getHelperDocumenti();
 				documentiBustaHelper.setCodice(cod);
 				
@@ -373,14 +340,6 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 							this.setDocumentiMancanti(busta.getDocumentiMancantiDB());
 							this.setDocumentiInseriti(busta.getDocumentiInseritiDB());
 							this.setDocumentiRichiesti(busta.getDocumentiRichiestiDB());
-							
-							// si aggiorna il totale dei file finora caricati
-//							for (Integer s : documentiBustaHelper.getDocRichiestiSize()) {
-//								this.dimensioneAttualeFileCaricati += s;
-//							}
-//							for (Integer s : documentiBustaHelper.getDocUlterioriSize()) {
-//								this.dimensioneAttualeFileCaricati += s;
-//							}
 							
 							if(SUCCESS.equals(this.getTarget()) || 
 							   SUCCESS_QUESTIONARIO.equals(this.getTarget())) 
@@ -452,16 +411,15 @@ public class OpenPageDocumentiBustaAction extends AbstractOpenPageAction {
 							}
 							
 							// verifica se esiste un allegato firmato non verificato
+							dimensioneAttualeFileCaricati += documentiBustaHelper.getTotalSize();
 							if (CollectionUtils.isNotEmpty(documentiBustaHelper.getRequiredDocs())) {
-								dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getRequiredDocs());
 								esisteFileConFirmaNonVerificata =
 										documentiBustaHelper.getRequiredDocs()
 												.stream()
 												.anyMatch(attachment -> attachment.getFirmaBean() != null && !attachment.getFirmaBean().getFirmacheck());
 								logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 							}
-							if (CollectionUtils.isNotEmpty(documentiBustaHelper.getAdditionalDocs())) {
-								dimensioneAttualeFileCaricati += Attachment.sumSize(documentiBustaHelper.getAdditionalDocs());
+							if (CollectionUtils.isNotEmpty(documentiBustaHelper.getAdditionalDocs())) {								
 								esisteFileConFirmaNonVerificata =
 										documentiBustaHelper.getAdditionalDocs()
 												.stream()

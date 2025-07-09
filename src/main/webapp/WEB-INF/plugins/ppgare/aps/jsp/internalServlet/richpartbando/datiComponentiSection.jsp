@@ -37,105 +37,116 @@
 
 <s:hidden id="quotaRTIVisibile" name="quotaRTIVisibile" value='%{#helper.rti && #isPartecipazione}' />
 <s:hidden id="quotaVisibile" name="quotaVisibile" value='%{#helper.rti && #isPartecipazione}' />
+<s:hidden id="readOnly" name="readOnly" value="%{readOnly}" />
 
+<s:if test="%{!readOnly}">
+	<script type="text/javascript">
 
-<script type="text/javascript">
+	var optPartitaIVALiberoProfessionista;
+	var codiciLiberoProfessionista;
+	var optPartitaIVAImpresaSociale;
+	var codiciImpresaSociale;
 
-var optPartitaIVALiberoProfessionista;
-var codiciLiberoProfessionista;
-var optPartitaIVAImpresaSociale;
-var codiciImpresaSociale;
+	<!--//--><![CDATA[//><!--
+		$(document).ready(function() {
 
-<!--//--><![CDATA[//><!--
-	$(document).ready(function() {
-		
-		<c:set var="cfg" value=""/>
-		<c:forEach items="${maps['checkPILiberoProf']}" var="currentItem">
-			<c:set var="cfg" value="${currentItem.value}" />
-		</c:forEach>
+			<c:set var="cfg" value=""/>
+			<c:forEach items="${maps['checkPILiberoProf']}" var="currentItem">
+				<c:set var="cfg" value="${currentItem.value}" />
+			</c:forEach>
 
-		optPartitaIVALiberoProfessionista = "<c:out value="${cfg}"/>";
+			optPartitaIVALiberoProfessionista = "<c:out value="${cfg}"/>";
 
-		<c:set var="codici" value="#"/> 
-		<c:forEach items="${maps['tipiImpresaLiberoProf']}" var="currentItem">
-			<c:set var="codici" value="${codici}${currentItem.key}#" />
-		</c:forEach>
+			<c:set var="codici" value="#"/>
+			<c:forEach items="${maps['tipiImpresaLiberoProf']}" var="currentItem">
+				<c:set var="codici" value="${codici}${currentItem.key}#" />
+			</c:forEach>
 
-		codiciLiberoProfessionista = "<c:out value="${codici}"/>"; 
+			codiciLiberoProfessionista = "<c:out value="${codici}"/>";
 
-		<c:set var="cfg" value=""/>
-		<c:forEach items="${maps['checkPIImprSociale']}" var="currentItem">
-			<c:set var="cfg" value="${currentItem.value}" />
-		</c:forEach>
+			<c:set var="cfg" value=""/>
+			<c:forEach items="${maps['checkPIImprSociale']}" var="currentItem">
+				<c:set var="cfg" value="${currentItem.value}" />
+			</c:forEach>
 
-		optPartitaIVAImpresaSociale = "<c:out value="${cfg}"/>";
+			optPartitaIVAImpresaSociale = "<c:out value="${cfg}"/>";
 
-		<c:set var="codici" value="#"/> 
-		<c:forEach items="${maps['tipiImpresaSociale']}" var="currentItem">
-			<c:set var="codici" value="${codici}${currentItem.key}#" />
-		</c:forEach>
+			<c:set var="codici" value="#"/>
+			<c:forEach items="${maps['tipiImpresaSociale']}" var="currentItem">
+				<c:set var="codici" value="${codici}${currentItem.key}#" />
+			</c:forEach>
 
-		codiciImpresaSociale = "<c:out value="${codici}"/>"; 
-		
-		// gestisci la selezione della tipologia 'Libero professionista'
-		ivaRequired();
-		$('#tipoImpresa').on('change', function() {
+			codiciImpresaSociale = "<c:out value="${codici}"/>";
+
+			// gestisci la selezione della tipologia 'Libero professionista'
 			ivaRequired();
+			$('#tipoImpresa').on('change', function() {
+				ivaRequired();
+			});
+
+			// gestisci la selezione ambito territoriale italia/estero
+			viewIdFiscaleEstero(false);
+			$('#ambitoTerritoriale').on('change', function() {
+				viewIdFiscaleEstero(true);
+			});
+
 		});
-		
-		// gestisci la selezione ambito territoriale italia/estero
-		viewIdFiscaleEstero(false);
-		$('#ambitoTerritoriale').on('change', function() {
-			viewIdFiscaleEstero(true);
-		});
-		
-	});
-	
-	function ivaRequired() {
-		var labelIVA = $('#labelIVA');
-		labelIVA.find('span').remove(".required-field");
-		var codiceCombo = "#"+$('[id="tipoImpresa"] option:selected').val()+"#";
-		if(codiciLiberoProfessionista.indexOf(codiceCombo) >= 0 && optPartitaIVALiberoProfessionista=="1" ){
+
+		function ivaRequired() {
+			var labelIVA = $('#labelIVA');
 			labelIVA.find('span').remove(".required-field");
-		} else if(codiciImpresaSociale.indexOf(codiceCombo) >= 0 && optPartitaIVAImpresaSociale=="1" ){
-			labelIVA.find('span').remove(".required-field");
-		}else{
-			labelIVA.append('<span class="required-field">*</span>');
-		} 
-	}
-	
-	function viewIdFiscaleEstero(changeValori) {
- 		var ambitoTerritoriale = "#"+$('[id="ambitoTerritoriale"] option:selected').val()+"#";
-		if(ambitoTerritoriale == "#1#") {
-			$('[id="nazione"] option[value="Italia"]').attr("disabled", false);
-			if (changeValori) {
-				$('[id="nazione"]').val("Italia");
-				$('[id="idFiscaleEstero"]').val("");
+			var codiceCombo = "#"+$('[id="tipoImpresa"] option:selected').val()+"#";
+			if(codiciLiberoProfessionista.indexOf(codiceCombo) >= 0 && optPartitaIVALiberoProfessionista=="1" ){
+				labelIVA.find('span').remove(".required-field");
+			} else if(codiciImpresaSociale.indexOf(codiceCombo) >= 0 && optPartitaIVAImpresaSociale=="1" ){
+				labelIVA.find('span').remove(".required-field");
+			}else{
+				labelIVA.append('<span class="required-field">*</span>');
 			}
-			$('.clsAmbitoTerIT').show();
-			$('.clsAmbitoTerEE').hide();
-		} else if(ambitoTerritoriale == "#2#"){
-			//$('[id="nazione"]').val("");
-			$('[id="nazione"] option[value="Italia"]').attr("disabled", true);
-			if (changeValori) {
+		}
+
+		function viewIdFiscaleEstero(changeValori) {
+			var ambitoTerritoriale = "#"+$('[id="ambitoTerritoriale"] option:selected').val()+"#";
+			if(ambitoTerritoriale == "#1#") {
+				$('[id="nazione"] option[value="Italia"]').attr("disabled", false);
+				if (changeValori) {
+					$('[id="nazione"]').val("Italia");
+					$('[id="idFiscaleEstero"]').val("");
+				}
+				$('.clsAmbitoTerIT').show();
+				$('.clsAmbitoTerEE').hide();
+				$('[id="codiceFiscale"]').prop('maxLength', 16);
+				$('[id="partitaIVA"]').prop('maxLength', 16);
+				$('[id="idFiscaleEstero"]').prop('maxLength', 16);
+			} else if(ambitoTerritoriale == "#2#"){
+				//$('[id="nazione"]').val("");
+				$('[id="nazione"] option[value="Italia"]').attr("disabled", true);
+				if (changeValori) {
+					$('[id="nazione"]').val("");
+					$('[id="codiceFiscale"]').val("");
+					$('[id="partitaIVA"]').val("");
+				}
+				$('.clsAmbitoTerIT').hide();
+				$('.clsAmbitoTerEE').show();
+				$('[id="codiceFiscale"]').prop('maxLength', 30);
+				$('[id="partitaIVA"]').prop('maxLength', 30);
+				$('[id="idFiscaleEstero"]').prop('maxLength', 30);
+			}else{
 				$('[id="nazione"]').val("");
+				$('[id="nazione"] option[value="Italia"]').attr("disabled", false);
 				$('[id="codiceFiscale"]').val("");
 				$('[id="partitaIVA"]').val("");
+				$('[id="idFiscaleEstero"]').val("");
+				$('.clsAmbitoTerIT').hide();
+				$('.clsAmbitoTerEE').hide();
+				$('[id="codiceFiscale"]').prop('maxLength', 16);
+				$('[id="partitaIVA"]').prop('maxLength', 16);
+				$('[id="idFiscaleEstero"]').prop('maxLength', 16);
 			}
-			$('.clsAmbitoTerIT').hide();
-			$('.clsAmbitoTerEE').show();
-		}else{
-			$('[id="nazione"]').val("");
-			$('[id="nazione"] option[value="Italia"]').attr("disabled", false);
-			$('[id="codiceFiscale"]').val("");
-			$('[id="partitaIVA"]').val("");
-			$('[id="idFiscaleEstero"]').val("");
-			$('.clsAmbitoTerIT').hide();
-			$('.clsAmbitoTerEE').hide();
 		}
-	}
-//--><!]]>
-</script>
+	//--><!]]>
+	</script>
+</s:if>
 
 <s:if test="%{#helper.rti}">
 	<c:set var="deleteSentence"><wp:i18n key='LABEL_QUESTION_CONFIRM_DEL_MANDANTE'/></c:set>
@@ -149,11 +160,11 @@ var codiciImpresaSociale;
 </s:if>
 <s:elseif test="%{#helper.impresa.consorzio}">
 	<c:set var="deleteSentence"><wp:i18n key='LABEL_QUESTION_CONFIRM_DEL_CONSORZIATA'/></c:set>
-	<c:set var="skipLista"><wp:i18n key='LABEL_SKIP_CONSORZIATE'/></c:set>
+	<c:set var="skipLista"><wp:i18n key='LABEL_SKIP_CONSORZIATE_ESECUTRICI'/></c:set>
 	<c:set var="fieldsetTableTitle"><wp:i18n key='LABEL_ELENCO_CONSORZIATE'/></c:set>
 	<c:set var="titoloTabella"><wp:i18n key='LABEL_ELENCO_CONSORZIATE'/></c:set>
-	<c:set var="modifyTitle"><wp:i18n key='LABEL_MODIFICA_CONSORZIATE'/></c:set>
-	<c:set var="deleteTitle"><wp:i18n key='LABEL_ELIMINA_CONSORZIATE'/></c:set>
+	<c:set var="modifyTitle"><wp:i18n key='LABEL_MODIFICA_CONSORZIATA'/></c:set>
+	<c:set var="deleteTitle"><wp:i18n key='LABEL_ELIMINA_CONSORZIATA'/></c:set>
 	<wp:i18n key='LABEL_CONSORZIATA' var="labelConsorziata"/>
 	<c:set var="obj" value="${fn:toLowerCase(attr.labelConsorziata)}" />
 </s:elseif>
@@ -177,11 +188,18 @@ var codiciImpresaSociale;
 	</div>
 </s:if>
 <s:elseif test="%{confirmNoConsorziate}">
-	<p class="question"><wp:i18n key='LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA'/></p>
+	<p class="question">
+		<s:if test="%{#invioOfferta}">
+			<wp:i18n key='LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA_OFF'/>
+		</s:if>
+		<s:else>
+			<wp:i18n key='LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA'/>
+		</s:else> 
+	</p>
 	<%-- si inseriscono dei valori fittizi per far trovare i campi all'xml di validazione --%>
 	<input type="hidden" name="ragioneSociale" />
 	<input type="hidden" name="tipoImpresa" />
-	<input type="hidden" name="nazione" value="*" />
+	<input type="hidden" name="nazione" value="" />
 	<input type="hidden" name="codiceFiscale" />
 	<input type="hidden" name="partitaIVA" />
 	<input type="hidden" name="ambitoTerritoriale" value="1" />	
@@ -263,8 +281,8 @@ var codiciImpresaSociale;
 						<label><wp:i18n key="LABEL_IDENTIFICATIVO_FISCALE_ESTERO" /> : </label>
 					</div>
 					<div class="element">
-						<%-- OLD <s:property value="%{#session[#sessionId].datiPrincipaliImpresa.codiceFiscale}"/> --%>
-						<s:property value="%{#helper.datiPrincipaliImpresa.idFiscaleEstero}"/>
+						<%-- <s:property value="%{#helper.datiPrincipaliImpresa.idFiscaleEstero}"/> ??? --%>
+						<s:property value="%{#helper.datiPrincipaliImpresa.codiceFiscale}"/> 
 					</div>
 				</div>
 			</s:elseif>
@@ -287,11 +305,11 @@ nessunaPrequalifica=<s:property value="%{#nessunaPrequalifica}" /><br/>
 					<div class="element">
 
 						<%-- per le gare ristrette la quota NON e' editabile --%>
-						<s:textfield name="strQuotaRTI" id="strQuotaRTI" value="%{quotaRTI != null ? quotaRTI : strQuotaRTI}" 
-									maxlength="6" size="15" 
-									readonly="%{!#partecipazione.editRTI && (#invioOfferta && #garaRistretta && #nessunaPrequalifica)}"
-									cssClass="%{#classBlocco}" 
-									aria-required="true" />
+							<s:textfield name="strQuotaRTI" id="strQuotaRTI" value="%{quotaRTI != null ? quotaRTI : strQuotaRTI}"
+										 maxlength="6" size="15"
+										 readonly="%{(!#partecipazione.editRTI && (#invioOfferta && #garaRistretta && #nessunaPrequalifica)) || readOnly}"
+										 cssClass="%{#classBlocco}"
+										 aria-required="true" />
 					</div>
 				</div>
 			</s:if>
@@ -326,13 +344,14 @@ nessunaPrequalifica=<s:property value="%{#nessunaPrequalifica}" /><br/>
 					<s:if test='%{#helper.rti && #isPartecipazione}'>
 						<th scope="col">Quota</th>
 					</s:if>
-					<th scope="col"><wp:i18n key="ACTIONS" /></th>
+					<s:if test="%{!readOnly}">
+						<th scope="col"><wp:i18n key="ACTIONS" /></th>
+					</s:if>
 				</tr>
 
 				<s:if test='%{#helper.rti && !#isPartecipazione}'>
 					<s:iterator  value="%{#helper.componentiRTI}" status="status">
 						<c:if test="${status.index != 0}">
-							<tr>
 								<td><s:property value="%{ragioneSociale}"/></td>
 								<td><s:property value="%{codiceFiscale}"/></td>
 								<td><s:property value="%{partitaIVA}"/></td>
@@ -344,32 +363,34 @@ nessunaPrequalifica=<s:property value="%{#nessunaPrequalifica}" /><br/>
 									<td><s:property value="%{quota}"/></td>
 								</s:if> 
 								--%>
-								<td class="azioni">
-									<ul>
-										<c:choose>
-											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														 title="${modifyTitle}">${modifyTitle}</a>
-												</li>
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														 title="${deleteTitle}">${deleteTitle}</a>
-												</li>
-											</c:when>
-											<c:otherwise>
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														 title="${modifyTitle}" class="bkg modify"></a>
-												</li>
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-														 title="${deleteTitle}" class="bkg delete"></a>
-												</li>
-											</c:otherwise>
-										</c:choose>
-									</ul>
-								</td>
+								<s:if test="{!readOnly}">
+									<td class="azioni">
+										<ul>
+											<c:choose>
+												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+													<li>
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}'
+															 title="${modifyTitle}">${modifyTitle}</a>
+													</li>
+													<li>
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}'
+															 title="${deleteTitle}">${deleteTitle}</a>
+													</li>
+												</c:when>
+												<c:otherwise>
+													<li>
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}'
+															 title="${modifyTitle}" class="bkg modify"></a>
+													</li>
+													<li>
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}'
+															 title="${deleteTitle}" class="bkg delete"></a>
+													</li>
+												</c:otherwise>
+											</c:choose>
+										</ul>
+									</td>
+								</s:if>
 							</tr>
 						</c:if>
 					</s:iterator>
@@ -386,32 +407,34 @@ nessunaPrequalifica=<s:property value="%{#nessunaPrequalifica}" /><br/>
 							<s:if test='%{#helper.rti && #isPartecipazione}'>
 								<td><s:property value="%{quota}"/></td>
 							</s:if>
-							<td class="azioni">
-								<ul>
-									<c:choose>
-										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-													 title="${modifyTitle}">${modifyTitle}</a>
-											</li>
-											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-													 title="${deleteTitle}">${deleteTitle}</a>
-											</li>
-										</c:when>
-										<c:otherwise>
-											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-													 title="${modifyTitle}" class="bkg modify"></a>
-											</li>
-											<li>
-												<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}&amp;${tokenHrefParams}' 
-													 title="${deleteTitle}" class="bkg delete"></a>
-											</li>
-										</c:otherwise>
-									</c:choose>
-								</ul>
-							</td>
+							<s:if test="%{!readOnly}">
+								<td class="azioni">
+									<ul>
+										<c:choose>
+											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+												<li>
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}'
+														 title="${modifyTitle}">${modifyTitle}</a>
+												</li>
+												<li>
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}'
+														 title="${deleteTitle}">${deleteTitle}</a>
+												</li>
+											</c:when>
+											<c:otherwise>
+												<li>
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/modifyComponente.action"/>&amp;id=${status.index}&amp;ext=${param.ext}'
+														 title="${modifyTitle}" class="bkg modify"></a>
+												</li>
+												<li>
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/${param.namespace}/confirmDeleteComponente.action"/>&amp;idDelete=${status.index}&amp;ext=${param.ext}'
+														 title="${deleteTitle}" class="bkg delete"></a>
+												</li>
+											</c:otherwise>
+										</c:choose>
+									</ul>
+								</td>
+							</s:if>
 						</tr>
 					</s:iterator>					
 				</s:else>
@@ -422,172 +445,173 @@ nessunaPrequalifica=<s:property value="%{#nessunaPrequalifica}" /><br/>
 	<p class="noscreen">[ <a href="#" id="formComponente"><wp:i18n key="SKIP_TO_FORM_BUTTONS"/></a> ]</p>
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/mandatory_fields_message.jsp" />
+	<s:if test="%{!readOnly}">
+		<fieldset>
+			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span>
+				<c:choose>
+					<c:when test="${empty id}">
+						<wp:i18n key="LABEL_NUOVA" /> ${obj}
+					</c:when>
+					<c:otherwise>
+						<wp:i18n key="BUTTON_EDIT" /> ${obj}
+					</c:otherwise>
+				</c:choose>
+			</legend>
 
-	<fieldset>
-		<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span>
-			<c:choose>
-				<c:when test="${empty id}">
-					<wp:i18n key="LABEL_NUOVA" /> ${obj}
-				</c:when>
-				<c:otherwise>
-					<wp:i18n key="BUTTON_EDIT" /> ${obj}
-				</c:otherwise>
-			</c:choose>
-		</legend>
-
-		<div class="fieldset-row first-row">
-			<div class="label">
-				<label for="ragioneSociale"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<s:textfield name="ragioneSociale" id="ragioneSociale" value="%{ragioneSociale}" 
-							 size="60" maxlength="2000" aria-required="true" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="tipoImpresa"><wp:i18n key="LABEL_TIPO_IMPRESA" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<wp:i18n key="OPT_CHOOSE_TIPO_IMPRESA" var="headerValueTipoImpresa" />
-				<s:select name="tipoImpresa" id="tipoImpresa" value="{tipoImpresa}" 
-							list="maps['tipiImpresaIscrAlbo']"  headerKey="" headerValue="%{#attr.headerValueTipoImpresa}" 
-							aria-required="true" >
-				</s:select>
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="ambitoTerritoriale"><wp:i18n key="LABEL_AMBITO_TERRITORIALE" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<s:select list="maps['ambitoTerritoriale']" name="ambitoTerritoriale" id="ambitoTerritoriale" value="%{ambitoTerritoriale}" 
-							headerKey="" aria-required="true" >
-				</s:select>	
-			</div>
-		</div>
-
-		<%-- ambito territoriale impresa Italia --%>
-		<div class="fieldset-row clsAmbitoTerIT">
-			<div class="label">
-				<label for="codiceFiscale"><wp:i18n key="LABEL_CODICE_FISCALE" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<s:textfield name="codiceFiscale" id="codiceFiscale" value="%{codiceFiscale}" 
-								maxlength="16" size="20" aria-required="true" />
-			</div>
-		</div>
-
-		<div class="fieldset-row clsAmbitoTerIT <s:if test='%{!#helper.rti || #isIscrizione}'>last-row</s:if> ">
-			<div class="label">
-				<label id="labelIVA" for="partitaIVA"><wp:i18n key="LABEL_PARTITA_IVA" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<s:textfield name="partitaIVA" id="partitaIVA" value="%{partitaIVA}" 
-								maxlength="16" size="20" aria-required="true" />
-			</div>
-		</div>
-
-		<%-- ambito territoriale impresa Estero --%>
-		<div class="fieldset-row clsAmbitoTerEE">
-			<div class="label">
-				<label for="nazione"><wp:i18n key="LABEL_NAZIONE" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<wp:i18n key="OPT_CHOOSE_NAZIONE" var="headerValueNazione" />
-				<s:select list="maps['nazioni']" name="nazione" id="nazione" value="%{nazione}"
-							headerKey="" headerValue="%{#attr.headerValueNazione}" 
-							aria-required="true" >
-				</s:select>
-			</div>
-		</div>
-		
-		<div class="fieldset-row clsAmbitoTerEE">
-			<div class="label">
-				<label><wp:i18n key="LABEL_IDENTIFICATIVO_FISCALE_ESTERO" /> : <span class="required-field">*</span></label>
-			</div>
-			<div class="element">
-				<s:textfield name="idFiscaleEstero" id="idFiscaleEstero" value="%{idFiscaleEstero}" 
-								maxlength="16" size="20" aria-required="true" />
-			</div>
-		</div>
-
-		<s:if test='%{#helper.rti && #isPartecipazione}'>
-			<div class="fieldset-row last-row">
+			<div class="fieldset-row first-row">
 				<div class="label">
-					<label for="strQuota"><wp:i18n key="LABEL_QUOTA_PARTECIPAZIONE" /> : <span class="required-field">*</span></label>
+					<label for="ragioneSociale"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /> : <span class="required-field">*</span></label>
 				</div>
 				<div class="element">
-					<s:textfield name="strQuota" id="strQuota" value="%{(quota != null || id == null) ? quota : strQuota}" 
-									maxlength="6" size="15" aria-required="true" />
+					<s:textfield name="ragioneSociale" id="ragioneSociale" value="%{ragioneSociale}"
+								 size="60" maxlength="2000" aria-required="true" />
 				</div>
 			</div>
-		</s:if>
-		
-		<div class="azioni">
-			<c:choose>
-				<c:when test="${empty id}">
-					<s:if test="%{#helper.rti}">
-						<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
-						<wp:i18n key="TITLE_ADD_MANDANTE" var="titleAddButton" />
-						<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
-					</s:if>
-					<s:elseif test="%{#helper.impresa.consorzio}">
-						<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
-						<wp:i18n key="TITLE_ADD_CONSORZIATA" var="titleAddButton" />
-						<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
-					</s:elseif>
-					<s:else>
-						<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
-						<wp:i18n key="TITLE_ADD_COMPONENTE" var="titleAddButton" />
-						<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
-					</s:else>
-				</c:when>
-				<c:otherwise>
-					<s:if test='%{#helper.rti && #isIscrizione}'>
-						<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
-						<wp:i18n key="TITLE_REFRESH_COMPONENTE" var="titleRefreshButton" />
-						<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
-						<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
-						<wp:i18n key="TITLE_NEW_COMPONENTE" var="titleAddButton" />
-						<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
-					</s:if>
-					<s:elseif test='%{#helper.rti && #isPartecipazione}'>
-						<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
-						<wp:i18n key="TITLE_REFRESH_MANDANTE" var="titleRefreshButton" />
-						<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="savePartecipazione"></s:submit>
-						<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
-						<wp:i18n key="TITLE_NEW_MANDANTE" var="titleNewButton" />
-						<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
-					</s:elseif>
-					<s:elseif test='%{#helper.impresa.consorzio && #isIscrizione}'>
-						<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
-						<wp:i18n key="TITLE_REFRESH_CONSORZIATA" var="titleRefreshButton" />
-						<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
-						<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
-						<wp:i18n key="TITLE_NEW_CONSORZIATA" var="titleNewButton" />
-						<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
-					</s:elseif>
-					<s:elseif test='%{#helper.impresa.consorzio && #isPartecipazione}'>
-						<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
-						<wp:i18n key="TITLE_REFRESH_CONSORZIATA" var="titleRefreshButton" />
-						<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="savePartecipazione"></s:submit>
-						<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
-						<wp:i18n key="TITLE_NEW_CONSORZIATA" var="titleNewButton" />
-						<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
-					</s:elseif>
-					<s:else>
-						<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
-						<wp:i18n key="TITLE_REFRESH_COMPONENTE" var="titleRefreshButton" />
-						<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
-						<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
-						<wp:i18n key="TITLE_NEW_COMPONENTE" var="titleAddButton" />
-						<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
-					</s:else>
-				</c:otherwise>
-			</c:choose>
-		</div>
-	</fieldset>
+
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="tipoImpresa"><wp:i18n key="LABEL_TIPO_IMPRESA" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<wp:i18n key="OPT_CHOOSE_TIPO_IMPRESA" var="headerValueTipoImpresa" />
+					<s:select name="tipoImpresa" id="tipoImpresa" value="{tipoImpresa}"
+								list="maps['tipiImpresaIscrAlbo']"  headerKey="" headerValue="%{#attr.headerValueTipoImpresa}"
+								aria-required="true" >
+					</s:select>
+				</div>
+			</div>
+
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="ambitoTerritoriale"><wp:i18n key="LABEL_AMBITO_TERRITORIALE" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<s:select list="maps['ambitoTerritoriale']" name="ambitoTerritoriale" id="ambitoTerritoriale" value="%{ambitoTerritoriale}"
+								headerKey="" aria-required="true" >
+					</s:select>
+				</div>
+			</div>
+
+			<%-- ambito territoriale impresa Italia --%>
+			<div class="fieldset-row clsAmbitoTerIT">
+				<div class="label">
+					<label for="codiceFiscale"><wp:i18n key="LABEL_CODICE_FISCALE" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<s:textfield name="codiceFiscale" id="codiceFiscale" value="%{codiceFiscale}"
+									maxlength="16" size="20" aria-required="true" />
+				</div>
+			</div>
+
+			<div class="fieldset-row clsAmbitoTerIT <s:if test='%{!#helper.rti || #isIscrizione}'>last-row</s:if> ">
+				<div class="label">
+					<label id="labelIVA" for="partitaIVA"><wp:i18n key="LABEL_PARTITA_IVA" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<s:textfield name="partitaIVA" id="partitaIVA" value="%{partitaIVA}"
+									maxlength="16" size="20" aria-required="true" />
+				</div>
+			</div>
+
+			<%-- ambito territoriale impresa Estero --%>
+			<div class="fieldset-row clsAmbitoTerEE">
+				<div class="label">
+					<label for="nazione"><wp:i18n key="LABEL_NAZIONE" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<wp:i18n key="OPT_CHOOSE_NAZIONE" var="headerValueNazione" />
+					<s:select list="maps['nazioni']" name="nazione" id="nazione" value="%{nazione}"
+								headerKey="" headerValue="%{#attr.headerValueNazione}"
+								aria-required="true" >
+					</s:select>
+				</div>
+			</div>
+
+			<div class="fieldset-row clsAmbitoTerEE">
+				<div class="label">
+					<label><wp:i18n key="LABEL_IDENTIFICATIVO_FISCALE_ESTERO" /> : <span class="required-field">*</span></label>
+				</div>
+				<div class="element">
+					<s:textfield name="idFiscaleEstero" id="idFiscaleEstero" value="%{idFiscaleEstero}"
+									maxlength="30" size="20" aria-required="true" />
+				</div>
+			</div>
+
+			<s:if test='%{#helper.rti && #isPartecipazione}'>
+				<div class="fieldset-row last-row">
+					<div class="label">
+						<label for="strQuota"><wp:i18n key="LABEL_QUOTA_PARTECIPAZIONE" /> : <span class="required-field">*</span></label>
+					</div>
+					<div class="element">
+						<s:textfield name="strQuota" id="strQuota" value="%{(quota != null || id == null) ? quota : strQuota}"
+										maxlength="6" size="15" aria-required="true" />
+					</div>
+				</div>
+			</s:if>
+
+			<div class="azioni">
+				<c:choose>
+					<c:when test="${empty id}">
+						<s:if test="%{#helper.rti}">
+							<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
+							<wp:i18n key="TITLE_ADD_MANDANTE" var="titleAddButton" />
+							<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
+						</s:if>
+						<s:elseif test="%{#helper.impresa.consorzio}">
+							<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
+							<wp:i18n key="TITLE_ADD_CONSORZIATA" var="titleAddButton" />
+							<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
+						</s:elseif>
+						<s:else>
+							<wp:i18n key="BUTTON_ADD" var="valueAddButton" />
+							<wp:i18n key="TITLE_ADD_COMPONENTE" var="titleAddButton" />
+							<s:submit value="%{#attr.valueAddButton}" title="%{#attr.titleAddButton}" cssClass="button" method="insert"></s:submit>
+						</s:else>
+					</c:when>
+					<c:otherwise>
+						<s:if test='%{#helper.rti && #isIscrizione}'>
+							<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
+							<wp:i18n key="TITLE_REFRESH_COMPONENTE" var="titleRefreshButton" />
+							<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
+							<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
+							<wp:i18n key="TITLE_NEW_COMPONENTE" var="titleAddButton" />
+							<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
+						</s:if>
+						<s:elseif test='%{#helper.rti && #isPartecipazione}'>
+							<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
+							<wp:i18n key="TITLE_REFRESH_MANDANTE" var="titleRefreshButton" />
+							<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="savePartecipazione"></s:submit>
+							<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
+							<wp:i18n key="TITLE_NEW_MANDANTE" var="titleNewButton" />
+							<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
+						</s:elseif>
+						<s:elseif test='%{#helper.impresa.consorzio && #isIscrizione}'>
+							<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
+							<wp:i18n key="TITLE_REFRESH_CONSORZIATA" var="titleRefreshButton" />
+							<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
+							<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
+							<wp:i18n key="TITLE_NEW_CONSORZIATA" var="titleNewButton" />
+							<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
+						</s:elseif>
+						<s:elseif test='%{#helper.impresa.consorzio && #isPartecipazione}'>
+							<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
+							<wp:i18n key="TITLE_REFRESH_CONSORZIATA" var="titleRefreshButton" />
+							<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="savePartecipazione"></s:submit>
+							<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
+							<wp:i18n key="TITLE_NEW_CONSORZIATA" var="titleNewButton" />
+							<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
+						</s:elseif>
+						<s:else>
+							<wp:i18n key="BUTTON_REFRESH" var="valueRefreshButton" />
+							<wp:i18n key="TITLE_REFRESH_COMPONENTE" var="titleRefreshButton" />
+							<s:submit value="%{#attr.valueRefreshButton}" title="%{#attr.titleRefreshButton}" cssClass="button" method="save"></s:submit>
+							<wp:i18n key="BUTTON_NEW" var="valueNewButton" />
+							<wp:i18n key="TITLE_NEW_COMPONENTE" var="titleAddButton" />
+							<s:submit value="%{#attr.valueNewButton}" title="%{#attr.titleNewButton}" cssClass="button" method="add"></s:submit>
+						</s:else>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</fieldset>
+	</s:if>
 </s:else>

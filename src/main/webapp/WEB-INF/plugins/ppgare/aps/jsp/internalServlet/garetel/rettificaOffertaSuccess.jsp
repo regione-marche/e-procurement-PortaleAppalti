@@ -100,12 +100,12 @@ isFromListaOfferte=<s:property value="%{#isFromListaOfferte}"/><br/>
 
 	<div class="back-link">
 		<s:if test="%{#isFromListaOfferte}">
-			<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/openGestioneListaOfferte.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;operazione=${operazione}&amp;${tokenHrefParams}">
+			<a href="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/openGestioneListaOfferte.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;operazione=${operazione}">
 				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 			</a>
 		</s:if>
 		<s:else>
-			<a href="<wp:action path='/ExtStr2/do/FrontEnd/Bandi/view.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;operazione=${operazione}&amp;${tokenHrefParams}">
+			<a href="<wp:action path='/ExtStr2/do/FrontEnd/Bandi/view.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;operazione=${operazione}">
 				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 			</a>
 		</s:else>

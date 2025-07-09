@@ -247,10 +247,11 @@
 										</s:if>
 										 --%>
 										 
+										<s:set var="indexDownload" value='%{#documenti.getIndexDocUlteriore(#status.index)}' /> 
 										<c:choose>
 											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 												<li>
-													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#status.index}&amp;tipoBusta=%{#documenti.tipoBusta}&amp;codice=%{#documenti.codice}" 
+													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#indexDownload}&amp;tipoBusta=%{#documenti.tipoBusta}&amp;codice=%{#documenti.codice}" 
 															title="%{#attr.titleDownloadAllegato}">
 														<wp:i18n key="LABEL_SCARICA_ALLEGATO" />
 													</s:a>
@@ -261,7 +262,7 @@
 											</c:when>
 											<c:otherwise>
 												<li>
-													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#status.index}&amp;tipoBusta=%{#documenti.tipoBusta}&amp;codice=%{#documenti.codice}" 
+													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#indexDownload}&amp;tipoBusta=%{#documenti.tipoBusta}&amp;codice=%{#documenti.codice}" 
 														 title="%{#attr.titleDownloadAllegato}" cssClass="bkg download">
 														<s:property value="%{#documenti.docUlterioriFileName.get(#status.index)}"/>
 													</s:a>
@@ -286,13 +287,13 @@
 				</tbody>
 			</table>
 		</div>
-		<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-		<s:set var="kbDisponibili" value="%{limiteTotaleUploadDocBusta - dimensioneAttualeFileCaricati}"></s:set>
+		
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/fileupload.jsp" />
+		
 		<p>
-			<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
-			<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <strong><s:property value="%{#kbCaricati}" /></strong> KB, <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" /> 
-			<strong><s:property value="%{#kbDisponibili}" /></strong> KB.
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+				<jsp:param name="dimensioneAttualeFileCaricati" value="${dimensioneAttualeFileCaricati}"/>
+			</jsp:include>
 		</p>
 	</fieldset>
 
@@ -314,6 +315,10 @@
 				<wp:i18n key="TITLE_WIZARD_PREVIOUS" var="titlePreviousButton" />
 				<s:submit value="%{#attr.valuePreviousButton}" title="%{#attr.titlePreviousButton}" cssClass="button" method="back" />	
 			</c:if>
+			
+			<wp:i18n key="BUTTON_WIZARD_VERIFICA_BUSTA" var="valueVerificaButton" />
+			<wp:i18n key="TITLE_WIZARD_VERIFICA_BUSTA" var="titleVerificaButton" />
+			<s:submit value="%{#attr.valueVerificaButton}" title="%{#attr.titleVerificaButton}" cssClass="button" method="check" ></s:submit>
 			
 			<wp:i18n key="BUTTON_WIZARD_BACK_TO_MENU" var="valueBackToMenuButton" />
 			<s:submit value="< %{#attr.valueBackToMenuButton}" title="%{#attr.valueBackToMenuButton}" cssClass="button" method="cancel"></s:submit>

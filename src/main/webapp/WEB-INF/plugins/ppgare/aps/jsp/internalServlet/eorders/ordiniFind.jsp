@@ -233,12 +233,12 @@ private static final String FROM_PAGE_OWNER		 = "searchordini";
 					<div class="list-action">
 						<c:choose>
 							<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/EOrders/view.action" />&amp;id=<s:property value="id"/>&amp;${tokenHrefParams}' title="<wp:i18n key="LINK_VIEW_DETAIL" />">
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/EOrders/view.action" />&amp;id=<s:property value="id"/>' title="<wp:i18n key="LINK_VIEW_DETAIL" />">
 									<wp:i18n key="LINK_VIEW_DETAIL" />
 								</a>
 							</c:when>
 							<c:otherwise>
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/EOrders/view.action" />&amp;id=<s:property value="id"/>&amp;${tokenHrefParams}' class="bkg detail-very-big" title="<wp:i18n key="LINK_VIEW_DETAIL" />">
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/EOrders/view.action" />&amp;id=<s:property value="id"/>' class="bkg detail-very-big" title="<wp:i18n key="LINK_VIEW_DETAIL" />">
 									<wp:i18n key="LINK_VIEW_DETAIL" />
 								</a>
 							</c:otherwise>
@@ -250,6 +250,8 @@ private static final String FROM_PAGE_OWNER		 = "searchordini";
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
 		</s:if>
 		<s:else>
+			<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+			<input disabled="disabled" type="submit" style="display:none;"/>
 			<div class="list-summary">
 				<wp:i18n key="SEARCH_RESULTS_INTRO" />
 				<s:property value="model.iTotalDisplayRecords" />

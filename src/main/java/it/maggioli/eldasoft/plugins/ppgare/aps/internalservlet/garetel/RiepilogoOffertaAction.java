@@ -1,25 +1,15 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import it.eldasoft.sil.portgare.datatypes.BustaEconomicaDocument;
-import it.eldasoft.sil.portgare.datatypes.BustaTecnicaDocument;
-import it.eldasoft.sil.portgare.datatypes.DocumentazioneBustaDocument;
-import it.eldasoft.sil.portgare.datatypes.DocumentoType;
-import it.eldasoft.sil.portgare.datatypes.ListaDocumentiType;
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.exception.ApsException;
+import it.eldasoft.sil.portgare.datatypes.*;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaAmministrativa;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaDocumenti;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaEconomica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaGara;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPrequalifica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.ComunicazioneFlusso;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.*;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
@@ -27,27 +17,21 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunica
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.Allegato;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ZipUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.RichiesteRettificaList;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.RichiesteRettificaList.RichiestaRettifica;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.InitIscrizioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.SessionAware;
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
-import com.agiletec.aps.system.exception.ApsException;
+import java.util.*;
 
 /**
  * Action per la pagina di riepilogo dell'offerta
@@ -81,6 +65,8 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	private boolean rti;
 	@Validate(EParamValidation.DENOMINAZIONE_RTI)
 	private String denominazioneRti;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 	private DettaglioGaraType dettGara;
 	private WizardDatiImpresaHelper datiImpresa;
 	private Long idBustaPreq;
@@ -103,6 +89,11 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	private RiepilogoBusteHelper bustaRiepilogativa;
 	private boolean hasFileRiepilogoAllegati;
 	private boolean riepilogoAllegatiFirmato;
+	private boolean garaSospesa;
+	
+	// richiesta rettifica, invio rettifica	
+	private Map<String, RichiesteRettificaList.RichiestaRettifica> lottoTecnicaRettifica = new HashMap<String, RichiesteRettificaList.RichiestaRettifica>();
+	private Map<String, RichiesteRettificaList.RichiestaRettifica> lottoEconomicaRettifica = new HashMap<String, RichiesteRettificaList.RichiestaRettifica>();
 	
 	/**
 	 * Riferimento alla url della pagina per visualizzare eventuali problemi emersi
@@ -204,6 +195,14 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 		this.denominazioneRti = denominazioneRti;
 	}
 
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
+	}
+
 	public DettaglioGaraType getDettGara() {
 		return dettGara;
 	}
@@ -259,7 +258,6 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	public void setIdBusta(int idBusta) {
 		this.idBusta = idBusta;
 	}
-
 	
 	public Long getIdBustaRiepilogo() {
 		return idBustaRiepilogo;
@@ -300,6 +298,15 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	public void setAbilitaRettifica(boolean abilitaRettifica) {
 		this.abilitaRettifica = abilitaRettifica;
 	}
+
+	public boolean isGaraSospesa() {
+		return garaSospesa;
+	}
+
+	public void setGaraSospesa(boolean garaSospesa) {
+		this.garaSospesa = garaSospesa;
+	}
+
 
 	@Override
 	public void setUrlPage(String urlPage) {
@@ -391,6 +398,30 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	public void setRiepilogoAllegatiFirmato(boolean riepilogoAllegatiFirmato) {
 		this.riepilogoAllegatiFirmato = riepilogoAllegatiFirmato;
 	}
+	
+	public Map<String, RichiesteRettificaList.RichiestaRettifica> getLottoTecnicaRettifica() {
+		return lottoTecnicaRettifica;
+	}
+
+	public void setLottoTecnicaRettifica(Map<String, RichiesteRettificaList.RichiestaRettifica> lottoTecnicaRettifica) {
+		this.lottoTecnicaRettifica = lottoTecnicaRettifica;
+	}
+
+	public Map<String, RichiesteRettificaList.RichiestaRettifica> getLottoEconomicaRettifica() {
+		return lottoEconomicaRettifica;
+	}
+
+	public void setLottoEconomicaRettifica(Map<String, RichiesteRettificaList.RichiestaRettifica> lottoEconomicaRettifica) {
+		this.lottoEconomicaRettifica = lottoEconomicaRettifica;
+	}
+
+	public RichiestaRettifica getBustaTecnicaRettifica() {
+		return lottoTecnicaRettifica.get(codice);
+	}
+
+	public RichiestaRettifica getBustaEconomicaRettifica() {
+		return lottoEconomicaRettifica.get(codice);
+	}
 
 	/**
 	 * Esponi le costanti 
@@ -439,7 +470,8 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 				BustaEconomica bustaEconomica = buste.getBustaEconomica();
 				BustaTecnica bustaTecnica = buste.getBustaTecnica();
 				BustaRiepilogo bustaRiepilogo = buste.getBustaRiepilogo();
-				
+				boolean handleBustaEconomica = bustaEconomica != null || (!buste.isConcorsoProgettazioneRiservato() && !buste.isConcorsoProgettazionePubblico());
+
 				boolean domandaPartecipazione = buste.isDomandaPartecipazione();
 				boolean invioOfferta = buste.isInvioOfferta();
 
@@ -450,6 +482,8 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 				stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA);
 				stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA_CON_ERRORE);
 				stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_SCARTATA);
+				stati.add("16");		// busta tecnica processata parzialmente
+				stati.add("17");		// busta tecnica processata parzialmente
 				if(daListaOfferte) {
 					stati.add(CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA);
 				}
@@ -476,6 +510,7 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 					if(bustaPartecipazione.getHelper() != null) {
 						this.rti = bustaPartecipazione.getHelper().isRti();
 						this.denominazioneRti = bustaPartecipazione.getHelper().getDenominazioneRTI();
+						this.codiceCNEL = bustaPartecipazione.getHelper().getCodiceCNEL();
 					}
 				}
 				
@@ -502,7 +537,7 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 					}
 
 					// provo a ricavare la comunicazione per la busta tecnica
-					if (this.offertaTecnica) {					
+					if (this.offertaTecnica) {
 						bustaTecnica.get(stati);
 						
 						if(bustaTecnica.getId() > 0) {
@@ -510,20 +545,25 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 							this.idBustaTec = bustaTecnica.getId();
 						}
 					}
-					
-					// provo a ricavare la comunicazione per la busta economica
-					bustaEconomica.get(stati);
-					
-					if(bustaEconomica.getId() > 0) {
-						this.setBustaEconomicaCifrata(bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione().getSessionKey() != null);
-						this.idBustaEco = bustaEconomica.getId();
+
+					if (handleBustaEconomica) {
+						// provo a ricavare la comunicazione per la busta economica
+						bustaEconomica.get(stati);
+
+						if (bustaEconomica.getId() > 0) {
+							this.setBustaEconomicaCifrata(bustaEconomica.getComunicazioneFlusso().getDettaglioComunicazione().getSessionKey() != null);
+							this.idBustaEco = bustaEconomica.getId();
+						}
 					}
 				}
 				
 				// verifica per le domande di prequalifica/offerte 
-				// se l'operazione e' ancora possibile rettificare				
+				// se l'operazione e' ancora possibile rettificare
 				this.abilitaRettifica = this.rettificaAbilitata();
-
+				
+				// richieste soccorso istruttorio per rettifica buste
+				richiestaInvioRettificaAbilitata(buste);
+				
 			} catch (ApsException t) {
 				ApsSystemUtils.logThrowable(t, this, "openPage");
 				ExceptionUtils.manageExceptionError(t, this);
@@ -546,7 +586,7 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 	public String download() {
 		String target = SUCCESS;
 		
-		Set<String> nomiFilePresenti = new HashSet<String>();
+		Set<String> nomiFilePresenti = new HashSet<>();
 		
 		if (null != this.getCurrentUser() 
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
@@ -593,12 +633,20 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 				for (int i = 0; i < documenti.sizeOfDocumentoArray(); i++) {
 					DocumentoType documento = documenti.getDocumentoArray(i);
 					
-					// --- in caso di file aventi lo stesso nome si aggiunge (x) alla fine del nome file --- 
-					// --- questo previene il problema del download dello zip (duplicate entry)          ---
-					if(nomiFilePresenti.contains(documento.getNomeFile())){
-						String nuovoNomeFile = "Copia di " + documento.getNomeFile(); //windows-like rename automatico file con stesso nome in cartella 
+					// in caso di file aventi lo stesso nome si rinomina il file 
+					// per previene il problema del download dello zip ("java.util.zip.ZipException: duplicate entry")
+					String nomeFile = documento.getNomeFile();
+					int j = nomeFile.lastIndexOf('.');
+					String ext =  (j > 0 ? nomeFile.substring(j) : "");
+					String fn =  (j > 0 ? nomeFile.substring(0, j) : nomeFile);
+					int n = 1;
+					while (nomiFilePresenti.contains(documento.getNomeFile())) {
+						//String nuovoNomeFile = fn + " - Copia" + (n < 2 ? "" : " (" + n + ")") + ext;  
+						String nuovoNomeFile = fn + " - (" + String.format("%03d", n) + ")" + ext;
 						documento.setNomeFile(nuovoNomeFile);
+						n++;
 					}
+
 					nomiFilePresenti.add(documento.getNomeFile());
 					
 					// se l'allegato è esterno alla busta XML...
@@ -677,6 +725,39 @@ public class RiepilogoOffertaAction extends EncodedDataAction implements Session
 			}
 		}
 		return abilita;
+	}
+	
+	/**
+	 * imposta lo stato per per l'abilitazione dell richiesta di rettifica o per l'invio della rettifica
+	 * @throws ApsException 
+	 */
+	protected void richiestaInvioRettificaAbilitata(GestioneBuste buste) throws ApsException {
+		if(buste == null) 
+			return;
+	
+		// NB: prequalifica e amminstrativa non sono previste
+
+		// buste tecniche/economiche
+		
+		RichiesteRettificaList tec = new RichiesteRettificaList(buste.getBustaTecnica());
+		RichiesteRettificaList eco = new RichiesteRettificaList(buste.getBustaEconomica());
+
+		if( !buste.isGaraLottiDistinti() ) {
+			// gara NO lotti
+			lottoTecnicaRettifica.put(codice, (tec != null ? tec.get(codice) : null));
+			lottoEconomicaRettifica.put(codice, (eco != null ? eco.get(codice) : null));
+		} else {
+			// gara a lotti
+			BustaRiepilogo bustaRie = buste.getBustaRiepilogo();
+			RiepilogoBusteHelper riepilogo = bustaRie.getHelper();
+			for(String lotto : riepilogo.getListaCompletaLotti()) {
+				RiepilogoBustaBean riepilogoTec = riepilogo.getBusteTecnicheLotti().get(lotto);
+				lottoTecnicaRettifica.put(lotto, (tec != null && riepilogoTec != null ? tec.get(lotto) : null));
+				
+				RiepilogoBustaBean riepilogoEco = riepilogo.getBusteEconomicheLotti().get(lotto);
+				lottoEconomicaRettifica.put(lotto, (eco != null && riepilogoEco != null ? eco.get(lotto) : null));
+			}
+		}
 	}
 
 }

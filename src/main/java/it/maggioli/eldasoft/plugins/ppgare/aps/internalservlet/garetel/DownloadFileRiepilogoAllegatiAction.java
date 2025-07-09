@@ -1,19 +1,5 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
-import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts2.interceptor.ServletResponseAware;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
@@ -23,6 +9,22 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.apsadmin.system.BaseAction;
+import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
+import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import org.apache.struts2.interceptor.ServletResponseAware;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  * Action per la gestione del download dei documenti di riepilogo gare elenchi e mercati elettronici
@@ -30,6 +32,7 @@ import com.agiletec.apsadmin.system.BaseAction;
  * @version 1.0
  * @author Michele.DiNapoli
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class DownloadFileRiepilogoAllegatiAction extends BaseAction 
 	implements  ServletResponseAware
 {
@@ -47,8 +50,8 @@ public class DownloadFileRiepilogoAllegatiAction extends BaseAction
 	@Validate(EParamValidation.FILE_NAME)
 	private String filename;
 	@Validate(EParamValidation.CONTENT_TYPE)
-	private String contentType;	
-	@Validate(EParamValidation.URL)
+	private String contentType;
+	@ValidationNotRequired
 	private String urlRedirect;
 	private Long id;			// id della comunicazione della busta di riepilogo
 	private long idCom;			// id della comunicazione relativa alla gestione per gli allegati della busta
@@ -116,10 +119,6 @@ public class DownloadFileRiepilogoAllegatiAction extends BaseAction
 		return urlRedirect;
 	}
 
-	public void setUrlRedirect(String urlRedirect) {
-		this.urlRedirect = urlRedirect;
-	}
-
 	public long getIdCom() {
 		return idCom;
 	}
@@ -150,16 +149,16 @@ public class DownloadFileRiepilogoAllegatiAction extends BaseAction
 			boolean marcatura = false; 
 
 			// trova l'allegato del riepilogo con la marcatura temporale
-			for(AllegatoComunicazioneType allegato : comunicazioneOffertaCompleta.getAllegato()) {					
+			for(AllegatoComunicazioneType allegato : comunicazioneOffertaCompleta.getAllegato()) {
 				String nomeallegato = allegato.getNomeFile();
 
 				if(nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_BUSTE) || 
-						nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_BUSTE_MARCATURA_TEMPORALE) ||
-						nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO) ||
-						nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE))
+				   nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_BUSTE_MARCATURA_TEMPORALE) ||
+				   nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO) ||
+				   nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE))
 				{
 					marcatura = (nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_BUSTE_MARCATURA_TEMPORALE) || 
-							nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE));
+								 nomeallegato.equalsIgnoreCase(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE));
 					if(marcatura) {
 						// apri la pagina dei dettagli per le marcature temporali e le firme...
 						this.idCom = this.id;

@@ -8,6 +8,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
@@ -24,6 +26,10 @@ import java.util.Map;
  * @version 1.0
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class DeleteAllegatoIscrizioneAction extends BaseAction 
 	implements ServletRequestAware, SessionAware 
 {
@@ -111,12 +117,8 @@ public class DeleteAllegatoIscrizioneAction extends BaseAction
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
 			this.deleteDocRichiesto = true;
-
 			try {
-				this.documentiRichiesti = this.bandiManager.getDocumentiRichiestiBandoIscrizione(
-						iscrizioneHelper.getIdBando(), 
-						iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
-						iscrizioneHelper.isRti());
+				this.documentiRichiesti = iscrizioneHelper.getDocumentiRichiestiBO();
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "confirmDeleteAllegatoRichiesto");
 				ExceptionUtils.manageExceptionError(t, this);

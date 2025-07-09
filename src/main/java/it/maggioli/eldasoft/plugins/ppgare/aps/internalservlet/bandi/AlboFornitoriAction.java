@@ -24,13 +24,12 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunica
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
-import org.apache.xmlbeans.XmlException;
 
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -54,7 +53,7 @@ public class AlboFornitoriAction extends EncodedDataAction implements SessionAwa
 	private DettaglioComunicazioneType dettComunicazione;
 	@Validate(EParamValidation.ID_COMUNICAZIONE)
 	private String idComunicazione;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlAlboFornitori;
 	private Boolean funzionNonAccessibile;
 	

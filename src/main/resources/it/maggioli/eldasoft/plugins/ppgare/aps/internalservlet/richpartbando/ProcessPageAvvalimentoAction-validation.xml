@@ -1,0 +1,75 @@
+<!DOCTYPE validators PUBLIC
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+	<!-- NB: questa condizione e' una riduzione della validazione leggibile (^ = xor) -->
+	<!-- in questo caso la validazione indica (non A e B != "") o (A e B = "")        -->
+	<field name="ragioneSociale">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!((
+				ragioneSociale.trim().length() > 0 ||
+				codiceFiscale.trim().length() > 0 || 
+				partitaIVA.trim().length() > 0 ||
+				tipoImpresa.trim().length() > 0) 
+				^ ragioneSociale.trim().length() > 0)]]>
+			</param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<!-- NB: questa condizione e' una riduzione della validazione leggibile (^ = xor) -->
+	<!-- in questo caso la validazione indica (non A e B != "") o (A e B = "")        -->
+	<field name="tipoImpresa">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!((
+				ragioneSociale.trim().length() > 0 ||
+				codiceFiscale.trim().length() > 0 || 
+				partitaIVA.trim().length() > 0 || 
+				tipoImpresa.trim().length() > 0) 
+				^ tipoImpresa.trim().length() > 0)]]>
+			</param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="codiceFiscale">
+		<field-validator type="fieldexpression" short-circuit="true">
+			<param name="expression"><![CDATA[!((
+				ragioneSociale.trim().length() > 0 ||
+				codiceFiscale.trim().length() > 0 || 
+				partitaIVA.trim().length() > 0 ||
+				tipoImpresa.trim().length() > 0) 
+				^ ("2".equals(ambitoTerritoriale.trim())
+				   || ("1".equals(ambitoTerritoriale.trim()) && codiceFiscale.trim().length() > 0))
+				)]]>
+			</param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="idFiscaleEstero">
+		<field-validator type="fieldexpression" >
+			<param name="expression"><![CDATA[(
+				("1".equals(ambitoTerritoriale.trim()))
+				|| ("2".equals(ambitoTerritoriale.trim()) && idFiscaleEstero.trim().length() > 0)
+				)]]>
+			</param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="avvalimentoPer">
+		<field-validator type="fieldexpression">
+			<param name="expression"><![CDATA[!((
+				ragioneSociale.trim().length() > 0 ||
+				codiceFiscale.trim().length() > 0 || 
+				partitaIVA.trim().length() > 0 ||
+				tipoImpresa.trim().length() > 0) 
+				^ avvalimentoPer.trim().length() > 0)]]>
+			</param>
+			<message key="localstrings.requiredstring" />
+		</field-validator>
+	</field>
+			
+</validators>

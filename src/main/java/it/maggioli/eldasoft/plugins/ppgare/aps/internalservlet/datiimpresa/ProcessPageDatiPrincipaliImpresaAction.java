@@ -9,8 +9,11 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.codifiche.ICodificheManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigFeatures;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +28,11 @@ import java.util.regex.Pattern;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageDatiPrincipaliImpresaAction extends
 				AbstractProcessPageAction implements IDatiPrincipaliImpresa {
 	/**
@@ -46,7 +54,7 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	private String tipoImpresa;
 	@Validate(EParamValidation.AMBITO_TERRITORIALE)
 	private String ambitoTerritoriale;
-	@Validate(EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO)
+	@Validate(value = EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO, error = @WithError(fieldLabel = "CODICE_FISCALE_O_IDENTIFICATIVO"))
 	private String codiceFiscale;
 	@Validate(EParamValidation.PARTITA_IVA)
 	private String partitaIVA;
@@ -64,9 +72,9 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	private String provinciaSedeLegale;
 	@Validate(EParamValidation.NAZIONE)
 	private String nazioneSedeLegale;
-	@Validate(EParamValidation.SITO_WEB)
+	@Validate(EParamValidation.URL)
 	private String sitoWeb;
-	@Validate(EParamValidation.TELEFONO)
+	@Validate(value = EParamValidation.TELEFONO)
 	private String telefonoRecapito;
 	@Validate(EParamValidation.TELEFONO)
 	private String faxRecapito;
@@ -166,6 +174,16 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	}
 
 	@Override
+	public String getIdAnagraficaEsterna() {
+		return null;
+	}
+
+	@Override
+	public void setIdAnagraficaEsterna(String idAnagraficaEsterna) {
+		// non viene gestito a video
+	}
+
+	@Override
 	public String getMicroPiccolaMediaImpresa() {
 		return this.microPiccolaMediaImpresa;
 	}
@@ -252,7 +270,10 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	}
 
 	public void setTelefonoRecapito(String telefonoRecapito) {
-		this.telefonoRecapito = telefonoRecapito;
+		this.telefonoRecapito =
+				StringUtils.isNotEmpty(telefonoRecapito)
+					? telefonoRecapito.trim()
+					: telefonoRecapito;
 	}
 
 	public String getFaxRecapito() {
@@ -260,7 +281,10 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	}
 
 	public void setFaxRecapito(String faxRecapito) {
-		this.faxRecapito = faxRecapito;
+		this.faxRecapito =
+				StringUtils.isNotEmpty(faxRecapito)
+					? faxRecapito.trim()
+					: faxRecapito;
 	}
 
 	public String getCellulareRecapito() {
@@ -268,7 +292,10 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 	}
 
 	public void setCellulareRecapito(String cellulareRecapito) {
-		this.cellulareRecapito = cellulareRecapito;
+		this.cellulareRecapito =
+				StringUtils.isNotEmpty(cellulareRecapito)
+					? cellulareRecapito.trim()
+					: cellulareRecapito;
 	}
 
 	public String getEmailRecapito() {
@@ -389,6 +416,8 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 				.containsValue("1");
 		this.setGruppoIvaAbilitato(isGruppoIVAAbilitato);
 
+		boolean OEItaliano = ("1".equals(this.ambitoTerritoriale));
+		
 		try {
 			LinkedHashMap<String, String> formeGiuridicheCooperative =
 					InterceptorEncodedData.get(InterceptorEncodedData.LISTA_FORME_GIURIDICHE_COOPERATIVE);
@@ -423,6 +452,12 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 			this.addFieldError(cf, this.getText("Errors.requiredstring", new String[] { this.getTextFromDB(cf) }));
 		}
 		
+		// OE Italiano: verifica la lunghezza del CF (16 caratteri)
+		if(OEItaliano && StringUtils.isNotEmpty(this.codiceFiscale) && this.codiceFiscale.length() > 16) {
+			this.addFieldError("codiceFiscale", this.getText("Errors.stringlength", 
+															 new String[] { this.getTextFromDB("codiceFiscale"), "16" }));
+		}
+		
 		super.validate();
 		if (this.getFieldErrors().size() > 0) {
 			return;
@@ -452,7 +487,7 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 			boolean invalidCap = (this.capSedeLegale != null && StringUtils.isNotEmpty(this.capSedeLegale) && !this.capSedeLegale.matches("[0-9]+"));
 			boolean invalidAlphaCap = (this.capSedeLegale != null && StringUtils.isNotEmpty(this.capSedeLegale) && !this.capSedeLegale.matches("[0-9a-zA-Z]+"));
 			
-			if("1".equals(this.ambitoTerritoriale)) {
+			if(OEItaliano) {
 				// operatore economico italiano
 				if(invalidCap) {
 					this.addFieldError("capSedeLegale", this.getTextFromDB("capSedeLegale") + " " + 
@@ -552,6 +587,5 @@ public class ProcessPageDatiPrincipaliImpresaAction extends
 						.get(PortGareSystemConstants.SESSION_ID_DETT_ANAGRAFICA_IMPRESA);
 		return helper;
 	}
-
 
 }

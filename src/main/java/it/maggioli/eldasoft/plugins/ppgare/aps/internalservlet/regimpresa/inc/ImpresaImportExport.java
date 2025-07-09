@@ -1,13 +1,20 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.dgue.DgueOrganizationDeserializer;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IIndirizzoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
@@ -16,14 +23,27 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.Sogge
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiPrincipaliImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiUlterioriImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.glassfish.jersey.client.ClientConfig;
+import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,6 +51,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,6 +59,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +79,8 @@ public class ImpresaImportExport {
 	private String crcBuffer;				// buffer per il calcolo del crc
 	private String[] xmlFields;				// elenco dei campi gestiti
 
+	private static final Logger LOG = ApsSystemUtils.getLogger();
+	
 	private static final String XML_VERSION 					= "2";
 	
 	private static final char SEPARATOR 						= '|';
@@ -75,12 +99,16 @@ public class ImpresaImportExport {
 	private static final String TAG_LISTA_ALTRECARICHE			= "altreCaricheImpresa";
 	private static final String TAG_LISTA_COLLABORATORI			= "collaboratoriImpresa";
 	private static final String TAG_SOGGETTO					= "Soggetto";
-	
+
 	// gestione dei tabellati
 	private InterceptorEncodedData encodedData = new InterceptorEncodedData();
 	private HashMap<String, String> tabellati = new HashMap<String, String>();
 
 	private List<String> readXmlErrors;
+	
+	private URI michelangelo_base_uri;			// servizio Michelangelo (SACE)
+	private Integer errorCode;					// servizio Michelangelo
+	private String errorDescription;			// servizio Michelangelo
 	
 	/**
 	 * ImportExportException 
@@ -123,14 +151,13 @@ public class ImpresaImportExport {
 		tabellati.put("Qualifica", InterceptorEncodedData.LISTA_SOGGETTI_TIPI_QUALIFICA);
 		tabellati.put("TipoSoggetto", InterceptorEncodedData.LISTA_SOGGETTI_TIPI_SOGGETTO);
 		tabellati.put("ResponsabileDichiarazioni", InterceptorEncodedData.LISTA_SINO);
-		tabellati.put("Soggetto.Titolo", InterceptorEncodedData.LISTA_TIPI_TITOLO_TECNICO);	// usa la lista "Titolo" solo per "Soggetto"
+		// NB: in caso di omonimia tra campi di sezioni diverse, si esplicita il tipo di tabellato associato al campo della sezione !!!
+		//     (i.e. solo "Titolo" delle sezioni "Soggetto", "AltriDatiAnagrafici" e "LiberoProfessionista" possono condividere
+		//      lo stesso tabellato LISTA_TIPI_TITOLO_TECNICO !!!)
+		tabellati.put("Soggetto.Titolo", InterceptorEncodedData.LISTA_TIPI_TITOLO_TECNICO);	
+		tabellati.put(TAG_ALTRIDATIANAGRAFICI + ".Titolo", InterceptorEncodedData.LISTA_TIPI_TITOLO_TECNICO); 
+		tabellati.put(TAG_LIBEROPROFESSIONISTA + ".Titolo", InterceptorEncodedData.LISTA_TIPI_TITOLO_TECNICO);
 		tabellati.put("Sesso", InterceptorEncodedData.LISTA_SESSI);
-		//tabellati.put("Soggetto.Provincia", InterceptorEncodedData.LISTA_PROVINCE);		// riutilizza la lista "Provincia"
-		//tabellati.put("Soggetto.Nazione", InterceptorEncodedData.LISTA_NAZIONI);			// riutilizza la lista "Nazione"
-		tabellati.put("ProvinciaNascita", InterceptorEncodedData.LISTA_PROVINCE);
-		tabellati.put("TipologiaAlboProf", InterceptorEncodedData.LISTA_TIPI_ALBO_PROFESSIONALE);
-		tabellati.put("ProvinciaIscrizioneAlboProf", InterceptorEncodedData.LISTA_PROVINCE);
-		tabellati.put("TipologiaCassaPrevidenza", InterceptorEncodedData.LISTA_TIPI_CASSA_PREVIDENZA);
 		tabellati.put("SolaLettura", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("IscrittoCCIAA", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("ProvinciaIscrizioneCCIAA", InterceptorEncodedData.LISTA_PROVINCE);
@@ -141,9 +168,10 @@ public class ImpresaImportExport {
 		tabellati.put("IscrittoWhitelistAntimafia", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("IscrittoAnagrafeAntimafiaEsecutori", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("RinnovoIscrizioneInCorsoAnagrafeAntimafiaEsecutori", InterceptorEncodedData.LISTA_SINO);
+		tabellati.put("IscrittoElencoSpecialeProfessionisti", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("IscrittoAnagrafeAntimafiaEsecutori", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("PossiedeRatingLegalita", InterceptorEncodedData.LISTA_SINO);
-		tabellati.put("RatingLegale", InterceptorEncodedData.LISTA_RATING_LEGALE);
+		tabellati.put("RatingLegalita", InterceptorEncodedData.LISTA_RATING_LEGALE);
 		tabellati.put("AggiornamentoRatingLegalita", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("SocioUnico", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("RegimeFiscale", InterceptorEncodedData.LISTA_TIPI_REGIME_FISCALE);
@@ -151,11 +179,11 @@ public class ImpresaImportExport {
 		tabellati.put("SettoreAttivitaEconomica", InterceptorEncodedData.LISTA_SETTORE_ATTIVITA_ECONOMICA);
 		tabellati.put("AssunzioniObbligate", InterceptorEncodedData.LISTA_SINO);
 		tabellati.put("ClasseDimensioneDipendenti", InterceptorEncodedData.LISTA_CLASSI_DIMENSIONE);
-		tabellati.put("TipoSocietaCooperativa", InterceptorEncodedData.LISTA_TIPOLOGIE_SOCIETA_COOPERATIVE);
+		tabellati.put("TipoSocietaCooperativa", InterceptorEncodedData.LISTA_TIPOLOGIE_SOCIETA_COOPERATIVE);	
 
 		// attributi della classe da gestire in export/import 
 		// vengono riportati nell'ordine visualizzato dal wizard dei dati impresa
-		// e cosï¿½ vengono scritti nel file xml
+		// e vengono scritti nello stesso ordine nel file xml
 		this.xmlFields = new String[] {
 			// DatiPrincipali
 			TAG_DATIPRINCIPALI + ":RagioneSociale",
@@ -190,7 +218,7 @@ public class ImpresaImportExport {
 	    	TAG_ALTRIINDIRIZZI + ":Telefono",
 	    	TAG_ALTRIINDIRIZZI + ":Fax",
 	    	// Altri dati anagrafici [...]
-	    	TAG_ALTRIDATIANAGRAFICI + ":SoggettoQualifica",			// questo ï¿½ il campo da esportare/importare con il valore della "Qualifica"
+	    	TAG_ALTRIDATIANAGRAFICI + ":SoggettoQualifica",			// questo e' il campo da esportare/importare con il valore della "Qualifica"
 	    	TAG_ALTRIDATIANAGRAFICI + ":Qualifica", 				// questo viene incluso ma non contiene il valore effettivo
 	    	TAG_ALTRIDATIANAGRAFICI + ":DataInizioIncarico",
 	    	TAG_ALTRIDATIANAGRAFICI + ":DataFineIncarico",
@@ -218,7 +246,7 @@ public class ImpresaImportExport {
 	    	TAG_ALTRIDATIANAGRAFICI + ":Note",
 	    	// Altri dati anagrafici-Libero Professionista 
 	    	// La sezione "LiberoProfessionista" serve per separare gli AltriDatiAngrafici
-	    	// in caso di libero professionista ma la sezione esportata ï¿½ sempre "AltriDatiAngrafici"
+	    	// in caso di libero professionista ma la sezione esportata e' sempre "AltriDatiAngrafici"
 	    	TAG_LIBEROPROFESSIONISTA + ":Titolo",
 	    	TAG_LIBEROPROFESSIONISTA + ":Cognome",
 	    	TAG_LIBEROPROFESSIONISTA + ":Nome",
@@ -245,6 +273,7 @@ public class ImpresaImportExport {
 			TAG_DATIULTERIORI + ":PosizContributivaIndividualeINPS",
 			TAG_DATIULTERIORI + ":DataIscrizioneINPS",
 			TAG_DATIULTERIORI + ":LocalitaIscrizioneINPS",
+			TAG_DATIULTERIORI + ":CodiceCNEL",
 			TAG_DATIULTERIORI + ":NumIscrizioneINAIL",
 			TAG_DATIULTERIORI + ":PosizAssicurativaINAIL",
 			TAG_DATIULTERIORI + ":DataIscrizioneINAIL",
@@ -344,12 +373,17 @@ public class ImpresaImportExport {
 			try {
 				LinkedHashMap<String, String> map = getTabellato(field);
 				if(map == null) {
-					// prova a cercare come "Parent:Field" (i.e. "Soggetto.Titolo") 
+					// cerca il tabellato come "Parent.Field" (i.e. "Soggetto.Titolo", "AltriDatiAnagrafici.Titolo", ...)
+					// vedi sopra, la definizione dei tabellati per campo
 					map = getTabellato(parent.getNodeName() + "." + field);
 				}
 				if(map != null) {
-					val = map.get(val);
-					val = (val != null ? val : "");
+					String v = map.get(val);
+					if(val != null && v == null) {
+						LOG.debug("writeXml {} valore non decodificato per '{}'=>???", 
+								parent.getNodeName() + "." + field, val);
+					}
+					val = (v != null ? v : "");
 				}
 			} catch(Exception ex) {
 				val = "";
@@ -358,7 +392,7 @@ public class ImpresaImportExport {
 		e.setTextContent(val);
 		
 		this.crcBuffer = this.crcBuffer + val + ";";
-ApsSystemUtils.getLogger().debug("writeXml " + field + "=" + val);
+		LOG.debug("writeXml " + field + "=" + val);
 		return e;
 	}
 	
@@ -373,7 +407,7 @@ ApsSystemUtils.getLogger().debug("writeXml " + field + "=" + val);
 			value = nodes.item(0).getTextContent();
 		} else {
 			if(evalCrc) {
-				ApsSystemUtils.getLogger().warn("Importazione dati operatore economico: campo '" + field + "' non trovato");
+				LOG.warn("Importazione dati operatore economico: campo '" + field + "' non trovato");
 			}
 		}
 		
@@ -406,7 +440,7 @@ ApsSystemUtils.getLogger().debug("writeXml " + field + "=" + val);
 		
 		if(evalCrc) {
 			this.crcBuffer = this.crcBuffer + value + ";";
-ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
+			LOG.debug("readXml " + field + "=" + value);
 		}
 		
 		return newValue;
@@ -617,13 +651,11 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 				String field = getXmlField(this.xmlFields[xmlIndex]);
 	    		
 	    		// crea la sezione XML...
-				// (caso particolare solo per "LiberoProfessionista") 
-				NodeList nodes = null;
-				if(TAG_LIBEROPROFESSIONISTA.equalsIgnoreCase(section)) {
-					nodes = this.document.getElementsByTagName(TAG_ALTRIDATIANAGRAFICI);
-				} else {
-					nodes = this.document.getElementsByTagName(section);
-				}
+				// (nel caso particolare del "LiberoProfessionista" si crea nell'xml la sezione "AltriDatiAnagrafici") 
+				NodeList nodes = (TAG_LIBEROPROFESSIONISTA.equalsIgnoreCase(section)
+						? this.document.getElementsByTagName(TAG_ALTRIDATIANAGRAFICI)
+						: this.document.getElementsByTagName(section)
+				);
 				e = (Element) (nodes != null && nodes.getLength() > 0 ? nodes.item(0) : null);
 				if(e == null) {
 					e = this.document.createElement(section);
@@ -766,7 +798,7 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 			exportDone = true;
 			
 		} catch (Exception ex) {
-			ApsSystemUtils.getLogger().error("exportToXml() " + ex.getMessage() + " (filename=" + xmlFileName + ")");
+			LOG.error("exportToXml() " + ex.getMessage() + " (filename=" + xmlFileName + ")");
 			throw ex;
 		} 
 		
@@ -863,7 +895,7 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 					}
 				}
 			} catch (Exception ex) {
-				ApsSystemUtils.getLogger().error(ex.getMessage());
+				LOG.error(ex.getMessage());
 			}
 			
 			nodes = root.getElementsByTagName(TAG_ALTRIDATIANAGRAFICI);
@@ -908,9 +940,12 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 								if (node.getNodeType() == Node.ELEMENT_NODE) {
 									e = (Element) nodes.item(i);
 
-									// NB: se QualificaSoggetto non ï¿½ riconosciuto
 									SoggettoImpresaHelper soggetto = new SoggettoImpresaHelper();
 									if (readFields(e, soggetto, TAG_ALTRIDATIANAGRAFICI)) {
+										// correggi il tipoSoggetto in base alla lista di appartenenza
+										if(StringUtils.isEmpty(soggetto.getTipoSoggetto())) {
+											soggetto.setTipoSoggetto(t + "");
+										}
 										lista.add(soggetto);
 									}
 								}
@@ -949,26 +984,26 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 			
 		} catch (SAXException ex) {
 			//Errors.importXml.importNotDefined=Importazione dati operatore economico non riuscita
-			ApsSystemUtils.getLogger().error(ex.getMessage());
+			LOG.error(ex.getMessage());
 			throw new Exception(getText("Errors.importXml.importNotDefined") + ":" +
 								ex.getMessage() + " (filename=" + xmlFileName + ")");
 		} catch (IOException ex) {
-			ApsSystemUtils.getLogger().error(ex.getMessage());
+			LOG.error(ex.getMessage());
 			throw new Exception(getText("Errors.importXml.importNotDefined") + ":" + 
 								ex.getMessage() + " (filename=" + xmlFileName + ")");
 		} catch (ParserConfigurationException ex) {
-			ApsSystemUtils.getLogger().error(ex.getMessage());
+			LOG.error(ex.getMessage());
 			throw new Exception(getText("Errors.importXml.importNotDefined") + ":" + 
 								ex.getMessage() + " (filename=" + xmlFileName + ")");
 		} catch (NullPointerException ex) {
-			ApsSystemUtils.getLogger().error(ex.getMessage());
+			LOG.error(ex.getMessage());
 			throw new Exception(getText("Errors.importXml.crcNotValid", new String[] {xmlFileName}));
 		} catch (WrongCRCException ex) {
 			result = true;
-			ApsSystemUtils.getLogger().warn(ex.getMessage());
+			LOG.warn(ex.getMessage());
 			throw ex;
 		} catch (Exception ex) {
-			ApsSystemUtils.getLogger().error(ex.getMessage());
+			LOG.error(ex.getMessage());
 			throw ex;
 		}		
 		return result;
@@ -999,11 +1034,154 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 			} else
 				result = true;
 		} catch (Exception ex) {
-			ApsSystemUtils.getLogger().error("importFromDGUE() " + ex.getMessage() + " (filename=" + xmlFileName + ")");
+			LOG.error("importFromDGUE() " + ex.getMessage() + " (filename=" + xmlFileName + ")");
 			throw ex;
 		}
 
 		return result;
+	}
+
+	/**
+	 * PORTAPPALT-1049 - Import dati impresa da servizio Michelangelo (SACE)  
+	 * @throws Exception 
+	 */
+	public boolean importFromMichelangelo(String codiceFiscale, WizardRegistrazioneImpresaHelper impresa) 
+		throws Exception 
+	{
+		boolean result = false;
+		errorCode = 0;
+		errorDescription = null;
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			IAppParamManager appParamManager = (IAppParamManager) ctx.getBean(CommonSystemConstants.APP_PARAM_MANAGER);
+			
+			String url = (String)appParamManager.getConfigurationValue(AppParamManager.MICHELANGELO_BASEURL);
+			if(StringUtils.isNotEmpty(url)) {
+				michelangelo_base_uri = UriBuilder.fromUri((String)appParamManager.getConfigurationValue(AppParamManager.MICHELANGELO_BASEURL))
+						.build();
+				
+				impresa.getDatiPrincipaliImpresa().setCodiceFiscale(codiceFiscale);
+				
+				Integer codiceSoggetto = MichelangeloGetCodiceSoggetto(codiceFiscale);
+				
+				MichelangeloCompanyInfo company = MichelangeloGetDatiImpresa(codiceSoggetto);
+				
+				// mappa i dati nell'helper impresa
+				if(company != null) {
+					MichelangeloCompanyToDatiImpresa.companyToImpresaHelper(company, impresa);
+				}
+			} else {
+				LOG.error("importFromMichelangelo() " + AppParamManager.MICHELANGELO_BASEURL + " è vuoto o invalido.");
+			}
+		} catch (Exception ex) {
+			LOG.error("importFromMichelangelo() " + ex.getMessage());
+			throw ex;
+		}
+		return result;
+	}
+
+	/**
+	 * richiede il codiceSoggetto al servizio Michelangelo (SACE)
+	 */
+	private Integer MichelangeloGetCodiceSoggetto(String codiceFiscale) throws Exception {
+		LOG.debug("MichelangeloGetCodiceSoggetto BEGIN");
+		Integer codiceSoggetto = null;
+		try {
+			ClientConfig config = new ClientConfig();
+	        Client client = ClientBuilder.newClient(config);
+	        
+	        // body content
+	        String body = "{" 
+	        	+ "\"codiceFonte\": " + "89" + "," 
+	  			+ "\"codiceFiscale\": \"" + codiceFiscale + "\"" 
+	        + "}";
+	        
+	        // POST https://wstest.sacesrv.it/services/soggettoInfo
+	        Response response = client
+		    		.target(michelangelo_base_uri).path("soggettoInfo")
+		    		.request(MediaType.APPLICATION_JSON)
+		    		.accept(MediaType.APPLICATION_JSON)
+		    		.post(Entity.entity(body, MediaType.APPLICATION_JSON));
+	        
+	        // mappa la risposta JSON
+			String json = response.readEntity(String.class);
+			ObjectMapper om = new ObjectMapper();
+			HashMap<String, Object> fields = (HashMap<String, Object>) om.readValue(json, HashMap.class);
+			
+			if(fields != null) {
+				HashMap<String, Object> transactionResult = (HashMap<String, Object>)fields.get("transactionResult");			
+				errorCode = (Integer)(transactionResult != null ? transactionResult.get("errorCode") : null);
+				errorDescription = (String)(transactionResult != null ? transactionResult.get("errorDescription") : null);
+				codiceSoggetto = (Integer)fields.get("codiceSoggetto");
+				LOG.debug("MichelangeloGetCodiceSoggetto codiceSoggetto=" + codiceSoggetto + ", errorCode=" + errorCode + ", errorDescription=" + errorDescription);				
+	        } 
+			
+			if(codiceSoggetto == null || (codiceSoggetto != null && codiceSoggetto.intValue() <= 0)) {
+				errorCode = 1;
+				errorDescription = "La piattaforma Michelangelo non ha reperito l'identificativo della tua impresa (" + codiceFiscale + ")";
+				LOG.error("MichelangeloGetCodiceSoggetto() " + errorDescription);
+	        }
+			
+		} catch (Exception ex) {
+			errorCode = 1;
+			errorDescription = "Piattaforma Michelangelo non raggiungibile, riprovare più tardi";
+			LOG.error("MichelangeloGetCodiceSoggetto() " + ex.getMessage());
+			//throw ex;
+		}
+		LOG.debug("MichelangeloGetCodiceSoggetto END");
+		return codiceSoggetto;
+	}
+	
+	/**
+	 * richiede i dati dell'impresa al servizio Michelangelo (SACE)
+	 */
+	private MichelangeloCompanyInfo MichelangeloGetDatiImpresa(Integer codiceSoggetto) throws Exception {
+		LOG.debug("MichelangeloGetDatiImpresa BEGIN");
+		MichelangeloCompanyInfo company = null;
+		if(codiceSoggetto != null && codiceSoggetto.longValue() != 0) {
+			try {
+				ClientConfig config = new ClientConfig();
+		        Client client = ClientBuilder.newClient(config);
+		        
+		        // GET https://wstest.sacesrv.it/services/company/[codiceSoggetto]
+		        Response response = client
+			    		.target(michelangelo_base_uri).path("services").path("company").path(codiceSoggetto.toString())
+			    		.request(MediaType.APPLICATION_JSON)
+			    		.get();
+		        
+		        // mappa la risposta JSON
+				String json = response.readEntity(String.class);
+				ObjectMapper om = new ObjectMapper();
+				company = (MichelangeloCompanyInfo) om.readValue(json, MichelangeloCompanyInfo.class);
+				
+				if(company == null) {
+					errorCode = 1;
+					errorDescription = "Piattaforma Michelangelo non raggiungibile, riprovare più tardi";
+					LOG.error("MichelangeloGetDatiImpresa() " + errorDescription);
+				} else {
+					if(company.Header.IsError) {
+						errorCode = company.Header.ReturnValue;
+						errorDescription = "La piattaforma Michelangelo ha rilevato un errore in fase di reperimento dei dati: " + company.Header.Message;
+						LOG.error("MichelangeloGetDatiImpresa() " + errorDescription);
+					}
+				}
+			} catch (Exception ex) {
+				errorCode = 1;
+				errorDescription = "Piattaforma Michelangelo non raggiungibile, riprovare più tardi";
+				LOG.error("MichelangeloGetDatiImpresa() " + ex.getMessage());
+				//throw ex;
+			}
+		}
+		LOG.debug("MichelangeloGetDatiImpresa END");
+		return company;
+	}
+
+	public Integer getErrorCode() {
+		return errorCode;
+	}
+
+	public String getErrorDescription() {
+		return errorDescription;
 	}
 
 	/**
@@ -1044,9 +1222,10 @@ ApsSystemUtils.getLogger().debug("readXml " + field + "=" + value);
 			if(StringUtils.isNotEmpty(errorMessage)) {
 				ActionSupport action = (ActionSupport)ActionContext.getContext().getActionInvocation().getAction();
 				action.addActionMessage(errorMessage);
-				ApsSystemUtils.getLogger().warn(errorMessage);
+				LOG.warn(errorMessage);
 			}
 		}
 	}
-	
+
+
 }

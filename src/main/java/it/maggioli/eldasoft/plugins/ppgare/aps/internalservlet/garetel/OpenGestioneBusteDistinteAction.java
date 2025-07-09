@@ -1,7 +1,6 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -16,8 +15,9 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.xmlbeans.XmlException;
@@ -29,14 +29,12 @@ import com.agiletec.aps.system.exception.ApsException;
 /**
  * ... 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenGestioneBusteDistinteAction extends OpenGestioneBusteAction implements SessionAware{
 	/**
 	 * UID 
 	 */
 	private static final long serialVersionUID = -1913545349959529280L;
-	
-	private static final String SESSION_ID_WIZARD_OFFERTA = "wizardOfferta";
-	private static final String SESSION_ID_DETTAGLIO_GARA = "dettaglioGara";
 	
 	private boolean almenoUnaBustaTecnica;
 	private boolean almenoUnaBustaEconomica;
@@ -112,23 +110,6 @@ public class OpenGestioneBusteDistinteAction extends OpenGestioneBusteAction imp
 	}
 
 	
-	public int getBUSTA_PRE_QUALIFICA() {
-		return PortGareSystemConstants.BUSTA_PRE_QUALIFICA;
-	}
-	
-	public int getBUSTA_AMMINISTRATIVA() {
-		return PortGareSystemConstants.BUSTA_AMMINISTRATIVA;
-	}
-
-	public int getBUSTA_TECNICA() {
-		return PortGareSystemConstants.BUSTA_TECNICA;
-	}
-
-	public int getBUSTA_ECONOMICA() {
-		return PortGareSystemConstants.BUSTA_ECONOMICA;
-	}
-	
-	
 	/**
 	 * Apertura pagina di gestione delle offerte a buste distinte
 	 *
@@ -137,11 +118,18 @@ public class OpenGestioneBusteDistinteAction extends OpenGestioneBusteAction imp
 	public String open() {
 		this.setTarget(SUCCESS);
 		
+		String codGara = (StringUtils.isNotEmpty(this.codiceGara) ? this.codiceGara : this.codice );
+		
+		if( !this.lockAccessoFunzione(EFlussiAccessiDistinti.OFFERTA_GARA, codGara) ) {
+			setCodice(codGara);
+			setTarget(BACK_TO_OFFERTA);
+			return getTarget();
+		}
+		
 		if (null != this.getCurrentUser() 
-			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
 			try {
-				String codGara = (StringUtils.isNotEmpty(this.codiceGara) ? this.codiceGara : this.codice );
-				
 				// inizializza la gestione delle buste 
 				// NB: save e restore in sessione e' gestito dalla classe  
 				GestioneBuste gestioneBuste = new GestioneBuste(

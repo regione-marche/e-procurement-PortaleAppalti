@@ -32,7 +32,7 @@ esecutrici=${esecutrici}<br/>
 		</c:if>
 	</li>
 	
-	<c:if test='${partecipazione.stepNavigazioneAbilitato["rti"]}' >	
+	<c:if test='${partecipazione.stepNavigazioneAbilitato["rti"]}' >
 		<li>
 			<c:if test="${sessionScope.page eq 'rti'}">
 				<div class="current-step">
@@ -49,12 +49,25 @@ esecutrici=${esecutrici}<br/>
 		<li id="step_componenti" <c:if test="${!(rti || consorzio)}">style='display: none'</c:if>>
 			<c:if test="${sessionScope.page eq 'componenti'}">
 				<div class="current-step">
-			</c:if>				
+			</c:if>
 			<c:choose>
 				<c:when test="${rti}"><wp:i18n key="LABEL_COMPONENTI_RAGGRUPPAMENTO" /></c:when>
 				<c:when test="${consorzio}"><wp:i18n key="LABEL_CONSORZIATE_ESECUTRICI" /></c:when>
 			</c:choose>
 			<c:if test="${sessionScope.page eq 'componenti'}">
+					<span class="noscreen"> (<wp:i18n key="LABEL_WIZARD_CURRENT_STEP" />)</span>
+				</div>
+			</c:if>
+		</li>
+	</c:if>	
+	
+	<c:if test='${partecipazione.stepNavigazioneAbilitato["avvalimento"]}' >
+		<li>
+			<c:if test="${sessionScope.page eq 'avvalimento'}">
+				<div class="current-step">
+			</c:if>
+					<wp:i18n key="LABEL_AVVALIMENTO" />
+			<c:if test="${sessionScope.page eq 'avvalimento'}">
 					<span class="noscreen"> (<wp:i18n key="LABEL_WIZARD_CURRENT_STEP" />)</span>
 				</div>
 			</c:if>

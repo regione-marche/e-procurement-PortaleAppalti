@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.RequestUtils;
@@ -42,10 +43,12 @@ import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.dispatcher.mapper.ActionMapper;
 import org.apache.struts2.dispatcher.mapper.ActionMapping;
-
 import com.agiletec.apsadmin.system.ApsAdminSystemConstants;
 import com.agiletec.apsadmin.system.dispatcher.mapper.ExtendedDefaultActionMapper;
 import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionProxy;
+import com.opensymphony.xwork2.ActionProxyFactory;
+import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.ClassLoaderUtil;
 import com.opensymphony.xwork2.util.profiling.UtilTimerStack;
@@ -70,7 +73,7 @@ public class Struts2ServletDispatcher extends HttpServlet implements StrutsStati
         String timerKey = "FilterDispatcher_doFilter: ";
         try {
             UtilTimerStack.push(timerKey);
-            request = prepareDispatcherAndWrapRequest(request, response);
+            request = prepareDispatcherAndWrapRequest(request, response, actionMapper);
             ActionMapping mapping;
             try {
                 mapping = actionMapper.getMapping(request, dispatcher.getConfigurationManager());
@@ -193,8 +196,12 @@ public class Struts2ServletDispatcher extends HttpServlet implements StrutsStati
      * @return Wrapped HttpServletRequest object
      * @throws ServletException on any error
      */
-    protected HttpServletRequest prepareDispatcherAndWrapRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-    	
+    protected HttpServletRequest prepareDispatcherAndWrapRequest(
+    		HttpServletRequest request, 
+    		HttpServletResponse response,
+    		ActionMapper actionMapper) throws ServletException 
+    {
+    	ActionContext defaultActionContext = ActionContext.getContext();
         Dispatcher du = Dispatcher.getInstance();
         
         // Prepare and wrap the request if the cleanup filter hasn't already, cleanup filter should be
@@ -230,6 +237,63 @@ public class Struts2ServletDispatcher extends HttpServlet implements StrutsStati
         	dispatcher = du;
         }
         
+        // ***************************************************************************
+		// VAPT - fix dei parametri in JakartaStreamMultiPartRequest (PORTAPPALT-1170)
+        if(actionMapper != null) {
+        	// recupera il contesto della action da eseguire, prima di creare l'oggetto "JakartaStreamMultiPartRequestWrapper"
+        	ActionMapping mapping = null;
+        	Map<String, Object> extraContext = null;
+        	Configuration config = null;
+    		ActionProxy proxy = null;
+    		String namespace = null;
+    		String name = null;
+    		String method = null;
+        	try {
+        		mapping = actionMapper.getMapping(request, dispatcher.getConfigurationManager());
+        		namespace = mapping.getNamespace();
+        		name = mapping.getName();
+        		method = mapping.getMethod();
+        		
+        		extraContext = dispatcher.createContextMap(request, response, mapping, getServletContext());
+	
+        		config = dispatcher.getConfigurationManager().getConfiguration();
+        		proxy = config.getContainer().getInstance(ActionProxyFactory.class).createActionProxy(
+        				namespace, 
+        				name, 
+        				method, 
+        				extraContext, 
+        				true, 
+        				false);
+        		
+    			// imposta preventivamente l'action context nell'ActionContext 
+    			// in modo da fornire a JakartaStreamMultiPartRequest la action 
+				// che verra' eseguita successivamente dal dispatcher
+        		// questo permette al dispatcher di wrappare la request per calcolare 
+        		// le info del multipart/form-data!!!
+        		if(proxy != null && proxy.getInvocation() != null) {
+        			ActionContext.setContext(proxy.getInvocation().getInvocationContext());
+        		}
+        	} catch (Throwable t) {
+        		// SE QUALCOSA VA MALE, si passa allo step successivo in modo silenzioso...
+        		// ripristina l'action context di default
+        		ActionContext.setContext(defaultActionContext);
+        		if(StringUtils.isNotEmpty(namespace) && StringUtils.isNotEmpty(name)) {
+	    			LOG.warn("(XSS) Failed to handle action context for JakartaStreamMultiPartRequest: " +
+	    					 (StringUtils.isEmpty(method)
+	    	    			  ? "namespace=" + namespace + ", name=" + name + ", method=" + method
+	    	    			  : t.getMessage())
+	    			);
+        		}
+        	} finally {
+        		// (forza la liberazione delle risorse)
+        		proxy = null;
+        		config = null;
+        		extraContext = null;
+        		mapping = null;
+        	}
+        }
+        // ***************************************************************************
+        
         try {
             // Wrap request first, just in case it is multipart/form-data
             // parameters might not be accessible through before encoding (ww-1278)
@@ -238,7 +302,12 @@ public class Struts2ServletDispatcher extends HttpServlet implements StrutsStati
             String message = "Could not wrap servlet request with MultipartRequestWrapper!";
             LOG.error(message, e);
             throw new ServletException(message, e);
-        }
+        } finally {
+            // VAPT - fix dei parametri in JakartaStreamMultiPartRequest (PORTAPPALT-1170)
+            // ripristina l'action context di default, dopo aver gestito una JakartaStreamMultiPartRequest
+            // che inizializza in anticipo l'action context per permettere la validazione XSS
+            ActionContext.setContext(defaultActionContext);
+		}
         return request;
     }
    

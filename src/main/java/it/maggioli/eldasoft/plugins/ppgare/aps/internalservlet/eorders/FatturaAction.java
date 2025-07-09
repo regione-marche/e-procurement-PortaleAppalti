@@ -252,13 +252,13 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	}
 	
 	public String cancel() {
-		logger.info("Called FatturaAction.cancel");
+		logger.debug("Called FatturaAction.cancel");
 		return "cancelToOrder";
 	}
 	
 	public String back() {
-		logger.info("Called FatturaAction.back");
-		return "back";		
+		logger.debug("Called FatturaAction.back");
+		return "back";
 	}
 	
 	public String view() {
@@ -285,7 +285,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 			this.setTarget(ERROR);
 			return this.getTarget();
 		}
-		logger.info("Called FatturaAction.rigenera with {}",this.getTarget());
+		logger.debug("Called FatturaAction.rigenera with {}",this.getTarget());
 		return this.getTarget();
 	}
 
@@ -344,7 +344,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 				if(StringUtils.isEmpty(this.getModel().getNumero())) {
 					this.getModel().setNumero(febt.getDatiGenerali().getDatiGeneraliDocumento().getNumero());
 				}
-				logger.info("this.getModel().getDatiPagamento().isNull? {}",(this.getModel().getDatiPagamento()==null));
+				logger.debug("this.getModel().getDatiPagamento().isNull? {}",(this.getModel().getDatiPagamento()==null));
 				if(this.getModel().getDatiPagamento()==null) {
 					logger.debug("setDatiPagamento with {}",febt.getDatiPagamento());
 					if(!febt.getDatiPagamento().isEmpty()) {
@@ -481,17 +481,17 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	}
 	
 	public String next() throws ApsException {
-		logger.info("Called next");
+		logger.debug("Called next");
 		return saveHeader();
 	}
 	
 	public String saveHeader() throws ApsException {
 		logger.debug("Called FatturaAction.saveHeader");
-		logger.info("Form: {}",this.getModel());
+		logger.debug("Form: {}",this.getModel());
 		
 		try {
 			this.setTarget(this.crea());
-			logger.info("Form: {}",this.getModel());
+			logger.debug("Form: {}",this.getModel());
 			
 			if(StringUtils.isEmpty(this.getModel().getNumero())
 					|| !StringUtils.isAlphanumeric(this.getModel().getNumero())
@@ -740,12 +740,12 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 					
 			}
 			
-			logger.info("SAVE-PRE: {}",this.fatturaElettronica);
+			logger.debug("SAVE-PRE: {}",this.fatturaElettronica);
 			this.fattManager.updateDatiGeneraliFattura(this.idFatt, this.fatturaElettronica);
 			//no sense to reload data if page and action will be changed			
 //			this.setTarget(this.crea());
-			logger.info("SAVE-POST: {}",this.fatturaElettronica);
-			logger.info("Form: {}",this.getModel());
+			logger.debug("SAVE-POST: {}",this.fatturaElettronica);
+			logger.debug("Form: {}",this.getModel());
 		} catch (ApiException e) {
 			ApsSystemUtils.logThrowable(e, this, "saveHeader");
 			ExceptionUtils.manageExceptionError(e, this);
@@ -761,8 +761,8 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	}
 	
 	public String elaboraLinee() throws ApsException {
-		logger.info("elaboraLinee for {}",this.getIdFatt());
-		logger.info("elaboraLinee for orderCode: {}",this.getOrderCode());
+		logger.debug("elaboraLinee for {}",this.getIdFatt());
+		logger.debug("elaboraLinee for orderCode: {}",this.getOrderCode());
 		this.setTarget(SUCCESS);
 		try {
 			this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,	"fatt-dl");
@@ -780,7 +780,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	
 	
 	public String saveLinee() throws ApsException {
-		logger.info("saveLinee");
+		logger.debug("saveLinee");
 		this.setTarget(SUCCESS);
 		if(ERROR.equals(this.elaboraLinee())) return ERROR;
 		try {
@@ -856,7 +856,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 //																	if(StringUtils.isNotEmpty(this.getParameters().get("natura")[index])) {
 //																		String natura = this.getParameters().get("natura")[index];
 //																		el.setNatura(NaturaEnum.fromValue(natura));
-//																		logger.info("Natura: {}-> {}:{}",natura,el.getNatura().name(),el.getNatura().getValue());
+//																		logger.debug("Natura: {}-> {}:{}",natura,el.getNatura().name(),el.getNatura().getValue());
 //																	}
 //																	if(StringUtils.isNotEmpty(this.getParameters().get("esigibilitaIva")[index])) {
 //																		AltriDatiGestionaliType e = new AltriDatiGestionaliType();
@@ -873,7 +873,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 //																	return el;
 //																})
 //																.collect(Collectors.toList());
-//		dettaglioLineeFiltered.forEach(el->logger.info("{}",el));
+//		dettaglioLineeFiltered.forEach(el->logger.debug("{}",el));
 		// send response
 
 			this.dbs.setDettaglioLinee(dettaglioLineeFiltered);
@@ -888,7 +888,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	}
 	
 	public String last() {
-		logger.info("Called last");
+		logger.debug("Called last");
 		return "last";
 	}
 
@@ -899,14 +899,14 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	@SuppressWarnings("finally")
 	private String riepilogo(String type) {
 		this.setTarget(SUCCESS);
-		logger.info("Called riepilogo with type ({})",type);
+		logger.debug("Called riepilogo with type ({})",type);
 		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA,	"fine");
 		try {
-			logger.info("Called riepilogo.getDatiFatturaById");
+			logger.debug("Called riepilogo.getDatiFatturaById");
 			this.fatture = this.fattManager.getDatiFatturaById(this.idFatt,type);
 			this.fatturaXMLContent = this.fatture.getPlainFileContents();
 			this.fileName = this.getFatture().getPlainFileName();
-			logger.info("Called riepilogo.getDatiFatturaById");
+			logger.debug("Called riepilogo.getDatiFatturaById");
 		} catch (ApiException e) {
 			logger.error("Error {}",e);
 			this.setTarget(ERROR);
@@ -914,7 +914,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 			logger.error("Error {}",e);
 			this.setTarget(ERROR);
 		} finally {
-			logger.info("Terminato riepilogo: {}",this.getTarget());
+			logger.debug("Terminato riepilogo: {}",this.getTarget());
 			return this.getTarget();
 		}
 	}
@@ -925,31 +925,31 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	
 	public String download() {
 		try {
-			logger.info("id: {}",id);
-			logger.info("idFatt: {}",idFatt);
-			logger.info("orderCode: {}",orderCode);
+			logger.debug("id: {}",id);
+			logger.debug("idFatt: {}",idFatt);
+			logger.debug("orderCode: {}",orderCode);
 			this.riepilogo("ubl");
 			this.setTarget("export");
-			logger.info("this.fatture.getProgressivoInvio(): {}",this.fatture.getProgressivoInvio());
+			logger.debug("this.fatture.getProgressivoInvio(): {}",this.fatture.getProgressivoInvio());
 			//TODO call the action to create the "DOWNLOAD" element
 			this.fattManager.createDraftDownload(this.id, this.idFatt, this.orderCode, this.fatture.getProgressivoInvio());
 			this.fileName = this.getFatture().getPlainFileName();
 			this.inputStream = new ByteArrayInputStream(this.fatturaXMLContent);
-			logger.info("download finished [{}]",this.fileName);
+			logger.debug("download finished [{}]",this.fileName);
 		} catch(Exception e) {
 			logger.error("Error on download {}",e);
 			this.setTarget(ERROR);
 		}
-		logger.info("download: {}",this.getTarget());
+		logger.debug("download: {}",this.getTarget());
 		return this.getTarget();
 	}
 	
 	public String upload() {
-		logger.info("FatturaAction.upload - START");
+		logger.debug("FatturaAction.upload - START");
 		//this.setTarget(SUCCESS);
 		this.setTarget("successUpload");
 		try {
-			logger.info("{}",this.docFattura);
+			logger.debug("{}",this.docFattura);
 			if(this.docFattura != null) {
 				//TODO unpack data from p7m
 				if(this.docFatturaFileName.endsWith("p7m") || this.docFatturaFileName.endsWith("xml")) {
@@ -973,7 +973,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 						res.putAll(verificaXML(inputFile));
 					}
 					
-					logger.info("VerificaXML {}",res.keySet());
+					logger.debug("VerificaXML {}",res.keySet());
 					if(res.size()!=2) {
 						logger.warn("Impossible find something in the XML: {}",res.keySet());
 						this.warningInvioFattura = "WARN_FATT_NO_DATA";
@@ -1029,18 +1029,18 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 			System.gc();
 			return this.getTarget();
 		}
-		logger.info("FatturaAction.upload  - FINISH [{}]",this.getTarget());
+		logger.debug("FatturaAction.upload  - FINISH [{}]",this.getTarget());
 		return this.getTarget();
 	}
 	
 	public String inviaFattura() {
 		this.setTarget(SUCCESS);
-		logger.info("Called inviaFattura");
-		logger.info("{}:{}",PortGareSystemConstants.SESSION_ID_NSO_FILENAME_SDI,this.session.get(PortGareSystemConstants.SESSION_ID_NSO_FILENAME_SDI));
-		logger.info("{} is present:{}",PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI,(this.session.get(PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI)!=null));
+		logger.debug("Called inviaFattura");
+		logger.debug("{}:{}",PortGareSystemConstants.SESSION_ID_NSO_FILENAME_SDI,this.session.get(PortGareSystemConstants.SESSION_ID_NSO_FILENAME_SDI));
+		logger.debug("{} is present:{}",PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI,(this.session.get(PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI)!=null));
 		try {
 			InvoiceDraftKeeper dd = this.fattManager.getLastDataForOrder(this.getId());
-			logger.info("Obtained InvoiceDraftKeeper {}",dd);
+			logger.debug("Obtained InvoiceDraftKeeper {}",dd);
 			byte[]  inv = (byte[]) this.session.get(PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI);
 
 			InvoiceData invoiceData = new InvoiceData();
@@ -1052,9 +1052,9 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 			}
 			invoiceData.setIdOrdine(this.id);
 			invoiceData.setProgInvio(this.progInvio);
-			logger.info("Invoice data TRY");
+			logger.debug("Invoice data TRY");
 			this.fattManager.inviaFattura(invoiceData );
-			logger.info("Invoice data SENT");
+			logger.debug("Invoice data SENT");
 			this.warningInvioFattura = "WARN_FATT_SENT";
 		} catch (ApiException e) {
 			logger.error("Impossible send data",e);
@@ -1072,7 +1072,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 		this.session.remove(PortGareSystemConstants.SESSION_ID_NSO_FILENAME_SDI);
 		this.session.remove(PortGareSystemConstants.SESSION_ID_NSO_FILE_SDI);
 		
-		logger.info("Called inviaFattura -> {}",this.getTarget());
+		logger.debug("Called inviaFattura -> {}",this.getTarget());
 		return this.getTarget();
 	}
 	
@@ -1080,7 +1080,7 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 	@Deprecated
 	private Map<String,String> verificaXML(final File xmlFile) {
 		FileInputStream fileIS = null;
-		logger.info("Verifica di {}",xmlFile.getName());
+		logger.debug("Verifica di {}",xmlFile.getName());
 		try {
 			fileIS = new FileInputStream(xmlFile);
 			return  verificaXML(fileIS);
@@ -1110,13 +1110,13 @@ public class FatturaAction extends EncodedDataAction implements SessionAware, Mo
 //	        expression = "/ns3:FatturaElettronica/FatturaElettronicaHeader/DatiTrasmissione/ProgressivoInvio";
 //	        String progInvio = extractXpathInfoFromDocument(doc, xpath, expression);
 //	        if(StringUtils.isNotEmpty(progInvio)) res.put("progInvio", progInvio);
-//	        logger.info("Found: {} with {}",codOrd, progInvio);
+//	        logger.debug("Found: {} with {}",codOrd, progInvio);
 	        
 			String codOrd = extractElemInfoFromDocument(doc, "OrderReference","ID");
 			if(StringUtils.isNotEmpty(codOrd)) res.put("codOrd", codOrd);
 			String progInvio = extractElemInfoFromDocument(doc, "UUID", null);
 			if(StringUtils.isNotEmpty(progInvio)) res.put("progInvio", progInvio);
-			logger.info("Found: {} with {}",codOrd, progInvio);
+			logger.debug("Found: {} with {}",codOrd, progInvio);
 			
 			// handle errors
 		} catch (Exception ex) {

@@ -23,7 +23,7 @@ public class WsPagoPATableWrapper {
 	private WSPagoPASoapProxy proxyWsPagoPa;
 	
 	public WsPagoPATableWrapper() {
-		logger.info("WsPagoPATableWrapper created.");
+		logger.debug("WsPagoPATableWrapper created.");
 	}
 	
 	/**
@@ -36,9 +36,9 @@ public class WsPagoPATableWrapper {
 	 * @param proxyWsPagoPa the proxyWsPagoPa to set
 	 */
 	public void setProxyWsPagoPa(WSPagoPASoapProxy proxyWsPagoPa) {
-		logger.info("Impostato il proxyWsPagoPa {}",proxyWsPagoPa);
+		logger.debug("Impostato il proxyWsPagoPa {}",proxyWsPagoPa);
 		this.proxyWsPagoPa = proxyWsPagoPa;
-		logger.info("Impostato il proxyWsPagoPa con endpoint: {}",proxyWsPagoPa.getEndpoint());
+		logger.debug("Impostato il proxyWsPagoPa con endpoint: {}",proxyWsPagoPa.getEndpoint());
 	}
 	
 	/**

@@ -21,7 +21,7 @@ statoVisibile: ${statoVisibile}<br/>
 esitoVisibile: ${esitoVisibile}<br/>
 --%>
  
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action" />" method="post">
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/${sessionScope.fromPage}.action" />" method="post">
  		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
  		
  		<%-- FILTRI DI RICERCA --%>
@@ -46,7 +46,7 @@ esitoVisibile: ${esitoVisibile}<br/>
 							<s:select name="model.stazioneAppaltante" id="model.stazioneAppaltante" list="maps['stazioniAppaltanti']" 
 									value="%{#searchForm.stazioneAppaltante}" 
 									headerKey="" headerValue="%{#attr.headerValueStazioneAppaltante}" 
-									cssStyle="width: 100%;" >
+									cssStyle="width: 100%;" autocomplete="off" >
 							</s:select>
 						</c:otherwise>
 					</c:choose>				
@@ -60,7 +60,7 @@ esitoVisibile: ${esitoVisibile}<br/>
 				<div class="element">
 					<s:textfield name="model.oggetto" id="model.oggetto" cssClass="text" 
 								value="%{#searchForm.oggetto}" 
-								size="50" />
+								size="50" autocomplete="off" />
 				</div>
 			</div>
 		
@@ -72,14 +72,42 @@ esitoVisibile: ${esitoVisibile}<br/>
 					<div class="element">
 						<s:textfield name="model.cig" id="model.cig" cssClass="text" 
 									value="%{#searchForm.cig}" 
-									size="50" maxlength="10" />
+									size="50" maxlength="10" autocomplete="off" />
 					</div>
 				</div>
 			</c:if>
+			
+			<c:if test="${statoVisibile}">
+				<div class="fieldset-row">
+				    <div class="label">
+				        <label for="model.stato"><wp:i18n key="LABEL_STATO_GARA" /> : </label>
+				    </div>
+				    <div class="element">
+				        <wp:i18n key="OPT_CHOOSE_STATO_GARA" var="headerValueStatoGara" />
+				        <s:select name="model.stato" id="model.stato" list="maps['statiGara']"
+				                value="%{#searchForm.stato}"
+				                headerKey="" headerValue="%{#attr.headerValueStatoGara}" autocomplete="off" >
+				        </s:select>
+				    </div>
+				</div>
+			</c:if>
 
-
- 		    <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/advancedFilter.jsp" />
-            <div id="advanced">
+            <div class="fieldset-row">
+            	<div class="label">
+                    <label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
+                </div>
+                <div class="element">
+                    <s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
+                            value="%{#searchForm.orderCriteria}"
+                            headerKey="" headerValue="" autocomplete="off" >
+                    </s:select>
+                </div>
+            </div>
+			
+			<%-- criteri di riceca avanzati --%>
+            <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/advancedFilter.jsp" />
+            
+            <div id="<s:property value='%{#ADVANCED_DIV_ID}' />" class="advanced">
                 <div class="fieldset-row">
                     <div class="label">
                         <label for="model.tipoAppalto"><wp:i18n key="LABEL_TIPO_APPALTO" /> : </label>
@@ -88,7 +116,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                         <wp:i18n key="OPT_CHOOSE_TIPO_APPALTO" var="headerValueTipoAppalto" />
                         <s:select name="model.tipoAppalto" id="model.tipoAppalto" list="maps['tipiAppalto']" 
                                     value="%{#searchForm.tipoAppalto}"
-                                    headerKey="" headerValue="%{#attr.headerValueTipoAppalto}" >
+                                    headerKey="" headerValue="%{#attr.headerValueTipoAppalto}" autocomplete="off" >
                         </s:select>
                     </div>
                 </div>
@@ -103,11 +131,11 @@ esitoVisibile: ${esitoVisibile}<br/>
                         <label><wp:i18n key="LABEL_DA_DATA" />: </label>
                         <s:textfield name="model.dataPubblicazioneDa" id="model.dataPubblicazioneDa" cssClass="text"
                                     value="%{#searchForm.dataPubblicazioneDa}" title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueDa}"
-                                    maxlength="10" size="10" />
+                                    maxlength="10" size="10" autocomplete="off" />
                         <label><wp:i18n key="LABEL_A_DATA" />: </label>
                         <s:textfield name="model.dataPubblicazioneA" id="model.dataPubblicazioneA" cssClass="text"
                                     value="%{#searchForm.dataPubblicazioneA}" title="%{#attr.headerValueDataPubblicazione} %{#attr.headerValueA}"
-                                    maxlength="10" size="10" />
+                                    maxlength="10" size="10" autocomplete="off" />
                         (<wp:i18n key="LABEL_FORMATO_DATA" />)
                     </div>
                 </div>
@@ -121,25 +149,25 @@ esitoVisibile: ${esitoVisibile}<br/>
                         <label><wp:i18n key="LABEL_DA_DATA" />: </label>
                         <s:textfield name="model.dataScadenzaDa" id="model.dataScadenzaDa" cssClass="text"
                                     value="%{#searchForm.dataScadenzaDa}" title="%{#attr.headerValueDataScadenza} %{#attr.headerValueDa}"
-                                    maxlength="10" size="10" />
+                                    maxlength="10" size="10" autocomplete="off" />
                         <label><wp:i18n key="LABEL_A_DATA" />: </label>
                         <s:textfield name="model.dataScadenzaA" id="model.dataScadenzaA" cssClass="text"
                                     value="%{#searchForm.dataScadenzaA}" title="%{#attr.headerValueDataScadenza} %{#attr.headerValueA}"
-                                    maxlength="10" size="10" />
+                                    maxlength="10" size="10" autocomplete="off" />
                         (<wp:i18n key="LABEL_FORMATO_DATA" />)
                     </div>
                 </div>
 
-			<div class="fieldset-row">
-				<div class="label">
-					<label for="model.codice"><wp:i18n key="LABEL_RIFERIMENTO_PROCEDURA" /> : </label>
+				<div class="fieldset-row">
+					<div class="label">
+						<label for="model.codice"><wp:i18n key="LABEL_RIFERIMENTO_PROCEDURA" /> : </label>
+					</div>
+					<div class="element">
+						<s:textfield name="model.codice" id="model.codice" cssClass="text"
+									value="%{#searchForm.codice}"
+									size="20" maxlength="20" autocomplete="off" />
+					</div>
 				</div>
-				<div class="element">
-					<s:textfield name="model.codice" id="model.codice" cssClass="text"
-								value="%{#searchForm.codice}"
-								size="20" maxlength="20"/>
-				</div>
-			</div>
 
                 <c:if test="${proceduraTelematicaVisibile}">
                     <%--
@@ -157,21 +185,6 @@ esitoVisibile: ${esitoVisibile}<br/>
                      --%>
                 </c:if>
 
-                <c:if test="${statoVisibile}">
-                    <div class="fieldset-row">
-                        <div class="label">
-                            <label for="model.stato"><wp:i18n key="LABEL_STATO_GARA" /> : </label>
-                        </div>
-                        <div class="element">
-                            <wp:i18n key="OPT_CHOOSE_STATO_GARA" var="headerValueStatoGara" />
-                            <s:select name="model.stato" id="model.stato" list="maps['statiGara']"
-                                    value="%{#searchForm.stato}"
-                                    headerKey="" headerValue="%{#attr.headerValueStatoGara}" >
-                            </s:select>
-                        </div>
-                    </div>
-                </c:if>
-
                 <c:if test="${esitoVisibile}">
                     <div class="fieldset-row" id="esitoGara">
                         <div class="label">
@@ -181,7 +194,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                             <wp:i18n key="OPT_CHOOSE_ESITO_GARA" var="headerValueEsito"/>
                             <s:select name="model.esito" id="model.esito" list="maps['esitiGara']"
                                             value="%{#searchForm.esito}"
-                                            headerKey="" headerValue="%{#attr.headerValueEsito}" >
+                                            headerKey="" headerValue="%{#attr.headerValueEsito}" autocomplete="off" >
                                 </s:select>
                         </div>
                     </div>
@@ -195,7 +208,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                         <wp:i18n key="OPT_CHOOSE_CUC_AGISCE_PER_CONTO" var="headerValueCUC"/>
                         <div class="element">
                             <s:select name="model.altriSoggetti" id="model.altriSoggetti" list="maps['tipoAltriSoggetti']"
-                                    value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" >
+                                    value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" autocomplete="off" >
                             </s:select>
                         </div>
                     </div>
@@ -208,7 +221,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                     <div class="element">
                         <s:select name="model.sommaUrgenza" id="model.sommaUrgenza" list="maps['sino']"
                                 value="%{#searchForm.sommaUrgenza}"
-                                headerKey="" headerValue="" >
+                                headerKey="" headerValue="" autocomplete="off" >
                         </s:select>
                     </div>
                 </div>
@@ -220,7 +233,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                     <div class="element">
                         <s:select name="model.isGreen" id="model.isGreen" list="maps['sino']"
                                 value="%{#searchForm.isGreen}"
-                                headerKey="" headerValue="" >
+                                headerKey="" headerValue="" autocomplete="off" >
                         </s:select>
                     </div>
                 </div>
@@ -232,7 +245,7 @@ esitoVisibile: ${esitoVisibile}<br/>
                     <div class="element">
                         <s:select name="model.isRecycle" id="model.isRecycle" list="maps['sino']"
                                 value="%{#searchForm.isRecycle}"
-                                headerKey="" headerValue="" >
+                                headerKey="" headerValue="" autocomplete="off" >
                         </s:select>
                     </div>
                 </div>
@@ -244,39 +257,26 @@ esitoVisibile: ${esitoVisibile}<br/>
                     <div class="element">
                         <s:select name="model.isPnrr" id="model.isPnrr" list="maps['sino']"
                                 value="%{#searchForm.isPnrr}"
-                                headerKey="" headerValue="" >
+                                headerKey="" headerValue="" autocomplete="off" >
                         </s:select>
                     </div>
                 </div>
                 
-                <div class="fieldset-row">
-                    <div class="label">
-                        <label for="model.orderCriteria"><wp:i18n key="LABEL_ORDER_CRITERIA" /> : </label>
-                    </div>
-                    <div class="element">
-                        <s:select name="model.orderCriteria" id="model.orderCriteria" list="maps['orderCriteria']"
-                                value="%{#searchForm.orderCriteria}"
-                                headerKey="" headerValue="" >
-
-                        </s:select>
-                    </div>
-                </div>
-
                 <div class="fieldset-row last-row">
                     <div class="label">
                         <label for="model.iDisplayLength"><s:property value="%{getText('label.rowsPerPage')}" /> : </label>
                     </div>
                     <div class="element">
-                        <select name="model.iDisplayLength" id="model.iDisplayLength" class="text">
+                        <select name="model.iDisplayLength" id="model.iDisplayLength" class="text" autocomplete="off">
                             <option <s:if test="%{model.iDisplayLength==10}">selected="selected"</s:if> value="10">10</option>
                             <option <s:if test="%{model.iDisplayLength==20}">selected="selected"</s:if> value="20">20</option>
                             <option <s:if test="%{model.iDisplayLength==50}">selected="selected"</s:if> value="50">50</option>
                             <option <s:if test="%{model.iDisplayLength==100}">selected="selected"</s:if> value="100">100</option>
                         </select>
                     </div>
-                </div>
+                </div>               
             </div>
-			
+            
 			<div class="azioni">
 				<wp:i18n key="BUTTON_SEARCH" var="valueSearchButton" />
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui"/>

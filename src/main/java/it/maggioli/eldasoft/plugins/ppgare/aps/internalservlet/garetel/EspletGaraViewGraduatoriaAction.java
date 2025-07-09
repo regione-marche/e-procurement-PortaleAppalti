@@ -1,23 +1,25 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.struts2.interceptor.SessionAware;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
-
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletamentoElencoOperatoriSearch;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.util.EspletamentoUtil;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+import org.apache.struts2.interceptor.SessionAware;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants.PORTAL_ERROR;
 
 public class EspletGaraViewGraduatoriaAction extends EncodedDataAction implements SessionAware {
 	/**
@@ -40,7 +42,9 @@ public class EspletGaraViewGraduatoriaAction extends EncodedDataAction implement
 	private List<EspletGaraOperatoreType> elencoOperatori;
 	private Boolean proceduraInversa;
 	private Integer tipoOffertaTelemantica;
-	private Integer nascondiValoriEspletamento; 
+	private Integer nascondiValoriEspletamento;
+	private boolean hideFiscalCode = false;
+	private boolean secondoGrado;
 
 	@Override
 	public void setSession(Map<String, Object> arg0) {
@@ -109,11 +113,36 @@ public class EspletGaraViewGraduatoriaAction extends EncodedDataAction implement
  
 	public void setNascondiValoriEspletamento(Integer nascondiValoriEspletamento) { 
 		this.nascondiValoriEspletamento = nascondiValoriEspletamento; 
-	} 
+	}
+	public boolean isSecondoGrado() {
+		return secondoGrado;
+	}
+
+	public String viewSecondoGrado() {
+		String target = PORTAL_ERROR;
+
+		try {
+			String codice = bandiManager.getCodiceSecondoGrado(getCurrentUser().getUsername(), this.codice);
+			if (codice == null)
+				throw new Exception("Non sono riuscito a trovare una gara di secondo grado per la gara " + this.codice);
+			secondoGrado = true;
+			target = view(Optional.of(codice));
+		} catch (Exception e) {
+			this.addActionError(this.getText("Errors.sessionExpired"));
+			this.setTarget(PORTAL_ERROR);
+		}
+
+		return target;
+	}
+
+	public String view() {
+		return view(Optional.empty());
+	}
+
 	/**
 	 * apre la pagina della graduatoria 
 	 */
-	public String view() {
+	public String view(Optional<String> codiceSecondoGrado) {
 		this.setTarget(SUCCESS);
 		
 		if (null != this.getCurrentUser() 
@@ -122,11 +151,16 @@ public class EspletGaraViewGraduatoriaAction extends EncodedDataAction implement
 		{
 			try {
 				this.lottiDistinti = (this.codiceLotto != null && !this.codiceLotto.isEmpty());
-				
+
+                codiceSecondoGrado.ifPresent(it -> codice = it);
+
 				String codiceGara = (this.lottiDistinti ? this.codiceLotto : this.codice);
-				
-				this.elencoOperatori = this.bandiManager
-					.getEspletamentoGaraGraduatoriaElencoOperatori(codiceGara, null);
+
+				EspletamentoElencoOperatoriSearch search = new EspletamentoElencoOperatoriSearch();
+				search.setCodice(codiceGara);
+				search.setCodiceOperatore(null);
+				search.setUsername(getCurrentUser().getUsername());
+				this.elencoOperatori = bandiManager.getEspletamentoGaraGraduatoriaElencoOperatori(search);
 				
 				// nel caso di accordo quadro esiste la possibilita' di avere
 				// piu' aggiudicatarie, in tal caso si modifica la dicitura
@@ -160,21 +194,25 @@ public class EspletGaraViewGraduatoriaAction extends EncodedDataAction implement
 					this.proceduraInversa = dettGara.getDatiGeneraliGara().isProceduraInversa();
 				}
 				DettaglioGaraType dettaglioGara = bandiManager.getDettaglioGara(codiceGara); 
-				nascondiValoriEspletamento = dettaglioGara.getDatiGeneraliGara().getNascondiValoriEspletamento(); 
-
-				this.tipoOffertaTelemantica = EspletGaraFasiAction.getTipoOffertaTelematica(this.session, this.codice);				
+				nascondiValoriEspletamento = dettaglioGara.getDatiGeneraliGara().getNascondiValoriEspletamento();
+				hideFiscalCode = EspletamentoUtil.hasToHideFiscalCode(dettGara);
+				this.tipoOffertaTelemantica = EspletGaraFasiAction.getTipoOffertaTelematica(this.session, this.codice);
 
 			} catch(Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "view");
 				ExceptionUtils.manageExceptionError(t, this);
-				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+				this.setTarget(PORTAL_ERROR);
 			}
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));
-			this.setTarget(CommonSystemConstants.PORTAL_ERROR);	
+			this.setTarget(PORTAL_ERROR);
 		}
 		
 		return this.getTarget();
+	}
+
+	public boolean getHideFiscalCode() {
+		return hideFiscalCode;
 	}
 
 }

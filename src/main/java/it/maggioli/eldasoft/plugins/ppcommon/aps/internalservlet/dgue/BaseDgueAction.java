@@ -8,12 +8,22 @@ import com.agiletec.aps.system.services.user.UserDetails;
 import it.eldasoft.utils.sign.DigitalSignatureChecker;
 import it.eldasoft.utils.sign.DigitalSignatureException;
 import it.eldasoft.www.WSOperazioniGenerali.FileType;
+
+import it.eldasoft.www.sil.WSAste.GetDettaglioAstaOutType;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentoAllegatoType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DownloadAllegatoAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParam;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IDocumentiDigitaliManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.EncryptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.JwtTokenUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.dgue.DgueBuilder;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.security.SymmetricEncryptionUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,9 +31,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.xml.security.utils.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
@@ -33,11 +40,22 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-//Anche la classe OpenpageDocumentiBustaAction dovrebbe estendere questa classe perch� crea url per l'mdgue e invia il token
+/**
+ * ...
+ * 
+ */
+//
+// NB: Anche la classe OpenpageDocumentiBustaAction dovrebbe estendere questa classe perche' crea url per l'mdgue e invia il token
+//
 public abstract class BaseDgueAction extends EncodedDataAction implements ServletResponseAware {
+    /**
+	 * UID
+	 */
+	private static final long serialVersionUID = 2337912035164112142L;
 
-    protected final Logger log = LoggerFactory.getLogger(BaseDgueAction.class);
-
+	// Classe che effettua lo sbustamento in case di richieste firmate
+    private static final DigitalSignatureChecker SIGNATURE_CHECKER = new DigitalSignatureChecker();
+    
     /**
      * DGUE
      */
@@ -45,55 +63,54 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
     public static final String REST_URL_VISUALIZATION   = "quadro-generale-appalti";
     public static final String REST_URL_MODIFICATION    = "dgue-home-portale";
 
-    public static final String TOKEN_SUBJECT          = "PortaleAppalti";
-    protected static final String DGUE_ENC_DATA          = "enc-data";
-    protected static final String DGUE_URL_MDGUE         = "dgue-url-mdgue";
-    protected static final String DGUE                   = "dgue";
-    //Minuti che il token jwt rimane attivo, in caso non fosse valorizzato il default attuale � 5 minuti 8DEFAULT_EXPIRATION_MINUTES)
-    protected static final String DGUE_JWTKEY_EXPIRATION = "dgue-jwtkey-expiration";
+    public static final String TOKEN_SUBJECT            = "PortaleAppalti";
+    public static final String DGUE_ENC_DATA			= "enc-data";
+    public static final String DGUE_URL_MDGUE			= "dgue-url-mdgue";
+    public static final String DGUE						= "dgue";    
+    
+    // Categoria dgue nel database
+    public static final String DGUE_CATEGORY			= "dgue";
+    
+    // Minuti che il token jwt rimane attivo, in caso non fosse valorizzato il default attuale e' 5 minuti 8DEFAULT_EXPIRATION_MINUTES)
+    public static final long DEFAULT_EXPIRATION_MINUTES	= 5;
+    public static final int    DGUE_JWT_SECRET_LENGTH	= 64;
+    public static final String DGUE_JWTKEY_EXPIRATION	= "dgue-jwtkey-expiration";       
     //Property contente la chiave jwt
     //Durante la fase di generazione, in caso la property fosse vuota, viene valorizzata.
-    protected static final String DGUE_JWTKEY            = "dgue-jwtkey";
+    public static final String DGUE_JWTKEY				= "dgue-jwtkey";    
     //Property contenente la chiave di crittografia simmetrica dei dati
-    //Durante la fase di generazione, in caso la property fosse vuota, viene valorizzata.
-    protected static final String DGUE_SYMKEY            = "dgue-symkey";
-    protected static final int    DGUE_JWT_SECRET_LENGTH = 64;
-    protected static final String JSON_LOTTI                 = "lotti";
+    // Durante la fase di generazione, in caso la property fosse vuota, viene rivalorizzata.
+    public static final String DGUE_SYMKEY				= "dgue-symkey";        
+    
+    public static final String JSON_LOTTI				= "lotti";
     //Nodo che contiene l'anagraficaOE
-    protected static final String JSON_INFO_OE               = "infoOE";
+    public static final String JSON_INFO_OE				= "infoOE";
     //Contenuto del file da passare al dgue
-    public static final String JSON_DGUE_REQUEST          = "dgueRequest";
-    public static final String JSON_CODICE                = "codice";
+    public static final String JSON_DGUE_REQUEST        = "dgueRequest";
+    public static final String JSON_CODICE              = "codice";
     public static final String JSON_PROGRESSIVO_OFFERTA = "progressivoOfferta";
     //Utente che ha effettuato la richiesta
     public static final String JSON_USER                = "usr";
-    protected static final String JSON_ENC_DATA            = "enc-data";
+    public static final String JSON_ENC_DATA			= "enc-data";
     //Nodo del json contenente il json con file e tutte le informazioni da inviare al dgue
-    protected static final String JSON_DATA                  = "data";
+    public static final String JSON_DATA				= "data";
     //Id del documento da passare al dgue
-    public static final String JSON_IDDOCDIG              = "iddocdig";
+    public static final String JSON_IDDOCDIG            = "iddocdig";
     //idprg del documento da passare al dgue
-    public static final String JSON_IDPRG                 = "idprg";
+    public static final String JSON_IDPRG               = "idprg";
     //Url della action da chiamare dopo l'invio del token da parte del Portale
-    protected static final String JSON_URL_SERVIZION         = "urlServizio";
-    //Categoria dgue nel database
-    protected static final String DGUE_CATEGORY              = "dgue";
-    protected static final long   DEFAULT_EXPIRATION_MINUTES = 5;
+    public static final String JSON_URL_SERVIZION		= "urlServizio";
 
-    //Classe che effettua lo sbustamento in case di richieste firmate
-    private static final DigitalSignatureChecker signatureChecker = new DigitalSignatureChecker();
-
-    //Utilizzata per impostare una risposta quando è il dgue a inviare una request al portale
     protected HttpServletResponse response;
-
-    //Utilizzata per recuperarsi le property di categoria dgue dal db
-    protected IAppParamManager               appParamManager;
-    //Utilizzata in alcuni casi, quando � necessario essere loggati
+    protected IAppParamManager appParamManager;
     protected IAuthenticationProviderManager authenticationProvider;
-    //Manager per recuperarmi il file della richiesta
     protected IDocumentiDigitaliManager documentiDigitaliManager;
-    //Manager che serve a far ritornare l'url del servizio corrente
-    protected ConfigInterface           configManager;
+    protected ConfigInterface configManager;
+    protected IBandiManager bandiManager;
+
+    @Validate(EParamValidation.CODICE)
+    protected String codice;
+    
 
     /**
      * Se non presente l'autenticazione ritorna errore.
@@ -104,7 +121,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
         String username = decodedData.getString(JSON_USER);
         UserDetails ud = authenticationProvider.getUser(username);
         if (ud == null) {
-            log.warn("Utente non identificato ha cercato di accedere ai dati DGUE. Username: {}", username);
+            logger.warn("Utente non identificato ha cercato di accedere ai dati DGUE. Username: {}", username);
             throw new Exception("Utente non identificato ha cercato di accedere ai dati DGUE.");
         }
         return username;
@@ -116,25 +133,25 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
      * @throws Exception
      */
     protected JSONObject getDecodedData(boolean forceUpdate) throws Exception {
-        //Ritorno il token jwt contenuto nell'header
+        // Ritorno il token jwt contenuto nell'header
         String jwt = getJwtFromHeader();
-        //inutile effettuare la query a db per le properties nel caso in cui manchi Authorization Header o che questi
+        // inutile effettuare la query a db per le properties nel caso in cui manchi Authorization Header o che questi
         // sia presente ma senza valori
         Map<String, String> properties = getValidDgueProperties(forceUpdate);
-        //Se non esistono le chiavi di decifratura a db, ritorno errore
+        // Se non esistono le chiavi di decifratura a db, ritorno errore
         if (properties.get(DGUE_SYMKEY) == null || properties.get(DGUE_JWTKEY) == null)
             throw new Exception("Missing params with category " + DGUE_CATEGORY);
 
-        //Estraggo il contenuto del jwt token in un json
+        // Estraggo il contenuto del jwt token in un json
         JSONObject body = getJsonFromJwtToken(properties, jwt);
-        //Il nodo root del json � JSON_DATA
+        // Il nodo root del json e' JSON_DATA
         JSONObject dataFromInput = (JSONObject) body.get(JSON_DATA);
-        //mi faccio ritornate il json criptato
+        // mi faccio ritornate il json criptato
         String encodedData = dataFromInput.getString(JSON_ENC_DATA);
-        log.trace("encData: {}", encodedData);
-        //Decripto il json
+        logger.trace("encData: {}", encodedData);
+        // Decripto il json
         JSONObject decodedData = decodeData(properties, encodedData);
-        log.trace("decoData: {}", decodedData);
+        logger.trace("decoData: {}", decodedData);
 
         return decodedData;
     }
@@ -197,9 +214,10 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
      * Utilizzato per specificare al browser che tipo di chiamate http sono accettate.
      */
     protected void addResponseHeader() {
-        response.addHeader("Access-Control-Allow-Origin", "*");//TODO non molto sicuro sarebbe meglio avere un
-        // mapping degli url chiamanti
-        response.addHeader("Vary", "Origin");//per dare modo al chiamante di sapere che la origin potrebbe variare
+    	// TODO non molto sicuro sarebbe meglio avere un mapping degli url chiamanti
+        response.addHeader("Access-Control-Allow-Origin", "*");        
+        // per dare modo al chiamante di sapere che la origin potrebbe variare
+        response.addHeader("Vary", "Origin"); 
         response.addHeader("Access-Control-Allow-Headers", "Authorization,Content-Type");
         response.addHeader("Access-Control-Allow-Methods", HttpMethod.OPTIONS + "," + HttpMethod.GET);
     }
@@ -221,7 +239,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
     }
 
     /**
-     * Controlla se la property � un chiave di cifratura, se presente e se vuote le valorizza.
+     * Controlla se la property e' una chiave di cifratura, se presente e se vuote le valorizza.
      * @param param
      */
     protected void checkAndUpdateProperties(AppParam param) {
@@ -231,7 +249,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
                             || updateIfEmpty(param, DGUE_JWTKEY, RandomStringUtils.random(DGUE_JWT_SECRET_LENGTH,
                                                                                           true, true));
             if (needsToUpdate) {
-                log.info("Param {} dgue-security not found, update it", param.getName());
+                logger.debug("Param {} dgue-security not found, update it", param.getName());
                 appParamManager.updateAppParams(Collections.singletonList(param));
             }
         } catch (Exception e) {
@@ -240,7 +258,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
     }
 
     /**
-     * Se la property � vuota la aggiorno con il valore specificato
+     * Se la property e' vuota la aggiorno con il valore specificato
      * @param param
      * @param propName
      * @param value
@@ -260,7 +278,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
 
     /**
      * Ritorna l'expiration date del token, ovvero il tempo specificato sulle properties o il DEFAULT_EXPIRATION_MINUTES se vuoto
-     * (viene ritornata la data di fine validit� in millisecondi)
+     * (viene ritornata la data di fine validita' in millisecondi)
      * @param properties
      * @return
      */
@@ -280,10 +298,44 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
      * @throws ApsException
      */
     protected FileType getDgueRequestDocument(JSONObject decodedData) throws ApsException {
-        return documentiDigitaliManager.getDocumentoPubblico(
-                decodedData.get(JSON_IDPRG).toString()
-                , decodedData.getLong(JSON_IDDOCDIG)
-        );
+    	String idprg = (decodedData.get(JSON_IDPRG) != null ? decodedData.get(JSON_IDPRG).toString() : null);
+        Long iddoc = (decodedData.get(JSON_IDDOCDIG) != null ? decodedData.getLong(JSON_IDDOCDIG) : null);
+        String codice = (decodedData.get(JSON_CODICE) != null ? decodedData.get(JSON_CODICE).toString() : null);
+        String username = (decodedData.get(JSON_USER) != null ? decodedData.get(JSON_USER).toString() : null);
+        
+        // recupera la documentazione di gara dalla gara 
+        // e verifica se il DGUE fa parte della documentazione di gara o di invito
+        DettaglioGaraType dettGara = bandiManager.getDettaglioGara(codice);        
+		boolean invito = false;
+        if(dettGara != null && dettGara.getInvito() != null && iddoc != null) {
+        	for(DocumentoAllegatoType doc : dettGara.getInvito()) {
+        		if(GestioneBuste.DGUEREQUEST.equalsIgnoreCase(doc.getIdStampa())) {
+        			logger.debug("getDgueRequestDocument invito dgue id={} descrizione={}  nomefile={}", doc.getId(), doc.getDescrizione(), doc.getNomefile());        			
+					invito = (doc.getId() != null && doc.getId().longValue() == iddoc.longValue());
+        		}
+        	}
+        }
+        
+        FileType dgueRequest = null;
+        if(invito) {
+	        // il dgue e' un documento di invito
+	        dgueRequest = DownloadAllegatoAction.getDownloadDocumentoInvito(
+	        		idprg,
+	        		iddoc,
+	        		username,
+	        		codice,
+	        		this
+	        );
+        } else {
+	        // il dgue e' un documento della documentazione di gara
+	        dgueRequest = DownloadAllegatoAction.getDownloadDocumentoPubblico(
+	        		idprg,
+	        		iddoc,
+	        		this
+	        );
+        }
+		
+        return dgueRequest; 
     }
 
     /**
@@ -295,7 +347,7 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
     protected byte[] getUnpackedFileBytes(FileType requestFileToSend) throws DigitalSignatureException {
         return StringUtils.endsWithIgnoreCase(requestFileToSend.getNome(), ".p7m")
                        || StringUtils.containsIgnoreCase(requestFileToSend.getNome(), ".p7m")
-               ? signatureChecker.getContent(requestFileToSend.getFile())
+               ? SIGNATURE_CHECKER.getContent(requestFileToSend.getFile())
                : requestFileToSend.getFile();
     }
 
@@ -321,20 +373,34 @@ public abstract class BaseDgueAction extends EncodedDataAction implements Servle
     public void setAppParamManager(IAppParamManager appParamManager) {
         this.appParamManager = appParamManager;
     }
+    
     public void setAuthenticationProvider(IAuthenticationProviderManager authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
+    
     public void setDocumentiDigitaliManager(IDocumentiDigitaliManager documentiDigitaliManager) {
         this.documentiDigitaliManager = documentiDigitaliManager;
     }
+    
     public void setConfigManager(ConfigInterface configManager) {
         this.configManager = configManager;
     }
 
+	public void setBandiManager(IBandiManager bandiManager) {
+		this.bandiManager = bandiManager;
+	}
 
-    @Override
+	@Override
     public void setServletResponse(HttpServletResponse response) {
         this.response = response;
     }
+
+    public String getCodice() {
+		return codice;
+	}
+
+	public void setCodice(String codice) {
+		this.codice = codice;
+	}
 
 }

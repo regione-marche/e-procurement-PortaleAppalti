@@ -28,10 +28,8 @@
 <s:set var="codiceTitolo" value="%{#bustaEconomica.codiceLotto}" />
 
 
-
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
 <link href="<wp:resourceURL/>static/css/parsley.css" rel="stylesheet"></link>
-<script src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script src="<wp:resourceURL/>static/js/jquery.dataTables.min.js"></script>
 
 <script>
@@ -225,6 +223,8 @@ $(document).ready(function() {
             });
             // dimensiono la tabella al massimo spazio disponibile (tolgo spazio del balloon)
             $('#tableEditVociDettaglio').parent('.dataTables_scrollBody').css('height', (tableHeight) + 'px');
+            // imposta overflow: visible per corregger un bug nella visualizzazione delle scrollbar del dialog
+            $('#tableEditVociDettaglio').parent('.dataTables_scrollBody').css('overflow', 'visible');
 		}
 	}
 
@@ -407,11 +407,10 @@ $(document).ready(function() {
 	
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/skip_form_buttons.jsp" />
 
-    <form
-        action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/variazionePrezziUnitari.action" />&amp;${tokenHrefParams}&amp;codice=${codice}"
-        method="post"
+    <form action="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/variazionePrezziUnitari.action" />" method="post"
         id="Id_Form_Modifica_Excel" >
         <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+        <input type="hidden" name="codice" value="${codice}" />
     </form>
 
 
@@ -426,7 +425,7 @@ $(document).ready(function() {
 					<div class="label">
 						<label><wp:i18n key="LABEL_VISUALIZZA_VOCI" /> : </label>
 					</div>
-					<div class="element">
+					<div class="element-orizontal">
 						<input type="radio" value="${VOCI_SOGGETTE_RIBASSO}" name="discriminante" aria-label='<wp:i18n key="LABEL_VOCI_SOGGETTE_RIBASSO" />'
 							<s:if test="%{discriminante == VOCI_SOGGETTE_RIBASSO}">checked="checked"</s:if> /> <wp:i18n key="LABEL_VOCI_SOGGETTE_RIBASSO" /> 
 						&nbsp;&nbsp;&nbsp;&nbsp;

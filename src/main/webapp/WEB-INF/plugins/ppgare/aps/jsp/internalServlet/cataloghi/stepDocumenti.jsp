@@ -244,12 +244,12 @@ $(document).ready(function(){
 										<s:set var="immagineCaricata" value="%{true}" />
 										<c:choose>
 											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-												<s:a href="%{#urlDownloadImmagine}?%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaImmagine}">
+												<s:a href="%{#urlDownloadImmagine}" title="%{#attr.valueScaricaImmagine}">
 													<wp:i18n key="LABEL_SCARICA_IMMAGINE" />
 												</s:a>
 											</c:when>
 											<c:otherwise>
-												<s:a href="%{#urlDownloadImmagine}?%{#attr.tokenHrefParams}" cssClass="bkg img" title="%{#attr.valueScaricaImmagine}">
+												<s:a href="%{#urlDownloadImmagine}" cssClass="bkg img" title="%{#attr.valueScaricaImmagine}">
 													<s:property value="{#helperDocumenti.immagineFileName}"/>
 												</s:a>
 											</c:otherwise>
@@ -275,12 +275,12 @@ $(document).ready(function(){
 											<s:else>
 												<c:choose>
 													<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-														<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoImmagine.action"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+														<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoImmagine.action"/>&amp;ext=${param.ext}" 
 															 title="${valueEliminaImmagine}"><wp:i18n key="LABEL_ELIMINA_IMMAGINE" />
 														</a>
 													</c:when>
 													<c:otherwise>
-														<a class="bkg delete" href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoImmagine.action"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+														<a class="bkg delete" href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoImmagine.action"/>&amp;ext=${param.ext}" 
 															 title="${valueEliminaImmagine}" >
 														</a>
 													</c:otherwise>
@@ -316,12 +316,12 @@ $(document).ready(function(){
 									<wp:i18n key="LABEL_SCARICA_FACSIMILE" var="valueScaricaFacsimile" />
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadFacSimile}?id=%{#facSimileCertificazione.id}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaFacsimile}">
+											<s:a href="%{#urlDownloadFacSimile}?id=%{#facSimileCertificazione.id}" title="%{#attr.valueScaricaFacsimile}">
 												<wp:i18n key="LABEL_SCARICA_FACSIMILE" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadFacSimile}?id=%{#facSimileCertificazione.id}&amp;%{#attr.tokenHrefParams}" cssClass="bkg attachment" title="%{#attr.valueScaricaFacsimile}">
+											<s:a href="%{#urlDownloadFacSimile}?id=%{#facSimileCertificazione.id}" cssClass="bkg attachment" title="%{#attr.valueScaricaFacsimile}">
 												<s:property value="%{#facSimileCertificazione.nomefile}"/>
 											</s:a>
 										</c:otherwise>
@@ -345,12 +345,12 @@ $(document).ready(function(){
 									<wp:i18n key="LABEL_SCARICA_CERTIFICAZIONE" var="valueScaricaCertificazione" />
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadCertificazione}?id=%{#statCertificazione.index}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaCertificazione}">
+											<s:a href="%{#urlDownloadCertificazione}?id=%{#statCertificazione.index}" title="%{#attr.valueScaricaCertificazione}">
 												<wp:i18n key="LABEL_SCARICA_CERTIFICAZIONE" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadCertificazione}?id=%{#statCertificazione.index}&amp;%{#attr.tokenHrefParams}" cssClass="bkg attachment" title="%{#attr.valueScaricaCertificazione}">
+											<s:a href="%{#urlDownloadCertificazione}?id=%{#statCertificazione.index}" cssClass="bkg attachment" title="%{#attr.valueScaricaCertificazione}">
 												<s:property value="%{#helperDocumenti.certificazioniRichiesteFileName.get(#statCertificazione.index)}"/>
 											</s:a>
 										</c:otherwise>
@@ -361,12 +361,12 @@ $(document).ready(function(){
 										<li>
 											<c:choose>
 												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoCertificazione.action"/>&amp;id=<s:property value="%{#statCertificazione.index}"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" title='<wp:i18n key="LABEL_ELIMINA_CERTIFICAZIONE" />' >
+													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoCertificazione.action"/>&amp;id=<s:property value="%{#statCertificazione.index}"/>&amp;ext=${param.ext}" title='<wp:i18n key="LABEL_ELIMINA_CERTIFICAZIONE" />' >
 														<wp:i18n key="LABEL_ELIMINA_CERTIFICAZIONE" />
 													</a>
 												</c:when>
 												<c:otherwise>
-													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoCertificazione.action"/>&amp;id=<s:property value="%{#statCertificazione.index}"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoCertificazione.action"/>&amp;id=<s:property value="%{#statCertificazione.index}"/>&amp;ext=${param.ext}" 
 														 title='<wp:i18n key="LABEL_ELIMINA_CERTIFICAZIONE" />' class="bkg delete">
 													</a>
 												</c:otherwise>
@@ -421,12 +421,12 @@ $(document).ready(function(){
 									<wp:i18n key="LABEL_SCARICA_SCHEDA_TECNICA" var="valueScaricaSchedaTecnica"/>
 									<c:choose>
 										<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-											<s:a href="%{#urlDownloadSchedaTecnica}?id=%{#statSchedaTecniche.index}&amp;%{#attr.tokenHrefParams}" title="%{#attr.valueScaricaSchedaTecnica}">
+											<s:a href="%{#urlDownloadSchedaTecnica}?id=%{#statSchedaTecniche.index}" title="%{#attr.valueScaricaSchedaTecnica}">
 												<wp:i18n key="LABEL_SCARICA_SCHEDA_TECNICA" />
 											</s:a>
 										</c:when>
 										<c:otherwise>
-											<s:a href="%{#urlDownloadSchedaTecnica}?id=%{#statSchedaTecniche.index}&amp;%{#attr.tokenHrefParams}" cssClass="bkg attachment" title="%{#attr.valueScaricaSchedaTecnica}">
+											<s:a href="%{#urlDownloadSchedaTecnica}?id=%{#statSchedaTecniche.index}" cssClass="bkg attachment" title="%{#attr.valueScaricaSchedaTecnica}">
 												<s:property value="%{#helperDocumenti.schedeTecnicheFileName.get(#statSchedaTecniche.index)}"/>
 											</s:a>
 										</c:otherwise>
@@ -437,13 +437,13 @@ $(document).ready(function(){
 										<li>
 											<c:choose>
 												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoSchedaTecnica.action"/>&amp;id=<s:property value="%{#statSchedaTecniche.index}"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoSchedaTecnica.action"/>&amp;id=<s:property value="%{#statSchedaTecniche.index}"/>&amp;ext=${param.ext}" 
 													   title='<wp:i18n key="LABEL_ELIMINA_SCHEDA_TECNICA" />' >
 														 <wp:i18n key="LABEL_ELIMINA_SCHEDA_TECNICA" />
 													</a>
 												</c:when>
 												<c:otherwise>
-													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoSchedaTecnica.action"/>&amp;id=<s:property value="%{#statSchedaTecniche.index}"/>&amp;ext=${param.ext}&amp;${tokenHrefParams}" 
+													<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmDeleteAllegatoSchedaTecnica.action"/>&amp;id=<s:property value="%{#statSchedaTecniche.index}"/>&amp;ext=${param.ext}" 
 													   title='<wp:i18n key="LABEL_ELIMINA_SCHEDA_TECNICA" />' class="bkg delete">
 													</a>
 												</c:otherwise>
@@ -489,11 +489,17 @@ $(document).ready(function(){
 			</div>
  			
 			<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-			<s:set var="kbDisponibili" value="%{limiteTotaleUploadDocProdotto - dimensioneAttualeFileCaricati}"></s:set>
+			<s:set var="kbDisponibili" value="%{limiteTotaleUpload - dimensioneAttualeFileCaricati}"></s:set>
 			<p>
+				<%--
 				<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
 				<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <strong><s:property value="%{#kbCaricati}" /></strong> KB <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" /> 
 				<strong><s:property value="getText('{0,number,#,##0}',{#kbDisponibili})"/></strong> <wp:i18n key="LABEL_KB_LIBERI_NEL_CATALOGO_PRODOTTI" />
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/estensioniAmmesse.jsp"/>
+				--%>
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+					<jsp:param name="dimensioneAttualeFileCaricati" value="${kbCaricati}"/>
+				</jsp:include>
 			</p>
 		</fieldset>
 		

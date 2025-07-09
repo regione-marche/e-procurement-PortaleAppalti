@@ -175,7 +175,7 @@
 	<c:choose>
 		<c:when test="${sessionScope.fromSearch}">
 			<div class="back-link">
-				<a href='<wp:action path="/ExtStr2/do/FrontEnd/${namespace}/${sessionScope.fromPage}.action" />&amp;last=1&amp;${tokenHrefParams}'>
+				<a href='<wp:action path="/ExtStr2/do/FrontEnd/${namespace}/${sessionScope.fromPage}.action" />&amp;last=1'>
 					<wp:i18n key="LINK_BACK_TO_SEARCH" />
 				</a>
 			</div>
@@ -183,7 +183,7 @@
 		<c:otherwise>
 			<c:if test="${! empty sessionScope.fromPage}">
 				<div class="back-link">
-					<a href='<wp:url page="${pageBack}"/>?${tokenHrefParams}'>
+					<a href='<wp:url page="${pageBack}"/>'>
 						<wp:i18n key="LINK_BACK_TO_LIST" />
 					</a>
 				</div>

@@ -37,17 +37,17 @@
 							<th scope="col"><wp:i18n key="LABEL_INFORMAZIONI" /></th>
 						</tr>
 					</thead>
-					<tbody>										
+					<tbody>
 						<s:iterator var="item" value="lotti" status="stat">
 							<s:set var="lotto" value="#item.key" />
 							<s:set var="asta" value="#item.value" />
 							
-							<s:if test="#lotto.codiceInterno != null && #lotto.codiceInterno != ''" >							
+							<s:if test="#lotto.codiceInterno != null && #lotto.codiceInterno != ''" >
 								<!-- action = { classifica | riepilogo } -->
 								<c:set var="url" value="" scope="page"/>
-								<c:set var="titolo" value=""/>								
-								<c:set var="stato" value=""/>					
-								<c:set var="descStato" value=""/>			
+								<c:set var="titolo" value=""/>
+								<c:set var="stato" value=""/>
+								<c:set var="descStato" value=""/>
 								
 								<s:if test="#asta != null" >
 									<c:if test="${action == 'classifica'}" >
@@ -63,7 +63,7 @@
 											<c:set var="stato"><wp:i18n key="LABEL_ATTIVA" /></c:set>
 											<c:set var="descStato"><wp:i18n key="LABEL_ASTA_APERTA" /></c:set>
 										</s:elseif>
-									</c:if>															
+									</c:if>
 									<c:if test="${action == 'riepilogo' || urlPage == ''}">
 										<c:set var="url" value="riepilogo" />
 										<c:set var="titolo"><wp:i18n key="LABEL_RIEPILOGO_ASTA" /></c:set>
@@ -74,17 +74,24 @@
 								</s:if>
 
 								<c:if test="${url != ''}">
-									<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Aste/${url}.action"/>&amp;codice=${codice}&amp;codiceLotto=<s:property value="#lotto.codiceLotto"/>&amp;${tokenHrefParams}</c:set>
+									<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Aste/${url}.action"/></c:set>
 								</c:if>
 								<c:if test="${url == ''}">
-									<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}</c:set>
+									<c:set var="url"><wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/></c:set>
 								</c:if>
 
 								<tr>
 									<td class="azioni">
-										<a href="${url}" title="${descStato}" class="<s:property value="cssClass"/>">
-											<s:property value="#lotto.codiceInterno" /> - <s:property value="#lotto.oggetto" />
-										</a>
+										<form action='${url}' method="post">
+											<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+											<input type="hidden" name="codice" value="${codice}" />
+											<input type="hidden" name="codiceLotto" value='<s:property value="#lotto.codiceLotto"/>' />
+											<input type="hidden" name="ext" value="" />
+											
+											<a href="javascript:;" onclick="parentNode.submit();" title="${descStato}" class="<s:property value="cssClass"/>">
+												<s:property value="#lotto.codiceInterno" /> - <s:property value="#lotto.oggetto" />
+											</a>
+										</form>
 									</td>
 									<td > 
 										<s:if test="#asta.dataOraApertura != null">
@@ -108,8 +115,13 @@
 	</div>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>&amp;codice=${codice}&amp;ext=&amp;${tokenHrefParams}">
-			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
-		</a>
+		<form action='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action"/>' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value="${codice}" />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
+			</a>
+		</form>	
 	</div>
 </div>

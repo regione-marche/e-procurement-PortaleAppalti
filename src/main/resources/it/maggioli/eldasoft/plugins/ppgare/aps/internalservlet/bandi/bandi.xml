@@ -7,6 +7,57 @@
     <package name="portgare_do/FrontEnd/Bandi" namespace="/do/FrontEnd/Bandi"
              extends="pp-common">
 
+		<!-- PORTAPPALT-1210 url generalizzata per l'apertura di esiti, bandi, etc -->
+        <action name="openProcedura" class="openProceduraAction" method="openProceduraByCodice">
+        	<result type="chain" name="successEsito">
+                <param name="actionName">view</param>
+                <param name="namespace">/do/FrontEnd/Esiti</param>
+            </result>
+        	<result type="chain" name="successBando">view</result>
+        	<result type="chain" name="successDelibera">openSearchDelibere</result>
+            <result type="chain" name="successAvviso">
+                <param name="actionName">view</param>
+                <param name="namespace">/do/FrontEnd/Avvisi</param>
+            </result>
+            <interceptor-ref name="japsFreeStack" />
+        </action>
+        
+        <action name="openProceduraCig" class="openProceduraAction" method="openProceduraByCig">
+        	<result type="chain" name="successEsito">
+                <param name="actionName">view</param>
+                <param name="namespace">/do/FrontEnd/Esiti</param>
+            </result>
+        	<result type="chain" name="successBando">view</result>
+        	<result type="chain" name="successDelibera">openSearchDelibere</result>
+            <result type="chain" name="successAvviso">
+                <param name="actionName">view</param>
+                <param name="namespace">/do/FrontEnd/Avvisi</param>
+            </result>
+            <interceptor-ref name="japsFreeStack" />
+        </action>        
+
+        <action name="openPageImpreseElenco" class="openPageElencoMeritoAction" method="openPage">
+            <result type="dispatcher">
+                /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/openPageElencoMeritoList.jsp
+            </result>
+            <interceptor-ref name="japsFreeStack" />
+            <interceptor-ref name="encodedData">
+                <param name="types">province,statiElenco,listaRating</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="exportElenchiOperatoriAbilitati" class="elencoMeritoExportAction" method="exportCSV">
+            <result type="dispatcher">
+                /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/openPageElencoMeritoList.jsp
+            </result>
+            <result name="success" type="stream">
+                <param name="contentType">text/csv</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">attachment;filename="export.csv"</param>
+            </result>
+            <interceptor-ref name="japsFreeStack" />
+        </action>
+
         <action name="listAll*" class="bandiFinderAction" method="listAll{1}">
             <result type="dispatcher">
                 /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/bandiList.jsp
@@ -15,6 +66,15 @@
             <interceptor-ref name="encodedData">
                 <param name="types">stazioniAppaltanti,tipiAppalto,statiGara,esitiGara,sino,tipoAltriSoggetti,orderCriteria</param>
             </interceptor-ref>
+        </action>
+
+        <action name="exportGare" class="bandiFinderAction" method="export">
+            <result name="export" type="stream">
+                <param name="contentType">text/csv</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">attachment;filename="export.csv"</param>
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
         </action>
 
         <action name="initSearch" class="bandiFinderAction" method="init">
@@ -61,7 +121,7 @@
             <interceptor-ref name="japsFreeStack"></interceptor-ref>
             <interceptor-ref name="encodedData">
                 <param name="types">
-                    stazioniAppaltanti,tipiAppalto,tipiProcedura,tipiAggiudicazione,statiDettaglioGara,esitiGara
+                    stazioniAppaltanti,tipiAppalto,tipiProcedura,tipiAggiudicazione,statiDettaglioGara,esitiGara,tipoProceduraConcorso
                 </param>
             </interceptor-ref>
         </action>
@@ -82,6 +142,13 @@
         <action name="viewLotti" class="bandiAction" method="viewLotti">
             <result type="dispatcher">
                 /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/lottiView.jsp
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
+        </action>
+
+        <action name="viewBDNCP" class="bandiAction" method="viewBDNCP">
+            <result type="dispatcher">
+                /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/BDNCPView.jsp
             </result>
             <interceptor-ref name="japsFreeStack"></interceptor-ref>
         </action>
@@ -209,7 +276,20 @@
                 <param name="types">stazioniAppaltanti,tipiAppalto,sino</param>
             </interceptor-ref>
         </action>
-
+        
+ <!-- SCHEDA DELIBERA DISABILITATA 
+        <action name="viewDelibera" class="deliberaAction" method="view">
+            <result type="dispatcher">
+                /WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/deliberaView.jsp
+            </result>
+            <interceptor-ref name="japsFreeStack"></interceptor-ref>
+            <interceptor-ref name="encodedData">
+                <param name="types">
+                    stazioniAppaltanti,tipiAppalto,tipiProcedura,tipiAggiudicazione,statiDettaglioGara,esitiGara,tipoProceduraConcorso
+                </param>
+            </interceptor-ref>
+        </action>
+ -->
         <action name="exportDelibere" class="openSearchDelibereAction" method="export">
             <result name="export" type="stream">
                 <param name="contentType">text/csv</param>

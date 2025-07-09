@@ -22,7 +22,12 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpSessionBindingEvent;
 
+
+/**
+ * busta economica per l'offerta di gara
+ */
 public class BustaEconomica extends BustaDocumenti {
 	/**
 	 * UID
@@ -72,7 +77,18 @@ public class BustaEconomica extends BustaDocumenti {
 		
 		this.helperDocumenti = null;
 		this.helper = null;
-		//this.initHelper();
+	}
+
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		super.valueUnbound(event);
+		if(helper != null) {
+			helper.valueUnbound(event);
+		}
 	}
 
 	/**
@@ -85,16 +101,14 @@ public class BustaEconomica extends BustaDocumenti {
 		
 		if(this.helper == null) {
 			// busta solo documenti
-			//XmlObject doc = this.getBustaDocument();
-			
 			continua = super.send(stato);
-			
 		} else {
 			// busta economica
 			// copia i firmatari della busta nella busta di riepilogo...
 			//this.helper.copiaUltimiFirmatariInseriti2Busta(this.gestioneBuste.getBustaRiepilogo().getHelper());
 			this.gestioneBuste.getBustaRiepilogo().getHelper().memorizzaUltimiFirmatariInseriti(this.helper.getComponentiRTI());
-
+			this.helper.getDocumenti().correggiDocumentiRichiestiConBO(documentiRichiestiDB);
+			
 			continua = super.send(
 					this.helper.getXmlDocument(BustaEconomicaDocument.Factory.newInstance(), true, false),
 					this.helper.getDocumenti(),

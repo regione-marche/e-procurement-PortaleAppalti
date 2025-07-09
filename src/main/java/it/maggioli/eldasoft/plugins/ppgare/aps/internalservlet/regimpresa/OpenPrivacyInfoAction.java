@@ -12,26 +12,33 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.AbstractMon
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc.DataUsageParam;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc.TermOfUseParam;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.util.Map;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class OpenPrivacyInfoAction extends BaseAction implements SessionAware {
-
     /**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -4004152821580458080L;
 	
 	private Map<String, Object> session;
 	private IAppParamManager appParamManager;
 
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String resourceURL;
 	@Validate(EParamValidation.DIGIT)
 	private String resourceID;
@@ -64,8 +71,15 @@ public class OpenPrivacyInfoAction extends BaseAction implements SessionAware {
 			if (showTermOfUse == null || StringUtils.equals(showTermOfUse.toString(), "1")) {
 				termOfUseParam = new TermOfUseParam();
 				termOfUseParam.setFieldsForMultiLang(getI18nManager(), appParamManager, getCurrentLang().getCode());
-			} else
-				resourceURL = "/resources/cms/documents/Regole_utilizzo_piattaforma_telematica.pdf";
+			} else {
+				if ("en".equals(getCurrentLang().getCode())) {
+					resourceURL = "/resources/cms/documents/EN_Regole_utilizzo_piattaforma_telematica.pdf";					
+				} else if ("de".equals(getCurrentLang().getCode())) {
+					resourceURL = "/resources/cms/documents/DE_Regole_utilizzo_piattaforma_telematica.pdf";					
+				} else {
+					resourceURL = "/resources/cms/documents/Regole_utilizzo_piattaforma_telematica.pdf";
+				}
+			}
 			
 		} catch (Exception e) {
 			ApsSystemUtils.logThrowable(e, this, getCallerMethodName());

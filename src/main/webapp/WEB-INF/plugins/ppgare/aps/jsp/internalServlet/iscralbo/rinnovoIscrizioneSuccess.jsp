@@ -41,15 +41,27 @@
 --%>
 
  	 <div class="back-link">
-		<s:if test="%{tipoElenco == TIPOLOGIA_ELENCO_STANDARD}">
-			<a href='<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}'>
-				<wp:i18n key='LINK_BACK_TO_ELENCO'/>
+ 	 	<c:set var="urlBackto">
+			<s:if test="%{tipoElenco == TIPOLOGIA_ELENCO_STANDARD}">
+				<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />
+			</s:if>
+			<s:else>
+				<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />
+			</s:else>
+		</c:set>
+		<form action='${urlBackto}' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value="${codice}" />
+			<input type="hidden" name="ext" value="${param.ext}" />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<s:if test="%{tipoElenco == TIPOLOGIA_ELENCO_STANDARD}">
+						<wp:i18n key='LINK_BACK_TO_ELENCO'/>
+				</s:if>
+				<s:else>
+						<wp:i18n key='LINK_BACK_TO_CATALOGO'/>
+				</s:else>
 			</a>
-		</s:if>
-		<s:else>
-			<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}'>
-				<wp:i18n key='LINK_BACK_TO_CATALOGO'/>
-			</a>
-		</s:else>
+		</form>
 	</div>  
 </div>

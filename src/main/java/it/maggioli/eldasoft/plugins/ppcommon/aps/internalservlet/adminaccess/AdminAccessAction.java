@@ -3,12 +3,16 @@ package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.adminaccess;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.RequestContext;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.system.services.authorization.IAuthorizationManager;
+import com.agiletec.aps.system.services.i18n.II18nManager;
+import com.agiletec.aps.system.services.lang.ILangManager;
 import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.apsadmin.system.BaseAction;
 import it.maggioli.eldasoft.mtoken.Mtoken;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
@@ -16,16 +20,21 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event.Le
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.portoken.beans.TokenContent;
 import it.maggioli.eldasoft.portoken.beans.UserInfoResponse;
 import it.maggioli.eldasoft.portoken.client.PortokenClient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -36,19 +45,19 @@ public class AdminAccessAction extends BaseAction implements ServletResponseAwar
 	private static final long serialVersionUID = -590160936911227418L;
 //	private Map<String, Object> session;
 //	private ServletContext servletContext;
-	@Validate(EParamValidation.EMAIL)
+	private transient HttpServletResponse response;
+	private transient IPageManager pageManager;
+	private transient IEventManager eventManager;
+	private transient IURLManager urlManager;
+	private transient IAppParamManager _appParamManager;
+	@Validate(EParamValidation.DOMAIN_USER)
 	private String domainMail;
 	@Validate(EParamValidation.PASSWORD)
 	private String domainPwd;
 	@Validate(EParamValidation.MOTIVAZIONE)
-	private String motivazione;
-	private IPageManager pageManager;
-	private IEventManager eventManager;
-	private IURLManager urlManager;
-	private HttpServletResponse response;
-	@Validate(EParamValidation.URL)
-	private String urlRedirect;
-	private IAppParamManager _appParamManager;
+	private String motivazione;	
+	@ValidationNotRequired
+	private String urlRedirect;	
 	// Mtoken
 	private File certificato;
 	@Validate(EParamValidation.CONTENT_TYPE)
@@ -58,6 +67,22 @@ public class AdminAccessAction extends BaseAction implements ServletResponseAwar
 	private String certificatoText;
 	//
 	private Integer spidValidatorVisible; 
+	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			pageManager = (IPageManager) ctx.getBean(SystemConstants.PAGE_MANAGER);
+			urlManager = (IURLManager) ctx.getBean(SystemConstants.URL_MANAGER);
+			eventManager = (IEventManager) ctx.getBean(PortGareSystemConstants.EVENTI_MANAGER);
+			_appParamManager = (IAppParamManager) ctx.getBean(CommonSystemConstants.APP_PARAM_MANAGER);
+			//response = ???;
+		} catch (Exception e) {
+		}
+	}
 	
 	public HttpServletResponse getResponse() {
 		return response;
@@ -77,10 +102,6 @@ public class AdminAccessAction extends BaseAction implements ServletResponseAwar
 
 	public IURLManager getUrlManager() {
 		return urlManager;
-	}
-
-	public void setUrlRedirect(String urlRedirect) {
-		this.urlRedirect = urlRedirect;
 	}
 
 	public void setUrlManager(IURLManager urlManager) {

@@ -44,9 +44,11 @@
 	</s:if>
 	
 	<div class="azioni">
-		<form action='<wp:action path="${pathProcedura}" />&amp;id=<s:property value="id"/>&amp;codice=<s:property value="codiceStipula"/>&amp;&amp;${tokenHrefParams}'
-				method="post">
+		<form action='<wp:action path="${pathProcedura}" />' method="post">
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="id" value='<s:property value="id"/>' />
+			<input type="hidden" name="codice" value='<s:property value="codiceStipula"/>' />
+			
 			<div>
 				<wp:i18n key="BUTTON_BACK_PREVIOUS_STEP" var="valueBackToStep" />
 				<s:submit value="%{#attr.valueBackToStep}" title="%{#attr.valueBackToStep}" cssClass="button block-ui"/>

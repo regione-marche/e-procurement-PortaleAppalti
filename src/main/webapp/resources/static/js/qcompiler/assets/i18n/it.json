@@ -24,6 +24,7 @@
     "load-error-generic": "Impossibile caricare i dati dal server.",
     "upload-error-generic": "Impossibile caricare il file.",
     "download-error-generic": "Impossibile scaricare il file.",
+    "upload-error-filename": "Il documento è stato scartato in quanto il suo nome contiene caratteri non consentiti. Rinominare il file utilizzando solamente caratteri alfanumerici, spazi e nessun altro carattere speciale eccetto -_.",
     "pdf-error-generic": "Errore in generazione PDF.",
     "server-error-generic": "Errore di comunicazione col server.",
     "save-error-generic": "Errore in salvataggio dati.",
@@ -66,7 +67,10 @@
     "mdgue-part2": "Per gli <b>ulteriori</b> eventuali <b>DGUE</b> richiesti ad altri soggetti (membri del ragguppamento, imprese ausiliarie, subappaltatori...) utilizza o condividi",
     "mdgue-part3": "Per modificare o riutilizzare un \"XML Response\" esistente, oppure per eseguire altre operazioni accessorie",
     "mdgue-click": "clicca qui",
-    "dgue-request-error": "Impossibile proseguire per mancanza del DGUE Request tra i documenti di gara. Contattare la stazione appaltante per la rettifica dei dati"
+    "dgue-request-error": "Impossibile proseguire per mancanza del DGUE Request tra i documenti di gara. Contattare la stazione appaltante per la rettifica dei dati",
+
+    "premiale-validity-end-date": "Validità fino al",
+    "premiale-display-validity-end-date": "con scadenza"
   },
   "primeng": {
     "startsWith": "Inizia con",

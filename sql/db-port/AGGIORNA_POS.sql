@@ -17390,3 +17390,2810 @@ select * from aggiornamento();
 drop function aggiornamento();
 
 
+-- 3.24.0_to_3.25.0-M1
+-- 3.25.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.24.0') THEN
+	-- INIZIO AGGIORNAMENTI
+		--SHOWLET
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listOperatoriIscritti', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Economic operators registered in the list</property><property key="it">Imprese iscritte ad un elenco</property></properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/openPageImpreseElenco.action</property></properties>', 1);
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_oper_ec_iscritti_elenco', 'ppgare_oper_economici', 5, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="en">Economic operators registered in the list</property><property key="it">Imprese iscritte ad un elenco</property></properties>', 'free', 0);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?><properties><property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property></properties>', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_oper_ec_iscritti_elenco', 7, 'ppgare_listOperatoriIscritti', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) SELECT 'ppgare_oper_ec_iscritti_elenco', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_oper_ec_iscritti_elenco' AND framepos = 9);
+
+UPDATE pages SET POS = 3 WHERE CODE = 'ppgare_oper_ec_esiti_aff';
+UPDATE pages SET POS = 4 WHERE CODE = 'ppgare_albo_fornitori_esterno';
+
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code = 'ppgare_oper_ec_iscritti_elenco';
+
+		--PROPERTIES
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('codiceCliente', 'S', 'Codice del cliente presso il quale e'' stato installato il portale', null, null,'configurazione generale', 105);
+
+		--LABEL
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OPERATORI_ISCRITTI_RATING', 'it', 'Rating');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_OPERATORI_ISCRITTI_RATING', 'en', 'Rating');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ELENCO_OPERATORI_ISCRITTI', 'it', 'Imprese iscritte all''elenco');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_ELENCO_OPERATORI_ISCRITTI', 'en', 'Economic operators registered in the list');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ELENCO_OPERATORI_ISCRITTI', 'it', 'All''interno di questa sezione è possibile consultare gli operatori iscritti ed abilitati ad un elenco. E'' possibile restringere i dati estratti agendo sui filtri di ricerca. Nel caso di utilizzo della funzione di esportazione in formato CSV, vengono riportati tutti i dati estratti indipendentemente dalla paginazione.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ELENCO_OPERATORI_ISCRITTI', 'en', 'Within this section it is possible to consult the registered and authorized operators in a list. It is possible to restrict the extracted data by acting on the search filters. In the case of using the export function in CSV format, all the extracted data are reported regardless of the pagination.');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.24.0';
+	UPDATE ppcommon_ver SET version = '3.25.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.24.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.25.0-M1_to_3.25.0-M2
+-- 3.25.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.25.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO_NO_RECAP', 'it', 'I numeri di telefono o fax possono essere inseriti in formato numerico senza spazi oppure ulteriori caratteri (es: 02123456) oppure possono anche essere inseriti nel formato previsto per i bandi europei (SIMAP), ovvero "+" iniziale, prefisso internazionale (39 per Italia), spazio, numero telefonico eventualmente con caratteri "-" per separare le cifre (es: +39 02-123456, oppure +39 02123456).');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('DATI_IMPRESA_INFO_TELEFONO_NO_RECAP', 'en', 'Telephone or fax numbers can be entered in numeric format without spaces or additional characters (e.g.: 02123456) or they can also be entered in the format required for European tenders (SIMAP), i.e. initial "+", international prefix (39 for Italy ), space, telephone number possibly with "-" characters to separate the digits (eg: +39 02-123456, or +39 02123456).');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0-M1';
+	UPDATE ppcommon_ver SET version = '3.25.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.25.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.25.0-M2_to_3.25.0-M3
+-- 3.25.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.25.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORIA_CODE_DESCR', 'it', 'Categoria (codice o descrizione)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CATEGORIA_CODE_DESCR', 'en', 'Category (code or description)');
+
+update ppcommon_customizations set attrib = 'CCDEDICATO' WHERE objectid = 'IMPRESA-DATIULT-ALTRIDATI' and attrib = 'IBAN';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTO_CORRENTE', 'it', 'Numero conto corrente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NUMERO_CONTO_CORRENTE', 'en', 'Current account number');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_IBAN', 'it', 'Area IBAN?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_IBAN', 'en', 'IBAN Area?');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0-M2';
+	UPDATE ppcommon_ver SET version = '3.25.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.25.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.25.0-M3_to_3.25.0-M4
+-- 3.25.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.25.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_FISCALE_O_IDENTIFICATIVO', 'it', 'Codice fiscale/Identificativo fiscale estero');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_FISCALE_O_IDENTIFICATIVO', 'en', 'Italian Social Security Number/Foreign tax ID');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0-M3';
+	UPDATE ppcommon_ver SET version = '3.25.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.25.0-M3';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.25.0-M4_to_3.25.0
+-- 3.25.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.25.0-M4') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.25.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0-M4';
+	UPDATE ppcommon_ver SET version = '3.25.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.25.0-M4';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.25.0_to_3.26.0-M1
+-- 3.26.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.25.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+-- aggiornamenti per nuovo codice degli appalti
+UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 36/2023.
+<br/>
+The e-procurement platform, the telematic system and the Procurement portal are also understood as synonyms for the online platform, the latter refers to the component specifically dedicated to economic operators.
+</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
+Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 36/2023.
+<br/>
+Si intendono quali sinonimi di piattaforma telematica anche piattaforma di e-procurement, sistema telematico e Portale Appalti, quest''ultimo fa riferimento alla componente specificamente dedicata agli operatori economici.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>3.0</version></content>
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="FAQ-STD-SPT" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato piattaforma telematica</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is a telematics platform?</text><text lang="it">Che cosa si intende per piattaforma telematica?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>We mean the present computer system (software and hardware), through which it is possible to carry out tender procedures entirely managed digitally in compliance with the provisions of the procurement code - Legislative Decree 36/2023.
+<br/>
+The e-procurement platform, the telematic system and the Procurement portal are also understood as synonyms for the online platform, the latter refers to the component specifically dedicated to economic operators.
+</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
+Si intende il presente sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; digitale nel rispetto delle disposizioni di cui al codice degli appalti - Dlgs 36/2023.
+<br/>
+Si intendono quali sinonimi di piattaforma telematica anche piattaforma di e-procurement, sistema telematico e Portale Appalti, quest''ultimo fa riferimento alla componente specificamente dedicata agli operatori economici.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>10</number></attribute></attributes><status>READY</status><version>3.0</version></content>
+', lastmodified = '20230614170616', currentversion = '3.0' WHERE contentid = 'FAQ-STD-SPT';
+
+UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="FAQ-STD-SOE" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato operatore economico</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is an economic operator?</text><text lang="it">Che cosa si intende per operatore economico?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
+Please refer to the definition of the procurement code - Legislative Decree 36/2023. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
+</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
+Si rimanda alla definizione del codice degli appalti - Dlgs 36/2023. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>5.0</version></content>
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="FAQ-STD-SOE" typecode="FAQ" typedescr="Domande e risposte frequenti "><descr>FAQ - Significato operatore economico</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Domanda" attributetype="Text"><text lang="en">What is an economic operator?</text><text lang="it">Che cosa si intende per operatore economico?</text></attribute><attribute name="Risposta" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>
+Please refer to the definition of the procurement code - Legislative Decree 36/2023. Simply, in the context of the online platform, is identified with the company that intends to participate in a procurement procedure.
+</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>
+Si rimanda alla definizione del codice degli appalti - Dlgs 36/2023. In termini pi&ugrave; semplici, nel contesto della piattaforma telematica, si identifica con l''impresa che intende partecipare ad una procedura di affidamento.
+</p>]]></hypertext></attribute><attribute name="Progressivo" attributetype="Number"><number>20</number></attribute></attributes><status>READY</status><version>5.0</version></content>
+', lastmodified = '20230614171205', currentversion = '5.0' WHERE contentid = 'FAQ-STD-SOE';
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_ATTI_DOC_ART29' AND langcode IN ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOCUMENTI', 'it', 'Altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ATTI_DOCUMENTI', 'en', 'Other acts and documents');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_VISUALIZZA_ATTI_DOC_ART29' AND langcode IN ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ATTI_DOCUMENTI', 'it', 'Visualizza altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ATTI_DOCUMENTI', 'en', 'View other acts and documents');
+
+UPDATE ppcommon_customizations SET attrib = 'ATTIDOC' WHERE objectid = 'GARE' AND attrib = 'ATTIDOCART29' AND feature = 'VIS';
+
+UPDATE localstrings SET stringvalue = 'Di seguito viene presentata la lista degli eventuali documenti e atti previsti ai fini della trasparenza.' WHERE keycode = 'BALLOON_ATTI_DOCUMENTI' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'The list of any documents and deeds required for the purposes of transparency is showed below.' WHERE keycode = 'BALLOON_ATTI_DOCUMENTI' AND langcode = 'en' AND customized = 0;
+
+DELETE FROM localstrings WHERE keycode = 'TABELLATO_tipiImpresa_4' AND langcode IN ('it','en');
+DELETE FROM localstrings WHERE keycode LIKE 'TABELLATO_tipiImpresa_%' AND langcode = 'en';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_1', 'en', 'Company (Art.65 paragraph 2/a Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_2', 'en', 'Consortium (Art.65 c.2/b,c,d Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_3', 'en', 'Temporary grouping of competitors (Art.65 c.2/e,f,h Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_5', 'en', 'Economic operator established in other Member States (art.65 c.1 Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_6', 'en', 'Freelancer (Art.66 c.1/a Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_7', 'en', 'Professionals company (Art.66 c.1/b Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_8', 'en', 'Engineering company (Art.66 c.1/c Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_9', 'en', 'Service provider established in other Member States (Art.66 c.1/d Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_10', 'en', 'Temporary grouping of professionals (Art.66 c.1/f Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_11', 'en', 'Stable consortium of professional or engineering companies (Art.66 c.1/g Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_12', 'en', 'Associated study (Art.66 c.1/a Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_13', 'en', 'Social enterprise (Art.65 c.2/a Legislative Decree 36/2023)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TABELLATO_tipiImpresa_14', 'en', 'Business network with legal subjectivity (Art.65 c.2/g Legislative Decree 36/2023)');
+
+-- aggiornamenti di balloon ed etichette non personalizzate
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare  le delibere a contrarre e gli atti equivalenti secondo i tempi previsti dalla normativa dei contratti.<br/><br/>Impostare un criterio di ricerca per consultare i dati. In corrispondenza della descrizione è disponibile il collegamento per consultare o scaricare il documento.'
+WHERE keycode = 'BALLOON_DELIBERE_A_CONTRARRE' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section you can consult contract resolutions and equivalent acts according to the timeframe provided for in the contract regulations.<br/><br/>Set a search criterion to consult the data. A link to consult or download the document is available under the description.'
+WHERE keycode = 'BALLOON_DELIBERE_A_CONTRARRE' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare i bandi di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_BANDI_IN_CORSO' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_BANDI_IN_CORSO' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare i bandi di gara <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_BANDI_SCADUTI' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the tender announcements <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_BANDI_SCADUTI' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare gli avvisi secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_AVVISI_IN_CORSO' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the notices according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_AVVISI_IN_CORSO' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare gli avvisi <span class="bolded">SCADUTI</span> secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda"'
+WHERE keycode = 'BALLOON_LISTA_AVVISI_SCADUTI' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the notices <span class="bolded">EXPIRED</span> according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_AVVISI_SCADUTI' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare gli esiti di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_ESITI_IN_CORSO' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the results of tenders according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_ESITI_IN_CORSO' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione è possibile consultare gli esiti di gare, condotte mediante l''utilizzo di elenco operatori economici secondo i tempi previsti dalla normativa dei contratti.<br/><br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_ESITI_AFFIDAMENTI' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'In this section it is possible to consult the results of tenders, conducted through the use of the economic operators list according to the times provider by the regulations of the contracts.<br/><br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.'
+WHERE keycode = 'BALLOON_LISTA_ESITI_AFFIDAMENTI' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'Informazioni relative alla trasparenza sugli appalti affidati secondo il D.Lgs. 36/2023.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, è disponibile sul campo CIG il link per consultare il relativo dettaglio.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.'
+WHERE keycode = 'BALLOON_AMMTRASP_CONTRATTI_LISTA' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'Information relating to transparency on contracts awarded in accordance with Legislative Decree 36/2023.<br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link is available on the CIG field to consult the relevant detail. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it in horizontal direction, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.'
+WHERE keycode = 'BALLOON_AMMTRASP_CONTRATTI_LISTA' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'Informazioni relative agli appalti affidati secondo il D.Lgs 36/2023 pubblicate ai sensi dell''articolo 26 e 27 del DLgs 33 del 2013.<br/>Impostare un criterio di ricerca per consultare i dati. In caso di estrazione di almeno un''occorrenza, a fine pagina è disponibile il link per esportare i dati estratti.<br/>ATTENZIONE: per visualizzare le restanti colonne della tabella estratta e quindi per scorrere la stessa in senso orizzontale, si consiglia di utilizzare le frecce destra e sinistra della tastiera, oppure di tenere premuto lo scroll wheel ("rotellina centrale") del mouse e spostare lo stesso a destra o sinistra. Si fa presente che alla fine di questa pagina è a disposizione una barra di scorrimento orizzontale.'
+WHERE keycode = 'BALLOON_PROSPETTO_AMM_APERTA' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'Information relating to contracts awarded pursuant to Legislative Decree 36/2023 published pursuant to Article 26 and 27 of Legislative Decree 33 of 2013. <br/> Set a search criterion to consult the data. In case of extraction of at least one occurrence, the link to export the extracted data is available at the end of the page. <br/> ATTENTION: to view the remaining columns of the extracted table and then to scroll it horizontally, we recommend to use the left and right arrows of the keyboard, or to hold down the scroll wheel of the mouse and move it to the right or left. Please note that a horizontal scroll bar is available at the end of this page.'
+WHERE keycode = 'BALLOON_PROSPETTO_AMM_APERTA' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'All''interno di questa sezione vengono riepilogate le procedure indette in casi di somma urgenza, ai sensi degli dell''art. 140 del D.Lgs. 36/2023.
+
+I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".'
+WHERE keycode = 'BALLOON_LISTA_SOMMA_URGENZA' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'This section summarises the procedures created in cases of extreme urgency, pursuant to article 140 of Legislative Decree 36/2023. 
+
+The detailed data of the public procedures can be consulted by selecting the link "View Detail".'
+WHERE keycode = 'BALLOON_LISTA_SOMMA_URGENZA' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'Si autorizza la Stazione appaltante ad inviare eventuali comunicazioni e/o corrispondenza agli indirizzi di posta elettronica indicati, ai sensi dell''art.29 del D.Lgs. 36/2023, consapevole che le comunicazioni e/o corrispondenza correttamente inviate ai predetti recapiti si intenderanno conosciute al destinatario.'
+WHERE keycode = 'DATI_IMPRESA_INFO_PEC2' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'The Contracting Authority is authorised to send any notices and/or correspondence to the email addresses indicated, pursuant to Article 29 of Legislative Decree 36/2023, in the knowledge that notices and/or correspondence correctly sent to the aforementioned addresses shall be deemed to be known to the addressee.'
+WHERE keycode = 'DATI_IMPRESA_INFO_PEC2' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'I presenti Termini e Condizioni disciplinano, in maniera vincolante, il funzionamento della Piattaforma telematica denominata "<strong>{0}</strong>", definendo, tra l''altro, le condizioni di accesso e le modalit&agrave; di utilizzo della stessa.<br>
+La suddetta Piattaforma &egrave; finalizzata all''espletamento delle procedure ad evidenza pubblica che si svolgono in modalit&agrave; telematica. Tali procedure sono regolate dal D.Lgs n. 36 del 2023, recante "Codice dei contratti pubblici" e relativi provvedimenti attuativi, cui si rinvia per quanto qui non specificato.<br>
+Per quanto concerne le specifiche tecniche, si rimanda al Manuale per gli Utenti della Piattaforma.<br>
+L''Utente, come di seguito definito, &egrave; pregato di leggere attentamente questo documento prima di registrarsi e di usufruire dei Servizi.'
+WHERE keycode = 'LABEL_TERM_OF_USE_TERMS' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'These Terms and Conditions govern, in a binding manner, the operation of the telematic platform called "<strong>{0}</strong>", defining, among other things, the conditions of access and how to use it.<br>
+The aforementioned platform is aimed at carrying out public procedures that take place electronically. These procedures are governed by Legislative Decree no. 36 of 2023, containing the "Code of public contracts" and related implementing measures, to which reference should be made for what is not specified here.<br>
+As regards the technical specifications, please refer to the Manual for Users of the Platform.<br>
+The User, as defined below, is requested to read this document carefully before registering and using the Services.'
+WHERE keycode = 'LABEL_TERM_OF_USE_TERMS' AND langcode = 'en' AND customized = 0;
+
+UPDATE localstrings SET stringvalue = 'Le espressioni di cui al presente articolo, quando utilizzate con l''iniziale maiuscola, avranno il seguente significato:<br>
+<strong>Area Riservata:</strong> indica l''area riservata all''Utente sulla Piattaforma, creata dopo la sua registrazione e finalizzata all''invio e alla ricezione di comunicazioni nell''ambito del Sistema;<br>
+<strong>Gestore del sistema:</strong> il soggetto di cui si avvale la stazione appaltante per la gestione tecnica della piattaforma;<br>
+<strong>Codice degli Appalti/Codice dei contratti pubblici:</strong> si intende il Decreto Legislativo n. 36/2023;<br>
+<strong>Operatore Economico:</strong> si intende uno dei soggetti ammessi a partecipare alle procedure ad evidenza pubblica, come definiti dall''art. 65 del Codice dei contratti pubblici e dalla normativa eurounitaria;<br>
+<strong>Piattaforma:</strong> si intende la piattaforma {0}"; il sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalit&agrave; telematica nel rispetto delle disposizioni di cui al Codice dei contratti pubblici;<br>
+<strong>Portale Appalti:</strong> si intende la componente della Piattaforma telematica rivolta ad offrire funzionalit&agrave; specifiche agli operatori economici;<br>
+<strong>Procedure Telematiche:</strong> si intendono le procedure gestite mediante la Piattaforma;<br>
+<strong>Utente:</strong> si intende la persona fisica, autorizzata dall''Operatore Economico e dotata dei necessari poteri di rappresentanza, che agisce sulla Piattaforma in nome e per conto dell''Operatore Economico stesso;<br>
+<strong>Servizio:</strong> si intende il Servizio offerto tramite la Piattaforma, come meglio definito nel Titolo I D.Lgs. 36/2023;<br>
+<strong>Stazione Appaltante:</strong> si intende l''ente, come definito nel Codice dei contratti pubblici, che offre il Servizio agli Operatori Economici interessati a partecipare ad una determinata procedura di gara;<br>
+<strong>Termini e Condizioni:</strong> indica il presente documento.'
+WHERE keycode = 'LABEL_TERM_OF_USE_ACRONIMI' AND langcode = 'it' AND customized = 0;
+UPDATE localstrings SET stringvalue = 'The expressions referred to in this article, when used with a capital letter, will have the following meaning:<br>
+<strong>Reserved Area:</strong> indicates the area reserved for the User on the Platform, created after his registration and aimed at sending and receiving communications within the System;<br>
+<strong>System manager:</strong> the subject used by the contracting authority for the technical management of the platform;<br>
+<strong>Procurement Code/Public Contracts Code:</strong> means the Legislative Decree n. 36/2023;<br>
+<strong>Economic Operator:</strong> means one of the subjects admitted to participate in public tender procedures, as defined by art. 65 of the Code of public contracts and the European Union legislation;<br>
+<strong>Platform:</strong> means the platform {0}"; the computer system (software and hardware) through which it is possible to carry out tender procedures entirely managed electronically in compliance with the provisions of the Code of public contracts;<br>
+<strong>Procurement Portal:</strong> means the telematic platform'' component aimed at offering functionalities specific to economic operators;<br>
+<strong>Telematic Procedures:</strong> means the procedures managed through the Platform;<br>
+<strong>User:</strong> means the natural person, authorized by the Economic Operator and endowed with the necessary powers of representation, who acts on the Platform in the name and on behalf of the Economic Operator itself;<br>
+<strong>Service:</strong> means the Service offered through the Platform, as better defined in Title 2 Legislative Decree 36/2023;<br>
+<strong>Contracting Authority:</strong> means the entity, as defined in the Public Contracts Code, which offers the Service to Economic Operators interested in participating in a specific tender procedure;<br>
+<strong>Terms and Conditions:</strong> means this document.'
+WHERE keycode = 'LABEL_TERM_OF_USE_ACRONIMI' AND langcode = 'en' AND customized = 0;
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RESPONSABILE_FASE_AFFIDAMENTO', 'it', 'Responsabile di procedimento per la fase di affidamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RESPONSABILE_FASE_AFFIDAMENTO', 'en', 'Responsible for the procedure for the assignment phase');
+
+update localstrings set stringvalue = 'RUP' where keycode = 'LABEL_RUP' and langcode = 'it' AND (customized IS NULL or customized = 0);
+
+update ppcommon_properties set name = 'kong.auth.url', category = 'kong-client' where name = 'digital-signature-check-authurl';
+update ppcommon_properties set name = 'kong.auth.username', category = 'kong-client' where name = 'digital-signature-check-authusername';
+update ppcommon_properties set name = 'kong.auth.password', category = 'kong-client' where name = 'digital-signature-check-authsecret';
+	
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('marcaturaTemp.tipologia', 'S', 'Tipologia di marcatura temporale. Valori ammessi: 1 [default] = servizio Maggioli protetto da autenticazione, 2 = blockchain (valore riservato, non disponibile), 3 = servizio Maggioli diretto (deprecato)', '3', '3','marcatura temporale', 865);
+
+UPDATE ppcommon_properties SET description = 'URL di accesso al servizio di marcatura temporale dei file (https://api.maggiolicloud.it/rest/segreteria/v2/dts per tipo 1, https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts per tipo 3)' WHERE name = 'marcaturaTemp.url'; 
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.26.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.25.0';
+	UPDATE ppcommon_ver SET version = '3.26.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.25.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.26.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.26.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+UPDATE ppcommon_properties SET description = 'Url di autenticazione mediante kong' WHERE name = 'kong.auth.url';
+
+UPDATE ppcommon_properties SET description = 'Username per kong' WHERE name = 'kong.auth.username';
+
+UPDATE ppcommon_properties SET description = 'Secret per autenticazione ed autorizzazione mediante kong' WHERE name = 'kong.auth.password';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.26.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.26.0-M1';
+	UPDATE ppcommon_ver SET version = '3.26.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.26.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.26.0_to_3.27.0-M1
+-- 3.27.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.26.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+-- profili SSO per soggetti impresa 
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_AGGIORNAMENTO_SSO', 'it', 'Autorizzazione accesso all''''operatore economico {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_AGGIORNAMENTO_SSO', 'en', 'Access authorization to the economic operator {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_AGGIORNAMENTO_SSO', 'it', 'Si notifica all''''utente {0} l''''assegnazione del profilo di accesso {1} ai fini dell''''utilizzo dell''''operatore economico {2} nel portale e-Procurement {3}. 
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_AGGIORNAMENTO_SSO', 'en', 'The user {0} is notified of the assignment of the access profile {1} for the purpose of using the economic operator {2} in the e-Procurement portal {3}.
+
+----- 
+This mail is generated by an automated system, please do not reply.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_RIMOZIONE_SSO', 'it', 'Rimozione autorizzazione accesso all''''operatore economico {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_OGGETTO_NOTIFICA_RIMOZIONE_SSO', 'en', 'Removal of access authorization to the economic operator {0}');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_RIMOZIONE_SSO', 'it', 'Si notifica all''''utente {0} la rimozione delle autorizzazioni ai fini dell''''utilizzo dell''''operatore economico {1} nel portale e-Procurement {2}. 
+
+-----
+Questa mail viene generata da un sistema automatico, si prega di non rispondere.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('MAIL_TESTO_NOTIFICA_RIMOZIONE_SSO', 'en', 'The access profile for company {0} for company {1} has been removed
+
+----- 
+This mail is generated by an automated system, please do not reply.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'it', 'Profili dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'en', 'Profiles of authorized delegates');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of delegates allowed');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'it', 'Soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'en', 'Authorized delegates');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'en', 'User Id. (fiscal code)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'it', 'Id. Utente (codice fiscale)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'it', 'Modifica soggetto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'en', 'Edit delegate');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'it', 'Elimina soggetto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'en', 'Remove delegate');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_SOLA_LETTURA', 'it', 'Sola lettura');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_SOLA_LETTURA', 'en', 'Read only');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'it', 'Compilazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'en', 'Instructor');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'it', 'Controllo completo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'en', 'Full control');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Profili dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Profiles of authorized delegates');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Profili dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Profiles of authorized delegates');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of delegates allowed');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of delegates allowed');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni dei soggetti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of delegates allowed');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DELEGATE', 'it', 'Soggetto impresa');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_DELEGATE', 'en', 'Delegate');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PROFILO', 'it', 'Profilo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PROFILO', 'en', 'Profile');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FUNCTION', 'it', 'Funzione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FUNCTION', 'en', 'Function');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGINTIME', 'it', 'Log in');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGINTIME', 'en', 'Log in');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGOUTTIME', 'it', 'Log out');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LOGOUTTIME', 'en', 'Log out');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK', 'it', 'Sblocca');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK', 'en', 'Unlock');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_SCOSTAMENTO', 'it', 'Importo scostamento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORTO_SCOSTAMENTO', 'en', 'Amount of deviation');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALORE_COMPLESSIVO_APPALTO', 'it', 'Valore complessivo dell’Appalto');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALORE_COMPLESSIVO_APPALTO', 'en', 'Total value of the Contract');
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.27.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.26.0';
+	UPDATE ppcommon_ver SET version = '3.27.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.26.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.27.0-M1_to_3.27.0-M2
+-- 3.27.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.27.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ENVELOPE_RESET', 'it', 'Stai richiedendo la cancellazione totale dei dati inseriti nella presente busta, e la compilazione della stessa dovrà essere ripetuta accedendo alla busta stessa ed inserendo nuovamente tutte le informazioni oppure i documenti richiesti.<br/><br/>Vuoi confermare e proseguire con l''operazione?');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ENVELOPE_RESET', 'en', 'You are requesting the total deletion of the data entered in this envelope, and the compilation of the same must be repeated by accessing the envelope itself and re-entering all the information or documents requested.<br/><br/>Do you want to confirm and continue with the operation?');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ELIMINATION', 'it', 'Conferma eliminazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CONFIRM_ELIMINATION', 'en', 'Confirm deletion');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA', 'it', 'Elimina');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA', 'en', 'Delete');
+	
+	UPDATE ppcommon_properties SET value = null WHERE name = 'dgue-symkey';
+	UPDATE ppcommon_properties SET value = null WHERE name = 'dgue-jwtkey';
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.27.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.27.0-M1';
+	UPDATE ppcommon_ver SET version = '3.27.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.27.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.27.0-M2_to_3.27.0
+-- 3.27.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.27.0-M2') THEN
+	
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.27.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.27.0-M2';
+	UPDATE ppcommon_ver SET version = '3.27.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.27.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+-- 3.27.0_to_3.28.0-M1
+-- 3.28.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.27.0') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	UPDATE localstrings SET stringvalue = 'Vuoi veramente annullare la rinuncia all''offerta?' WHERE keycode = 'LABEL_GARETEL_ANNULLA_RINUNCIA_INVIO_3' AND langcode = 'it' AND customized = 0;
+
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.28.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.27.0';
+	UPDATE ppcommon_ver SET version = '3.28.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.27.0';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.28.0_to_3.28.0-M2
+-- 3.28.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.28.0-M1') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_DESC', 'it', 'Ordinamento decrescente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_DESC', 'en', 'Descending sort');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_ASC', 'it', 'Ordinamento crescente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ORDER_ASC', 'en', 'Ascending sort');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GRADUATORIA_SECONDO_GRADO', 'it', 'Graduatoria 2° grado');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_GRADUATORIA_SECONDO_GRADO', 'en', '2° degree ranking');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALUTAZIONE_TECNICA_PRIMO_GRADO', 'it', 'Valutazione tecnica 1° grado');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VALUTAZIONE_TECNICA_PRIMO_GRADO', 'en', '1° degree technical evaluation');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_PROCEDURA_CONCORSO', 'it', 'Tipologia concorso');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_PROCEDURA_CONCORSO', 'en', 'Design competition type');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.28.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.28.0-M1';
+	UPDATE ppcommon_ver SET version = '3.28.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.28.0-M1';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 3.28.0_to_3.28.0-M2
+-- 3.28.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.28.0-M2') THEN
+	-- INIZIO AGGIORNAMENTI
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD_VERIFICA_BUSTA', 'it', 'Verifica busta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_WIZARD_VERIFICA_BUSTA', 'en', 'Check envelope');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_VERIFICA_BUSTA', 'it', 'Verifica busta');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_WIZARD_VERIFICA_BUSTA', 'en', 'Check envelope');
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.28.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.28.0-M2';
+	UPDATE ppcommon_ver SET version = '3.28.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.28.0-M2';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.28.0-M3_to_3.28.0
+-- 3.28.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.28.0-M3') THEN
+	-- INIZIO AGGIORNAMENTI
+
+	-- AGGIORNAMENTO DELLE VERSIONI
+	UPDATE ppcommon_ver SET version = '3.28.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.28.0-M3';
+	UPDATE ppcommon_ver SET version = '3.28.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.28.0-M3';
+	-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.28.0_to_4.0.0
+
+-- 3.29.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.28.0') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		-- aggiornamento url servizi kong e keycloak
+		UPDATE ppcommon_properties SET description = 'URL di accesso al servizio di marcatura temporale dei file (https://api.maggioli.cloud/rest/segreteria/v2/dts per tipo 1, https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts per tipo 3)' WHERE name = 'marcaturaTemp.url';
+		
+		UPDATE ppcommon_properties SET defvalue = 'https://api.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url';
+		UPDATE ppcommon_properties SET value = 'https://api.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url' and value = 'https://api.maggiolicloud.it/rest/segreteria/v2/dts';
+		UPDATE ppcommon_properties SET value = 'https://api-dev.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url' and value = 'https://api-dev.maggiolicloud.it/rest/segreteria/v2/dts';
+		
+		UPDATE ppcommon_properties SET defvalue = 'https://login.maggioli.cloud/realms/progetto_segreteria' WHERE name = 'kong.auth.url';
+		UPDATE ppcommon_properties SET value = 'https://login.maggioli.cloud/realms/progetto_segreteria' WHERE name = 'kong.auth.url' and value like 'https://login.maggiolicloud.it/realms/progetto_segreteria%';
+		UPDATE ppcommon_properties SET value = 'https://login-dev.maggioli.cloud/realms/progetto_segreteria' WHERE name = 'kong.auth.url' and value like 'https://login-dev.maggiolicloud.it/realms/progetto_segreteria%';
+
+		UPDATE ppcommon_properties SET defvalue = 'https://api.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url';
+		UPDATE ppcommon_properties SET value = 'https://api.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url' and value = 'https://api.maggiolicloud.it/rest/segreteria/v2';
+		UPDATE ppcommon_properties SET value = 'https://api-dev.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url' and value = 'https://api-dev.maggiolicloud.it/rest/segreteria/v2';
+
+		INSERT INTO ppcommon_customreports VALUES (51, 'com-reggioemilia', 1, 'DomandaIscrizioneAlbo', 'Domanda iscrizione standard per Comune Reggio Emilia');
+
+		-- accessi differenziati per SPID
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('loginMultiente', 'S', 'Installazione che gestisce i dati per più enti (0 [default] = No, 1= Si)', '0', '0', 'autenticazione-spid', 10580);
+		--INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.spid.serviceprovider.?', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione SPID - <denominazione staz. appaltante>', '<valore>', '<valore>','autenticazione-spid', 10581,2,3,4,5);
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_PER_PROCEDERE_SELEZIONARE_SA', 'it', 'Per procedere selezionare la stazione appaltante su cui si intende operare in questa sessione di utilizzo');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_PER_PROCEDERE_SELEZIONARE_SA', 'en', 'To proceed, select the contracting station on which you intend to operate in this session of use');
+
+		UPDATE ppcommon_properties SET value = '1', defvalue = '1' WHERE name = 'auth.sso.spid.serviceindex';
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.29.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.28.0';
+		UPDATE ppcommon_ver SET version = '3.29.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.28.0';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+
+-- 3.29.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.29.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+
+-- codice CNEL
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CNEL', 'it', 'Codice CNEL');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CODICE_CNEL', 'en', 'CNEL code');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'it', 'Inserire il codice CNEL di 4 caratteri corrispondente al contratto di settore utilizzato come reperibile in https://www.cnel.it/Archivio-Contratti, punto a), scaricando il file excel di competenza (colonna CCNL id), oppure calcolandolo come indicato nel punto b) dal sito web al link https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL (primi 4 caratteri del campo "Categoria" dopo aver selezionato il campo "Settore").<br/>Nel caso in cui il codice non risulti applicabile, indicare "N.A." nel valore del campo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'en', 'Enter the 4-character CNEL code corresponding to the sector contract used as available in https://www.cnel.it/Archivio-Conrati, point a), downloading the relevant excel file (CCNL id column), or calculating it as indicated in point b) from the website at the link https://www.cnel.it/Archivio-Conrati/Contrattazione-Nazionale/Ricerca-CCNL (first 4 characters of the "Category" field after selecting the "Sector" field).<br/>If the code is not applicable, indicate "N.A." in the field value.');
+		
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.29.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.29.0-M1';
+		UPDATE ppcommon_ver SET version = '3.29.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.29.0-M1';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 3.29.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.29.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'it', 'Profili degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SOGGETTI_ABILITATI', 'en', 'Profiles of enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Profili degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Profiles of enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Accedi alla presente funzionalità in quanto hai registrato l''operatore economico sul portale e pertanto sei il PROPRIETARIO ed AMMINISTRATORE delle autorizzazioni.<br/>Di seguito è presente l''elenco degli utenti abilitati, e quindi DELEGATI ad accedere, mediante autenticazione forte (es: SPID, CIE, sistemi centralizzati di autenticazione...), ai dati dell''operatore economico; puoi aggiungere utenti, eliminarli, oppure rettificarne le abilitazioni.<br/>
+È importante associare l''identificativo per consentire agli utenti di accedere, e tipicamente questo corrisponde al codice fiscale. Associare inoltre il corretto profilo di utilizzo all''utente; i profili disponibili sono:
+<ul>
+<li>Sola lettura: l''utente accede in sola lettura ai dati dell''operatore economico, può solamente consultare i dati senza operare attivamente inviando/annullando dei flussi o modificando qualsiasi informazione</li>
+<li>Compilazione: l''utente può accedere ai processi operativi, può inserire e salvare in bozza informazioni e documenti, ma non può inviare flussi eccetto l''aggiornamento dei dati anagrafici e l''invio nuova comunicazione</li>
+<li>Controllo completo: l''utente può compilare ed inviare qualsiasi flusso operativo; a differenza della tua utenza, non può accedere alla presente pagina per variare le abilitazioni</li>
+</ul>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Access this functionality because you have registered the economic operator on the portal and therefore you are the OWNER and ADMINISTRATOR of the authorizations.<br/>Below is the list of users enabled, and therefore DELEGATED to access, through strong authentication (e.g. SPID, CIE, centralized authentication systems...), to the data of the economic operator; you can add users, delete them, or adjust their permissions.<br/>
+It is important to associate the identifier to allow users to access, and typically this corresponds to the tax code. Also associate the correct usage profile to the user; the available profiles are:
+<ul>
+<li>Read only: the user has read-only access to the economic operator''s data, he can only consult the data without actively sending/cancelling flows or modifying any information</li>
+<li>Compilation: the user can access operational processes, can insert and save information and documents in draft form, but cannot send flows except updating personal data and sending new communication</li>
+<li>Full control: the user can compile and send any operational flow; unlike your user, he cannot access this page to change the authorizations</li>
+</ul>');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_SOGGETTI_ABILITATI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'it', 'Utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SOGGETTI_ABILITATI', 'en', 'Enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_ID_UTENTE' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'it', 'Id. Utente (codice fiscale)');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ID_UTENTE', 'en', 'User ID (tax code)');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_MODIFICA_SOGGETTO_SSO' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'it', 'Modifica utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_SOGGETTO_SSO', 'en', 'Edit user');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_ELIMINA_SOGGETTO_SSO' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'it', 'Elimina utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_SSO', 'en', 'Delete user');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_ACCESSO_COMPILAZIONE' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'it', 'Compilazione');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_COMPILAZIONE', 'en', 'Compilation');
+
+-- replace con nuova label
+DELETE FROM localstrings WHERE keycode = 'LABEL_DELEGATE';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COGNOME_NOME', 'it', 'Cognome e nome');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_COGNOME_NOME', 'en', 'Last and first name');
+
+DELETE FROM localstrings WHERE keycode = 'TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_SSO_SESSIONI_SOGGETTI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'it', 'Sessioni degli utenti abilitati');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SSO_SESSIONI_SOGGETTI', 'en', 'Sessions of enabled users');
+
+DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'it', 'Si fornisce la lista degli utenti attualmente connessi e relativa funzione utilizzata; la funzione può contenere anche il riferimento alla procedura sulla quale l''utente sta operando. Se si intende togliere l''accesso ad una funzionalità forzando l''uscita dell''utente bloccante, selezionare l''azione "Sblocca" nell''ultima colonna.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SSO_SESSIONI_SOGGETTI', 'en', 'The list of users currently connected and the related function used is provided; the function can also contain the reference to the procedure on which the user is operating. If you intend to remove access to a feature by forcing the locking user to exit, select the "Unlock" action in the last column.');
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '3.29.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.29.0-M2';
+		UPDATE ppcommon_ver SET version = '3.29.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.29.0-M2';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.0.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '3.29.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+		DELETE FROM ppcommon_properties WHERE name = 'loginMultiente';
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('loginMultiente', 'S', 'Installazione che gestisce i dati per più enti (0 [default] = No, 1= Si)', '0', '0', 'configurazione generale', 5);
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_IMPRESA', 'it', 'Sei sicuro di voler eliminare l''utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_SOGGETTO_IMPRESA', 'en', 'Are you sure you want to delete the user');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK_SOGGETTO_IMPRESA', 'it', 'Sei sicuro di voler sbloccare l''utente');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_UNLOCK_SOGGETTO_IMPRESA', 'en', 'Are you sure you want to unlock the user');
+
+DELETE FROM localstrings WHERE keycode = 'LABEL_NOTE_CNEL' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'it', 'Inserire il codice CNEL di 4 caratteri corrispondente al contratto di settore utilizzato come reperibile in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, punto a), scaricando il file excel di competenza (colonna CCNL id), oppure calcolandolo come indicato nel punto b) dal sito web al link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (primi 4 caratteri del campo "Categoria" dopo aver selezionato il campo "Settore").<br/>Nel caso in cui il codice non risulti applicabile, indicare "n.a." nel valore del campo.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL', 'en', 'Enter the 4-character CNEL code corresponding to the sector contract used as available in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, point a), downloading the relevant excel file (CCNL id column), or calculating it as indicated in point b) from the website at the link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (first 4 characters of the "Category" field after selecting the "Sector" field).<br/>If the code is not applicable, indicate "n.a." in the field value.');
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.0.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '3.29.0-M3';
+		UPDATE ppcommon_ver SET version = '4.0.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '3.29.0-M3';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.0.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.0.0-M4') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.0.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.0.0-M4';
+		UPDATE ppcommon_ver SET version = '4.0.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '4.0.0-M4';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.0.0_to_4.1.0
+
+-- 4.1.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.0.0') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+-- avvalimento
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO', 'it', 'Avvalimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO', 'en', 'Availability');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_AVVALIMENTO', 'it', 'Inserire i dati relativi a tutte le imprese ausiliarie che partecipano in avvalimento.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_DETTAGLIO_AVVALIMENTO', 'en', 'Enter the data relating to all the auxiliary companies participating in availment.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICORSO_AVVALIMENTO', 'it', 'Avvalimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICORSO_AVVALIMENTO', 'en', 'Availability');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELENCO_IMPRESE_AUSILIARIE', 'it', 'Imprese ausiliarie');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELENCO_IMPRESE_AUSILIARIE', 'en', 'Auxiliary companies');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO_PER', 'it', 'Avvalimento per');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AVVALIMENTO_PER', 'en', 'Availability for');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPRESA_AUSILIARIA', 'it', 'Impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPRESA_AUSILIARIA', 'en', 'Auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_IMPRESA_AUSILIARIA', 'it', 'Modifica l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_MODIFICA_IMPRESA_AUSILIARIA', 'en', 'Edit auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_IMPRESA_AUSILIARIA', 'it', 'Elimina l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ELIMINA_IMPRESA_AUSILIARIA', 'en', 'Remove auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONFIRM_IMPRESA_AUSILIARIA', 'it', 'Vuoi eliminare l''impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONFIRM_IMPRESA_AUSILIARIA', 'en', 'Do you want to eliminate the auxiliary company?');
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.1.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.0.0';
+		UPDATE ppcommon_ver SET version = '4.1.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '4.0.0';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.1.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.1.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		UPDATE localstrings SET stringvalue = 'Accedi con nome utente e password' WHERE keycode = 'auth_FORM_LOGIN_TITLE' AND langcode = 'it' AND customized = 0;
+		UPDATE localstrings SET stringvalue = 'Login with username and password' WHERE keycode = 'auth_FORM_LOGIN_TITLE' AND langcode = 'en' AND customized = 0;
+
+		UPDATE localstrings SET stringvalue = 'Se sei in possesso di credenziali al portale puoi accedere tramite l''inserimento di nome utente e password nell''apposita form.' WHERE keycode = 'auth_FORM_LOGIN_DESCRIPTION' AND langcode = 'it' AND customized = 0;
+		UPDATE localstrings SET stringvalue = 'If you have credentials for the portal you can login by filling username and password in the form.' WHERE keycode = 'auth_FORM_LOGIN_DESCRIPTION' AND langcode = 'en' AND customized = 0;
+
+		UPDATE localstrings SET stringvalue = 'Nome utente' WHERE keycode = 'USERNAME' AND langcode = 'it' AND customized = 0;
+		UPDATE localstrings SET stringvalue = 'Credenziali non valide' WHERE keycode = 'USER_STATUS_CREDENTIALS_INVALID' AND langcode = 'it' AND customized = 0;
+
+		UPDATE localstrings SET stringvalue = 'E'' possibile recuperare la password inserendo il nome utente utilizzato per l''accesso al sito o l''indirizzo email ad esso abbinato (entrambe informazioni assegnate in fase di registrazione). Qualora non si disponga piÃ¹ del nome utente o della casella di posta elettronica associata, contattare l''amministrazione.' WHERE keycode = 'BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG' AND langcode = 'it' AND customized = 0;
+		UPDATE localstrings SET stringvalue = 'It is possible to recover the password by entering the username used to access the site or the email address associated with it (both information assigned during registration). If you no longer have a username or associated mailbox, contact the administration.' WHERE keycode = 'BALLOON_jpuserreg_REACTIVATION_PASSWORD_LOST_MSG' AND langcode = 'en' AND customized = 0;
+
+		UPDATE localstrings SET stringvalue = 'Recupera password da un indirizzo di posta elettronica' WHERE keycode = 'jpuserreg_REACTIVATION_USERNAME_LOST_MSG' AND langcode = 'it' AND customized = 0;
+
+UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?> 
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso e utilizzo dell''area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica Ã¨ subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalitÃ  di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalitÃ  tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">ModalitÃ  tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>5.0</version></content> 
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?> 
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso e utilizzo dell''area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica Ã¨ subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalitÃ  di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalitÃ  tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal (italian version)</text><text lang="it">ModalitÃ  tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>5.0</version></content> 
+', lastmodified = '20240208141000', currentversion = '5.0' WHERE contentid = 'GEN-STD-AAR';
+
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LAYOUT', 'TESTATAFISSA', 'ACT', 0); 
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.1.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.1.0-M1';
+		UPDATE ppcommon_ver SET version = '4.1.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '4.1.0-M1';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.1.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.1.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+-- avvalimenti
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SKIP_IMPRESA_AUSILIARIA', 'it', 'Salta la lista delle imprese ausiliarie e vai allo step successivo');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_SKIP_IMPRESA_AUSILIARIA', 'en', 'Skip the list of auxiliary companies and go to the next step');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_ADD_IMPRESA_AUSILIARIA', 'it', 'Aggiungi impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_ADD_IMPRESA_AUSILIARIA', 'en', 'Add auxiliary company');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_IMPRESA_AUSILIARIA', 'it', 'Nuova impresa ausiliaria');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_NEW_IMPRESA_AUSILIARIA', 'en', 'New auxiliary company');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.1.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon' AND version = '4.1.0-M2';
+		UPDATE ppcommon_ver SET version = '4.1.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare' AND version = '4.1.0-M2';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.1.0_to_4.2.0
+
+-- 4.2.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.1.0') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		-- aggiornamento url servizi keycloak
+		UPDATE ppcommon_properties SET description = 'URL di accesso al servizio di marcatura temporale dei file (https://apis.maggioli.cloud/rest/segreteria/v2/dts per tipo 1, https://europe-west1-servizi-infrastrutturali.cloudfunctions.net/dts per tipo 3)' WHERE name = 'marcaturaTemp.url';
+		
+		UPDATE ppcommon_properties SET defvalue = 'https://apis.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url';
+		UPDATE ppcommon_properties SET value = 'https://apis.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url' and value = 'https://api.maggioli.cloud/rest/segreteria/v2/dts';
+		UPDATE ppcommon_properties SET value = 'https://apis-dev.maggioli.cloud/rest/segreteria/v2/dts' WHERE name = 'marcaturaTemp.url' and value = 'https://api-dev.maggioli.cloud/rest/segreteria/v2/dts';
+		
+		UPDATE ppcommon_properties SET defvalue = 'https://apis.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url';
+		UPDATE ppcommon_properties SET value = 'https://apis.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url' and value = 'https://api.maggioli.cloud/rest/segreteria/v2';
+		UPDATE ppcommon_properties SET value = 'https://apis-dev.maggioli.cloud/rest/segreteria/v2' WHERE name = 'digital-signature-check-url' and value = 'https://api-dev.maggioli.cloud/rest/segreteria/v2';
+
+		-- fix "Abilita a sistema di autenticazione esterno" per tutte le inizializzazioni dalla 3.12 in poi
+		INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+		SELECT 'ppcommon_abilita_accesso_sso', 7, 'ppcommon_abilitaAccessoSSO', NULL, NULL
+		FROM pages WHERE code = 'ppcommon_abilita_accesso_sso' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppcommon_abilita_accesso_sso' AND framepos = 7);
+		INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+		SELECT 'ppcommon_abilita_accesso_sso', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppcommon_abilita_accesso_sso' AND framepos = 9);
+
+		-- PORTAPPALT-1193 - scheda ANAC
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('bdncp.templateUrl', 'S', 'Template per url di accesso alla scheda ANAC', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_cig/?cig={0}', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_cig/?cig={0}','configurazione generale', 197);
+		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BDNCP', 'it', 'Dati aperti BDNCP');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_BDNCP', 'en', 'BDNCP open data');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_BDNCP', 'it', 'Dati aperti BDNCP');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_BDNCP', 'en', 'BDNCP open data');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DATI_APERTI_BDNCP', 'it', 'Dati aperti BDNCP');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DATI_APERTI_BDNCP', 'en', 'BDNCP open data');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DATI_APERTI_BDNCP', 'it', 'Viene qui riportato il collegamento ipertestuale che rinvia ai dati relativi all''intero ciclo di vita del contratto contenuti nella BDNCP (Banca Dati Nazionale dei Contratti Pubblici istituita da ANAC).  Tale collegamento garantisce un accesso immediato e diretto ai dati da consultare riferiti allo specifico contratto ed assicura la trasparenza di tutti gli atti di ogni procedura contrattuale, dai primi atti all''esecuzione.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DATI_APERTI_BDNCP', 'en', 'Below is the hyperlink which refers to the data relating to the entire life cycle of the contract contained in the BDNCP (National Database of Public Contracts established by ANAC). This connection guarantees immediate and direct access to the data to be consulted relating to the specific contract and ensures the transparency of all the documents of each contractual procedure, from the first documents to the execution.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_BDNCP', 'it', 'Apri la scheda nel BDNCP di ANAC');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_APRI_BDNCP', 'en', 'Open the tab in ANAC''s BDNCP');
+
+		-- PORTAPPALT-1049 - MICHELANGELO (SACE)
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('REG-IMPRESA', 'IMPORT-MICHELANGELO', 'VIS', 0);
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_MICHELANGELO', 'it', 'Importa anagrafica da banca dati');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_REGISTRA_OE_IMPORT_MICHELANGELO', 'en', 'Import personal data from database');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_MICHELANGELO', 'it', 'Se sei un operatore economico italiano iscritto alla CCIAA, puoi fruire della banca dati centralizzata messa a disposizione da SACE e reperirei automaticamente tuoi dati impresa per semplificare il processo di registrazione.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_FROM_MICHELANGELO', 'en', 'If you are an Italian economic operator registered with the Chamber of Commerce, you can use the centralized database made available by SACE and automatically retrieve your company data to simplify the registration process.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'it', 'Ricerca anagrafica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Companty search');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA', 'it', 'Ricerca anagrafica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Companty search');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_MICHELANGELO', 'it', 'Inserisci il tuo codice fiscale');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_IMPORT_OE_INFO_MICHELANGELO', 'en', 'Insert your fiscal code');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_SEARCH_CODICE_FISCALE', 'it', 'Inserisci il tuo codice fiscale per richiedere i dati della tua organizzazione e precompilare la registrazione. Attenzione: i dati importati non saranno modificabili in quanto reperiti da archivi nazionali centralizzati. Per ulteriori informazioni consultare la stazione appaltante');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_REG_IMPRESA_SEARCH_CODICE_FISCALE', 'en', 'Enter your tax code to request your organization''s data and pre-fill the registration. Attention: the imported data cannot be modified as it is obtained from centralized national archives. For further information, consult the contracting authority');
+
+		-- PORTAPPALT-1252 invio consorziate esecutrici
+		DELETE FROM localstrings WHERE keycode = 'BALLOON_INVIO_OFFERTA_CONSORZIATE' AND langcode IN ('it', 'en');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'it', 'ATTENZIONE: non sono state inserite le imprese consorziate esecutrici o le imprese consorziate non esecutrici che forniscono requisiti al consorzio. Queste devono essere indicate nei casi previsti per consentire alla Stazione Appaltante di effettuare le verifiche mediante FVOE, il Fascicolo Virtuale dell''Operatore Economico di ANAC.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_INVIO_OFFERTA_CONSORZIATE', 'en', 'ATTENTION: the executing consortium companies or the non-executing consortium companies that provide requirements to the consortium have not been included. These must be indicated in the cases foreseen to allow the Contracting Authority to carry out checks using FVOE, the ANAC Economic Operator Virtual File.');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA_OFF', 'it', 'Per il consorzio nell''ambito dell''appalto specifico sono previste imprese consorziate esecutrici o le imprese consorziate non esecutrici che forniscono requisiti al consorzio?');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_QUESTION_CONTINUE_WITHOUT_CONSORZIATA_OFF', 'en', 'Are there implementing consortium companies or non-executing consortium companies providing requirements to the consortium within the specific contract?');
+		
+		UPDATE ppcommon_properties SET value = 'https://cie-oidc.comune-online.it/AuthServiceOIDC/services/AuthService', defvalue = 'https://cie-oidc.comune-online.it/AuthServiceOIDC/services/AuthService' WHERE name = 'auth.sso.cie.wsAuthServiceCIE.url';
+		UPDATE ppcommon_properties SET value = 'maggioli-rp', defvalue = 'maggioli-rp' WHERE name = 'auth.sso.cie.serviceprovider';
+		UPDATE ppcommon_properties SET defvalue = null WHERE name = 'auth.sso.spid.serviceprovider';
+		UPDATE ppcommon_properties SET defvalue = null WHERE name = 'auth.sso.spidbusiness.serviceprovider';
+
+		-- PORTAPPALT-1089 formati accettati
+		UPDATE ppcommon_properties SET defvalue = 'PDF,P7M,XLS,XLSX,XML,ODS,DOC,DOCX,RTF,ODT,ZIP,TSD,IFC,DXF,SHP' WHERE name = 'estensioniAmmesseDocIscrizione';
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ESTENSIONI_FILE', 'it', 'Visualizza estensioni dei file caricabili');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ESTENSIONI_FILE', 'en', 'View uploadable file extensions');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NASCONDI_ESTENSIONI_FILE', 'it', 'Nascondi estensioni dei file caricabili');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NASCONDI_ESTENSIONI_FILE', 'en', 'Hide uploadable file extensions');
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.2.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.2.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.2.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.2.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		-- Accesso ai documenti art. 36 DLgs 36/2023
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'it', 'Accesso ai documenti art. 36 DLgs 36/2023');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents art. 36 Legislative Decree 36/2023');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'it', 'Accesso ai documenti art. 36 DLgs 36/2023');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents art. 36 Legislative Decree 36/2023');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIA', 'it', 'Aggiudicataria');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_AGGIUDICATARIA', 'en', 'Successful bidder');		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CLASSIFICATA', 'it', 'Impresa classificata');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_CLASSIFICATA', 'en', 'Classified company');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.2.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.2.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.2.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.2.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- Accesso ai documenti art. 36 DLgs 36/2023
+		DELETE FROM localstrings WHERE keycode='BALLOON_GARA_TEL_ACCESSO_DOCUMENTI'; 
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'it', 'In questa pagina sono resi disponibili gli atti (verbali di gara, comunicazioni, ecc.) e i documenti d''offerta dell''aggiudicataria a tutti i candidati e offerenti non esclusi.<br/>Sempre in questa pagina, quando applicabile, gli operatori economici collocatisi nei primi cinque posti in graduatoria troveranno anche le reciproche offerte presentate.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI', 'en', 'On this page the documents (tender reports, communications, etc.) and the tender documents of the successful tenderer are made available to all candidates and bidders not excluded.<br/>Always on this page, when applicable, the economic operators placed in the first five places in the ranking will also find each other''s offers presented.');
+		DELETE FROM localstrings WHERE keycode='LABEL_ACCESSO_DOCUMENTI'; 
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'it', 'Accesso agli atti e offerte');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents and offers');
+		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI_LOTTI', 'it', 'Selezionare il lotto per il quale procedere alla consultazione degli atti (verbali di gara, comunicazioni, ecc.) e i documenti d''offerta dell''aggiudicataria a tutti i candidati e offerenti non esclusi.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_GARA_TEL_ACCESSO_DOCUMENTI_LOTTI', 'en', 'Select the lot for which to proceed with the consultation of the documents (tender minutes, communications, etc.) and the offer documents of the successful tenderer to all candidates and bidders not excluded.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_ACCESSO_DOCUMENTI', 'it', 'Accesso agli atti e offerte');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_GARETEL_ACCESSO_DOCUMENTI', 'en', 'Access to documents and offers');
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.2.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.2.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.2.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.2.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.2.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.2.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.2.0_to_4.3.0
+
+-- 4.3.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.2.0') THEN
+		-- INIZIO AGGIORNAMENTI
+
+-- aggiorna "estensioniAmmesseDocIscrizione" solo se e' vuoto
+UPDATE ppcommon_properties SET value = 'PDF,P7M,XLS,XLSX,XML,ODS,DOC,DOCX,RTF,ODT,ZIP,TSD,IFC,DXF,SHP' WHERE name = 'estensioniAmmesseDocIscrizione' AND (value IS NULL OR value = '');
+		
+-- aggiornamento contenuti
+INSERT INTO resources VALUES ('RES-STD-MANMDGUE', 'Attach', 'Manuale uso M-DGUE Response', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="RES-STD-MANMDGUE"><descr>Manuale uso M-DGUE Response</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>Manuale_uso_M-DGUE_Response_OE.pdf</filename><mimetype>application/x-unknown</mimetype><weight>894 Kb</weight></instance></resource>
+');
+
+INSERT INTO resources VALUES ('EN-STD-MANUSO', 'Attach', 'Modalità tecniche utilizzo piattaforma e accesso Area Riservata (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-MANUSO"><descr>Modalità tecniche utilizzo piattaforma e accesso Area Riservata (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Technical_procedures_for_using_the_electronic_platform_and_access_the_reserved_area.pdf</filename><mimetype>application/x-unknown</mimetype><weight>2289 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-OFFTEL', 'Attach', 'Presentazione Offerte Telematiche (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-OFFTEL"><descr>Presentazione Offerte Telematiche (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Guide_for_tenderers.pdf</filename><mimetype>application/x-unknown</mimetype><weight>4601 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-REGPIAT', 'Attach', 'Regole di utilizzo della piattaforma telematica (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-REGPIAT"><descr>Regole di utilizzo della piattaforma telematica (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Rules_for_use_of_telematic_platform.pdf</filename><mimetype>application/x-unknown</mimetype><weight>189 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-ISCRELE', 'Attach', 'Iscrizione ad un Elenco Operatori (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-ISCRELE"><descr>Iscrizione ad un Elenco Operatori (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_Guide_for_registration_to_Operators_Lists.pdf</filename><mimetype>application/x-unknown</mimetype><weight>2006 Kb</weight></instance></resource>
+');
+INSERT INTO resources VALUES ('EN-STD-MANMDGUE', 'Attach', 'Manuale uso M-DGUE Response (Inglese)', 'free', '<?xml version="1.0" encoding="UTF-8"?>
+<resource typecode="Attach" id="EN-STD-MANMDGUE"><descr>Manuale uso M-DGUE Response (Inglese)</descr><groups mainGroup="free" /><categories /><instance><size>0</size><filename>EN_M-DGUE_Response_Operators_Lists_user_manual.pdf</filename><mimetype>application/x-unknown</mimetype><weight>894 Kb</weight></instance></resource>
+');
+
+UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANUSO" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>6.0</version></content>
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-AAR" typecode="GEN" typedescr="Contenuto generico"><descr>Accesso area riservata</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Access and use of the reserved area</text><text lang="it">Accesso e utilizzo dell''area riservata</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[<p>The use of the online platform is subject to registration of the economic operator''s registry in order to obtain the credentials to access the Reserved Area of the Procurement Portal where the functions to interact with the Contracting Authority are available.</p><p>The following documents describe the requirements and technical methods for registration, access and use of the telematic platform.</p>]]></hypertext><hypertext lang="it"><![CDATA[<p>L''utilizzo della piattaforma telematica è subordinato alla registrazione dell''anagrafica dell''operatore economico ai fini di ottenere le credenziali per accedere all''Area Riservata del Portale Appalti ove sono disponibili le funzionalità di interazione con la Stazione Appaltante.</p><p>I seguenti documenti descrivono i requisiti e le modalità tecniche per la registrazione, l''accesso e l''utilizzo della piattaforma telematica.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANUSO" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANUSO" lang="it" /><text lang="en">Technical methods for the use of the online platform and access to the Reserved Area of the Procurement Portal</text><text lang="it">Modalità tecniche per l''utilizzo della piattaforma telematica e accesso all''Area Riservata del Portale Appalti</text></attribute></list></attributes><status>READY</status><version>6.0</version></content>
+', lastmodified = '20240517122820', currentversion = '6.0' WHERE contentid = 'GEN-STD-AAR';		
+
+UPDATE contents SET workxml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-ISCRELE" lang="en" /><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-OFFTEL" lang="en" /><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANMDGUE" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANMDGUE" lang="it" /><text lang="en">Guide for creating and managing the XML DGUE Response file (Italian version)</text><text lang="it">Guida per la creazione e gestione del file XML DGUE Response</text></attribute></list></attributes><status>READY</status><version>4.0</version></content>
+', onlinexml = '<?xml version="1.0" encoding="UTF-8"?>
+<content id="GEN-STD-IM" typecode="GEN" typedescr="Contenuto generico"><descr>Istruzioni e manuali</descr><groups mainGroup="free" /><categories /><attributes><attribute name="Titolo" attributetype="Text"><text lang="en">Instructions and manuals</text><text lang="it">Istruzioni e manuali</text></attribute><attribute name="CorpoTesto" attributetype="Hypertext"><hypertext lang="en"><![CDATA[Below are the support manuals for working with the institution''s electronic platform.]]></hypertext><hypertext lang="it"><![CDATA[<p>Di seguito si riportano i manuali di supporto per operare con la piattaforma telematica dell''Ente.</p>]]></hypertext></attribute><list attributetype="Monolist" name="Allegati" nestedtype="Attach"><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-ISCRELE" lang="en" /><resource resourcetype="Attach" id="RES-STD-ISCRELE" lang="it" /><text lang="en">Guide for registering to an Operators List</text><text lang="it">Guida per l''iscrizione ad un Elenco Operatori</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-OFFTEL" lang="en" /><resource resourcetype="Attach" id="RES-STD-OFFTEL" lang="it" /><text lang="en">Guide for the submission of a telematic offer</text><text lang="it">Guida per la presentazione di un''offerta telematica</text></attribute><attribute name="Allegati" attributetype="Attach"><resource resourcetype="Attach" id="EN-STD-MANMDGUE" lang="en" /><resource resourcetype="Attach" id="RES-STD-MANMDGUE" lang="it" /><text lang="en">Guide for creating and managing the XML DGUE Response file (Italian version)</text><text lang="it">Guida per la creazione e gestione del file XML DGUE Response</text></attribute></list></attributes><status>READY</status><version>4.0</version></content>
+', lastmodified = '20240517122651', currentversion = '3.0' WHERE contentid = 'GEN-STD-IM';		
+
+INSERT INTO contentrelations VALUES ('GEN-STD-AAR', NULL, NULL, 'EN-STD-MANUSO', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'RES-STD-MANMDGUE', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-ISCRELE', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-OFFTEL', NULL, NULL);
+INSERT INTO contentrelations VALUES ('GEN-STD-IM', NULL, NULL, 'EN-STD-MANMDGUE', NULL, NULL);
+
+-- refactoring label "atti e documenti"
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI', 'it', 'Visualizza altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI', 'en', 'View acts altri and documents');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_ATTI_DOCUMENTI', 'it', 'Altri atti e documenti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ALTRI_ATTI_DOCUMENTI', 'en', 'Other acts and documents');
+
+DELETE FROM localstrings WHERE keycode='LABEL_VISUALIZZA_ATTI_DOCUMENTI' and langcode in ('it', 'en');
+
+DELETE FROM localstrings WHERE keycode='BALLOON_ATTI_DOCUMENTI' and langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_ATTI_DOCUMENTI', 'it', 'Di seguito viene presentata la lista degli eventuali documenti e atti previsti ai fini della trasparenza.');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_ALTRI_ATTI_DOCUMENTI', 'en', 'The list of any documents and deeds required for the purposes of transparency is showed below.');
+
+UPDATE localstrings SET stringvalue='Atti e documenti' WHERE keycode='LABEL_ATTI_DOCUMENTI' AND langcode='it' AND (customized = 0 OR customized IS NULL);
+UPDATE localstrings SET stringvalue='Acts and documents' WHERE keycode='LABEL_ATTI_DOCUMENTI' AND langcode='en' AND (customized = 0 OR customized IS NULL);	
+
+-- CONFIGURAZIONI SACE
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('michelangelo.baseUrl', 'S', 'Url per la ricerca dei dati impresa mediante Michelangelo', 'https://wstest.sacesrv.it', 'https://wstest.sacesrv.it', 'sace', 13000);
+
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ISCRALBO-CATEG', 'NOTA', 'VIS', 1);
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.3.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.3.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.3.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.3.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE ppcommon_customizations SET configvalue = 1 WHERE objectid = 'BOTFILTER' AND attrib = 'ABILITACOOKIES' AND feature = 'ACT';
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.3.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.3.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.3.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.3.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.3.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.3.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.3.0_to_4.4.0
+
+-- 4.4.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.3.0') THEN
+		-- INIZIO AGGIORNAMENTI
+
+-- correggi l'ordinamento del menu in "pagemodels"
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+	<frame pos="3">
+		<descr>Second Column: Box 1</descr>
+		<defaultShowlet code="jpuserreg_loginUserReg" />
+	</frame>
+	<frame pos="4">
+		<descr>Second Column: Box 2</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="5">
+		<descr>Second Column: Box 3</descr>
+	</frame>
+</frames>'
+WHERE code = '2colonne-mainsx';
+
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="3">
+		<descr>First Column: Box 1</descr>
+		<defaultShowlet code="jpuserreg_loginUserReg" />
+	</frame>
+	<frame pos="4">
+		<descr>First Column: Box 2</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="5">
+		<descr>First Column: Box 3</descr>
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+</frames>'
+WHERE code = '2colonne-maindx';
+
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="3">
+		<descr>First Column: Box 1</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="4">
+		<descr>First Column: Box 2</descr>
+	</frame>
+	<frame pos="5">
+		<descr>First Column: Box 3</descr>
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+	<frame pos="10">
+		<descr>Third Column: Box 1</descr>
+	</frame>
+	<frame pos="11">
+		<descr>Third Column: Box 2</descr>
+	</frame>
+	<frame pos="12">
+		<descr>Third Column: Box 3</descr>
+	</frame>
+</frames>'
+WHERE code = '3colonne';
+
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+	<frame pos="3">
+		<descr>Second Column: Box 1</descr>
+		<defaultShowlet code="jpuserreg_loginUserReg" />
+	</frame>
+	<frame pos="4">
+		<descr>Second Column: Box 2</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="5">
+		<descr>Second Column: Box 3</descr>
+	</frame>
+</frames>'
+WHERE code = '2colonne-agid-mainsx';
+
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="3">
+		<descr>First Column: Box 1</descr>
+		<defaultShowlet code="jpuserreg_loginUserReg" />
+	</frame>
+	<frame pos="4">
+		<descr>First Column: Box 2</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="5">
+		<descr>First Column: Box 3</descr>
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+</frames>'
+WHERE code = '2colonne-agid-maindx';
+
+UPDATE pagemodels SET frames = '<frames>
+	<frame pos="9">
+		<descr>Language</descr>
+	</frame>
+	<frame pos="0">
+		<descr>Date and time</descr>
+		<defaultShowlet code="date_time" />
+	</frame>
+	<frame pos="1">
+		<descr>Search Form</descr>
+		<defaultShowlet code="search_form" />
+	</frame>
+	<frame pos="2">
+		<descr>Breadcrumbs</descr>
+		<defaultShowlet code="navigation_breadcrumbs" />
+	</frame>
+	<frame pos="3">
+		<descr>First Column: Box 1</descr>
+		<defaultShowlet code="navigation_menu">
+			<properties>
+				<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+			</properties>
+		</defaultShowlet>		
+	</frame>
+	<frame pos="4">
+		<descr>First Column: Box 2</descr>
+	</frame>
+	<frame pos="5">
+		<descr>First Column: Box 3</descr>
+	</frame>
+	<frame pos="6">
+		<descr>Main Column: Pre</descr>
+	</frame>
+	<frame pos="7" main="true">
+		<descr>Main Column</descr>
+	</frame>
+	<frame pos="8">
+		<descr>Main Column: Post</descr>
+	</frame>
+	<frame pos="10">
+		<descr>Third Column: Box 1</descr>
+	</frame>
+	<frame pos="11">
+		<descr>Third Column: Box 2</descr>
+	</frame>
+	<frame pos="12">
+		<descr>Third Column: Box 3</descr>
+	</frame>
+</frames>'
+WHERE code = '3colonne-agid';
+
+-- correggi le posizioni dei menu in tutte le occorrenze di "showletconfig"
+UPDATE showletconfig SET config = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>'
+WHERE showletcode = 'navigation_menu' AND framepos = 4 AND config like '%<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_extra).subtree(1)</property>%';
+
+-- menu area riservata: customizza la posizione (in alto a dx)
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LAYOUT', 'LOGINTOPRIGHT', 'ACT', 0); 
+
+-- menu informazioni: nascondi FAQ e Accessibilità
+UPDATE pages SET showinmenu = 0 WHERE code = 'ppgare_doc_faq';
+UPDATE pages SET showinmenu = 0 WHERE code = 'ppgare_doc_accessibilita';
+
+-- footer: sposta "accessibilità" nel footer
+UPDATE localstrings set stringvalue = '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibility</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div></div>' 
+WHERE keycode='FOOTER' AND langcode='en' AND (customized = 0 OR customized IS NULL);
+UPDATE localstrings set stringvalue = '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibilità</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div></div>'
+WHERE keycode = 'FOOTER' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+
+-- menu atti e documenti di carattere generale...: nuovo menu 
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_atti_doc_gen', 'homepage', 2, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Deeds and documents of a general nature referring to all procedures</property>
+<property key="it">Atti e documenti di carattere generale riferiti a tutte le procedure</property>
+</properties>', 'free', 1);
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_avvisi_atti_doc_gen', 'ppgare_atti_doc_gen', 1, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Notices, communications and documents of a general nature</property>
+<property key="it">Avvisi, comunicazioni e atti di carattere generale</property>
+</properties>', 'free', 1);
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_avvisiAttiDocGen', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Notices, communications and documents of a general nature</property>
+<property key="it">Avvisi, comunicazioni e atti di carattere generale</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Avvisi/listAvvisiComunicazioniAtti.action</property>
+</properties>', 1);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_avvisi_atti_doc_gen', 7, 'ppgare_avvisiAttiDocGen', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_avvisi_atti_doc_gen', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_avvisi_atti_doc_gen' AND framepos = 9);
+
+
+-- menu procedure d'appalto e contratti: rinominata sezione e modificato ordine delle voci
+UPDATE pages SET titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Procurement procedures and contracts</property>
+<property key="it">Procedure d''appalto e contratti</property>
+</properties>'
+WHERE code = 'ppgare_bandi_gara';
+
+UPDATE pages SET pos = 1, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Public announcements in progress and expired</property>
+<property key="it">Avvisi pubblici in corso e scaduti</property>
+</properties>'
+WHERE code = 'ppgare_avvisi_lista';
+
+UPDATE pages SET pos = 2, showinmenu = 0 WHERE code = 'ppgare_avvisi_scaduti_lista';
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listAvvisi', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tender notices in progress and expired</property>
+<property key="it">Lista avvisi di gara in corso e scaduti</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Avvisi/listAllInCorsoScaduti.action</property>
+</properties>', 1);
+
+UPDATE showletconfig SET showletcode = 'ppgare_listAvvisi' WHERE pagecode = 'ppgare_avvisi_lista' AND framepos = 7;
+
+UPDATE pages SET pos = 3, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Resolutions to contract or equivalent act</property>
+<property key="it">Delibere a contrarre o atto equivalente</property>
+</properties>'
+WHERE code = 'ppgare_delibere_contrarre';
+
+UPDATE pages SET pos = 4, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tenders and procedures in progress and expired</property>
+<property key="it">Gare e procedure in corso e scadute</property>
+</properties>'
+WHERE code = 'ppgare_bandi_lista';
+
+UPDATE pages SET pos = 5, showinmenu = 0 WHERE code = 'ppgare_bandi_scaduti_lista';
+
+INSERT INTO showletcatalog (code, titles, parameters, plugincode, parenttypecode, defaultconfig, locked) VALUES ('ppgare_listBandi', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Calls for tender in progress and expired</property>
+<property key="it">Lista bandi gara in corso e scaduti</property>
+</properties>', NULL, 'ppgare', 'formAction', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/listAllInCorsoScaduti.action</property>
+</properties>', 1);
+
+UPDATE showletconfig SET showletcode = 'ppgare_listBandi' WHERE pagecode = 'ppgare_bandi_lista' AND framepos = 7;
+
+-- menu procedure fino al 31/12/2023: rinominata e spostata come ultima
+UPDATE pages SET pos = 10, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tenders until 12/31/2023</property>
+<property key="it">Procedure fino al 31/12/2023</property>
+</properties>'
+WHERE code = 'ppgare_info_proc_tabellare';
+
+UPDATE pages SET pos = 11, parentcode = 'ppgare_info_proc_tabellare'
+WHERE code = 'ppgare_ammtrasp_anticorr';
+
+UPDATE pages SET pos = 12, parentcode = 'ppgare_info_proc_tabellare', titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Contracts summary - BDNCP Link</property>
+<property key="it">Riepilogo contratti - Link BDNCP</property>
+</properties>'
+WHERE code = 'ppgare_ammtrasp_contratti';
+
+-- labels
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DATA_RIFERIMENTO', 'it', 'Data di riferimento');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_190_DATA_RIFERIMENTO', 'en', 'Reference date');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_BDNCP', 'it', 'Link BDNCP');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_BDNCP', 'en', 'BDNCP Link');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'it', 'Gare e procedure in corso e scaduti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'en', 'Tenders and procedures in progress and expired');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI', 'it', 'All''interno di questa sezione è possibile consultare i bandi di gara secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_BANDI', 'en', 'In this section it is possible to consult the tender announcements according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'it', 'Avvisi di gara in corso e scaduti');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'en', 'Tender notices in progress and expired');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO_SCADUTI', 'it', 'All''interno di questa sezione è possibile consultare gli avvisi secondo i tempi previsti dalla normativa dei contratti.<br/>I dati di dettaglio delle procedure pubbliche sono consultabili selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_IN_CORSO_SCADUTI', 'en', 'In this section it is possible to consult the notices according to the deadlines set by the contracts legislation.<br/>Detailed data on public procedures can be consulted by selecting the "View detail" link.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'it', 'Avvisi, comunicazioni e atti di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'en', 'Notices, communications and documents of a general nature');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'it', 'All''interno di questa sezione è possibile consultare avvisi, atti e documenti di carattere generale riferiti a tutte le procedure, quali ad esempio la documentazione sull''uso di procedure automatizzate nel ciclo di vita dei contratti pubblici, gli allegati della programmazione dei lavori (con le eventuali opere incompiute) e dei servizi e forniture, ecc.<br/>Per ciascuna pubblicazione sono consultabili i relativi documenti selezionando il collegamento "Visualizza Scheda".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_LISTA_AVVISI_COMUNICAZIONI_ATTI', 'en', 'Within this section it is possible to consult notices, deeds and documents of a general nature referring to all procedures, such as for example the documentation on the use of automated procedures in the life cycle of public contracts, the annexes of the work planning (with any unfinished works) and services and supplies, etc.<br/>For each publication the relevant documents can be consulted by selecting the "View Sheet" link.');
+
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'it', 'Dettaglio Avviso, comunicazione e atto di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'en', 'Detail Notice, communication and act of a general nature');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'it', 'Dettaglio Avviso, comunicazione e atto di carattere generale');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_AVVISO_COMUNICAZIONE_ATTO', 'en', 'Detail Notice, communication and act of a general nature');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO_GENERALE', 'it', 'Tipologia');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_AVVISO_GENERALE', 'en', 'Type of tender notice');
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		-- semplificazione/rename pagine e titoli
+
+UPDATE pages SET titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tender procedures and contracts</property>
+<property key="it">Procedure d''appalto e contratti</property>
+</properties>'
+WHERE code = 'ppgare_bandi_gara';
+
+UPDATE pages SET pos = 1, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Public announcements</property>
+<property key="it">Avvisi pubblici</property>
+</properties>'
+WHERE code = 'ppgare_avvisi_lista';
+
+UPDATE pages SET pos = 4, titles = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Tenders and procedures</property>
+<property key="it">Gare e procedure</property>
+</properties>'
+WHERE code = 'ppgare_bandi_lista';
+
+		DELETE FROM localstrings WHERE keycode = 'TITLE_PAGE_LISTA_BANDI';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'it', 'Gare e procedure');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_BANDI', 'en', 'Tenders and procedures');
+
+		-- rimozione configurazione introdotta ma non utilizzata
+		DELETE FROM ppcommon_customizations WHERE objectid = 'LAYOUT' AND attrib = 'LOGINTOPRIGHT'; 
+
+		-- riposizionamento elementi di primo e secondo livello con il giusto ordine
+		UPDATE pages SET pos = 1 WHERE code = 'ppgare_documenti';
+		UPDATE pages SET pos = 2 WHERE code = 'ppgare_atti_doc_gen';
+		UPDATE pages SET pos = 3 WHERE code = 'ppgare_bandi_gara';
+		UPDATE pages SET pos = 4 WHERE code = 'ppgare_acq_reg_priv';
+		UPDATE pages SET pos = 5 WHERE code = 'ppgare_vend_reg_priv';
+		UPDATE pages SET pos = 6 WHERE code = 'ppgare_oper_economici';
+		UPDATE pages SET pos = 7 WHERE code = 'ppgare_cataloghi';
+		UPDATE pages SET pos = 8 WHERE code = 'ppgare_info_proc_tabellare';
+		UPDATE pages SET pos = 9 WHERE code = 'ppgare_extra';
+		UPDATE pages SET pos = 10 WHERE code = 'ppcommon_area_riservata';
+		UPDATE pages SET pos = 11 WHERE code = 'ppgare_impr';
+		UPDATE pages SET pos = 12 WHERE code = 'service';
+		UPDATE pages SET pos = 13 WHERE code = 'ppgare_contratti_ordini';
+		UPDATE pages SET pos = 14 WHERE code = 'ppgare_eorders';
+		UPDATE pages SET pos = 15 WHERE code = 'ppgare_pagopa';
+
+		UPDATE pages SET pos = 1 WHERE code = 'ppgare_avvisi_lista';
+		UPDATE pages SET pos = 2 WHERE code = 'ppgare_avvisi_scaduti_lista';
+		UPDATE pages SET pos = 3 WHERE code = 'ppgare_delibere_contrarre';
+		UPDATE pages SET pos = 4 WHERE code = 'ppgare_bandi_lista';
+		UPDATE pages SET pos = 5 WHERE code = 'ppgare_bandi_scaduti_lista';
+		UPDATE pages SET pos = 6 WHERE code = 'ppgare_esiti_lista';
+		UPDATE pages SET pos = 7, parentcode = 'ppgare_bandi_gara' WHERE code = 'ppgare_ammtrasp_contratti';
+		UPDATE pages SET pos = 8 WHERE code = 'ppgare_ammtrasp_art18';
+		UPDATE pages SET pos = 9 WHERE code = 'ppgare_consulenti';
+		UPDATE pages SET pos = 10 WHERE code = 'ppgare_somme_urgenze_lista';
+		UPDATE pages SET pos = 11 WHERE code = 'ppgare_bandi_gara_area_pers';
+		UPDATE pages SET showinmenu = 1, pos = 1 WHERE code = 'ppgare_ammtrasp_anticorr';
+
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('bdncp.sa.templateUrl', 'S', 'Template per url di accesso ai dati di una stazione appaltante in ANAC', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa={0}', 'https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa={0}','configurazione generale', 198); 
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.4.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+
+UPDATE showletcatalog SET defaultconfig = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Avvisi/listAllAvvisi.action</property>
+</properties>'
+WHERE code = 'ppgare_listAvvisi';
+
+UPDATE showletcatalog SET defaultconfig = '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="actionPath">/ExtStr2/do/FrontEnd/Bandi/listAllBandi.action</property>
+</properties>'
+WHERE code = 'ppgare_listBandi';
+
+DELETE FROM  localstrings WHERE keycode='TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI' AND langcode in ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'it', 'Avvisi di gara');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_LISTA_AVVISI_IN_CORSO_SCADUTI', 'en', 'Tender notices');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_STATO_AVVISO', 'it', '-- Scegli uno stato --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_STATO_AVVISO', 'en', '-- Choose a tender status --');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_AVVISO', 'en', 'Tender notice status');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_STATO_AVVISO', 'it', 'Stato');
+
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+
+-- footer: sposta "mappa sito" nel footer
+UPDATE localstrings set stringvalue = '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibility</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="sitemap-info"><a href="ppcommon_site_map.wp">Site map</a></div></div>' 
+WHERE keycode='FOOTER' AND langcode='en' AND (customized = 0 OR customized IS NULL);
+UPDATE localstrings set stringvalue = '<div class="footer-info"><div class="accessibility-info"><a href="ppgare_doc_accessibilita.wp">Accessibilità</a></div><div class="credits-info"><a href="ppgare_doc_credits.wp">Credits</a></div><div class="cookies-info"><a href="ppgare_cookies.wp">Cookies</a></div><div class="sitemap-info"><a href="ppcommon_site_map.wp">Mappa sito</a></div></div>'
+WHERE keycode = 'FOOTER' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0-M5
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M4') THEN
+		-- INIZIO AGGIORNAMENTI
+
+INSERT INTO pages (code, parentcode, pos, modelcode, titles, groupcode, showinmenu) VALUES ('ppgare_detail', 'ppgare_bandi_gara', 12, '2colonne-agid-maindx', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="en">Procedure detail</property>
+<property key="it">Dettaglio procedura</property>
+</properties>', 'free', 0);
+
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 0, 'date_time', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 1, 'search_form', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 2, 'navigation_breadcrumbs', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 3, 'jpuserreg_loginUserReg', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 4, 'navigation_menu', '<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<property key="navSpec">code(ppgare_documenti).subtree(1)+code(ppgare_atti_doc_gen).subtree(1)+code(ppgare_bandi_gara).subtree(1)+code(ppgare_acq_reg_priv).subtree(1)+code(ppgare_vend_reg_priv).subtree(1)+code(ppgare_oper_economici).subtree(1)+code(ppgare_cataloghi).subtree(1)+code(ppgare_info_proc_tabellare).subtree(1)+code(ppgare_extra).subtree(1)</property>
+</properties>
+', NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) VALUES ('ppgare_detail', 7, 'ppgare_listBandi', NULL, NULL);
+INSERT INTO showletconfig (pagecode, framepos, showletcode, config, publishedcontent) 
+SELECT 'ppgare_detail', framepos, showletcode, NULL, NULL FROM showletconfig WHERE pagecode = 'homepage' and framepos = 9 AND showletcode = 'language_choose' AND NOT EXISTS(SELECT pagecode FROM showletconfig WHERE pagecode = 'ppgare_detail' AND framepos = 9);
+
+UPDATE pages SET modelcode = (select modelcode from pages where code = 'homepage') WHERE code in ('ppgare_atti_doc_gen', 'ppgare_avvisi_atti_doc_gen', 'ppgare_detail');
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0-M6
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M5') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		UPDATE localstrings SET stringvalue = 'Accedi - Registrati' WHERE keycode = 'auth_ACCEDI' AND langcode = 'it' AND (customized = 0 OR customized IS NULL);
+		UPDATE localstrings SET stringvalue = 'Login - Register' WHERE keycode = 'auth_ACCEDI' AND langcode = 'en' AND (customized = 0 OR customized IS NULL);
+		
+		UPDATE ppcommon_customizations SET configvalue = 0 WHERE objectid = 'TABINF-INDICIZZAZIONE' AND attrib = 'RSS' AND feature = 'VIS';
+		UPDATE ppcommon_customizations SET configvalue = 0 WHERE objectid = 'TABINF-INDICIZZAZIONE' AND attrib = 'TAB' AND feature = 'VIS';
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0-M6') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE showletconfig SET showletcode = 'ppgare_listBandi' WHERE pagecode = 'homepage' AND framepos = 7 and showletcode = 'ppgare_listBandiInCorso';
+		DELETE FROM showletconfig where pagecode = 'ppgare_tab_inf_dpcm' AND framepos = 7;
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.4.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.4.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.4.0_to_4.5.0
+
+-- 4.5.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.4.0') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE ppcommon_properties SET value = 'P', defvalue = 'P' WHERE name = 'auth.sso.spidbusiness.authpurpose';
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- integrazione label		
+		DELETE FROM localstrings WHERE keycode = 'auth_LOGIN_HEADER' AND langcode IN ('it', 'en');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_LOGIN_HEADER', 'it', 'Accedi');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_LOGIN_HEADER', 'en', 'Login');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_CUC_AGISCE_PER_CONTO', 'it', '-- Scegli una centrale di committenza --');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_CUC_AGISCE_PER_CONTO', 'en', '-- Choose a CUC --');
+		
+		-- richieste di rettifica
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_RETTIFICA_OFFERTA', 'it', 'Rettifica offerta');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_RETTIFICA_OFFERTA', 'en', 'Offer Rectification');		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_OFFERTA', 'it', 'Fino al giorno fissato per l''apertura, l''operatore economico pu&ograve; effettuare, tramite la Piattaforma, la richiesta di rettifica di un errore materiale contenuto nell''offerta tecnica o nell''offerta economica, di cui si sia avveduto dopo la scadenza del termine per la loro presentazione.<br/>
+<br/>
+A tal fine, con il presente modulo richiede di potersi avvalere di tale facolt&agrave;.<br/>
+<br/>
+A seguito della richiesta, sono comunicate all''operatore economico le modalit&agrave; e i tempi con cui procedere all''indicazione degli elementi che consentono l''individuazione dell''errore materiale e la sua correzione.<br/>
+La rettifica &egrave; operata nel rispetto della segretezza dell''offerta e non pu&ograve; comportare la presentazione di una nuova offerta, ne la sua modifica sostanziale.
+Se la rettifica &egrave; ritenuta non accoglibile perch&egrave; sostanziale, &egrave; valutata la possibilit&agrave; di dichiarare l''offerta inammissibile.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_OFFERTA', 'en', 'Until the day set for the opening, the economic operator can make, via the Platform, the request for rectification of a material error contained in the technical offer or in the economic offer, which he/she becomes aware of after the deadline. of the deadline for their submission.<br/>
+<br/>To this end, with this form you request to be able to make use of this option.<br/>
+<br/>
+Following the request, the economic operator is informed of the methods and times with which to proceed with the indication of the elements that allow the identification of the material error and its correction.<br/>
+The rectification is carried out in compliance with the secrecy of the offer and cannot lead to the submission of a new offer, nor its substantial modification.
+If the correction is deemed unacceptable because it is substantial, the possibility of declaring the offer inadmissible is assessed.');		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_DOCUMENTI', 'it', 'Inserisci i documenti da inviare con la rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_DOCUMENTI', 'en', 'Enter the documents to send with the rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_RIEPILOGO', 'it', 'Riepilogo della rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_RIEPILOGO', 'en', 'Rectification summary');		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_INVIO_RETTIFICA', 'it', 'Procedere con la presentazione della rettifica. Si rammenta che la rettifica &egrave; operata nel rispetto della segretezza dell''offerta e non pu&ograve; comportare la presentazione di una nuova offerta, ne la sua modifica sostanziale. Se la rettifica &egrave; ritenuta non accoglibile perch&egrave; sostanziale, &egrave; valutata la possibilità di dichiarare l''offerta inammissibile.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_WIZ_RETTIFICA_INVIO_RETTIFICA', 'en', 'Proceed with the submission of the correction. Please remember that the rectification is carried out in compliance with the secrecy of the offer and cannot lead to the submission of a new offer, nor its substantial modification. If the correction is deemed unacceptable because it is substantial, the possibility of declaring the offer inadmissible is assessed.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_BUSTA', 'it', 'Tipo busta');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_TIPO_BUSTA', 'en', 'Envelope type');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_LOTTO', 'it', '-- Lotto --');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('OPT_CHOOSE_LOTTO', 'en', '-- Lot --');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_RETTIFICA_BUSTA', 'it', 'Richiesta rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RICHIESTA_RETTIFICA_BUSTA', 'en', 'Rectification request');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_TEC', 'it', 'Richiesta di rettifica offerta tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_TEC', 'en', 'Request for technical offer rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_ECO', 'it', 'Richiesta di rettifica offerta economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_OGGETTO_ECO', 'en', 'Request for economic offer rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_TESTO', 'it', 'Si invia la richiesta di rettifica per la {0} con rif. procedura {1}');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RICHIESTA_TESTO', 'en', 'The rectification request is sent for {0} with ref. procedure {1}');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_TEC', 'it', 'Invio rettifica offerta tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_TEC', 'en', 'Sending technical offer rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_ECO', 'it', 'Invio rettifica offerta economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_OGGETTO_ECO', 'en', 'Sending economic offer rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_TESTO', 'it', 'Si invia la rettifica per la {0} con rif. procedura {1}');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_INVIO_TESTO', 'en', 'The rectification sent for {0} with ref. procedure {1}');		
+		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_BUSTA', 'it', 'Rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_BUSTA', 'en', 'Rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RICHIESTA_RETTIFICA', 'it', 'Ultima richiesta di rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RICHIESTA_RETTIFICA', 'en', 'Last rectification request');		
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_IN_ATTESA_DI_APPROVAZIONE', 'it', 'In attesa di approvazione');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_IN_ATTESA_DI_APPROVAZIONE', 'en', 'Pending for approval');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RIFIUTATA', 'it', 'Rifiutata');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_RIFIUTATA', 'en', 'Rejected');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ACCETTATA', 'it', 'Accettata');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ACCETTATA', 'en', 'Accepted');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_TRASMESSA', 'it', 'Trasmessa');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_TRASMESSA', 'en', 'Transmitted');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RETTIFICA', 'it', 'Ultima rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_ULTIMA_RETTIFICA', 'en', 'Last rectification');
+				
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RETTIFICA_CONFERMA_RICHIESTA', 'it', 'Conferma richiesta rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_RETTIFICA_CONFERMA_RICHIESTA', 'en', 'Confirm rectification request');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_TEC', 'it', 'Vuoi procedere inviando una comunicazione di richiesta di rettifica per l''offerta tecnica?');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_TEC', 'en', 'Do you want to proceed by sending a communication requesting rectification for the technical offer?');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_ECO', 'it', 'Vuoi procedere inviando una comunicazione di richiesta di rettifica per l''offerta economica?');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_PAGE_RETTIFICA_CONFERMA_RICHIESTA_ECO', 'en', 'Do you want to proceed by sending a communication requesting rectification for the economic offer?');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0-M4 (RC2)
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_RETTIFICA', 'it', 'Fase di rettifica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_FASE_RETTIFICA', 'en', 'Rectification phase');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RICHIESTA_TEC', 'it', 'Richiesta rettifica tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RICHIESTA_TEC', 'en', 'Request for technical rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_ACCETTATA_TEC', 'it', 'Accettazione richiesta rettifica tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_ACCETTATA_TEC', 'en', 'Acceptance of technical rectification request');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RIFIUTATA_TEC', 'it', 'Rifiuto rechiesta rettifica tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RIFIUTATA_TEC', 'en', 'Rejection of technical rectification request');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_INVIO_TEC', 'it', 'Invio rettifica tecnica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_INVIO_TEC', 'en', 'Sending technical rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RICHIESTA_ECO', 'it', 'Richiesta rettifica economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RICHIESTA_ECO', 'en', 'Request for economic rectification');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_ACCETTATA_ECO', 'it', 'Accettazione richiesta rettifica economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_ACCETTATA_ECO', 'en', 'Acceptance of economic rectification request');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RIFIUTATA_ECO', 'it', 'Rifiuto rechiesta rettifica economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_RIFIUTATA_ECO', 'en', 'Rejection of economic rectification request');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_INVIO_ECO', 'it', 'Invio rettifica economica');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_RETTIFICA_MODELLO_INVIO_ECO', 'en', 'Sending economic rectification');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0-M5
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M4') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE ppcommon_properties SET value='https://eservices.sace.it/sace-xapi-digital-prod/api/informations/integrations/services', defvalue='https://eservices.sace.it/sace-xapi-digital-prod/api/informations/integrations/services' WHERE name='michelangelo.baseUrl';
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0-M6
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M5') THEN
+		-- INIZIO AGGIORNAMENTI
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_RICHIESTA_TEC';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_ACCETTATA_TEC';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_RIFIUTATA_TEC';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_INVIO_TEC';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_RICHIESTA_ECO';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_ACCETTATA_ECO';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_RIFIUTATA_ECO';
+		DELETE FROM localstrings WHERE langcode IN ('it', 'en') AND keycode = 'LABEL_RETTIFICA_MODELLO_INVIO_ECO';
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0-M6') THEN
+		-- INIZIO AGGIORNAMENTI
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.5.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.5.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.5.0_to_4.6.0
+
+-- 4.6.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.5.0') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- Informativa sul trattamento dei dati personali – Privacy policy
+		UPDATE localstrings SET stringvalue = 'Informativa sul trattamento dei dati personali – Privacy policy' WHERE keycode = 'LABEL_DATA_USAGES_TITLE' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Information on the processing of personal data – Privacy policy' WHERE keycode = 'LABEL_DATA_USAGES_TITLE' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = '<p>La privacy e la sicurezza dei dati personali dell''utente sono molto importanti e pertanto i dati personali sono raccolti e gestiti con la massima attenzione adottando adeguate misure di sicurezza per custodirli. In questa pagina, si descrivono le modalit&agrave; e le logiche del trattamento dei dati personali degli utenti che consultano il Sito. L''informativa &egrave; resa ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 a tutti gli utenti che, interagendo con il Sito, forniscono i propri dati personali. La validit&agrave; dell''informativa contenuta nella presente pagina &egrave; limitata al solo Sito e non si estende ad altri siti web eventualmente consultabili mediante collegamento ipertestuale. Di seguito, verranno chiaramente elencati:<br/>
+<ul>
+<li>i riferimenti di chi tratterà i suoi dati personali;</li>
+<li>quali dati personali verranno trattati;</li>
+<li>le finalità e la base giuridica per cui saranno trattati i dati;</li>
+<li>i tempi di conservazione e i diritti che le sono riconosciuti.</li>
+</ul>
+Gli utenti, utilizzando il presente Sito, accettano la presente informativa e sono, pertanto, invitati a prenderne visione prima di fornire informazioni personali di qualsiasi genere.</p>' WHERE keycode = 'LABEL_DATA_USAGES' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = '<p>The privacy and security of the user''s personal data are very important and therefore personal data is collected and managed with the utmost care by adopting adequate security measures to safeguard it. On this page, we describe the methods and the logic of the processing of personal data of users who consult the Site. The information is made pursuant to articles. 13 and 14 of Regulation (EU) 2016/679 to all users who, interacting with the Site, provide their personal data. The validity of the information contained on this page is limited to the Site only and does not extend to other websites that may be consulted via hyperlink. Below, they will be clearly listed:<br/>
+<ul>
+<li>the contact details of who will process your personal data;</li>
+<li>what personal data will be processed;</li>
+<li>the purposes and legal basis for which the data will be processed;</li>
+<li>the retention times and the rights recognized to you.</li>
+</ul>
+Users, by using this Site, accept this information and are therefore invited to read it before providing personal information of any kind.</p>' WHERE keycode = 'LABEL_DATA_USAGES' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'Il Titolare del trattamento &egrave; {0} con sede in {1} - email {2}' WHERE keycode = 'LABEL_DATA_USAGES_TREATMENT' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The Data Controller is {0} based in {1} - email {2}' WHERE keycode = 'LABEL_DATA_USAGES_TREATMENT' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'Gestore della Piattaforma di Approvvigionamento Digitale e responsabile del trattamento dei dati' WHERE keycode = 'LABEL_DATA_USAGES_HANDLER_TITLE' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Digital Procurement Platform Manager and data controller' WHERE keycode = 'LABEL_DATA_USAGES_HANDLER_TITLE' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Il Gestore della Piattaforma di Approvvigionamento Digitale responsabile del trattamento dei dati &egrave; {0} con sede in {1} – email {2}.' WHERE keycode = 'LABEL_DATA_USAGES_HANDLER' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The Digital Procurement Platform Manager responsible for data processing is {0} based in {1} – email {2}.' WHERE keycode = 'LABEL_DATA_USAGES_HANDLER' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'I sistemi informatici e le procedure software preposte al funzionamento di questo sito acquisiscono, nel corso del loro normale esercizio, alcuni dati personali la cui trasmissione &egrave; implicita nell''uso dei protocolli di comunicazione di Internet.</p> 
+<p>In questa categoria di dati rientrano gli indirizzi IP o i nomi a dominio dei computer e dei terminali utilizzati dagli utenti, gli indirizzi in notazione URI/URL (Uniform Resource Identifier/Locator) delle risorse richieste, l''orario della richiesta, il metodo utilizzato nel sottoporre la richiesta al server, la dimensione del file ottenuto in risposta, il codice numerico indicante lo stato della risposta data dal server (buon fine, errore, ecc.) ed altri parametri relativi al sistema operativo e all''ambiente informatico dell''utente.</p>
+<p>Tali dati, necessari per la fruizione dei servizi web, vengono anche trattati allo scopo di ottenere informazioni statistiche sull''uso dei servizi (pagine pi&ugrave; visitate, numero di visitatori per fascia oraria o giornaliera, aree geografiche di provenienza, ecc.) e/o controllare il corretto funzionamento dei servizi offerti.</p>  
+<p>I dati di navigazione non persistono per pi&ugrave; di {0} mesi e vengono cancellati immediatamente dopo la loro aggregazione (salve eventuali necessit&agrave; di accertamento di reati da parte dell''Autorit&agrave; giudiziaria).' WHERE keycode = 'LABEL_DATA_USAGES_NAVIGATION' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The computer systems and software procedures used to operate this site acquire, during their normal operation, some personal data whose transmission is required. implicit in the use of Internet communication protocols.</p> 
+<p>This category of data includes the IP addresses or domain names of the computers and terminals used by users, the addresses in URI/URL (Uniform Resource Identifier/Locator) notation of the requested resources, the time of the request, the method used to submit the request to the server, the size of the file obtained in response, the numerical code indicating the status of the response given by the server (successful, error, etc.) and other parameters relating to the operating system and the environment user''s computer.</p>
+<p>Such data, necessary for the use of web services, are also processed for the purpose of obtaining statistical information on the use of the services (most visited pages, number of visitors per time slot or day, geographical areas of origin, etc. .) and/or check the correct functioning of the services offered.</p>  
+<p>Browsing data does not persist for longer of {0} months and are canceled immediately after their aggregation (except for any need for the investigation of crimes by the judicial authority).' WHERE keycode = 'LABEL_DATA_USAGES_NAVIGATION' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = 'I dati personali sono forniti dagli utenti allo scopo di fruire dei servizi della Piattaforma.</p>
+Attraverso il Sito &egrave; possibile inviare richieste e comunicazioni mediante gli indirizzi e i moduli di contatto ivi indicati. Il conferimento di tali dati &egrave; obbligatorio, necessario per rispondere alle richieste inviate nonch&egrave; per ricontattare il mittente per ottenere precisazioni in ordine a quanto segnalato. In particolare, i dati personali sono forniti dagli utenti allo scopo di fruire dei servizi del Sito.
+<p>Il Titolare non raccoglie e non tratta dati personali relativi ai minori d''et&agrave;. Accedendo al Sito e utilizzando i servizi offerti, dichiara di aver compiuto la maggiore et&agrave;. Gli utenti minori di 18 anni sono pertanto pregati di non registrarsi al Sito e di non fornire dati personali.' WHERE keycode = 'LABEL_DATA_USAGES_VOLUNTARILY' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Personal data is provided by users for the purpose of using the Platform''s services.</p>
+Through the Site it is It is possible to send requests and communications via the addresses and contact forms indicated therein. The provision of such data is mandatory, necessary to respond to the requests sent as well as to contact the sender to obtain clarifications regarding what was reported. In particular, personal data are provided by users for the purpose of using the Site''s services.
+<p>The Data Controller does not collect or process personal data relating to minors. By accessing the Site and using the services offered, you declare that you have reached the age of majority. Users under 18 are therefore asked not to register on the Site and not to provide personal data.' WHERE keycode = 'LABEL_DATA_USAGES_VOLUNTARILY' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'L''accesso alla propria area riservata pu&ograve; avvenire mediante sistemi pubblici di identit&agrave; (quali SPID, CIE, ecc.) oppure attraverso l''autenticazione con sistemi interni (es. username e password) in conformità alle Regole tecniche AgID relative alla certificazione della piattaforma. Nel caso di sistemi pubblici di identit&agrave;, i dati che vengono trattati dal Titolare sono visualizzabili da ciascun utente prima di completare l''identificazione nella schermata riepilogativa messa a disposizione dal proprio Identity Provider. Nel caso di autenticazione tramite sistemi interni, l''utente potrebbe dover fornire alcuni dati tra cui il nome, il cognome, l''indirizzo email, un numero di telefono. Oltre ai dati dell''utente, dovranno essere forniti i dati dell''operatore economico che intende registrare e per il quale ha titolo ad operare. I dati obbligatori sono contrassegnati da asterisco, pertanto il rifiuto di fornirli comporta l''impossibilit&agrave; di completare la registrazione.' WHERE keycode = 'LABEL_DATA_USAGES_REGISTRATION_DATA' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Access to your reserved area can be take place through public identity systems (such as SPID, CIE, etc.) or through authentication with internal systems (e.g. username and password) in compliance with the AgID Technical Rules relating to platform certification. In the case of public identity systems, the data processed by the Data Controller can be viewed by each user before completing identification in the summary screen made available by their Identity Provider. In the case of authentication via internal systems, the user may have to provide some data including name, surname, email address, telephone number. In addition to the user''s data, the data of the economic operator who intends to register and for whom he is entitled to operate must be provided. Mandatory data is marked with an asterisk, therefore refusal to provide it will make it impossible to complete the data. to complete the registration.' WHERE keycode = 'LABEL_DATA_USAGES_REGISTRATION_DATA' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Si tratta delle informazioni che decider&agrave; di comunicare scrivendo agli indirizzi indicati sulla Piattaforma o nelle aree dedicate all''interazione con la Stazione Appaltante. In questo caso il Titolare tratta i suoi dati come l''indirizzo e-mail, PEC e ogni altra informazione che includer&agrave; nella comunicazione.' WHERE keycode = 'LABEL_DATA_USAGES_CONTACT_ADDRESSES' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'This is the information that will decide to communicate by writing to the addresses indicated on the Platform or in the areas dedicated to interaction with the Contracting Authority. In this case the Data Controller processes your data such as the e-mail address, PEC and any other information that will include in communication.' WHERE keycode = 'LABEL_DATA_USAGES_CONTACT_ADDRESSES' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = 'I cookie sono piccoli file di testo che i siti web visitati dall''utente inviano al suo terminale, dove vengono memorizzati per essere poi ritrasmessi agli stessi siti alla successiva visita del medesimo utente.</p>
+<p>In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali non &egrave; richiesto alcun consenso da parte dell''interessato, nel rispetto dell''articolo 122 del D. Lgs. n. 196/2003 – Codice in materia di protezione dei dati personali (di seguito “Codice Privacy”), nonch&egrave; dei Provvedimenti generali del Garante per la Protezione dei Dati Personali n. 229 dell''8 maggio 2014 e n. 231 del 10 giugno 2021 in materia di cookie.</p>
+<p>I cookie tecnici sono quelli che consentono la normale navigazione di un sito nonch&egrave; il corretto funzionamento dello stesso. Poich&egrave; consentono attivit&agrave; essenziali per una ottimale fruizione del Sito, hanno la funzione di agevolare la consultazione del sito da parte degli utenti. Essi non vengono utilizzati per scopi ulteriori e sono normalmente installati direttamente dal titolare o gestore del sito web. Per l''installazione di tali cookie non &egrave; richiesto il preventivo consenso degli utenti.' WHERE keycode = 'LABEL_DATA_USAGES_COOKIE' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'Cookies are small text files that the websites visited by the user send to his terminal, where they are stored before being re-transmitted to the same sites at the next visit by the same user.</p>
+<p>This site uses only technical cookies strictly necessary for navigation and configuration of the site, with respect to which it is not no consent is required from the interested party, in compliance with article 122 of Legislative Decree no. 196/2003 – Code regarding the protection of personal data (hereinafter “Privacy Code”), as well as of the General Provisions of the Guarantor for the Protection of Personal Data n. 229 of 8 May 2014 and n. 231 of 10 June 2021 regarding cookies.</p>
+<p>Technical cookies are those that allow normal navigation of a site as well as its correct functioning. Since allow activities essential for optimal use of the Site, they have the function of facilitating consultation of the site by users. They are not used for other purposes and are normally installed directly by the owner or operator of the website. It is not possible to install these cookies. the prior consent of users is required.' WHERE keycode = 'LABEL_DATA_USAGES_COOKIE' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = '<p>I trattamenti di dati personali sono effettuati dal Titolare del trattamento per le seguenti finalit&agrave;:</p>
+<ol>
+<li>Assicurare il corretto funzionamento delle pagine web e dei loro contenuti. In questo caso, il trattamento dei dati si basa sul legittimo interesse del Titolare.</li>
+<li>Creare il profilo utente o consentire l''identificazione dell''utente per garantire l''accesso alla propria area riservata. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
+<li>Riscontrare le richieste di informazioni e di assistenza dell''utente. Il trattamento &egrave; funzionale ad adempiere a una richiesta dell''utente e si basa sull''esecuzione di un contratto o di misure precontrattuali.</li>
+<li>Consentire l''iscrizione all''elenco operatori. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
+<li>Fruire dei servizi della Piattaforma partecipando alle procedure d''appalto. Il trattamento si basa sull''esecuzione del contratto o di misure precontrattuali e su obblighi di legge.</li>
+</ol>' WHERE keycode = 'LABEL_DATA_USAGES_PURPOSE' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = '<p>The processing of personal data is carried out by the Data Controller for the following purposes:</p>
+<ol>
+<li>Ensure the correct functioning of web pages and their contents. In this case, the data processing is based on the legitimate interest of the Data Controller.</li>
+<li>Create the user profile or allow user identification to guarantee access to your reserved area. The treatment is functional to fulfill a user request and is based on the execution of a contract or pre-contractual measures.</li>
+<li>Respond to user requests for information and assistance. The treatment is functional to fulfill a user request and is based on the execution of a contract or pre-contractual measures.</li>
+<li>Allow registration to the operator list. The processing is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+<li>Use the Platform''s services by participating in the procurement procedures. The processing is based on the execution of the contract or pre-contractual measures and on legal obligations.</li>
+</ol>' WHERE keycode = 'LABEL_DATA_USAGES_PURPOSE' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = '<p>Il Titolare adotta le seguenti politiche in materia di conservazione dei dati degli utenti della Piattaforma:</p>
+<ol>
+<li>I dati di navigazione verranno conservati per {0} mesi.</li>
+<li>I dati forniti in fase di registrazione e necessari alla creazione del profilo utente verranno conservati fino alla cancellazione dell''account.</li>
+<li>I dati forniti nei form di contatto o nelle mail inviate agli indirizzi pubblicati sulla Piattaforma verranno conservati per {1} mesi.</li>
+<li>I dati inseriti nell''elenco operatori saranno conservati per l''intera durata dell''elenco e in caso di mancato rinnovo o richiesta di rimozione dall''elenco per {2} mesi.</li>
+<li>I dati, ricompresi in atti e documenti, forniti per partecipare alle procedure d''appalto verranno conservati per l''intera durata delle procedure e al termine di queste per {3} anni.</li>
+<li>I dati caricati all''interno della propria area riservata e non inviati per la partecipazione alle procedure verranno conservati per {4} mesi.</li>
+</ol>' WHERE keycode = 'LABEL_DATA_USAGES_PRESERVATION' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = '<p>The Owner adopts the following policies regarding the storage of data of users of the Platform:</p>
+<ol>
+<li>Browsing data will be kept for {0} months.</li>
+<li>The data provided during registration and necessary for the creation of the user profile will be retained until the account is deleted.</li>
+<li>The data provided in the contact forms or in emails sent to the addresses published on the Platform will be kept for {1} months.</li>
+<li>The data entered in the operator list will be kept for the entire duration of the list and in case of non-renewal or request for removal from the list for {2} months.</li>
+<li>The data, included in deeds and documents, provided to participate in the procurement procedures will be kept for the entire duration of the procedures and at the end of these for {3} years.</li>
+<li>The data uploaded into your reserved area and not sent for participation in the procedures will be kept for {4} months.</li>
+</ol>' WHERE keycode = 'LABEL_DATA_USAGES_PRESERVATION' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		-- Termini e condizioni di utilizzo della piattaforma telematica
+		UPDATE localstrings SET stringvalue = 'I presenti Termini e Condizioni disciplinano, in maniera vincolante, il funzionamento della Piattaforma telematica denominata "<strong>{0}</strong>", definendo, tra l''altro, le condizioni di accesso e le modalit&agrave; di utilizzo della stessa.<br/>
+La suddetta Piattaforma &egrave; finalizzata all''espletamento delle procedure d’appalto che si svolgono in modalit&agrave; telematica. Tali procedure sono regolate dal D.Lgs n. 36 del 2023, recante "Codice dei contratti pubblici" e relativi provvedimenti attuativi, cui si rinvia per quanto qui non specificato.<br/>
+Per quanto concerne le specifiche tecniche, si rimanda al Manuale per gli Utenti della Piattaforma.<br/>
+L''Utente, come di seguito definito, &egrave; pregato di leggere attentamente questo documento prima di registrarsi e di usufruire dei Servizi.' WHERE keycode = 'LABEL_TERM_OF_USE_TERMS' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'These Terms and Conditions govern, in a binding manner, the functioning of the online platform called "<strong>{0}</strong>", defining, among other things, the conditions of access and the methods of of use of the same.<br/>
+The aforementioned Platform is aimed at completing the procurement procedures which are carried out in a telematics. These procedures are regulated by Legislative Decree no. 36 of 2023, containing the "Public Contracts Code" and related implementing measures, to which reference should be made for anything not specified here.<br/>
+As regards the technical specifications, please refer to the Platform User Manual.<br/>
+The User, as defined below, is Please read this document carefully before registering and using the Services.' WHERE keycode = 'LABEL_TERM_OF_USE_TERMS' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = 'Le espressioni di cui al presente articolo, quando utilizzate con l''iniziale maiuscola, avranno il seguente significato:<br/>
+<strong>Area Riservata:</strong> indica l''area riservata all''Utente sulla Piattaforma, creata dopo la sua registrazione e finalizzata all''invio e alla ricezione di comunicazioni nell''ambito del Sistema;<br/>
+<strong>Gestore della Piattaforma di Approvvigionamento Digitale o Gestore del Sistema</strong>: il soggetto di cui si avvale la stazione appaltante per la gestione tecnica della piattaforma e iscritto quale Gestore autorizzato al Registro Piattaforme Certificate ANAC in conformità alle Regole Tecniche AgID;<br/>
+<strong>Codice degli Appalti/Codice dei contratti pubblici:</strong> si intende il Decreto Legislativo n. 36/2023;<br/>
+<strong>Operatore Economico:</strong> si intende uno dei soggetti ammessi a partecipare alle procedure d''appalto, come definiti dall''art. 65 del Codice dei contratti pubblici e dalla normativa eurounitaria;<br/>
+<strong>Piattaforma o PAD (Piattaforma di Approvvigionamento Digitale):</strong> si intende la piattaforma "{0}"; certificata e registrata nel Registro Piattaforme Certificate ANAC, ovvero il sistema informatico (software e hardware) attraverso il quale &egrave; possibile espletare procedure di gara interamente gestite in modalità telematica nel rispetto delle disposizioni di cui al Codice dei contratti pubblici;<br/>
+<strong>Portale Appalti:</strong> si intende la componente della Piattaforma telematica rivolta ad offrire funzionalità specifiche agli operatori economici;<br/>
+<strong>Procedure Telematiche:</strong> si intendono le procedure gestite mediante la Piattaforma;<br/>
+<strong>Utente:</strong> si intende la persona fisica, autorizzata dall''Operatore Economico e dotata dei necessari poteri di rappresentanza, che agisce sulla Piattaforma in nome e per conto dell''Operatore Economico stesso;<br/>
+<strong>Servizio:</strong> si intende il Servizio offerto tramite la Piattaforma, come meglio definito nel Titolo I D.Lgs. 36/2023;<br/>
+<strong>Stazione Appaltante:</strong> si intende l''ente, come definito nel Codice dei contratti pubblici, che offre il Servizio agli Operatori Economici interessati a partecipare ad una determinata procedura di gara;<br/>
+<strong>Termini e Condizioni:</strong> indica il presente documento.' WHERE keycode = 'LABEL_TERM_OF_USE_ACRONIMI' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The expressions referred to in this article, when used with a capital letter, will have the following meaning:<br/>
+<strong>Reserved Area:</strong> indicates the area reserved for the User on the Platform, created after registration and aimed at sending and receiving communications within the System;
+<strong>Manager of the Digital Procurement Platform or System Manager</strong>: the person used by the contracting authority for the technical management of the platform and registered as an authorized Manager in the ANAC Register of Certified Platforms in compliance with the AgID Technical Rules; <br/>
+<strong>Procurement Code/Public Contracts Code:</strong> means Legislative Decree no. 36/2023;<br/>
+<strong>Economic Operator:</strong> means one of the subjects admitted to participate in the procurement procedures, as defined by the art. 65 of the Public Contracts Code and the European Union legislation;<br/>
+<strong>Platform or PAD (Digital Procurement Platform):</strong> means the "{0}" platform; certified and registered in the ANAC Register of Certified Platforms, i.e. the IT system (software and hardware) through which it is it is possible to carry out tender procedures entirely managed electronically in compliance with the provisions of the Public Contracts Code;<br/>
+<strong>Procurement Portal:</strong> means the component of the telematic platform aimed at offering specific functions to economic operators;<br/>
+<strong>Telematic Procedures:</strong> means the procedures managed via the Platform;<br/>
+<strong>User:</strong> means the natural person, authorized by the Economic Operator and equipped with the necessary powers of representation, who acts on the Platform in the name and on behalf of the Economic Operator itself;<br/>
+<strong>Service:</strong> means the Service offered through the Platform, as better defined in Title I Legislative Decree 36/2023;<br/>
+<strong>Contracting Authority:</strong> means the body, as defined in the Public Contracts Code, which offers the Service to Economic Operators interested in participating in a specific tender procedure;<br/>
+<strong>Terms and Conditions:</strong> means this document.' WHERE keycode = 'LABEL_TERM_OF_USE_ACRONIMI' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = 'Il Servizio consiste in un sistema online, accessibile mediante registrazione dell''Operatore Economico alla Piattaforma, che consente all''Operatore economico di partecipare alle procedure d''appalto, indette dalla Stazione Appaltante.<br/>
+L''utilizzo della piattaforma da parte degli Operatori economici &egrave; subordinato alla registrazione degli stessi al fine di accedere all''Area Riservata, ove sono disponibili le funzionalit&agrave; di interazione con la Stazione Appaltante.' WHERE keycode = 'LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The Service consists of an online system, accessible by registering the Economic Operator on the Platform, which allows the Economic Operator to participate in the procurement procedures called by the Contracting Authority.<br/>
+The use of the platform by Economic Operators is subject to their registration in order to access the Reserved Area, where the functionalities are available. of interaction with the Contracting Authority.' WHERE keycode = 'LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		UPDATE localstrings SET stringvalue = 'L''Utente registrato effettuer&agrave; l''accesso alla Piattaforma mediante l''utilizzo delle proprie credenziali costituite da nome utente e password o tramite sistema pubblico di identit&agrave; digitale (SPID, CIE, ecc.).<br/>
+La stazione appaltante potrebbe in ogni caso adottare restrizioni in materia di strumenti di identificazione nel caso si rendesse necessario per adeguarsi a disposizioni normative sopravvenute.<br/>
+L''Utente garantisce che le informazioni personali fornite durante la procedura di registrazione, o anche successivamente, sono complete e veritiere e si impegna a tenere la stazione appaltante indenne e manlevata da qualsiasi danno, obbligo risarcitorio e/o sanzione derivante da e/o in qualsiasi modo collegata alla violazione da parte dell''Utente delle disposizioni del presente articolo.<br/>
+L''account creato dall''Utente &egrave; strettamente personale e non pu&ograve; essere ceduto a qualunque titolo o condiviso con terzi, neanche temporaneamente.<br/>
+L''Utente si impegna a non cedere neanche temporaneamente a terzi e a conservare le credenziali di registrazione con la dovuta cura, diligenza e segretezza sotto la propria responsabilit&agrave;, costituendo le stesse i soli mezzi per identificare l''Utente e per validare i suoi accessi alla Piattaforma. L''Utente pertanto &egrave; informato che tutti gli atti compiuti mediante l''utilizzo delle dette credenziali saranno a lui attribuiti ed avranno efficacia vincolante nei suoi confronti e nei confronti dell''Operatore rappresentato.
+L''Utente, una volta terminata la registrazione, non potr&agrave; modificare autonomamente le proprie informazioni o quelle dell''Operatore Economico. Eventuali variazioni dovranno essere richieste utilizzando l''apposita procedura "Richiedi variazione dati identificativi" disponibile nell''Area Riservata. Per tali variazioni &egrave; richiesta la verifica e l''accettazione da parte da parte della stazione appaltante e, pertanto, il processo di aggiornamento &egrave; differito. In caso di urgenza &egrave; possibile contattare la Stazione Appaltante mediante il pulsante "Assistenza operatori economici" presente sul Portale.' WHERE keycode = 'LABEL_TERM_OF_USE_ACCOUNT' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The Registered User will carry out access to the Platform through the use of your credentials consisting of username and password or via a public identity system; digital (SPID, CIE, etc.).<br/>
+The contracting authority could in any case adopt restrictions regarding identification tools if it were necessary to adapt to new regulatory provisions.<br/>
+The User guarantees that the personal information provided during the registration procedure, or even subsequently, is complete and truthful and undertakes to hold the contracting authority harmless and indemnified from any damage, compensation obligation and/or sanction deriving from and/or in any way connected to the violation by the User of the provisions of this article.<br/>
+The account created by the User is strictly personal and cannot be be transferred for any reason or shared with third parties, even temporarily.<br/>
+The User undertakes not to transfer the registration credentials to third parties, even temporarily, and to keep the registration credentials with due care, diligence and secrecy under his own responsibility, as they constitute the only means to identify the User and to validate his access to the Platform. The User is therefore informed that all actions carried out through the use of said credentials will be attributed to him and will have binding effect towards him and towards the Operator represented.
+Once registration is completed, the User will not be able to register. independently modify your own information or that of the Economic Operator. Any changes must be requested using the specific "Request change in identification data" procedure available in the Reserved Area. For these variations it is verification and acceptance by the contracting authority is required and, therefore, the update process is deferred. In case of emergency it is It is possible to contact the Contracting Authority using the "Assistance for economic operators" button on the Portal.' WHERE keycode = 'LABEL_TERM_OF_USE_ACCOUNT' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'Con l''accettazione dei presenti Termini e Condizioni l''Utente elegge domicilio presso la Piattaforma stessa e presso la casella di posta elettronica certificata indicata all''atto della registrazione alla Piattaforma. L''utente potrà rinvenire le comunicazioni presso l''area Utente riservata all''interno della Piattaforma. Le comunicazioni tra la stazione appaltante e l''Utente potranno avvenire mediante i canali summenzionati.' WHERE keycode = 'LABEL_TERM_OF_USE_ELECTION' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'By accepting these Terms and Conditions, the User elects domicile at the Platform itself and at the certified email address indicated when registering on the Platform. The user will be able to find the communications in the reserved User area within the Platform. Communications between the contracting authority and the User may take place through the aforementioned channels.' WHERE keycode = 'LABEL_TERM_OF_USE_ELECTION' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		UPDATE localstrings SET stringvalue = 'I dati comunicati dall''Utente saranno trattati dalla Stazione Appaltante, in qualit&agrave; di titolare del trattamento, nel rispetto della normativa sulla protezione dei dati personali. Per ulteriori specificazioni si invita l''Utente a prendere visione dell''informativa sul trattamento dei dati personali, consultabile alla sezione "Informazioni", sottosezione "Accesso area riservata" del sito, la quale costituisce parte integrante e sostanziale dei presenti "Termini e Condizioni".' WHERE keycode = 'LABEL_TERM_OF_USE_PERSONAL' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'The data communicated by the User will be processed by the Contracting Authority, as of the data controller, in compliance with the legislation on the protection of personal data. For further specifications, the User is invited to read the information on the processing of personal data, which can be consulted in the "Information" section, "Access to the reserved area" subsection of the site, which constitutes an integral and substantial part of these "Terms and Conditions".' WHERE keycode = 'LABEL_TERM_OF_USE_PERSONAL' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE localstrings SET stringvalue = 'In questo sito si utilizzano solo cookie tecnici strettamente necessari alla navigazione e configurazione del sito, rispetto ai quali, ai sensi dell''art. 122 del codice privacy e del Provvedimento del Garante dell''8 maggio 2014, non è richiesto alcun consenso da parte dell''interessato.<br/>
+Nessun dato personale degli utenti viene memorizzato nel sito mediante cookie.' WHERE keycode = 'LABEL_INFO_SITE_COOKIES' AND langcode = 'it' AND (customized IS NULL OR customized=0);
+		UPDATE localstrings SET stringvalue = 'This site uses only technical cookies strictly necessary for navigation and site configuration, with respect to which, pursuant to art. 122 of the privacy code and the Provision of the Guarantor of 8 May 2014, no consent is required from the interested party.<br/>
+No personal user data is stored by the site via cookies.' WHERE keycode = 'LABEL_INFO_SITE_COOKIES' AND langcode = 'en' AND (customized IS NULL OR customized=0);
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_TITLE', 'it', 'Accedi con EIDAS');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_TITLE', 'en', 'Login with EIDAS');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_DESCRIPTION', 'it', 'Se sei in possesso delle credenziali europee EIDAS clicca su "Accedi con EIDAS". Per maggiori informazioni <a href="https://eid.gov.it">https://eid.gov.it</a>.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_DESCRIPTION', 'en', 'If you have European EIDAS credentials click on "Log in with EIDAS". For more information <a href="https://eid.gov.it">https://eid.gov.it</a>.');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_BUTTON', 'it', 'Accedi con EIDAS');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('auth_EIDAS_LOGIN_BUTTON', 'en', 'Login with EIDAS');
+
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_EIDAS', 'it', 'EIDAS');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_LINK_USER_TO_EIDAS', 'en', 'EIDAS');
+		
+		--CONFIGURAZIONI EIDAS
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas', 'I', 'Sistema di autenticazione Single Sign-on EIDAS (0=non previsto, 1=previsto)', '0', '0','autenticazione', 10102);
+		
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.position', 'I', 'posizione sistema di autenticazione tramite EIDAS', '12', '12','autenticazione', 10230);
+
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.wsAuthServiceEIDAS.url', 'L', 'Web service Maggioli per l''integrazione servizi di autenticazione EIDAS', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'https://spid.comune-online.it/AuthServiceSPID/services/AuthService', 'autenticazione-eidas', 12100);
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.authlevel', 'S', 'Livello di autorizzazione del web service Maggioli per l''integrazione servizi di autenticazione EIDAS (L1, L2, L3)', 'L2', 'L2', 'autenticazione-eidas', 12110);
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.serviceindex', 'I', 'Dataset restituito da EIDAS. Valori ammessi: 100', '100', '100', 'autenticazione-eidas', 12120);
+		INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('auth.sso.eidas.serviceprovider', 'S', 'Service provider del web service Maggioli per l''integrazione servizi di autenticazione EIDAS', 'provinciadilatina', 'provinciadilatina', 'autenticazione-eidas', 12130);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ISCRIZIONE_A_CATALOGO', 'it', 'Iscriviti al catalogo');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_AREA_ISCRIZIONE_A_CATALOGO', 'en', 'Subscribe to catalog');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ISCRIZIONE_A_CATALOGO', 'it', 'Iscriviti al catalogo');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LINK_AREA_ISCRIZIONE_A_CATALOGO', 'en', 'Register to catalog');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO_CATALOGO', 'it', 'Attenzione: non sei ancora iscritto ad alcun catalogo.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NON_SEI_ANCORA_ISCRITTO_CATALOGO', 'en', 'Warning: you are not yet subscribed to list of catalog.');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0-M5
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M4') THEN
+		-- INIZIO AGGIORNAMENTI
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_DELIBERA', 'it', 'Delibera a contrarre o atto equivalente');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_PAGE_DETTAGLIO_DELIBERA', 'en', 'Resolution to contract or equivalent act');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_DELIBERA', 'it', 'All''interno di questa sezione è possibile consultare i documenti relativi alla delibera o atto equivalente e i relativi allegati.');
+		INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_DETTAGLIO_DELIBERA', 'en', 'Within this section it is possible to consult the documents relating to the resolution or equivalent act and the related attachments.');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0-M6
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M5') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE ppcommon_properties SET description = 'Nome del titolare dell''impianto (in genere Maggioli S.p.A.; verificare per i clienti on premise)' WHERE name = 'privacy.nomeTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Sede del titolare dell''impianto (es: Via del Carpino n. 8 – 47822 Santarcangelo di Romagna (RN))' WHERE name = 'privacy.sedeTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Mail del titolare dell''impianto (es. privacy@maggioli.it)' WHERE name = 'privacy.mailTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Mail del DPO dell''impianto (es. mail: dpo.privacy@maggioli.it pec: dpo.privacy@maggioli.legalmail.it)' WHERE name = 'privacy.mailDPO' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Nome del gestore autorizzato (in genere Maggioli S.p.A.; verificare per i clienti on premise)' WHERE name = 'privacy.nomeGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Sede del gestore autorizzato' WHERE name = 'privacy.sedeGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Mail del gestore autorizzato' WHERE name = 'privacy.mailGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Durata dei log, in mesi (24)' WHERE name = 'privacy.durataLogNavigazione' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Durata conservazione contatti mail, in mesi (24)' WHERE name = 'privacy.durataConservazioneContattiMail' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Durata dati associati ad un elenco, in mesi (24)' WHERE name = 'privacy.durataDatiElenco' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Durata dati gare, in anni (10)' WHERE name = 'privacy.durataDatiGare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Durata dati non trasmessi, in mesi (24)' WHERE name = 'privacy.durataDatiNonTrasmessi' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Denominazione della piattaforma telematica come dal registro ANAC (per Maggioli è Appalti&Contratti e-Procurement, verificare per i clienti on premise)' WHERE name = 'privacy.nomePiattaforma' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Localita del foro di competenza (per Maggioli è Rimini, verificare per i clienti on premise)' WHERE name = 'privacy.localitaForo' AND category = 'privacy';
+		UPDATE ppcommon_properties SET description = 'Pubblica i termini e le condizioni di servizio standard? (1=Si per Maggioli, 0=No)' WHERE name = 'privacy.pubblicaCondizioniUsoStd' AND category = 'privacy';
+		
+		UPDATE ppcommon_properties SET defvalue = 'Maggioli S.p.A.' WHERE name = 'privacy.nomeTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'Via del Carpino n. 8 – 47822 Santarcangelo di Romagna (RN)' WHERE name = 'privacy.sedeTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'privacy@maggioli.it' WHERE name = 'privacy.mailTitolare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'mail: dpo.privacy@maggioli.it pec: dpo.privacy@maggioli.legalmail.it' WHERE name = 'privacy.mailDPO' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'Maggioli S.p.A.' WHERE name = 'privacy.nomeGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'Via del Carpino, 8 - 47822 Santarcangelo di Romagna (RN)' WHERE name = 'privacy.sedeGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'privacy@maggioli.it' WHERE name = 'privacy.mailGestore' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '24' WHERE name = 'privacy.durataLogNavigazione' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '24' WHERE name = 'privacy.durataConservazioneContattiMail' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '24' WHERE name = 'privacy.durataDatiElenco' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '10' WHERE name = 'privacy.durataDatiGare' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '24' WHERE name = 'privacy.durataDatiNonTrasmessi' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = '01/01/2024' WHERE name = 'privacy.dataInizioValiditaPolicy' AND category = 'privacy';		
+		UPDATE ppcommon_properties SET defvalue = 'Appalti & Contratti e-Procurement' WHERE name = 'privacy.nomePiattaforma' AND category = 'privacy';
+		UPDATE ppcommon_properties SET defvalue = 'Rimini (RN)' WHERE name = 'privacy.localitaForo' AND category = 'privacy';
+		
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('LOGIN', 'PROFILAUTENTISSO', 'ACT', 0);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0-M6') THEN
+		-- INIZIO AGGIORNAMENTI
+		UPDATE ppcommon_properties SET value = null, defvalue = null WHERE name = 'auth.sso.eidas.serviceprovider';
+		
+		DELETE FROM localstrings WHERE keycode IN ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA') AND langcode = 'en';
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BUTTON_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Company search');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('TITLE_REGISTRA_OE_RICERCA_ANAGRAFICA', 'en', 'Company search');
+
+		DELETE FROM localstrings WHERE keycode = 'LABEL_ACCESSO_CONTROLLO_COMPLETO' AND langcode IN ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'it', 'Compilazione ed invio');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_ACCESSO_CONTROLLO_COMPLETO', 'en', 'Compilation and submission');
+
+		DELETE FROM localstrings WHERE keycode = 'BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI' AND langcode IN ('it', 'en');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'it', 'Accedi alla presente funzionalità in quanto hai registrato l''operatore economico sul portale e pertanto sei il PROPRIETARIO ed AMMINISTRATORE delle autorizzazioni.<br/>Di seguito è presente l''elenco degli utenti abilitati, e quindi DELEGATI ad accedere, mediante autenticazione forte (es: SPID, CIE, sistemi centralizzati di autenticazione...), ai dati dell''operatore economico; puoi aggiungere utenti, eliminarli, oppure rettificarne le abilitazioni.<br/>
+È importante associare l''identificativo per consentire agli utenti di accedere, e tipicamente questo corrisponde al codice fiscale. Associare inoltre il corretto profilo di utilizzo all''utente; i profili disponibili sono:
+<ul>
+<li>Sola lettura: l''utente accede in sola lettura ai dati dell''operatore economico, può solamente consultare i dati senza operare attivamente inviando/annullando dei flussi o modificando qualsiasi informazione</li>
+<li>Compilazione: l''utente può accedere ai processi operativi, può inserire e salvare in bozza informazioni e documenti, ma non può inviare flussi eccetto l''aggiornamento dei dati anagrafici e l''invio nuova comunicazione</li>
+<li>Compilazione ed invio: l''utente può compilare ed inviare qualsiasi flusso operativo; a differenza della tua utenza, non può accedere alla presente pagina per variare le abilitazioni</li>
+</ul>');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('BALLOON_AREA_PERSONALE_SOGGETTI_ABILITATI', 'en', 'Access this functionality because you have registered the economic operator on the portal and therefore you are the OWNER and ADMINISTRATOR of the authorizations.<br/>Below is the list of users enabled, and therefore DELEGATED to access, through strong authentication (e.g. SPID, CIE, centralized authentication systems...), to the data of the economic operator; you can add users, delete them, or adjust their permissions.<br/>
+It is important to associate the identifier to allow users to access, and typically this corresponds to the tax code. Also associate the correct usage profile to the user; the available profiles are:
+<ul>
+<li>Read only: the user has read-only access to the economic operator''s data, he can only consult the data without actively sending/cancelling flows or modifying any information</li>
+<li>Compilation: the user can access operational processes, can insert and save information and documents in draft form, but cannot send flows except updating personal data and sending new communication</li>
+<li>Compilation and submission: the user can compile and send any operational flow; unlike your user, he cannot access this page to change the authorizations</li>
+</ul>');
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.6.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.6.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.6.0_to_4.7.0
+
+-- 4.7.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.6.0') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UPLOADFILE', 'CHECKCONTENUTO', 'ACT', 1);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.7.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.7.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.7.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.7.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('UPLOADFILE', 'CHECKPDFVULNERABILE', 'ACT', 1);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.7.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.7.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.7.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.7.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.7.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.7.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+-- 4.7.0_to_4.8.0
+
+-- 4.8.0-M1
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.7.0') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		INSERT INTO ppcommon_customizations SELECT 'PDF', 'PDF-UA', 'ACT', 0 FROM ppcommon_ver WHERE plugin = 'ppgare' 
+											AND not exists (SELECT objectid FROM ppcommon_customizations WHERE objectid = 'PDF' AND attrib = 'PDF-UA' AND feature = 'ACT');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M1', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M2
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M1') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL_OFFERTA', 'it', 'Inserire il codice CNEL di 4 caratteri corrispondente al contratto di settore utilizzato come reperibile in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, punto a), scaricando il file excel di competenza (colonna CCNL id), oppure calcolandolo come indicato nel punto b) dal sito web al link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (primi 4 caratteri del campo "Categoria" dopo aver selezionato il campo "Settore").<br/>Nel caso in cui il codice non risulti applicabile, indicare "n.a." nel valore del campo.<br/>E'' possibile salvare il valore del campo CNEL nella propria anagrafica in modo che venga riproposto nelle procedure di gara; per farlo vai nell''Area personale, nella sezione "I tuoi dati".');
+INSERT INTO localstrings (keycode, langcode, stringvalue) VALUES ('LABEL_NOTE_CNEL_OFFERTA', 'en', 'Enter the 4-character CNEL code corresponding to the sector contract used as available in <a target="_blank" href="https://www.cnel.it/Archivio-Contratti">https://www.cnel.it/Archivio-Contratti</a>, point a), downloading the relevant excel file (CCNL id column), or calculating it as indicated in point b) from the website at the link <a target="_blank" href="https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL">https://www.cnel.it/Archivio-Contratti/Contrattazione-Nazionale/Ricerca-CCNL</a> (first 4 characters of the "Category" field after selecting the "Sector" field).<br/>If the code is not applicable, indicate "n.a." in the field value.<br/>It is possible to save the value of the CNEL field in your personal data so that it is re-proposed in the tender procedures; to do this go to the Personal Area, in the "Your data" section.');
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M2', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M3
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M2') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('ricercaBandi.statoApertura', 'S', 'Stato in apertura della pagina di ricerca dei dbandi (default=in corso)', 'in corso', 'in corso', 'configurazione generale', 185);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M3', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M4
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M3') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('AMMTRASP-RIEPCONTRATTI', 'EXPORT', 'VIS', 1);
+		INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ESITO', 'RUP', 'VIS', 1);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M4', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M5
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M4') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('GARE', 'EXPORT', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('ESITI', 'EXPORT', 'VIS', 0);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M5', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M6
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M5') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('COMUNICAZIONI', 'STAZIONEAPPALTANTE', 'VIS', 0);
+INSERT INTO ppcommon_customizations (objectid, attrib, feature, configvalue) VALUES ('COMUNICAZIONI', 'OPERATORE', 'VIS', 1);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M6', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M7
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M6') THEN
+		-- INIZIO AGGIORNAMENTI
+		
+DELETE FROM ppcommon_properties WHERE name='ricercaBandi.statoApertura';
+INSERT INTO ppcommon_properties (name, type, description, value, defvalue, category, ordprog) VALUES ('ricercaBandi.statoApertura', 'I', 'Stato in apertura della pagina di ricerca dei bandi (Valori ammessi: 0=nessun filtro, 1=In corso [DEFAULT], 2=In aggiudicazione, 3=Conclusa)', '1', '1', 'configurazione generale', 185);
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M7', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M7', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0-M8
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M7') THEN
+		-- INIZIO AGGIORNAMENTI
+
+UPDATE ppcommon_properties SET name = 'kong.auth.clientId' WHERE name = 'kong.auth.username';
+UPDATE ppcommon_properties SET name = 'kong.auth.secret' WHERE name = 'kong.auth.password';
+		
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0-M8', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0-M8', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+
+
+-- 4.8.0
+CREATE OR REPLACE FUNCTION aggiornamento()
+	RETURNS void AS
+$$
+BEGIN
+    IF (select count(*) = 1 from ppcommon_ver where plugin = 'ppgare' and version = '4.8.0-M8') THEN
+		-- INIZIO AGGIORNAMENTI
+
+		-- AGGIORNAMENTO DELLE VERSIONI
+		UPDATE ppcommon_ver SET version = '4.8.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppcommon';
+		UPDATE ppcommon_ver SET version = '4.8.0', lastupdate = CURRENT_TIMESTAMP WHERE plugin = 'ppgare';
+		-- FINE AGGIORNAMENTI
+	END IF;
+END;
+$$
+LANGUAGE 'plpgsql' ;
+select * from aggiornamento();
+drop function aggiornamento();
+

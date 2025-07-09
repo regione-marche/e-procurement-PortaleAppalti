@@ -60,14 +60,14 @@ public class SispiService extends AbstractService implements PagoPaService {
 	}
 
 	public SispiService() {
-		logger.info("SispiService created");
+		logger.debug("SispiService created");
 	}
 	
 	@Override
 	public String getIuv(PagoPaPagamentoModel model, Map<Integer, String> map) throws Exception {
 		try {
-			logger.info("Calling external WS.");
-			logger.info("{}",model);
+			logger.debug("Calling external WS.");
+			logger.debug("{}",model);
 			String tipoFiscaleDebitore = model.getTipoIdFiscaleDebitore();
 			String idFiscaleDebitore = model.getIdFiscaleDebitore();
 			Date dataFineValidita = model.getDataFineValidita();
@@ -78,10 +78,10 @@ public class SispiService extends AbstractService implements PagoPaService {
 			Double importo = model.getImporto();
 			String causale = map.get(model.getCausale());
 			String iuv = model.getIuv();
-			logger.info("Calling out element");
+			logger.debug("Calling out element");
 			
 //			PagoPAResponseUrl res = pagopaIntgration.generaPagamento(tipoFiscaleDebitore, idFiscaleDebitore, dataFineValidita, dataInizioValidita, dataScadenza, idDebito, idRata, importo, causale, tipoFiscaleDebitore, idFiscaleDebitore, idDebito, idRata, iuv);
-//			logger.info("{} - {}",res.getIuv(), res.getUrl());
+//			logger.debug("{} - {}",res.getIuv(), res.getUrl());
 			return pagopaIntgration.getIuvFromClient(tipoFiscaleDebitore, idFiscaleDebitore, dataFineValidita, dataInizioValidita,dataScadenza, idDebito, idRata, importo, causale);
 		} catch (Exception e) {
 			logger.error("Errore nella comunicazione.",e);
@@ -106,7 +106,7 @@ public class SispiService extends AbstractService implements PagoPaService {
 		authApi.getApiClient().setPassword(params.get(keycloakPassword).getValue());
 		authApi.getApiClient().setBasePath(params.get(keycloakUrl).getValue());
 		
-		logger.info("Calling  SispiService getToken: {}",authApi.getApiClient().getBasePath());
+		logger.debug("Calling  SispiService getToken: {}",authApi.getApiClient().getBasePath());
 		KeycloakTokenResponse resp = authApi.getToken(client_id,client_secret,grant_type,scope);
 		UrlpagamentoRequest body = new UrlpagamentoRequest()
 										.idRichiesta(null)
@@ -118,14 +118,14 @@ public class SispiService extends AbstractService implements PagoPaService {
 										.urlS2S(urlS2S);
 		pagamentoApi.getApiClient().setBasePath(params.get(sispiBaseurl).getValue());
 		pagamentoApi.getApiClient().setApiKey(resp.getAccessToken());
-		List<UrlpagamentoResponse> respl = pagamentoApi.urlpagamento(body , params.get(sispiCodiceEnte).getValue(), iuv);
-		if(respl==null || respl.isEmpty()) throw new ApiException("Restituita lista vuota di URL");
-		return respl.get(0).getLocation();
+		UrlpagamentoResponse respl = pagamentoApi.urlpagamento(body , params.get(sispiCodiceEnte).getValue(), iuv);
+		if(respl==null || "".equalsIgnoreCase(respl.getLocation())) throw new ApiException("Restituita lista vuota di URL");
+		return respl.getLocation();
 	}
 
 	@Override
 	public void init() throws Exception {
-		logger.info("SispiService init");
+		logger.debug("SispiService init");
 		ApiClient apiClientForToken = new ApiClient();
 
 		authApi = new AuthenticationApi(apiClientForToken);
@@ -144,7 +144,7 @@ public class SispiService extends AbstractService implements PagoPaService {
 		pagopaIntgration = PagoPAIntegration
 									.getInstance(PagoPAClient.SISPI)
 									.initService(hashParams);
-		logger.info("SispiService initialized");
+		logger.debug("SispiService initialized");
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class SispiService extends AbstractService implements PagoPaService {
 	@Override
 	public String getRicevutaByIuv(String iuv) throws Exception {
 		String str = pagopaIntgration.getRicevutaByIuv(iuv);
-		logger.info("ricevutatelematica: {}",str);
+		logger.debug("ricevutatelematica: {}",str);
 		return str;
 	}
 	

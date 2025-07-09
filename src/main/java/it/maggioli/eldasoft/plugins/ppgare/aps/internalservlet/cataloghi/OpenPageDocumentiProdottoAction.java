@@ -2,6 +2,9 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardDocumentiProdottoHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.apsadmin.system.BaseAction;
@@ -9,6 +12,7 @@ import it.eldasoft.www.sil.WSGareAppalto.DocumentoAllegatoType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -21,6 +25,7 @@ import org.apache.struts2.interceptor.SessionAware;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class OpenPageDocumentiProdottoAction extends BaseAction implements SessionAware {
 	/**
 	 * UID
@@ -102,12 +107,13 @@ public class OpenPageDocumentiProdottoAction extends BaseAction implements Sessi
 		this.facSimileCertificazioni = facSimileCertificazioni;
 	}
 
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
+//	public Integer getLimiteUploadFile() {
+//		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+//	}
 
 	public Integer getLimiteTotaleUploadDocProdotto() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+		return super.getLimiteTotaleUpload();
 	}
 
 	/**
@@ -134,7 +140,6 @@ public class OpenPageDocumentiProdottoAction extends BaseAction implements Sessi
 	 * ... 
 	 */
 	private String openPageCommon() {
-
 		String errore = (String) session.remove(IDownloadAction.ERROR_DOWNLOAD);
 		if (errore != null) {
 			this.addActionError(errore);
@@ -154,6 +159,12 @@ public class OpenPageDocumentiProdottoAction extends BaseAction implements Sessi
 				} else {
 					// la sessione non e' scaduta, per cui proseguo regolarmente
 					this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, PortGareSystemConstants.WIZARD_ISCRALBO_PAGINA_DOCUMENTI);
+					
+					getUploadValidator()
+						.setHelper(prodottoHelper)
+						.setOnlyP7m(false)
+						.setEstensioniAmmesse( (String)appParamManager.getConfigurationValue(AppParamManager.ESTENSIONI_AMMESSE_IMMAGINE) );
+					
 					WizardDocumentiProdottoHelper documentiHelper = prodottoHelper.getDocumenti();
 					if (documentiHelper != null) {
 						if (documentiHelper.getImmagine() != null) {

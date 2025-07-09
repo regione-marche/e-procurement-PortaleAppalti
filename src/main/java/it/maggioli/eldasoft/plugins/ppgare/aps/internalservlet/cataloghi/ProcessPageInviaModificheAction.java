@@ -5,9 +5,7 @@ import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-import com.lowagie.text.DocumentException;
 import it.eldasoft.utils.utility.UtilityDate;
-import it.eldasoft.utils.utility.UtilityStringhe;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoType;
@@ -16,7 +14,7 @@ import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -33,6 +31,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.P
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageProtocollazioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -62,7 +62,6 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -75,6 +74,7 @@ import java.util.Properties;
  * 
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class ProcessPageInviaModificheAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -266,8 +266,13 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 	public String add() {
 		String target = "addRiepilogo";
 
-		try {
+		if( !hasPermessiCompilazioneFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
 
+		try {
 			if (null == this.session.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI)) {
 				// la sessione e' scaduta, occorre riconnettersi
 				this.addActionError(this.getText("Errors.sessionExpired"));
@@ -277,28 +282,21 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 						.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI);
 
 				int dimensioneRiepilogo = FileUploadUtilities.getFileSize(this.riepilogo);
-
-				// traccia l'evento di upload di un file...
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(carrelloProdotti.getCurrentCatalogo());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage("Riepilogo modifiche prodotti:"
-								  + " allegato con file=" + this.riepilogoFileName
-								  + ", dimensione=" + dimensioneRiepilogo + "KB");
-
-				boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				boolean controlliOk =
-						checkFileSize(riepilogo, riepilogoFileName, dimensioneRiepilogo, appParamManager, evento)
-						&& checkFileName(riepilogoFileName, evento)
-						&& checkFileFormat(riepilogo, riepilogoFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO, evento, onlyP7m);
 				
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = this.checkFileSignature(this.riepilogo, this.riepilogoFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO,checkDate, evento, onlyP7m, this.appParamManager, this.customConfigManager);
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setActualTotalSize(dimensioneRiepilogo)	// ???
+						.setDocumento(riepilogo)
+						.setDocumentoFileName(riepilogoFileName)
+						.setDocumentoFormato(PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO)
+						.setOnlyP7m( this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M") )
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(carrelloProdotti.getCurrentCatalogo())
+						.setEventoMessaggio("Riepilogo modifiche prodotti:"
+								 			+ " allegato con file=" + this.riepilogoFileName
+								 			+ ", dimensione=" + dimensioneRiepilogo + "KB");
+				
+				if ( getUploadValidator().validate() ) {
 					ProdottiCatalogoSessione prodottiDaInviare = carrelloProdotti
 							.getListaProdottiPerCatalogo().get(carrelloProdotti.getCurrentCatalogo());
 
@@ -317,9 +315,8 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 					target = INPUT;
 				}
 
-				this.eventManager.insertEvent(evento);
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
-
 		} catch (Throwable t) {
 			ApsSystemUtils.logThrowable(t, this, "add");
 			ExceptionUtils.manageExceptionError(t, this);
@@ -363,6 +360,10 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		// digitalmente va invece inserito a parte come ulteriore allegato alla
 		// medesima comunicazione. I soli prodotti in bozza vengono salvati
 		// in una ulteriore comunicazione identica e senza file di riepilogo.
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
 
 		this.codiceSistema = (String) this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA);									
 		this.tipoProtocollazione = new Integer(PortGareSystemConstants.TIPO_PROTOCOLLAZIONE_NON_PREVISTA);
@@ -601,12 +602,6 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 							loginAttr.getLoginTitAttr().setCodiceUfficio(fascicoloBackOffice.getCodiceUfficio());
 						}
 						
-						boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
-						InputStream iccFilePath = null;
-						if(isActiveFunctionPdfA) {
-							iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-						}
-						
 						WSDMProtocolloDocumentoInType wsdmProtocolloDocumentoIn = creaInputProtocollazioneWSDM(
 								datiImpresaHelper, 
 								bandoIscrizione.getDatiGeneraliBandoIscrizione().getOggetto(), 
@@ -614,7 +609,8 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 								tipoInvio, 
 								fascicoloBackOffice,
 								nuovaComunicazione, 
-								bandoIscrizione, isActiveFunctionPdfA, iccFilePath);
+								bandoIscrizione
+						);
 
 						ris = this.wsdmManager.inserisciProtocollo(loginAttr, wsdmProtocolloDocumentoIn);
 						this.annoProtocollo = ris.getAnnoProtocollo();
@@ -862,8 +858,7 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 	}
 
 	/**
-	 * Crea e popola il contenitore per richiedere la protocollazione mediante
-	 * WSDM.
+	 * Crea e popola il contenitore per richiedere la protocollazione mediante WSDM.
 	 * 
 	 * @param datiImpresaHelper
 	 *            dati dell'impresa
@@ -873,24 +868,20 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 	 *            prefisso per il reperimento di testi dal resources di package,
 	 *            dipendente dall'operazione di modifica prodotti
 	 * @param bandoIscrizione
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
+	 *  
 	 * @return contenitore popolato
-	 * @throws IOException
-	 * @throws DocumentException 
+	 * @throws Exception 
 	 * @throws ApsException
 	 */
 	private WSDMProtocolloDocumentoInType creaInputProtocollazioneWSDM(
-			WizardDatiImpresaHelper datiImpresaHelper, 
-			String oggettoFascicolo,
-			ProdottiCatalogoSessione prodottiDaInviare, 
-			int tipoInvio,
-			FascicoloProtocolloType fascicoloBackOffice,
-			ComunicazioneType comunicazione,
-			DettaglioBandoIscrizioneType bandoIscrizione, 
-			boolean isActiveFunctionPdfA, 
-			InputStream iccFilePath) throws IOException, DocumentException 
-	{
+			WizardDatiImpresaHelper datiImpresaHelper 
+			, String oggettoFascicolo
+			, ProdottiCatalogoSessione prodottiDaInviare 
+			, int tipoInvio
+			, FascicoloProtocolloType fascicoloBackOffice
+			, ComunicazioneType comunicazione
+			, DettaglioBandoIscrizioneType bandoIscrizione 
+	) throws Exception {
 		// ATTENZIONE:
 		// L'UTILIZZO DEL CAST A INTEGER SUL METODO appParamManager.getConfigurationValue(...)
 		// E' DEPRECATO, IN QUANTO NON E' SEMPRE VERO CHE IN PPCOMMON_PROPERTIES ESISTA
@@ -954,7 +945,11 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		wsdmProtocolloDocumentoIn.setTipoDocumento((String) this.appParamManager
 				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_MEPA_TIPO_DOCUMENTO));
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -1029,8 +1024,10 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		}
 
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
+		
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -1038,14 +1035,6 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(impresa.getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1098,19 +1087,21 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 	
-		WSDMProtocolloAllegatoType[] allegati = createAttachments(datiImpresaHelper, prodottiDaInviare, comunicazione,
-				isActiveFunctionPdfA, iccFilePath, ragioneSociale, ragioneSociale200, codiceFiscale, indirizzo,
-				prefisso, inTesta);
-
+		WSDMProtocolloAllegatoType[] allegati = createAttachments(
+				datiImpresaHelper
+				, prodottiDaInviare
+				, comunicazione
+				, ragioneSociale
+				, ragioneSociale200
+				, codiceFiscale
+				, indirizzo
+				, prefisso
+				, inTesta
+		);
 		wsdmProtocolloDocumentoIn.setAllegati(allegati);
 		
 		// INTERVENTI ARCHIFLOW
@@ -1150,10 +1141,21 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		return wsdmProtocolloDocumentoIn;
 	}
 
-	private WSDMProtocolloAllegatoType[] createAttachments(WizardDatiImpresaHelper datiImpresaHelper,
-			ProdottiCatalogoSessione prodottiDaInviare, ComunicazioneType comunicazione, boolean isActiveFunctionPdfA,
-			InputStream iccFilePath, String ragioneSociale, String ragioneSociale200, String codiceFiscale,
-			String indirizzo, String prefisso, boolean inTesta) throws IOException, DocumentException {
+	/**
+	 * ...
+	 * @throws Exception 
+	 */
+	private WSDMProtocolloAllegatoType[] createAttachments(
+			WizardDatiImpresaHelper datiImpresaHelper
+			, ProdottiCatalogoSessione prodottiDaInviare 
+			, ComunicazioneType comunicazione
+			, String ragioneSociale
+			, String ragioneSociale200 
+			, String codiceFiscale
+			, String indirizzo
+			, String prefisso 
+			, boolean inTesta
+	) throws Exception {
 		WSDMProtocolloAllegatoType[] allegati = new WSDMProtocolloAllegatoType[2];
 		
 		int n = 0;
@@ -1177,6 +1179,18 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		
 		//... inserisci "comunicazione.pdf" nella lista degli allegati (in testa/in coda)
 		//... prepara l'allegato "comunicazione.pdf"
+		String titolo = this.formatI18nLabelFromDefaultLocale(prefisso + "_SEND_OGGETTO", new Object[] { ragioneSociale200 });
+		
+		// PDF-A
+		boolean isActiveFunctionPdfA = customConfigManager.isActiveFunction("PDF", "PDF-A");
+
+		byte[] comunicazionePdf = getComunicazionePdf(
+				datiImpresaHelper
+				, ragioneSociale
+				, codiceFiscale
+				, indirizzo
+		);
+		
 		int n2 = n;
 		if(inTesta) {
 			n2 = 0;
@@ -1184,34 +1198,10 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		
 		// allegato del file comunicazione.pdf
 		allegati[n2] = new WSDMProtocolloAllegatoType();
-		allegati[n2].setTitolo(this.formatI18nLabelFromDefaultLocale(prefisso + "_SEND_OGGETTO",
-				new Object[] { ragioneSociale200 }));
-		allegati[n2].setTipo("pdf");
+		allegati[n2].setTitolo(titolo);
+		allegati[n2].setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
 		allegati[n2].setNome("comunicazione.pdf");
-		String contenuto = this.formatI18nLabelFromDefaultLocale("MAIL_CATALOGHI_PROTOCOLLO_TESTOCONALLEGATO", 
-				new Object[] { ragioneSociale,
-				   codiceFiscale,
-				   datiImpresaHelper.getDatiPrincipaliImpresa().getRagioneSociale(),
-				   (String) ((IUserProfile) this.getCurrentUser().getProfile()).getValue("email"),
-				   indirizzo,
-				   UtilityDate.convertiData(this.getDataPresentazione(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
-				   this.getCatalogo() });
-		
-		byte[] contenutoPdf = null;
-		if(isActiveFunctionPdfA) {
-			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-				contenutoPdf = UtilityStringhe.string2PdfA(contenuto,iccFilePath);
-			} catch (com.itextpdf.text.DocumentException e) {
-				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-				de.initCause(e);
-				throw de;
-			}
-		} else {
-			contenutoPdf = UtilityStringhe.string2Pdf(contenuto);
-		}
-		allegati[n2].setContenuto(contenutoPdf);
-		
+		allegati[n2].setContenuto(comunicazionePdf);
 		// serve per Titulus
 		allegati[n2].setIdAllegato("W_INVCOM/"
 				+ CommonSystemConstants.ID_APPLICATIVO + "/"
@@ -1220,6 +1210,35 @@ public class ProcessPageInviaModificheAction extends EncodedDataAction implement
 		ProtocolsUtils.setFieldsForNumix(allegati);
 		
 		return allegati;
+	}
+	
+	/**
+	 * ...
+	 * @throws Exception 
+	 */
+	private byte[] getComunicazionePdf(
+			WizardDatiImpresaHelper datiImpresaHelper
+			, String ragioneSociale
+			, String codiceFiscale
+			, String indirizzo
+	) throws Exception {
+		String comunicazioneTxt = this.formatI18nLabelFromDefaultLocale("MAIL_CATALOGHI_PROTOCOLLO_TESTOCONALLEGATO", 
+				new Object[] { ragioneSociale,
+				   codiceFiscale,
+				   datiImpresaHelper.getDatiPrincipaliImpresa().getRagioneSociale(),
+				   (String) ((IUserProfile) getCurrentUser().getProfile()).getValue("email"),
+				   indirizzo,
+				   UtilityDate.convertiData(getDataPresentazione(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
+				   this.getCatalogo() }
+		);
+	
+		byte[] comunicazionePdf = JRPdfExporterEldasoft.textToPdf(
+				comunicazioneTxt
+				, "Riepilogo comunicazione"
+				, this
+		);
+		
+		return comunicazionePdf; 
 	}
 
 	/**

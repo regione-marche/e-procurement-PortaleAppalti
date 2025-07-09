@@ -27,12 +27,14 @@ import it.eldasoft.www.sil.WSGareAppalto.BandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.CategoriaImpresaType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
+import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.ImpresaIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.MandanteRTIType;
 import it.eldasoft.www.sil.WSGareAppalto.QuestionarioType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.ComponentiRTIList;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario;
@@ -45,12 +47,11 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StrutsUtilities;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -204,14 +205,14 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	}
 
 	/**
-	 * ...
+	 * inizializza un'iscrizione ad elenco operatori
 	 */
 	public String newIscrizione() throws Exception {
 		return newIscrizione(PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD);
 	}
 
 	/**
-	 * ...
+	 * inizializza un'iscrizione a catalogo
 	 */
 	public String newCatalogoIscrizione() throws Exception {
 		return newIscrizione(PortGareSystemConstants.TIPOLOGIA_ELENCO_CATALOGO);
@@ -226,18 +227,22 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	private String newIscrizione(int tipologia) throws Exception {
 //		boolean datiInterpretati = false;
 		
+		EFlussiAccessiDistinti flusso = (tipologia == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
+				? EFlussiAccessiDistinti.ISCRIZIONE_ELENCO 
+				: EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO);
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(flusso, this.codice) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+		
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
 			try {
 				// Pulisco la sessione da eventuali wizard pending, i quali non 
 				// sono stati annullati tramite l'operazione di "annulla" 
-//				if(this.getSession().get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO) != null) {
-//					this.getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
-//				} else if(this.getSession().get(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO) != null) {
-//					this.getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
-//				}
-				
-				this.getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+				resetSessionHelper();
 				
 				// si estraggono dal B.O. i dati del bando a cui iscriversi
 				DettaglioBandoIscrizioneType dettBando = this.bandiManager
@@ -272,7 +277,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 							listaCategorie, 
 							tipologia);
 				
-					iscrizioneHelper.setListaFirmatariMandataria(this.composeListaFirmatariMandataria(iscrizioneHelper.getImpresa()));
+					iscrizioneHelper.setListaFirmatariMandataria(iscrizioneHelper.composeListaFirmatariMandataria());
 					if (dettBando.getDatiGeneraliBandoIscrizione().getAmmesseRTI()) {
 						iscrizioneHelper.setAmmesseRTI(true);
 					}
@@ -294,7 +299,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					if (iscrizioneHelper.isAmmesseRTI()) {
 						iscrizioneHelper.setEditRTI(true);
 					}
-										
+					
 					// (QFORM - QUESTIONARI)
 					this.setTarget(this.initQuestionario(iscrizioneHelper));
 					
@@ -302,11 +307,11 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					
 					this.session.put(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO, iscrizioneHelper);
 
-					if(this.getTarget().equals(MODULISTICA_CAMBIATA)) {					
+					if(this.getTarget().equals(MODULISTICA_CAMBIATA)) {
 						//this.nextResultAction = "openQuestionarioModuloCambiato";
 					} else {
 						this.nextResultAction = iscrizioneHelper.getNextAction("");		// vai al primo step del wizard
-					}					
+					}
 				}
 			} catch (XmlException e) {
 				ApsSystemUtils.logThrowable(e, this, "newIscrizione");
@@ -323,6 +328,16 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		}
 
 		return this.getTarget();
+	}
+	
+	/**
+	 * resetto la sessione da tutti i vecchi helper presenti in sessione
+	 */
+	protected void resetSessionHelper() {
+		// pulisco la sessione da tutti gli eventuali precedenti helper ancora presenti in sessione!!! 
+		GestioneBuste.resetSession();
+		getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
+		getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 	}
 
 	/**
@@ -367,7 +382,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				// si ha un ciclo su un unico elemento, e lo si estrae
 				iscrizioneHelper.getStazioniAppaltanti().add((String) iterator.next());
 			}
-		}		
+		}
 
 		iscrizioneHelper.setRichiestaCoordinatoreSicurezza(
 				dettBando.getDatiGeneraliBandoIscrizione().getCoordinatoreSicurezza());
@@ -405,7 +420,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		Long id = null;
 		
 		IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ApsWebApplicationUtils
-			.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER,
+			.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER,
 					 ServletActionContext.getRequest());
 
 		DettaglioComunicazioneType dettComunicazione = ComunicazioniUtilities
@@ -441,6 +456,17 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * wizard di registrazione all'albo e memorizza tali dati in sessione
 	 */
 	private String reloadIscrizione(int tipologia) {
+		
+		EFlussiAccessiDistinti flusso = (tipologia == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
+				? EFlussiAccessiDistinti.ISCRIZIONE_ELENCO 
+				: EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO);
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(flusso, this.codice) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
 		{
@@ -481,7 +507,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	
 					iscrizioneHelper.setIscrizioneDomandaVisible(this.customConfigManager.isVisible("ISCRALBO-DOCUM", "PDFDOMANDA"));
 					if(iscrizioneHelper.isIscrizioneDomandaVisible()) {
-						iscrizioneHelper.setListaFirmatariMandataria(this.composeListaFirmatariMandataria(iscrizioneHelper.getImpresa()));
+						iscrizioneHelper.setListaFirmatariMandataria(iscrizioneHelper.composeListaFirmatariMandataria());
 					}
 
 					if (dettBando.getDatiGeneraliBandoIscrizione().getAmmesseRTI()) {
@@ -511,7 +537,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					if (SUCCESS.equals(this.getTarget())) {
 						this.session.put(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO, iscrizioneHelper);						
 						this.nextResultAction = iscrizioneHelper.getNextAction("");		// vai al primo step del wizard
-					}					
+					}
 				}
 			
 			} catch (XmlException e) {
@@ -586,12 +612,11 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				
 		ComunicazioneType comunicazione = null;
 		List<DettaglioComunicazioneType> comunicazioni = null;
-		AllegatoComunicazioneType allegato = null;
 	
 		helper.setIdComunicazioneBozza(null);
 
 		if(fromBozza) {
-			// cerca l'ultima comunicazione di iscrizione in stato BOZZA... 
+			// cerca l'ultima comunicazione di ISCRIZIONE in stato BOZZA... 
 			comunicazioni = ricercaComunicazioni(setRicercaIscrizioneBozza(criteriRicerca));
 	
 			if (comunicazioni == null || comunicazioni.size() != 1) {
@@ -604,23 +629,20 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				comunicazione = this.comunicazioniManager.getComunicazione(
 						CommonSystemConstants.ID_APPLICATIVO,
 						comunicazioni.get(0).getId());
-				helper.setIdComunicazione(comunicazione.getDettaglioComunicazione().getId());				
-				allegato = estraiAllegato(comunicazione, PortGareSystemConstants.NOME_FILE_ISCRIZIONE);				
+				helper.setIdComunicazione(comunicazione.getDettaglioComunicazione().getId());
 			}
 	
-			if (allegato == null) {
+			boolean controlliOK = ricalcoloDaComunicazione(
+					comunicazione, 
+					comunicazione.getDettaglioComunicazione().getId(),
+					helper, 
+					setCategorieFoglia);
+			if(!controlliOK) {
 				// non dovrebbe succedere mai...si inserisce questo
 				// controllo per blindare il codice da eventuali
 				// comportamenti anomali
 				this.addActionError(this.getText("Errors.reloadIscrizione.xmlIscrizioneNotFound"));
 				target = CommonSystemConstants.PORTAL_ERROR;
-			} else {
-				// si interpreta l'xml ricevuto
-				ricalcoloDaComunicazione(
-						comunicazione, 
-						allegato, 
-						helper, 
-						setCategorieFoglia);
 			}
 			
 		} else {
@@ -637,6 +659,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 			}
 			
 			long idComunicazione = -1;
+			long idComFirmatari = -1;
 			comunicazioni = ricercaComunicazioni(
 					setRicercaComunicazioni(criteriRicerca, tipoDomanda, CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA));
 			
@@ -645,52 +668,68 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				throw new ApsException("Errors.retrieveComunicazione.notUnique");
 				
 			} else if(comunicazioni != null && comunicazioni.size() == 1) {
-				// trovata la comunicazione in stato BOZZA relativa al tipo di
-				// domanda...
+				// trovata la comunicazione in stato BOZZA relativa al tipo di domanda...
 				// si tratta quindi del completamento di una domanda 
 				// precedentemente inziata ma non completata/inviata!!!
 				idComunicazione = comunicazioni.get(0).getId();
 				helper.setIdComunicazioneBozza(idComunicazione); 
 				
 			} else {
-				// cerca la comunicazione di RINNOVO, AGGIORNAMENTO, ISCRIZIONE 
+				// cerca la precedente comunicazione di RINNOVO, AGGIORNAMENTO, ISCRIZIONE 
 				// in stato DA PROCESSARE o PROCESSATA... 
+				// In caso di AGGIORNAMENTO non vanno considerate le precedenti comunicazioni di RINNOVO
+				// perche' nei rinnovi non ci sono le informazioni delle categorie (e dei questionari)
+				// I dati dei firmatari vanno recuperati sempre dall'ultima comunicazione (max(idcom)) 
+				// tra tutte le FS2,FS3,FS4
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE, CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE));
 				for(int i = 0; i < comunicazioni.size(); i++) {
-					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					if( !helper.isAggiornamentoIscrizione() ) {
+						// solo il rinnovo puo' recuperare da un precedente rinnovo 
+						idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					}
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 				
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE, CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA));
 				for(int i = 0; i < comunicazioni.size(); i++) {
-					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					if( !helper.isAggiornamentoIscrizione() ) {
+						// solo il rinnovo puo' recuperare da un precedente rinnovo
+						idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					}
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 				
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO, CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE));
 				for(int i = 0; i < comunicazioni.size(); i++) {
 					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 				
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO, CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA));
 				for(int i = 0; i < comunicazioni.size(); i++) {
 					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 		
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO, CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE));
 				for(int i = 0; i < comunicazioni.size(); i++) {
 					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 		
 				comunicazioni = ricercaComunicazioni(
 						setRicercaComunicazioni(criteriRicerca, PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO, CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA));
 				for(int i = 0; i < comunicazioni.size(); i++) {
 					idComunicazione = Math.max(idComunicazione, comunicazioni.get(i).getId());
+					idComFirmatari = Math.max(idComFirmatari, comunicazioni.get(i).getId());
 				}
 			}
+			
 			// 2) se esiste, recupera i dati dalla comunicazione più aggiornata
 			//    altrimenti recupera i dati dal BO
 			if (idComunicazione > 0) {
@@ -698,77 +737,18 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 						CommonSystemConstants.ID_APPLICATIVO,
 						idComunicazione);
 				
-				String tipoComunicazione = comunicazione.getDettaglioComunicazione().getTipoComunicazione();   
-				
-				// recupera l'allegato della comunicazione relativo alla domanda...
-				allegato = null;
-				if(PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE.equals(tipoComunicazione)) {
-					allegato = estraiAllegato(
-							comunicazione, 
-							PortGareSystemConstants.NOME_FILE_RINNOVO_ISCRIZIONE);
-				} else if(PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO.equals(tipoComunicazione)) {				
-					allegato = estraiAllegato(
-							comunicazione, 
-							PortGareSystemConstants.NOME_FILE_AGG_ISCRIZIONE);
-				} else if(PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO.equals(tipoComunicazione)) {				
-					allegato = estraiAllegato(
-							comunicazione, 
-							PortGareSystemConstants.NOME_FILE_ISCRIZIONE);
-				}
-				if (allegato == null) {
+				boolean controlliOK = ricalcoloDaComunicazione(
+						comunicazione,
+						idComFirmatari,
+						helper, 
+						setCategorieFoglia);
+				if (!controlliOK) {
 					// non dovrebbe succedere mai...si inserisce questo
 					// controllo per blindare il codice da eventuali
 					// comportamenti anomali
 					this.addActionError(this.getText("Errors.reloadIscrizione.xmlIscrizioneNotFound"));
 					target = CommonSystemConstants.PORTAL_ERROR;
-				} else {
-					ricalcoloDaComunicazione(
-							comunicazione, 
-							allegato, 
-							helper, 
-							setCategorieFoglia);
-					
-					boolean isBozza = (CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA.equals( 
-							comunicazione.getDettaglioComunicazione().getStato()));
-					logger.debug("comunicazione isBozza? {}",isBozza);
-					helper.setFromBozza(isBozza);
-					if(!isBozza) {
-						AllegatoComunicazioneType all = null;
-						int i = 0;
-						while (comunicazione.getAllegato() != null
-								&& i < comunicazione.getAllegato().length
-								&& all == null) 
-						{
-							// si cerca l'xml con i dati dell'aggiornamento
-							// anagrafica tra tutti gli allegati
-							if (DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME.equals(comunicazione.getAllegato()[i].getNomeFile())) {
-								all = comunicazione.getAllegato()[i];
-							}
-							i++;
-						}
-						AllegatoComunicazioneType tip = null;
-						if(all != null) {
-							if(all.getFile() == null) {
-								comunicazione = comunicazioniManager.getComunicazione(CommonSystemConstants.ID_APPLICATIVO, idComunicazione,all.getUuid());
-								tip = comunicazione.getAllegato(0);
-							}
-							
-							if(tip != null || all.getFile() != null) {
-								helper.getDocumenti().addDocUlteriore(
-										DocumentiAllegatiHelper.QUESTIONARIO_DESCR, 
-										(tip != null ? tip.getFile() : all.getFile()), 
-										"JSON", 
-										DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME, 
-										null,
-										null,
-										null);
-								logger.debug("Inserito questionario presente nella comunicazione precedente.");
-							}
-						}
-						logger.info("Conclusa operazione di caricamento dati da comunicazione precedente {}",idComunicazione);
-					}
 				}
-	
 			} else {
 				// se non lo trovo in nessuno dei due casi precedenti cerco i dati in BO
 				List<MandanteRTIType> mandantiBO = this.getBandiManager().getMandantiRTI(
@@ -781,7 +761,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				}
 
 				// non avendo una comunicazione pregressa da leggere, la lista dei firmatari si recupera dai dati dell'impresa
-				helper.setListaFirmatariMandataria(this.composeListaFirmatariMandataria(helper.getImpresa()));				
+				helper.setListaFirmatariMandataria(helper.composeListaFirmatariMandataria());
 			}
 			
 			// in caso di RTI imposta i flag per l'RTI
@@ -823,44 +803,64 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	/**
 	 * inizializza la domanda di Iscrizione/Rinnovo/Aggiornamento dalla comunicazione
 	 */	
-	protected void ricalcoloDaComunicazione(
+	protected boolean ricalcoloDaComunicazione(
 			ComunicazioneType comunicazione,
-			AllegatoComunicazioneType busta, 
+			long idComunicazioneFirmatari,
 			WizardIscrizioneHelper helper, 
 			Set<String> setCategorieFoglia) throws ApsException, XmlException, Exception
-	{
+	{	
+		boolean controlliOK = false;
 		if(comunicazione != null) {
 			String tipoComunicazione = comunicazione.getDettaglioComunicazione().getTipoComunicazione();
-
-			// NB: se la comunicazione è in stato BOZZA allora ricarica 
-			//     nell'helper i documenti allegati della bozza...
+			long idComunicazione = comunicazione.getDettaglioComunicazione().getId().longValue();
 			boolean popolaDocumentiDaBozza = (CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA.equals( 
-						comunicazione.getDettaglioComunicazione().getStato()));
+											  comunicazione.getDettaglioComunicazione().getStato()));
+			FirmatarioType[] firmatariImpresa = null;
 			
+			// recupera i dati dei firmatari dalla comunicazione (iscrizione, aggiornamento o rinnovo)...
+			if(idComunicazioneFirmatari > 0 && idComunicazioneFirmatari != idComunicazione) {
+				ComunicazioneType c = getComunicazioniManager().getComunicazione(
+						CommonSystemConstants.ID_APPLICATIVO,
+						idComunicazioneFirmatari);
+				if(c != null) {
+					XmlObject xml = getImpresaElencoOperatoriType(c);
+					if(xml instanceof IscrizioneImpresaElencoOpType) {
+						firmatariImpresa = ((IscrizioneImpresaElencoOpType) xml).getFirmatarioArray(); 
+					} else if(xml instanceof AggIscrizioneImpresaElencoOpType) {
+						firmatariImpresa = ((AggIscrizioneImpresaElencoOpType) xml).getFirmatarioArray();
+					} else if(xml instanceof RinnovoIscrizioneImpresaElencoOperatoriType) {
+						firmatariImpresa = ((RinnovoIscrizioneImpresaElencoOperatoriType) xml).getFirmatarioArray();
+					}
+				}
+			}
+			 
+			// NB: se la comunicazione e' in stato BOZZA allora ricarica 
+			//     nell'helper i documenti allegati della bozza...
 			if(PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE.equals(tipoComunicazione)) {
 				// DOMANDA RINNOVO ISCRIZIONE
-				RinnovoIscrizioneImpresaElencoOperatoriDocument documento = RinnovoIscrizioneImpresaElencoOperatoriDocument
-					.Factory.parse(new String(busta.getFile()));
-				RinnovoIscrizioneImpresaElencoOperatoriType rinnovoImpresa = documento
-					.getRinnovoIscrizioneImpresaElencoOperatori();
+				RinnovoIscrizioneImpresaElencoOperatoriType rinnovoImpresa = 
+						(RinnovoIscrizioneImpresaElencoOperatoriType) getImpresaElencoOperatoriType(comunicazione);
 
+				resetInfoQuestionariPerRinnovo(rinnovoImpresa, helper);
+				
 				if(popolaDocumentiDaBozza) {
 					ComunicazioniUtilities.getAllegatiBustaFromComunicazione(comunicazione, rinnovoImpresa.getDocumenti());
-					popolaDocumentiWizard(helper, rinnovoImpresa.getDocumenti(), false);					
+					popolaDocumentiWizard(rinnovoImpresa.getDocumenti(), helper, false);
 				}
 				
-				this.popolaFromRinnovo(helper, rinnovoImpresa, setCategorieFoglia);
+				popolaFromRinnovo(rinnovoImpresa, firmatariImpresa, helper);
 				refreshDatiFirmatari(helper);
 				
 			} else if(PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO.equals(tipoComunicazione)) {
 				// DOMANDA AGGIORNAMENTO ISCRIZIONE
-				AggiornamentoIscrizioneImpresaElencoOperatoriDocument documento = AggiornamentoIscrizioneImpresaElencoOperatoriDocument
-					.Factory.parse(new String(busta.getFile()));
-				AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa = documento
-					.getAggiornamentoIscrizioneImpresaElencoOperatori();
+				AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa = 
+						(AggIscrizioneImpresaElencoOpType) getImpresaElencoOperatoriType(comunicazione);
+	
+				resetInfoQuestionariPerRinnovo(aggIscrizioneImpresa, helper);
+
 				if(popolaDocumentiDaBozza) {
-					ComunicazioniUtilities.getAllegatiBustaFromComunicazione(comunicazione, aggIscrizioneImpresa.getDocumenti());					
-					popolaDocumentiWizard(helper, aggIscrizioneImpresa.getDocumenti(), false);					
+					ComunicazioniUtilities.getAllegatiBustaFromComunicazione(comunicazione, aggIscrizioneImpresa.getDocumenti());
+					popolaDocumentiWizard(aggIscrizioneImpresa.getDocumenti(), helper, false);
 					InitIscrizioneAction.setCategorie(
 							helper, 
 							aggIscrizioneImpresa.getCategorieIscrizione(),
@@ -874,23 +874,23 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					}
 				}
 				
-				this.setDatiRTI(helper, aggIscrizioneImpresa);
+				setDatiRTI(aggIscrizioneImpresa, firmatariImpresa, helper);
 				refreshDatiFirmatari(helper);
 			
 			} else if(PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO.equals(tipoComunicazione)) {
 				// DOMANDA ISCRIZIONE 
-				IscrizioneImpresaElencoOperatoriDocument documento = IscrizioneImpresaElencoOperatoriDocument
-					.Factory.parse(new String(busta.getFile(), "UTF-8"));
-				IscrizioneImpresaElencoOpType iscrizioneImpresa = documento
-					.getIscrizioneImpresaElencoOperatori();
+				IscrizioneImpresaElencoOpType iscrizioneImpresa = 
+						(IscrizioneImpresaElencoOpType) getImpresaElencoOperatoriType(comunicazione);
+	
+				resetInfoQuestionariPerRinnovo(iscrizioneImpresa, helper);
 				
 				if(popolaDocumentiDaBozza) {
 					ComunicazioniUtilities.getAllegatiBustaFromComunicazione(comunicazione, iscrizioneImpresa.getDocumenti());
-					popolaDocumentiWizard(helper, iscrizioneImpresa.getDocumenti(), false);
+					popolaDocumentiWizard(iscrizioneImpresa.getDocumenti(), helper, false);
 				}
 				
-				this.setDatiRTI(helper, iscrizioneImpresa);
-				this.popolaFromComunicazioneEsistente(
+				setDatiRTI(iscrizioneImpresa, firmatariImpresa, helper);
+				popolaFromComunicazioneEsistente(
 						helper, 
 						iscrizioneImpresa, 
 						setCategorieFoglia,
@@ -907,10 +907,150 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		    	// idComunicazione non viene aggiornato...
 		    	// E' quindi necessario assegnare direttamente "idComunicazione"
 		    	// in  WizardDocumentiHelper!!!
-		    	helper.getDocumenti().setIdComunicazione(comunicazione.getDettaglioComunicazione().getId()); 		    	
+		    	helper.getDocumenti().setIdComunicazione(comunicazione.getDettaglioComunicazione().getId());
+			}
+			
+			// (QFORM - QUESTIONARI) 
+			// SOLO PER ISCRIZIONE E AGGIORNAMENTO ISCRIZIONE 
+			// il questionario e' previsto SOLO in fase di iscrizione/aggiornamento elenco
+			// quindi nel rinnovo NON serve recuperare dalla comunicazione precedente
+			// i dati del questionario
+			if( !popolaDocumentiDaBozza ) {
+				boolean iscrizioneOAggiornamento = (!helper.isRinnovoIscrizione())
+												    || helper.isAggiornamentoIscrizione();
+				if(iscrizioneOAggiornamento) {
+					AllegatoComunicazioneType questionario = getAllegatoComunicazione(comunicazione, DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME);
+					if(questionario != null) {
+						byte[] contenuto = questionario.getFile();
+					
+						// se il contenuto dell'allegato non e' presente nella comunicazione, scaricalo dal servizio
+						if(contenuto == null) {
+							ComunicazioneType c = comunicazioniManager.getComunicazione(CommonSystemConstants.ID_APPLICATIVO, idComunicazione, questionario.getUuid());
+							contenuto = (c != null ? c.getAllegato(0).getFile() : null);
+						}
+						
+						// ricava dalla comunicazione precedente l'allegato "questionario.json" 
+						// ed aggiungilo agli allegati dell'helper corrente (iscrizione/aggiornamento)
+						if(contenuto != null) {
+							helper.getDocumenti().addDocUlteriore(
+									DocumentiAllegatiHelper.QUESTIONARIO_DESCR, 
+									contenuto, 
+									"JSON", 
+									DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME, 
+									null,
+									null,
+									null);
+							logger.debug("Inserito questionario presente nella comunicazione precedente.");
+						}
+					}
+					logger.debug("Conclusa operazione di caricamento dati da comunicazione precedente {}", idComunicazione);
+				}	
+			}
+			
+			controlliOK = true;
+		}
+		
+		return controlliOK;
+	}
+	
+	/**
+	 * estra il documento XML dall'allegato XML della comunicazione  
+	 * @throws ApsException 
+	 * @throws XmlException 
+	 */
+	private XmlObject getImpresaElencoOperatoriType(ComunicazioneType comunicazione) throws ApsException, XmlException {
+		XmlObject xmlDoc = null;
+		
+		// estrai il documento XML dall'allegato xml
+		if(PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO.equals(comunicazione.getDettaglioComunicazione().getTipoComunicazione())) {
+			// DOMANDA ISCRIZIONE
+			AllegatoComunicazioneType xml = getAllegatoComunicazione(
+					comunicazione, 
+					PortGareSystemConstants.NOME_FILE_ISCRIZIONE);
+			if(xml != null) {
+				IscrizioneImpresaElencoOperatoriDocument documento = IscrizioneImpresaElencoOperatoriDocument
+						.Factory.parse(new String(xml.getFile()));
+				IscrizioneImpresaElencoOpType iscrizioneImpresa = documento
+						.getIscrizioneImpresaElencoOperatori();
+				xmlDoc = iscrizioneImpresa;
+			}
+		} else if(PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO.equals(comunicazione.getDettaglioComunicazione().getTipoComunicazione())) {
+			// DOMANDA AGGIORNAMENTO ISCRIZIONE
+			AllegatoComunicazioneType xml = getAllegatoComunicazione(
+					comunicazione, 
+					PortGareSystemConstants.NOME_FILE_AGG_ISCRIZIONE);
+			if(xml != null) {
+				AggiornamentoIscrizioneImpresaElencoOperatoriDocument documento = AggiornamentoIscrizioneImpresaElencoOperatoriDocument
+						.Factory.parse(new String(xml.getFile()));
+				AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa = documento
+						.getAggiornamentoIscrizioneImpresaElencoOperatori();
+				xmlDoc = aggIscrizioneImpresa;
+			}			
+		} else if(PortGareSystemConstants.RICHIESTA_RINNOVO_ISCRIZIONE.equals(comunicazione.getDettaglioComunicazione().getTipoComunicazione())) {
+			// DOMANDA RINNOVO ISCRIZIONE
+			AllegatoComunicazioneType xml = getAllegatoComunicazione(
+					comunicazione, 
+					PortGareSystemConstants.NOME_FILE_RINNOVO_ISCRIZIONE);
+			if(xml != null) {
+				RinnovoIscrizioneImpresaElencoOperatoriDocument documento = RinnovoIscrizioneImpresaElencoOperatoriDocument
+						.Factory.parse(new String(xml.getFile()));
+				RinnovoIscrizioneImpresaElencoOperatoriType rinnovoImpresa = documento
+						.getRinnovoIscrizioneImpresaElencoOperatori();
+				xmlDoc = rinnovoImpresa;
 			}
 		}
-	}	
+		return xmlDoc;
+	}
+	
+	/**
+	 * rimuove le informazioni relative ai questionari in un documento XML  
+	 */
+	private void resetInfoQuestionariPerRinnovo(XmlObject impresaElencoOperatoriType, WizardIscrizioneHelper helper) throws XmlException {
+		// in caso di rinnovo l'allegato "questionario.json" non e' previsto
+		// e non va preso in considerazione dalla comunicazione precente
+		if(helper.isRinnovoIscrizione()) {
+			ListaDocumentiType allegati = null;
+			
+			// esamina il documento xml della precedente comunicazione...
+			if(impresaElencoOperatoriType instanceof RinnovoIscrizioneImpresaElencoOperatoriType) {
+				// DOMANDA RINNOVO ISCRIZIONE
+				RinnovoIscrizioneImpresaElencoOperatoriType rinnovoImpresa = (RinnovoIscrizioneImpresaElencoOperatoriType)impresaElencoOperatoriType;
+				allegati = rinnovoImpresa.getDocumenti();
+				// il rinnovo non prevede i questionari!!!
+				
+			} else if(impresaElencoOperatoriType instanceof AggIscrizioneImpresaElencoOpType) {
+				// DOMANDA AGGIORNAMENTO ISCRIZIONE
+				AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa = (AggIscrizioneImpresaElencoOpType)impresaElencoOperatoriType;
+				allegati = aggIscrizioneImpresa.getDocumenti();
+				if(aggIscrizioneImpresa.isSetQuestionarioCompletato()) {
+					aggIscrizioneImpresa.unsetQuestionarioCompletato();
+				}
+				if(aggIscrizioneImpresa.isSetQuestionarioId()) {
+					aggIscrizioneImpresa.unsetQuestionarioId();
+				}
+				
+			} else if(impresaElencoOperatoriType instanceof IscrizioneImpresaElencoOpType) {
+				// DOMANDA ISCRIZIONE
+				IscrizioneImpresaElencoOpType iscrizioneImpresa = (IscrizioneImpresaElencoOpType)impresaElencoOperatoriType;
+				allegati = iscrizioneImpresa.getDocumenti();
+				if(iscrizioneImpresa.isSetQuestionarioCompletato()) {
+					iscrizioneImpresa.unsetQuestionarioCompletato();
+				}
+				if(iscrizioneImpresa.isSetQuestionarioId()) {
+					iscrizioneImpresa.unsetQuestionarioId();
+				}
+			}
+			
+			if(allegati != null) {
+				// rimuovi dagli allegati il documento "questionario.json"
+				for(int i = allegati.sizeOfDocumentoArray() - 1; i >= 0; i--) {
+					if(DocumentiAllegatiHelper.QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(allegati.getDocumentoArray()[i].getNomeFile())) {
+						allegati.removeDocumento(i);
+					}
+				}
+			}
+		}
+	}
 	
 	/**
 	 * popola da BO i componenti RTI 
@@ -918,7 +1058,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	protected void popolaFromBO(
 			List<MandanteRTIType> mandantiBO, 
 			WizardIscrizioneHelper iscrizioneHelper) throws ApsException 
-	{		
+	{
 		setComponentiRTIFromBO(mandantiBO, iscrizioneHelper);
 		iscrizioneHelper.setRti(true);
 		iscrizioneHelper.setAmmesseRTI(true);
@@ -998,6 +1138,17 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * ... 
 	 */
 	private String update(int matchFase, int tipologia) {
+		
+		EFlussiAccessiDistinti flusso = (tipologia == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
+				? EFlussiAccessiDistinti.ISCRIZIONE_ELENCO 
+				: EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO);
+
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(flusso, this.codice) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+
 		boolean impresaSet = false;
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
@@ -1411,6 +1562,21 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 
 		return iscrHelper;
 	}
+
+	/**
+	 * Recupero le categorie assegnate ad un organizzazione per un elenco
+	 * le recupero direttamente dal DB di appalti per non rischiare di
+	 * avere problemi di inconsistenza, ovvero, che l'ultima FS4 ha n
+	 * categorie, ma, magari da appalti sono state tolte alcune delle categorie
+	 *
+	 * @param username username della ditta
+	 * @param codice codice dell'elenco
+	 * @param setCategorieFoglia
+	 * @param comunicazioniManager	manager per contattare il DB di Appalti
+	 * @param bandiManager	altro manager per contattare il DB di Appalti
+	 * @return Wizard contenente i dati richiesti (le categorie)
+	 * @throws Exception
+	 */
 	public static WizardIscrizioneHelper retrieveProcessedCategories(
 			String username
 			, String codice
@@ -1429,68 +1595,27 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					.collect(Collectors.toSet())
 				: setCategorieFoglia;
 
-		// se non si trovano comunicazioni di aggiornamento si cercano le
-		// comunicazioni di iscrizione (FS2 stato=5)
-		DettaglioComunicazioneType criteriRicerca = new DettaglioComunicazioneType();
-		criteriRicerca.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
-		criteriRicerca.setChiave1(username);
-		criteriRicerca.setChiave2(codice);
-		criteriRicerca.setStato(CommonSystemConstants.STATO_COMUNICAZIONE_PROCESSATA);
-		criteriRicerca.setTipoComunicazione(PortGareSystemConstants.RICHIESTA_ISCRIZIONE_ALBO);
-		List<DettaglioComunicazioneType> comunicazioni = comunicazioniManager.getElencoComunicazioni(criteriRicerca);
-		boolean iscrizione = CollectionUtils.isNotEmpty(comunicazioni);
-		if (CollectionUtils.isEmpty(comunicazioni)) {
-			criteriRicerca.setTipoComunicazione(PortGareSystemConstants.RICHIESTA_AGGIORNAMENTO_ISCRIZIONE_ALBO);
-			comunicazioni = comunicazioniManager.getElencoComunicazioni(criteriRicerca);
-		}
+		// AGGIORNAMENTO
+		// non esistono comunicazioni in stato da processare di
+		// aggiornamento o iscrizione albo, pertanto si prendono i dati
+		// direttamente dal backoffice in quanto e' il posto piu' aggiornato
+		// NB:
+		// nelle categorie viene resituito anche "coordinatoreSicurezza"
+		// estratto da DITG ed è quindi uguale per tutte le categorie
+		List<CategoriaImpresaType> listaCategorie = bandiManager.getCategorieImpresaPerIscrizione(username, codice);
 
-		if (CollectionUtils.isEmpty(comunicazioni)) {
-			// AGGIORNAMENTO
-			// non esistono comunicazioni in stato da processare di
-			// aggiornamento o iscrizione albo, pertanto si prendono i dati
-			// direttamente dal backoffice in quanto e' il posto piu' aggiornato
-			// NB:
-			// nelle categorie viene resituito anche "coordinatoreSicurezza"
-			// estratto da DITG ed è quindi uguale per tutte le categorie
-			List<CategoriaImpresaType> listaCategorie = bandiManager.getCategorieImpresaPerIscrizione(username, codice);
+		setCategorieFromBackoffice(
+				iscrHelper
+				, listaCategorie
+				, setCategorieFoglia
+				, false
+		);
 
-			setCategorieFromBackoffice(
-					iscrHelper
-					, listaCategorie
-					, setCategorieFoglia
-					, false
-			);
+		// recupera altri dati relativi all'iscrizione
+		ImpresaIscrizioneType impresa = bandiManager.getImpresaIscrizione(username, codice);
 
-			// recupera altri dati relativi all'iscrizione
-			ImpresaIscrizioneType impresa = bandiManager.getImpresaIscrizione(username, codice);
+		setImpresaIscrizioneFromBackoffice(iscrHelper, impresa);
 
-			setImpresaIscrizioneFromBackoffice(iscrHelper, impresa);
-
-		} else {
-			// ISCRIZIONE/AGGIORNAMENTO
-			// si individua l'ultima comunicazione in stato da processare
-			// (quella con id massimo, dato che e' un contatore)
-			long maxId = comunicazioni.stream()
-							.map(DettaglioComunicazioneType::getId)
-							.max(Long::compareTo)
-						.orElse(-1L);
-
-			logger.debug("trovata comunicazione con maxId: {}", maxId);
-			// si estraggono i dati dall'ultima comunicazione in stato
-			// da processare
-			ComunicazioneType comunicazione = comunicazioniManager.getComunicazione(CommonSystemConstants.ID_APPLICATIVO, maxId);
-
-			XmlObject xml = getXmlIscrizione(comunicazione, iscrizione);
-
-			setCategorieFromXml(
-					xml
-					, iscrHelper
-					, setCategorieFoglia
-					, iscrizione
-			);
-
-			setIscrizioneImpresaFromXml(xml, iscrHelper);
-		}
 		return iscrHelper;
 	}
 
@@ -1646,28 +1771,28 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 			iscrizioneHelper.getStazioniAppaltanti().add(listaSA.getStazioneAppaltanteArray()[i]);
 		}
 		
-		// set delle categorie
+		// categorie
 		InitIscrizioneAction.setCategorie(
 				iscrizioneHelper, 
 				iscrizioneImpresa.getCategorieIscrizione(),
 				setCategorieFoglia, 
 				false);
 		
-		// set serial number
+		// serial number
 		if (iscrizioneImpresa.isSetSerialNumberMarcaBollo()) {
 			iscrizioneHelper.setSerialNumberMarcaBollo(iscrizioneImpresa.getSerialNumberMarcaBollo());
 		}
 		
-		// set dei documenti
+		// documenti
 		if(fromBozza) {
-			this.popolaDocumentiWizard(iscrizioneHelper, iscrizioneImpresa.getDocumenti(), false);
+			this.popolaDocumentiWizard(iscrizioneImpresa.getDocumenti(), iscrizioneHelper, false);
 		}
 		
 		if(iscrizioneHelper.isRti() 
 		   || StringUtils.isNotEmpty(StringUtils.stripToNull(iscrizioneImpresa.getDenominazioneRTI()))) {
-			// set dati RTI
+			// dati RTI
 			iscrizioneHelper.setRti(true);
-			this.setDatiRTI(iscrizioneHelper, iscrizioneImpresa);
+			this.setDatiRTI(iscrizioneImpresa, null, iscrizioneHelper);
 		} else if(iscrizioneHelper.getImpresa().isConsorzio()) {
 			//Ripopolamento da bozza per consorzio
 			this.setDatiConsorzio(iscrizioneHelper, iscrizioneImpresa);
@@ -1701,15 +1826,18 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		}
 		
 		// (QFORM - QUESTIONARI)
-		QuestionarioType questionario = null;
-		if (iscrizioneImpresa.isSetQuestionarioId()) {
-			iscrizioneHelper.getDocumenti().setQuestionarioId(iscrizioneImpresa.getQuestionarioId());
-			questionario = WizardDocumentiHelper.getQuestionarioAssociatoBO(iscrizioneHelper.getIdBando(), null, 0);
-			iscrizioneHelper.getDocumenti().setQuestionarioAssociato(questionario);
+		// in caso di RINNOVO i dati del questionario NON sono previsti
+		if( !iscrizioneHelper.isRinnovoIscrizione() ) {
+			QuestionarioType questionario = null;
+			if (iscrizioneImpresa.isSetQuestionarioId()) {
+				iscrizioneHelper.getDocumenti().setQuestionarioId(iscrizioneImpresa.getQuestionarioId());
+				questionario = WizardDocumentiHelper.getQuestionarioAssociatoBO(iscrizioneHelper.getIdBando(), null, 0);
+				iscrizioneHelper.getDocumenti().setQuestionarioAssociato(questionario);
+			}
+			//if (iscrizioneImpresa.isSetQuestionarioCompletato()) {
+			//	// calcolato da "QuestionarioAssociato"
+			//}
 		}
-		//if (iscrizioneImpresa.isSetQuestionarioCompletato()) {
-		//	// calcolato da "QuestionarioAssociato"
-		//}
 	}
 	
 	/**
@@ -1721,9 +1849,9 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * @param setCategorieFoglia ...
 	 */
 	private void popolaFromRinnovo(
-			WizardIscrizioneHelper helper, 
-			RinnovoIscrizioneImpresaElencoOperatoriType rinnovoIscrizioneImpresa, 
-			Set<String> setCategorieFoglia) throws XmlException, Exception 
+			RinnovoIscrizioneImpresaElencoOperatoriType rinnovoIscrizioneImpresa,
+			FirmatarioType[] firmatariImpresa,
+			WizardIscrizioneHelper helper) throws XmlException, Exception 
 	{
 		FirmatarioType[] firmatari = rinnovoIscrizioneImpresa.getFirmatarioArray();
 
@@ -1747,7 +1875,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				} else {
 					if (firmatari.length == 1) {
 						// impresa singola
-						/* --- CESSATI --- */
+						// --- CESSATI ---
 						WizardDatiImpresaHelper datiImpresaHelper = ImpresaAction.getLatestDatiImpresa(
 										this.getCurrentUser().getUsername(), 
 										this);
@@ -2016,12 +2144,12 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	}
 		
 	/**
-	 * Popola l'helper con i documenti presenti nella comunicazione analizzata
-	 *
+	 * Popola l'helper con i documenti presenti nell'XML relativo alla comunicazione
+	 * 
+	 * @param documentiXml 
+	 * 			lista dei documenti
 	 * @param helper 
 	 * 			helper (iscrizione/rinnovo/aggiornamento) con i documenti da popolare
-	 * @param listaDocumenti 
-	 * 			lista dei documenti da popolare
 	 * @param nascondi 
 	 * 			TRUE per nascondere i documenti (mantenerli solo per aggiornare 
 	 * 			la comunicazione), FALSE altrimenti. <b>NB: Valido solo per i
@@ -2030,19 +2158,45 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * @throws IOException
 	 */
 	private void popolaDocumentiWizard(
+			ListaDocumentiType documentiXml,
 			WizardIscrizioneHelper helper,
-			ListaDocumentiType listaDocumenti,
 			boolean nascondi) throws IOException 
 	{
-		if(listaDocumenti != null) {
+		if(documentiXml != null) {
 			WizardDocumentiHelper documenti = new WizardDocumentiHelper();
 
 			Long idComunicazione = (helper.getIdComunicazione() == null
 									? helper.getIdComunicazioneBozza() 
 									: helper.getIdComunicazione());
 			
-			documenti.popolaDocumentiFromXml(listaDocumenti, idComunicazione);
+			documenti.popolaDocumentiFromXml(documentiXml, idComunicazione);
 	    	
+			// verifica se i documenti richiesti caricati dall'XML di una precedente comunicazione sono ancora presenti in BO
+			try {
+				List<DocumentazioneRichiestaType> docRichiestiBO = helper.getDocumentiRichiestiBO(); 
+				if(docRichiestiBO != null) {
+					List<Attachment> allegatiInconsistenti = documenti.getRequiredDocs().stream()
+						.filter(d -> docRichiestiBO.stream()
+										.noneMatch(docBO -> docBO.getId() == d.getId().longValue()) )
+						.collect(Collectors.toList());
+					
+					// rimuovi i documenti inconsistenti per il contesto "ad oggi"
+					// NB: alcuni allegati potrebbero aver cambiato contesto di validita' o essere stati archiviati etc.
+					if(allegatiInconsistenti != null && allegatiInconsistenti.size() > 0) {
+						allegatiInconsistenti.stream()
+							.forEach(a -> logger.warn(this.getText("Errors.allegatoIncosistente", 
+													 			   new String[] {a.getId().toString(), a.getFileName()})));
+						// rimuovi gli allegati incosistenti con definizione diversa lato BO (archiviati o con contesto di validita')
+						documenti.getRequiredDocs()
+							.removeIf(d -> allegatiInconsistenti.stream()
+												.anyMatch(a -> d.getId().longValue() == a.getId().longValue()) );
+					}
+				}
+			} catch (Throwable t) {
+				ApsSystemUtils.logThrowable(t, this, "popolaDocumentiWizard", "Errore durante la sincronizzazione dei documenti");
+				ExceptionUtils.manageExceptionError(t, this);
+			}
+			
 	    	helper.setDocumenti(documenti);
 		}
 	}
@@ -2060,26 +2214,26 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		return StrutsUtilities.getTempDir(this.getRequest().getSession().getServletContext(), multipartSaveDir);
 	}
 
-
 	/**
 	 * Popola l'helper con gli eventuali componenti RTI e firmatari presenti 
 	 * nella comunicazione analizzata (iscrizione o aggiornamento)
 	 *
-	 * @param iscrizioneHelper 
-	 * 			helper da popolare
 	 * @param iscrizioneImpresa 
 	 * 			contenitore con i dati ricevuti dal backoffice
+	 * @param iscrizioneHelper 
+	 * 			helper da popolare
 	 * 
 	 * @throws Exception
 	 */	
 	protected void setDatiRTI(
-			WizardIscrizioneHelper iscrizioneHelper,
-			XmlObject domandaImpresa) throws Exception 
+			XmlObject domandaImpresa,
+			FirmatarioType[] firmatariImpresa, 
+			WizardIscrizioneHelper iscrizioneHelper) throws Exception 
 	{
 		if(domandaImpresa instanceof IscrizioneImpresaElencoOpType) {
-			setDatiRTIIscrizione(iscrizioneHelper, (IscrizioneImpresaElencoOpType) domandaImpresa);
+			setDatiRTIIscrizione((IscrizioneImpresaElencoOpType) domandaImpresa, firmatariImpresa, iscrizioneHelper);
 		} else if(domandaImpresa instanceof AggIscrizioneImpresaElencoOpType) {
-			setDatiRTIAggiornamento(iscrizioneHelper, (AggIscrizioneImpresaElencoOpType) domandaImpresa);
+			setDatiRTIAggiornamento((AggIscrizioneImpresaElencoOpType) domandaImpresa, firmatariImpresa, iscrizioneHelper);
 		}
 	}
 	
@@ -2087,11 +2241,10 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * ... 
 	 */
 	private void setDatiRTIIscrizione(
-			WizardIscrizioneHelper iscrizioneHelper,
-			IscrizioneImpresaElencoOpType iscrizioneImpresa) throws Exception 
+			IscrizioneImpresaElencoOpType iscrizioneImpresa,
+			FirmatarioType[] firmatariImpresa,
+			WizardIscrizioneHelper iscrizioneHelper) throws Exception 
 	{
-		FirmatarioType[] firmatari = null;
-		
 		if (StringUtils.isNotEmpty(iscrizioneImpresa.getDenominazioneRTI())) {
 			iscrizioneHelper.setDenominazioneRTI(iscrizioneImpresa.getDenominazioneRTI());
 			iscrizioneHelper.setRti(true);
@@ -2100,7 +2253,9 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		
 		// --- FASE DI POPOLAMENTO ---
 		if(iscrizioneHelper.isIscrizioneDomandaVisible()) {
-			firmatari = iscrizioneImpresa.getFirmatarioArray();
+			// recupera l'elenco dei firmatari 
+			FirmatarioType[] firmatari = (firmatariImpresa != null ? firmatariImpresa : iscrizioneImpresa.getFirmatarioArray());
+			
 			if(firmatari.length == 0) {
 				setComponentiRTIFromPartecipantiRaggruppamento(
 						iscrizioneHelper,
@@ -2119,14 +2274,14 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 			}
 
 			if(iscrizioneHelper.getComponentiRTI().size() != 0) {
+				// in caso di RTI recupera il firmatario della mandataria
 				if(firmatari.length > 1) {
-					setDatiFirmatariRTI(firmatari,iscrizioneHelper);
+					setDatiFirmatariRTI(firmatari, iscrizioneHelper);
 				} else {
 					if(firmatari.length == 1) {
-						FirmatarioType firmatario = iscrizioneImpresa.getFirmatarioArray()[0];
-						
-						if(iscrizioneImpresa.getDatiImpresa().getImpresa().getRagioneSociale().equals(firmatari[0].getRagioneSociale())) {
-							// se l'unico firmatario recuperato è quello della mandataria
+						FirmatarioType firmatario = firmatari[0];
+						if(iscrizioneImpresa.getDatiImpresa().getImpresa().getRagioneSociale().equals(firmatario.getRagioneSociale())) {
+							// se l'unico firmatario recuperato e' quello della mandataria
 							setFirmatario(firmatario, iscrizioneHelper);
 							
 							// NB: se la lista dei firmatari della mandataria è 
@@ -2156,15 +2311,10 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 						}
 					}	
 				}
-			} else {
-				if (firmatari.length == 1) {
-					setFirmatario(	
-							iscrizioneImpresa.getFirmatarioArray()[0], 
-							iscrizioneHelper);
-					findFirmatarioSelezionatoInLista(
-							iscrizioneImpresa.getFirmatarioArray()[0],
-							iscrizioneHelper);
-				}
+			} else if (firmatari.length == 1) {
+				// in caso di ditta singola recupera il primo firmatario della ditta
+				setFirmatario(firmatari[0], iscrizioneHelper);
+				findFirmatarioSelezionatoInLista(firmatari[0], iscrizioneHelper);
 			}
 		} else {
 			// Scarica domanda disabilitata : impresa corrente + recupero info 
@@ -2180,12 +2330,12 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * ... 
 	 */
 	private void setDatiRTIAggiornamento(
-			WizardIscrizioneHelper iscrizioneHelper,
-			AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa) throws Exception 
+			AggIscrizioneImpresaElencoOpType aggIscrizioneImpresa,
+			FirmatarioType[] firmatariImpresa,
+			WizardIscrizioneHelper iscrizioneHelper) throws Exception 
 	{
-		FirmatarioType[] firmatari = null;
+		FirmatarioType[] firmatari = (firmatariImpresa != null ? firmatariImpresa : aggIscrizioneImpresa.getFirmatarioArray());
 		
-		firmatari = aggIscrizioneImpresa.getFirmatarioArray();
 		if (firmatari != null && firmatari.length > 1) {
 			// aggiungi una denominazione fittizia...
 			iscrizioneHelper.setDenominazioneRTI("RTI_" + iscrizioneHelper.getImpresa().getDatiPrincipaliImpresa().getRagioneSociale());
@@ -2299,66 +2449,6 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		setComponentiConsorzioFromPartecipantiRaggruppamento(
 				iscrizioneHelper, 
 				iscrizioneImpresa.getPartecipantiRaggruppamento());
-	}
-
-	/**
-	 * componi la lista dei soggetti firmatari 
-	 */
-	protected  ArrayList<FirmatarioBean> composeListaFirmatariMandataria(
-			WizardDatiImpresaHelper datiImpresaHelper)
-	{
-		ArrayList<FirmatarioBean> listaFirmatari = new ArrayList<FirmatarioBean>();
-		if (datiImpresaHelper.isLiberoProfessionista()) {
-			FirmatarioBean firmatario = new FirmatarioBean();
-			firmatario.setNominativo(datiImpresaHelper.getAltriDatiAnagraficiImpresa().getCognome() +" "+datiImpresaHelper.getAltriDatiAnagraficiImpresa().getNome());
-			listaFirmatari.add(firmatario);
-		} else {
-			for (int i = 0; i < datiImpresaHelper.getLegaliRappresentantiImpresa().size(); i++) {
-				addSoggettoMandataria(
-						datiImpresaHelper.getLegaliRappresentantiImpresa().get(i), 
-						i,
-						CataloghiConstants.LISTA_LEGALI_RAPPRESENTANTI, 
-						listaFirmatari);
-			}
-			for (int i = 0; i < datiImpresaHelper.getDirettoriTecniciImpresa().size(); i++) {
-				addSoggettoMandataria(
-						datiImpresaHelper.getDirettoriTecniciImpresa().get(i), 
-						i,
-						CataloghiConstants.LISTA_DIRETTORI_TECNICI, 
-						listaFirmatari);
-			}
-			for (int i = 0; i < datiImpresaHelper.getAltreCaricheImpresa().size(); i++) {
-				addSoggettoMandataria(
-						datiImpresaHelper.getAltreCaricheImpresa().get(i), 
-						i,
-						CataloghiConstants.LISTA_ALTRE_CARICHE, 
-						listaFirmatari);
-			}
-		}
-		return listaFirmatari;
-	}
-
-	/**
-	 * ... 
-	 */
-	private static void addSoggettoMandataria(
-			ISoggettoImpresa soggetto, 
-			int index, 
-			String lista, 
-			ArrayList<FirmatarioBean> listaFirmatari) 
-	{
-		if (soggetto.getDataFineIncarico() == null && "1".equals(soggetto.getResponsabileDichiarazioni())) {
-			FirmatarioBean firmatario = new FirmatarioBean();
-			String cognome = StringUtils.capitalize(soggetto.getCognome().substring(0, 1)) + 
-													soggetto.getCognome().substring(1);
-			String nome = StringUtils.capitalize(soggetto.getNome().substring(0, 1)) + 
-												 soggetto.getNome().substring(1);
-			firmatario.setNominativo(new StringBuilder().append(cognome)
-									.append(" ").append(nome).toString());
-			firmatario.setIndex(index);
-			firmatario.setLista(lista);
-			listaFirmatari.add(firmatario);
-		}
 	}
 
 	/**
@@ -2499,7 +2589,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	}
 	
 	/**
-	 * Estrae l'allegato relativo ad una comunicazione
+	 * Estrae l'allegato di una comunicazione in base al "filename"
 	 *
 	 * @param comunicazione 
 	 * 			comunicazione da cui recuperare l'allegato
@@ -2508,17 +2598,13 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 	 * 
 	 * @throws ApsException
 	 */
-	protected AllegatoComunicazioneType estraiAllegato(
+	private AllegatoComunicazioneType getAllegatoComunicazione(
 			ComunicazioneType comunicazione, 
 			String nomefile) throws ApsException 
 	{
 		AllegatoComunicazioneType allegato = null;
-
 		int i = 0;
-		while (comunicazione.getAllegato() != null
-			   && i < comunicazione.getAllegato().length
-			   && allegato == null) {
-			// si cerca l'xml con i dati dell'iscrizione tra tutti gli allegati
+		while (comunicazione.getAllegato() != null && i < comunicazione.getAllegato().length && allegato == null) {
 			if (nomefile.equals(comunicazione.getAllegato()[i].getNomeFile())) {
 				allegato = comunicazione.getAllegato()[i];
 			} else {
@@ -2859,27 +2945,21 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					} else {
 						survey = new byte[0];
 					}
-					dimensioneDocumento = survey.length;					
+					dimensioneDocumento = (int) Math.ceil(survey.length / 1024.0);
 					
 					// in caso di aggiornamento iscrizione compila l'elenco dei file "serverFiles"
 					// con l'elenco dei file presenti in W_DOCDIG
 					if(isAggiornamento) {
-						QCQuestionario questionario = null;
-						//controllo che non sia presente un questionario, in caso prendo quello, altrimenti inserisco il template
-						if(documenti.getAdditionalDocs() != null) {
-							for(Attachment attachment : documenti.getAdditionalDocs()) {
-								if (WizardDocumentiHelper.QUESTIONARIO_ELENCHI_FILENAME.equalsIgnoreCase(attachment.getFileName())) {
-									questionario = new QCQuestionario(new String(documenti.getContenutoDocUlteriore(attachment), StandardCharsets.UTF_8));
-									questionario.addServerFilesUuids(documenti);
-									String json = questionario.getQuestionario();
-									documenti.updateQuestionario(json);
-									survey = json.getBytes(StandardCharsets.UTF_8);
-									break;
-								}
-							}
-						}
+						// controllo se e' presente un questionario...
+						QCQuestionario questionario = documenti.getQuestionarioElenchi(); 
+						
+						// ...altrimenti inserisco il template
 						if(questionario == null && documenti.getQuestionarioAssociato().getOggetto() != null ) {
 							questionario = new QCQuestionario(documenti.getQuestionarioAssociato().getOggetto());
+						}
+						
+						// e aggiorno la sezione "serverFilesUuids" per il client angular
+						if(questionario != null) {
 							questionario.addServerFilesUuids(documenti);
 							String json = questionario.getQuestionario();
 							documenti.updateQuestionario(json);
@@ -2919,7 +2999,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 					this.eventManager.insertEvent(evento);
 				}
 			} else if(isAggiornamento && !helper.isFromBozza()) {
-				logger.info("Siamo in aggiornamento e non esiste in bozza il qform si presenta variato rispetto a quanto inviato in precedenza.");
+				logger.debug("Siamo in aggiornamento e non esiste in bozza il qform si presenta variato rispetto a quanto inviato in precedenza.");
 				target = SUCCESS;
 				QuestionarioType questionarioBO = WizardDocumentiHelper.getQuestionarioAssociatoBO(helper.getIdBando(), null, 0);
 				if(questionarioBO != null) {
@@ -3006,7 +3086,7 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 				// elimina la comunicazione della richiesta
 				Long comunicazioneDaElminare = helper.getIdComunicazione() != null ? helper.getIdComunicazione() : helper.getIdComunicazioneBozza();
 				if(comunicazioneDaElminare != null) {
-					logger.info("InitIscrizioneAction - eliminazione comunicazione con id: {}",comunicazioneDaElminare);
+					logger.debug("InitIscrizioneAction - eliminazione comunicazione con id: {}",comunicazioneDaElminare);
 					this.comunicazioniManager.deleteComunicazione(
 							CommonSystemConstants.ID_APPLICATIVO, 
 							comunicazioneDaElminare);
@@ -3029,4 +3109,5 @@ public class InitIscrizioneAction extends EncodedDataAction implements SessionAw
 		
 		return target;
 	}
+	
 }

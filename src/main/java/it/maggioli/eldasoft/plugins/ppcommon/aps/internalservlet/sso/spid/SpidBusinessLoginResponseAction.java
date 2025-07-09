@@ -47,7 +47,6 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 
 	private IBandiManager bandiManager;
 	private IUserManager userManager;
-	//	private String urlRedirect;
 	protected DatiImpresaChecker datiImpresaChecker;
 
 	public void setBandiManager(IBandiManager bandiManager) {
@@ -106,7 +105,10 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 			String authPurpose = (String) appParamManager
 					.getConfigurationValue(AppParamManager.SPIDBUSINESS_AUTHPURPOSE);
 			//String idProvider = this.idp; 
-
+			
+			String saServiceProvider = getSpidServiceProviderPerSA(appParamManager);
+			serviceProvider = (StringUtils.isNotEmpty(saServiceProvider) ? saServiceProvider : serviceProvider);
+			
 			target = validateParameters(idProvider, target, action, url, serviceProvider, authLevel);
 
 			if (SUCCESS.equals(target)) {
@@ -119,8 +121,7 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 				// richiedi il token temporaneo al sevizio SPID... 
 				// e salvalo in sessione per il login... 
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID... 
 				int i = url.indexOf("/services/");
@@ -205,12 +206,9 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 	public String loginSpidBusiness() {
 		String target = SUCCESS;
 
-		BaseAction action = (BaseAction) ActionContext.getContext().getActionInvocation().getAction();
-
 		try {
-			String authId = (String) action.getRequest().getSession()
-					.getAttribute(SESSION_ID_SSO_AUTHID);
-
+			String authId = getAuthId();
+			
 			AuthDataV2 userInfo = authServiceSPIDManager.retrieveUserDataV2(authId);
 //			AuthDataV2 userInfo = getTestUserInfo();
 
@@ -234,7 +232,7 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 							errorWhileLoggingIn("Errors.sso.duplicateAccountBusiness");
 							target = INPUT;
 						} else
-							succcesfullyLoggedIn(companyFiscalCode, companyName, userInfo, utenze.get(0));
+							successfullyLoggedIn(companyFiscalCode, companyName, userInfo, utenze.get(0));
 					} else {
 						errorWhileLoggingIn("Errors.sso.noAccountBusiness");
 						target = INPUT;
@@ -245,6 +243,7 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 					target = INPUT;
 				} else {
 					AccountSSO accountSpid = new AccountSSO();
+					accountSpid.setAuthId(authId);
 					accountSpid.setNome(userInfo.getNome());
 					accountSpid.setCognome(userInfo.getCognome());
 					accountSpid.setLogin(companyFiscalCode);
@@ -321,18 +320,20 @@ public class SpidBusinessLoginResponseAction extends BaseResponseAction {
 		this.getRequest().getSession().setAttribute(CommonSystemConstants.SESSION_OBJECT_ACTION, this);
 	}
 
-	private void succcesfullyLoggedIn(String companyFiscalCod, String companyName, AuthDataV2 userInfo, UserDetails userDetails) {
+	private void successfullyLoggedIn(String companyFiscalCod, String companyName, AuthDataV2 userInfo, UserDetails userDetails) {
+		String ipAddress = getIp();
+		
 		AccountSSO accountSpid = new AccountSSO();
+		accountSpid.setAuthId(getAuthId());
 		accountSpid.setNome(userInfo.getNome());
 		accountSpid.setCognome(userInfo.getCognome());
 		accountSpid.setLogin(companyFiscalCod);
 		accountSpid.setRagioneSociale(companyName);
 		accountSpid.setTipologiaLogin(PortGareSystemConstants.TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO_BUSINESS);
-		this.getRequest().setAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO, accountSpid);
-		String ipAddress = getIp();
-
 		accountSpid.setIpAddress(ipAddress);
-
+		
+		this.getRequest().setAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO, accountSpid);
+		
 		ServletContext ctx = this.getRequest().getSession().getServletContext();
 		TrackerSessioniUtenti.getInstance(ctx)
 				.putSessioneUtente(this.getRequest().getSession(),

@@ -10,11 +10,14 @@
  */
 package it.maggioli.eldasoft.plugins.ppcommon.aps.system;
 
+
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.aps.system.services.user.UserDetails;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
+
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -26,7 +29,6 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +74,6 @@ public class TrackerSessioniUtenti {
 				id = this.session.getId();
 				lastAccessedTime = this.session.getLastAccessedTime();
 				maxInactiveInterval = this.session.getMaxInactiveInterval();
-			} else {
-				lastAccessedTime = (new Date()).getTime();
 			}
 		}
 		
@@ -198,7 +198,50 @@ public class TrackerSessioniUtenti {
 		}
 		
 	}
-	
+		
+	/** 
+	 * ******************************************************************
+	 * Info degli utenti loggati 
+	 * ******************************************************************   
+	 */
+	public class LoggedUserInfo {
+		
+		private String ip;
+		private String login;
+		private String loginTime;
+		private String logoutTime;
+		private String lastAccess;
+		private String username;
+		private String sessionId;
+		
+		public LoggedUserInfo(String ip, String login, String loginDateTime, String logoutDateTime, String username, String sessionId) {
+			this.ip = ip;
+			this.login = login;
+			this.loginTime = loginDateTime;
+			this.logoutTime = logoutDateTime;
+			this.username = username;
+			this.sessionId = sessionId;
+		}
+
+		public String getIp() { return ip; }
+		public void setIp(String ip) { this.ip = ip; }
+
+		public String getLogin() { return login; }
+		public void setLogin(String login) { this.login = login; }
+
+		public String getLoginTime() { return loginTime; }
+		public void setLoginTime(String loginTime) { this.loginTime = loginTime; }
+
+		public String getLogoutTime() { return logoutTime; }
+		public void setLogoutTime(String logoutTime) { this.logoutTime = logoutTime; }
+
+		public String getUsername() { return username; }
+		public void setUsername(String username) { this.username = username; }
+
+		public String getSessionId() { return sessionId; }
+		public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+	}
+
 	
 	public static final String UTENTI_CONNESSI = "utentiConnessi";
 	
@@ -206,49 +249,26 @@ public class TrackerSessioniUtenti {
 	private static final DateFormat YYYYMMDD_HHMMSS_SSSSSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
 	
 	/**
-	 * Hash contenente gli identificativi delle sessioni degli utenti connessi
-	 * all'applicativo
+	 * Hash contenente gli identificativi delle sessioni degli utenti connessi all'applicativo
 	 */
-	private HashMap<String, String[]> datiSessioniUtentiConnessi;     
+	private HashMap<String, LoggedUserInfo> datiSessioniUtentiConnessi;
 
 	/**
 	 * Lista delle sessioni degli utenti connessi all'applicativo
 	 */
 	private HashMap<String, HttpSession> sessioniUtentiConnessi;  
 
-//  /**
-//   * Singleton
-//   */
-//  private static TrackerSessioniUtenti instance;
+	
+	/**
+	 * Costruttore privato del singleton che inizializza l'oggetto con le
+	 * variabili per le connessioni al valore massimo letto dal file di
+	 * configurazione, mentre il set di id sessione è inizialmente vuoto
+	 */
+	public TrackerSessioniUtenti() {
+		this.datiSessioniUtentiConnessi = new HashMap<String, LoggedUserInfo>();
+		this.sessioniUtentiConnessi = new HashMap<String, HttpSession>();
+	}
 
-  /**
-   * Costruttore privato del singleton che inizializza l'oggetto con le
-   * variabili per le connessioni al valore massimo letto dal file di
-   * configurazione, mentre il set di id sessione è inizialmente vuoto
-   */
-  public TrackerSessioniUtenti() {
-    this.datiSessioniUtentiConnessi = new HashMap<String, String[]>();
-    this.sessioniUtentiConnessi = new HashMap<String, HttpSession>();
-  }
-
-//  /**
-//   * Metodo statico per ottenere l'unica referenza al dizionario. Viene creato
-//   * l'oggetto solo la prima volta, le altre volte l'oggetto viene semplicemente
-//   * restituito
-//   *
-//   * @return oggetto limitatore delle connessioni
-//   */
-//  public static TrackerSessioniUtenti getInstance() {
-//    if (instance != null) return instance;
-//
-//    synchronized (TrackerSessioniUtenti.class) {
-//      if (instance == null) {
-//        instance = new TrackerSessioniUtenti();
-//      }
-//    }
-//    return instance;
-//  }
-  
 	/**
 	 * Ritorna una referenza al tracker delle sessioni utenti connessi.
 	 * 
@@ -301,9 +321,9 @@ public class TrackerSessioniUtenti {
 						
 						// verifica se l'utente esiste gia' nel tracker delle sessioni utente... 
 						boolean trovato = false;
-						for (Map.Entry<String, String[]> dati : tracker.getDatiSessioniUtentiConnessi().entrySet()) {
-							String[] datiUtente = dati.getValue();
-							if(datiUtente[1].equals(username)) {
+						for (Map.Entry<String, LoggedUserInfo> dati : tracker.getDatiSessioniUtentiConnessi().entrySet()) {
+							LoggedUserInfo info = dati.getValue();
+							if(info.getLogin().equals(username)) {
 								trovato = true;
 								break;
 							}
@@ -322,7 +342,7 @@ public class TrackerSessioniUtenti {
 		
 		return tracker;
 	}
-
+	
 	private static String formatDate(String date) throws ParseException {
 		return DDMMYYYY_HHMMSS.format(YYYYMMDD_HHMMSS_SSSSSS.parse(date));
 	}
@@ -331,36 +351,47 @@ public class TrackerSessioniUtenti {
 	 * ... 
 	 */
 	private static void debugTrackerList(TrackerSessioniUtenti tracker) {
-//System.out.println("------------------------------");
 		if(ApsSystemUtils.getLogger().isDebugEnabled()) {
+//System.out.println("TrackerSessioniUtenti BEGIN");
 			ApsSystemUtils.getLogger().debug("TrackerSessioniUtenti BEGIN");
-			for (String elementSessionId : tracker.getDatiSessioniUtentiConnessi().keySet()) {
-				String[] datiUtente = tracker.getDatiSessioniUtentiConnessi().get(elementSessionId);
-				ApsSystemUtils.getLogger().debug("TrackerSessioniUtenti: " + datiUtente[1] + ", " + datiUtente[4] + ", sessionId=" + elementSessionId );
-//System.out.println("TrackerSessioniUtenti: " + datiUtente[1] + ", " + datiUtente[4] + ", sessionId=" + elementSessionId );
+			for (String sessionId : tracker.getDatiSessioniUtentiConnessi().keySet()) {
+				LoggedUserInfo info = tracker.getDatiSessioniUtentiConnessi().get(sessionId);
+				ApsSystemUtils.getLogger().debug("TrackerSessioniUtenti [" + sessionId + "]=(" + info.getLogin() + ", " + info.getUsername() + ", " + info.getLoginTime() + ", " + info.getLogoutTime() + ")");
+//System.out.println("TrackerSessioniUtenti [" + sessionId + "]=(" + info.getLogin() + ", " + info.getUsername() + ", " + info.getLoginTime() + ", " + info.getLogoutTime() + ", " + info.getIp() + ")");
 			}
 			ApsSystemUtils.getLogger().debug("TrackerSessioniUtenti END");
+//System.out.println("TrackerSessioniUtenti END");
 		}
-//System.out.println("------------------------------");
 	}
 
 	/**
 	 * Referenzia la sessione utente con i dati caratterizzanti l'autenticazione.
 	 */
-    public synchronized void putSessioneUtente(HttpSession session, String sessionId, String ip, String login, String loginDateTime, String logoutDateTime, String username) {
+    public synchronized void putSessioneUtente(
+    		HttpSession session, 
+    		String sessionId, 
+    		String ip, 
+    		String login, 
+    		String loginDateTime, 
+    		String logoutDateTime, 
+    		String username) 
+    {
        if(session != null && StringUtils.isEmpty(sessionId)) {
     	   sessionId = session.getId();
        }
        if(StringUtils.isNotEmpty(sessionId)) {
-		   String[] info = new String[6];
-		   info[0] = ip;
-		   info[1] = login;
-		   info[2] = loginDateTime;
-		   info[3] = logoutDateTime;
-		   info[4] = username;
-		   HttpSessionWrapper cs = (session != null && session instanceof HttpSessionWrapper
-									? (HttpSessionWrapper)session 
-									: new HttpSessionWrapper(session));
+    	   HttpSessionWrapper cs = (session != null && session instanceof HttpSessionWrapper
+					? (HttpSessionWrapper)session 
+					: new HttpSessionWrapper(session));
+    	   
+    	   LoggedUserInfo info = new LoggedUserInfo(
+    			   ip,
+    			   login, 
+    			   loginDateTime, 
+    			   logoutDateTime, 
+    			   username, 
+    			   sessionId);
+    	   
 		   this.datiSessioniUtentiConnessi.put(sessionId, info);
 		   this.sessioniUtentiConnessi.put(sessionId, cs);
 		   
@@ -384,104 +415,133 @@ public class TrackerSessioniUtenti {
 	 *            data ora in formato stringa GG/MM/AAAA HH:MI:SS di
 	 *            autenticazione al sistema
 	 */
-  public synchronized void putSessioneUtente(HttpSession session, String ip, String login, String loginDateTime) {
-	 putSessioneUtente(session, session.getId(), ip, login, loginDateTime, null, null);
-  }
+    public synchronized void putSessioneUtente(HttpSession session, String ip, String login, String loginDateTime) {
+    	putSessioneUtente(session, session.getId(), ip, login, loginDateTime, null, null);
+    }
 
-  /**
-   * Esegue la deallocazione della connessione per la sessione in input. Si
-   * esegue un test preventivo che la sessione sia tra quelle che han ottenuto
-   * con successo l'allocazione in precedenza.
-   *
-   * @param sessionId
-   *        sessione richiedente la deallocazione della connessione
-   */
-  public synchronized void removeSessioneUtente(String sessionId) {
-    if (this.datiSessioniUtentiConnessi.containsKey(sessionId)) {
-        this.datiSessioniUtentiConnessi.remove(sessionId);
-        this.sessioniUtentiConnessi.remove(sessionId);
-        debugTrackerList(this);
-    }    
-  }
-
-  /**
-   * @return Ritorna datiSessioniUtentiConnessi.
-   */
-  public HashMap<String, String[]> getDatiSessioniUtentiConnessi() {
-	  return datiSessioniUtentiConnessi;
-  }
+    /**
+     * aggiorna i dati sessione di un utente
+     */
+    public synchronized void updateSessioneUtente(String sessionId) {
+    	if(StringUtils.isNotEmpty(sessionId)) {
+    		try {
+    			HttpSessionWrapper cs = (HttpSessionWrapper) this.sessioniUtentiConnessi.get(sessionId);
+        		// ATTENNZIONE: 
+        		// il logoutTime viene aggiornato con la data attuale da UserCluesterIterceptor 
+        		// per mantenere aggiornata la data ora di ultimo accesso 
+    			LoggedUserInfo info = this.datiSessioniUtentiConnessi.get(sessionId);
+    			info.setLogoutTime(DateFormatUtils.format(cs.getLastAccessedTime(), "dd/MM/yyyy HH:mm:ss"));
+    		} catch(Exception ex) {
+    			ApsSystemUtils.getLogger().warn("TrackerSessioniUtenti", "updateSessioneUtente", ex);
+    		}
+    	}
+    }
   
-  /**
-   * 
-   */
-  public HashMap<String, HttpSession> getSessioniUtentiConnessi() {
-	  return sessioniUtentiConnessi;
-  }
-  
-  /**
-   * 
-   */
-  public Integer getNumeroUtentiConnessi() {
-	  return datiSessioniUtentiConnessi.size();
-  }
-  
-	/**
-	 * Verifica se un utente risulta o meno gi&agrave; connesso.
-	 * 
-	 * @param login
-	 *            login utente da verificare
-	 * @param sessionId
-	 *            id sessione dell'utente che sta effettuando l'accesso
-	 * 
-	 * @return true se l'utente in input risulta gi&agrave; connesso, false altrimenti
-	 */
-	public synchronized boolean isUtenteConnesso(String login, String sessionId) {
-		boolean utenteConnesso = false;
-		for (String elementSessionId : datiSessioniUtentiConnessi.keySet()) {
-			String[] datiUtente = datiSessioniUtentiConnessi.get(elementSessionId);
-			if (datiUtente[1].equals(login) && !elementSessionId.equals(sessionId)) {
-				utenteConnesso = true;
-				break;
-			}
-		}
-		return utenteConnesso;
-	}
+    /**
+     * aggiorna i dati sessione utente solo per l'utente specificato, senza ricaricare da DB i dati di tutti gli utenti loggati...
+     */
+    public static void updateSessioneUtente(HttpSession session, UserDetails currentUser) {	
+    	if(session != null && currentUser != null) {
+    		TrackerSessioniUtenti tracker = (TrackerSessioniUtenti) session.getServletContext().getAttribute(TrackerSessioniUtenti.UTENTI_CONNESSI);
+    		if(tracker != null) {
+    			tracker.updateSessioneUtente(currentUser.getSessionId());
+    		}
+    	}
+    }
 
-	/**
-	 * Verifica se un utente risulta o meno gi&agrave; connesso e ritorna l'eventuale session id dell'utente correntemente connesso.
-	 * 
-	 * @param login
-	 *            login utente da verificare
-	 * @param sessionId
-	 *            id sessione dell'utente che sta effettuando l'accesso
-	 * 
-	 * @return identificativo di sessione utente gi&agrave; connesso, null se non esiste alcun accesso simultaneo con lo stesso utente
-	 */
-	public synchronized String getSessionIdUtenteConnesso(String login, String sessionId) {
-		String sessionIdUserLogged = null;
-		for (String elementSessionId : datiSessioniUtentiConnessi.keySet()) {
-			String[] datiUtente = datiSessioniUtentiConnessi.get(elementSessionId);
-			if (datiUtente[1].equals(login) && !elementSessionId.equals(sessionId)) {
-				sessionIdUserLogged = elementSessionId;
-				break;
-			}
-		}
-		return sessionIdUserLogged;
-	}
+    /**
+     * Esegue la deallocazione della connessione per la sessione in input. Si
+     * esegue un test preventivo che la sessione sia tra quelle che han ottenuto
+     * con successo l'allocazione in precedenza.
+     *
+     * @param sessionId
+     *        sessione richiedente la deallocazione della connessione
+     */
+    public synchronized void removeSessioneUtente(String sessionId) {
+    	if (this.datiSessioniUtentiConnessi.containsKey(sessionId)) {
+    		this.datiSessioniUtentiConnessi.remove(sessionId);
+    		this.sessioniUtentiConnessi.remove(sessionId);
+    		debugTrackerList(this);
+    	}
+    }
 
-	/**
-	 * Restituisce il session id di un utente loggato
-	 */
-	public synchronized String getIdSessioneUtente(String login) {
-		String id = null;
-		for (String elementSessionId : datiSessioniUtentiConnessi.keySet()) {
-			String[] datiUtente = datiSessioniUtentiConnessi.get(elementSessionId);
-			if (datiUtente[1].equals(login)) {
-				id = elementSessionId;
-				break;
-			}
-		}
-		return id;
-	}
+    
+    /**
+     * @return Ritorna datiSessioniUtentiConnessi.
+     */
+    public HashMap<String, LoggedUserInfo> getDatiSessioniUtentiConnessi() {
+    	return datiSessioniUtentiConnessi;
+    }
+  
+    /**
+     * ...
+     */
+    public HashMap<String, HttpSession> getSessioniUtentiConnessi() {
+    	return sessioniUtentiConnessi;
+    }
+  
+    /**
+     * ...
+     */
+    public Integer getNumeroUtentiConnessi() {
+    	return datiSessioniUtentiConnessi.size();
+    }
+  
+    /**
+     * recupera la prima sessione di un utente diversa dalla sessione corrente
+     * @param login 
+     * 			username dell'utente da verificare
+     * @param currentSessionId 
+     * 			id sessione dell'utente da verificare
+     */
+    private synchronized String findUserIdSession(String login, String currentSessionId) {
+    	String sessionId = null;
+    	for (String id : datiSessioniUtentiConnessi.keySet()) {
+    		// ignora la sessione corrente...
+    		// ATTENNZIONE: 
+    		// il logoutTime viene aggiornato con la data attuale da UserCluesterIterceptor 
+    		// per mantenere aggiornata la data ora di ultimo accesso 
+    		if( !currentSessionId.equals(id) ) {
+    			LoggedUserInfo info = datiSessioniUtentiConnessi.get(id);
+	    		if(login.equals(info.getLogin())) {
+	    			sessionId = id;
+	    			break;
+	    		}
+    		}
+    	}
+    	return sessionId;
+    }
+
+    /**
+     * Verifica se un utente risulta o meno gi&agrave; connesso.
+     * @param login
+     *            login utente da verificare
+     * @param sessionId
+     *            id sessione dell'utente che sta effettuando l'accesso
+     * 
+     * @return true se l'utente in input risulta gi&agrave; connesso, false altrimenti
+     */
+    public synchronized boolean isUtenteConnesso(String login, String loginSessionId) {
+    	LoggedUserInfo info = null;
+    	String sessionId = findUserIdSession(login, loginSessionId);
+    	if(StringUtils.isNotEmpty(sessionId)) {
+    		info = datiSessioniUtentiConnessi.get(sessionId);
+    	}
+    	return (info != null);
+    }
+
+    /**
+     * Verifica se un utente risulta gi&agrave; connesso e ritorna l'eventuale session id dell'utente gi&agrave; connesso.
+     * 
+     * @param login
+     *            login utente da verificare
+     * @param sessionId
+     *            id sessione dell'utente corrente che sta tentanto l'accesso
+     * 
+     * @return identificativo di sessione utente gi&agrave; connesso, null se non esiste alcun accesso simultaneo con lo stesso utente
+     */
+    public synchronized String getSessionIdUtenteConnesso(String login, String loginSessionId) {
+    	return findUserIdSession(login, loginSessionId);
+    }
 
 }

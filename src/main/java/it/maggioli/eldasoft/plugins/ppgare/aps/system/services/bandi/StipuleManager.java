@@ -1,20 +1,14 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi;
 
-import java.rmi.RemoteException;
-import java.util.Calendar;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.AbstractService;
-
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
-import it.eldasoft.www.sil.WSStipule.DocumentazioneStipulaContrattiType;
-import it.eldasoft.www.sil.WSStipule.ElencoStipuleContrattiOutType;
-import it.eldasoft.www.sil.WSStipule.GetAllegatoStipulaContrattoOutType;
-import it.eldasoft.www.sil.WSStipule.GetDettaglioStipulaContrattoOutType;
-import it.eldasoft.www.sil.WSStipule.GetDocumentiRichiestiStipulaContrattoOutType;
-import it.eldasoft.www.sil.WSStipule.StipulaContrattoType;
+import it.eldasoft.www.sil.WSStipule.*;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
+
+import java.rmi.RemoteException;
+import java.util.Calendar;
 
 
 public class StipuleManager extends AbstractService implements IStipuleManager {
@@ -25,14 +19,6 @@ public class StipuleManager extends AbstractService implements IStipuleManager {
 
 	/** Riferimento al wrapper per il web service Gare Appalto */
 	private WSStipuleWrapper wsStipule;
-
-	/**
-	 * Imposta il web service gare
-	 * 
-	 * @param proxyWsGare
-	 *            web service gare
-	 */
-
 
 	public void init() throws Exception {
 		ApsSystemUtils.getLogger().debug(
@@ -72,7 +58,7 @@ public class StipuleManager extends AbstractService implements IStipuleManager {
 	}
 	
 	@Override
-	public StipulaContrattoType dettaglioStipulacontratto(
+	public StipulaContrattoType getDettaglioStipulaContratto(
 			String id, String username, boolean pubblicata) throws ApsException  
 	{
 		try {
@@ -118,7 +104,7 @@ public class StipuleManager extends AbstractService implements IStipuleManager {
 	}
 
 	@Override
-	public AllegatoComunicazioneType getAllegatoStipula(String docId) throws ApsException {
+	public AllegatoComunicazioneType getDocumentoStipula(String docId) throws ApsException {
 		try {
 			GetAllegatoStipulaContrattoOutType 	retWS = wsStipule.getProxyWSstipule().getDocumentoStipula(docId);
 			if (retWS.getErrore() == null) {
@@ -137,7 +123,7 @@ public class StipuleManager extends AbstractService implements IStipuleManager {
 	}
 
 	@Override
-	public void deleteAllegatoStipula(String docId) throws ApsException {
+	public void deleteDocumentoStipula(String docId) throws ApsException {
 		try {
 			String error = wsStipule.getProxyWSstipule().deleteDocumentoStipula(docId);
 			if (error != null){
@@ -152,21 +138,34 @@ public class StipuleManager extends AbstractService implements IStipuleManager {
 	}
 	
 	@Override
-	public void insertAllegatoStipula(String nomeFile, Long idDocStipula, byte[] allegato, String note, DocumentiAllegatiFirmaBean checkFirma) throws ApsException {
+	public void insertAllegato(
+			String nomeFile
+			, Long idDocStipula
+			, byte[] allegato
+			, String note
+			, DocumentiAllegatiFirmaBean checkFirma
+			, String contentType
+	) throws ApsException {
 		try {
 			String error = null;
-			ApsSystemUtils.getLogger().info("checkFirma is null? {}",(checkFirma==null));
-			if(checkFirma != null) {
+			ApsSystemUtils.getLogger().debug("checkFirma is null? {}",(checkFirma==null));
+			AllegatoComunicazioneType attachment = new AllegatoComunicazioneType();
+			attachment.setNomeFile(nomeFile);
+			attachment.setTipo(contentType);
+			attachment.setFile(allegato);
+			if (checkFirma != null) {
 				Calendar firmacheckts = Calendar.getInstance();
 				firmacheckts.setTimeInMillis(checkFirma.getFirmacheckts().getTime());
-				error = wsStipule.getProxyWSstipule().insertAllegato(nomeFile, idDocStipula, allegato, note, checkFirma.getFirmacheck() ? "1" : "2", firmacheckts);
-			} else {
-				error = wsStipule.getProxyWSstipule().insertAllegato(nomeFile, idDocStipula, allegato, note, null, null);
+
+				attachment.setFirmacheck(checkFirma.getFirmacheck() ? "1" : "2");
+				attachment.setFirmacheckts(firmacheckts);
 			}
-			if (error != null){
+
+			wsStipule.getProxyWSstipule().insertAllegato(idDocStipula, attachment, note);
+
+			if (error != null)
 				throw new ApsException(
 						"Errore durante la lettura del documento della stipula contratto: " + error);
-			}
 		} catch (RemoteException t) {
 			throw new ApsException(
 					"Errore durante la lettura del documento della stipula contratto", t);

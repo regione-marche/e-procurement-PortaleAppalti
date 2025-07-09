@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -17,21 +18,28 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.LocaleProvider;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
+
+import it.maggioli.eldasoft.plugins.ppcommon.aps.XSSValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ClassFieldValidator;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ParamValidationResult;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 
 /**
  * Copia della classe "JakartaStreamMultiPartRequest" 
@@ -83,7 +91,7 @@ public class JakartaStreamMultiPartRequest implements MultiPartRequest {
 	private Locale defaultLocale = Locale.ENGLISH;
 	
 	/**
-	 * 
+	 * ...
 	 */
 	private FileUploadListener progress = null;
 
@@ -283,7 +291,15 @@ public class JakartaStreamMultiPartRequest implements MultiPartRequest {
 	private void processUpload(HttpServletRequest request, String saveDir) throws Exception {
 		// Sanity check that the request is a multi-part/form-data request.
 		if (ServletFileUpload.isMultipartContent(request)) {
-
+			// XSS - recupera gli attributi della action che andra' eseguita a breve...
+			// (vedi Struts2ServletDispatcher.prepareDispatcherAndWrapRequest(...))
+			Object action = (ActionContext.getContext() != null && ActionContext.getContext().getActionInvocation() != null  
+							 ? ActionContext.getContext().getActionInvocation().getAction()
+							 : null);
+			List<Field> actionFields = (action != null 
+							 ? ClassFieldValidator.getAllFieldsIncludingParent(action.getClass())
+							 : null);
+			
 			// Sanity check on request size.
 			boolean requestSizePermitted = isRequestSizePermitted(request);
 
@@ -313,7 +329,7 @@ public class JakartaStreamMultiPartRequest implements MultiPartRequest {
 						// If the file item stream is a form field, delegate to the
 						// field item stream handler
 						if (itemStream.isFormField()) {
-							processFileItemStreamAsFormField(itemStream);
+							processFileItemStreamAsFormField(itemStream, request, actionFields);
 						}
 	
 						// Delegate the file item stream for a file field to the
@@ -391,11 +407,13 @@ public class JakartaStreamMultiPartRequest implements MultiPartRequest {
 	 *
 	 * @param itemStream file item stream
 	 */
-	private void processFileItemStreamAsFormField(FileItemStream itemStream) {
+	private void processFileItemStreamAsFormField(FileItemStream itemStream, HttpServletRequest request, List<Field> actionFields) {
 		String fieldName = itemStream.getFieldName();
 		try {
-			List<String> values;
 			String fieldValue = Streams.asString(itemStream.openStream());
+			fieldValue = XSSValidateFieldValue(fieldName, fieldValue, actionFields);
+
+			List<String> values;
 			if (!parameters.containsKey(fieldName)) {
 				values = new ArrayList<String>();
 				parameters.put(fieldName, values);
@@ -407,6 +425,44 @@ public class JakartaStreamMultiPartRequest implements MultiPartRequest {
 			LOG.warn("Failed to handle form field '" + fieldName + "'.", e);
 		}
 	}
+
+	/**
+	 * XSS - verifica e filtra il valore associato al parametro (PORTAPPALT-1170)
+	 */
+	private String XSSValidateFieldValue(String fieldName, String fieldValue, List<Field> actionFields) {
+//		LOG.debug("START - validating field {}", fieldName);
+		boolean invalid = false;
+		
+		if(XSSValidation.hasToBeChecked(fieldName, fieldValue)) {
+			// gestisci i parametri NON definiti in una action
+			invalid = (XSSValidation.isNotValid(fieldName, fieldValue));
+		} else if(actionFields != null) {
+			// gestisci i parametri definiti da una action
+			// 1) recupera l'annotazione del "field" nella action
+			Validate annotation = actionFields.stream()
+				.filter(f -> fieldName.equalsIgnoreCase(f.getName()) && f.getAnnotation(Validate.class) != null)
+				.map(f -> f.getAnnotation(Validate.class))
+				.findFirst()
+				.orElse(null);
+			
+			// 2) applica il validatore dell'annotazione al valore del "field"
+			if(annotation != null) {
+		        // in questo contesto il valore da verificare e' sempre di tipo String (vedi "parameters")!!!
+				EParamValidation validator = annotation.value();
+				ParamValidationResult res = validator.validate(fieldValue);
+		        String invalidPart = (res != null ? res.getInvalidPart() : null);
+		        invalid = (StringUtils.isNotEmpty(invalidPart));
+			}
+		}
+		
+		if(invalid) {
+			LOG.error("The value: {}; for the field {} is not valid", fieldValue, fieldName);
+			fieldValue = "";
+		}
+		
+//		LOG.debug("END - validating field {}", fieldName);
+		return fieldValue; 
+	}	
 
 	/**
 	 * Processes the FileItemStream as a file field.

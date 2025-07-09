@@ -16,10 +16,16 @@
 	<p>
 		<wp:i18n key='LABEL_MODULISTICA_ELENCO_CAMBIATA_INFO'/>
 		<ul>
-			<li>				
-				<a href="<wp:action path='/ExtStr2/do/FrontEnd/IscrAlbo/openQCSummaryToView.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;${tokenHrefParams}">
-					<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI'/>
-				</a>
+			<li>
+				<form action="<wp:action path='/ExtStr2/do/FrontEnd/IscrAlbo/openQCSummaryToView.action'/>" method="post">
+					<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+					<input type="hidden" name="codice" value="${codice}" />
+					<input type="hidden" name="ext" value="${param.ext}" />
+					
+					<a href="javascript:;" onclick="parentNode.submit();" >
+						<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_SCARICA_DOCUMENTI'/>
+					</a>
+				</form>
 			</li>
 			<li>
 				<%--
@@ -29,9 +35,15 @@
 					elimino i doc della singola busta 
 					/ExtStr2/do/FrontEnd/GareTel/confirmRettificaBusta.action&currentFrame=7
 		 		--%>
-				<a href="<wp:action path='/ExtStr2/do/FrontEnd/IscrAlbo/eliminaDocumentiElenco.action'/>&amp;ext=${param.ext}&amp;codice=${codice}&amp;${tokenHrefParams}">
-					<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI'/>
-				</a>
+				<form action="<wp:action path='/ExtStr2/do/FrontEnd/IscrAlbo/eliminaDocumentiElenco.action'/>" method="post">
+					<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+					<input type="hidden" name="codice" value="${codice}" />
+					<input type="hidden" name="ext" value="${param.ext}" />
+					
+					<a href="javascript:;" onclick="parentNode.submit();" >
+						<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_ELIMINA_DOCUMENTI'/>
+					</a>
+				</form>
 			</li>
 		</ul>
 		<wp:i18n key='LABEL_MODULISTICA_CAMBIATA_INFO3'/>

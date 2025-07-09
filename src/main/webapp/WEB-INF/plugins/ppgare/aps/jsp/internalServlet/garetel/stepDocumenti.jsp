@@ -320,13 +320,13 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 															</li>
 															<li>
 																<s:if test="%{!#partecipazione.plicoUnicoOfferteDistinte}">
-																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}'
+																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>'
 																	   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class='bkg delete'>
 																		<wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 																	</a>
 																</s:if>
 																<s:else>
-																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>&amp;${tokenHrefParams}'
+																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>'
 																	   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class='bkg delete'>
 																		<wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 																	</a>
@@ -343,12 +343,12 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 															</li>
 															<li>
 																<s:if test="%{!#partecipazione.plicoUnicoOfferteDistinte}">
-																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}'
+																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>'
 																	   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 																	</a>
 																</s:if>
 																<s:else>
-																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>&amp;${tokenHrefParams}'
+																	<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>'
 																	   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 																	</a>
 																</s:else>
@@ -433,13 +433,13 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 													</li>
 													<li>
 														<s:if test="%{!#partecipazione.plicoUnicoOfferteDistinte}">
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}'
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>'
 															   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 																 <wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 															</a>
 														</s:if>
 														<s:else>
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>&amp;${tokenHrefParams}'
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>'
 															   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 																 <wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 															</a>
@@ -456,12 +456,12 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 													</li>
 													<li>
 														<s:if test="%{!#partecipazione.plicoUnicoOfferteDistinte}">
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}'
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>'
 															   title="<s:property value='%{#attr.titleEliminaAllegato}'/>" class="bkg delete">
 															</a>
 														</s:if>
 														<s:else>
-															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>&amp;${tokenHrefParams}'
+															<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{codice}"/>&amp;codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/>'
 															   title="<s:property value='%{#attr.titleEliminaAllegato}'/>" class="bkg delete">
 															</a>
 														</s:else>
@@ -512,13 +512,13 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 					</tbody>
 				</table>
 			</div>
-			<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-			<s:set var="kbDisponibili" value="%{limiteTotaleUploadDocBusta - dimensioneAttualeFileCaricati}"></s:set>
+			
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/fileupload.jsp" />
+			
 			<p>
-				<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
-				<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <strong><s:property value="%{#kbCaricati}" /></strong> KB, <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" />
-				<strong><s:property value="%{#kbDisponibili}" /></strong> KB.
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+					<jsp:param name="dimensioneAttualeFileCaricati" value="${dimensioneAttualeFileCaricati}"/>
+				</jsp:include>
 			</p>
 		</fieldset>
 
@@ -552,6 +552,11 @@ riepilogoBuste.codiceGara=<s:property value="%{#riepilogoBuste.codiceGara}"/><br
 					<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_save_docs.jsp" />
 					<s:submit value="Salva documenti" title="Salva le modifiche ai documenti" class="button block-ui" method="save" ></s:submit>
 				</s:if>
+				
+				<wp:i18n key="BUTTON_WIZARD_VERIFICA_BUSTA" var="valueVerificaButton" />
+				<wp:i18n key="TITLE_WIZARD_VERIFICA_BUSTA" var="titleVerificaButton" />
+				<s:submit value="%{#attr.valueVerificaButton}" title="%{#attr.titleVerificaButton}" cssClass="button" method="check" ></s:submit>
+				
 			</div>
 		</form>
 	</s:else>

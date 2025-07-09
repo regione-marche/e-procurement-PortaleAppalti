@@ -1308,7 +1308,11 @@ public class ComunicazioniUtilities {
 		wsdmProtocolloDocumentoIn.setClassifica(classificaFascicolo);
 		wsdmProtocolloDocumentoIn.setTipoDocumento(tipoDocumento);
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -1374,9 +1378,10 @@ public class ComunicazioniUtilities {
 		}
 		
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
+		
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
-		
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -1384,13 +1389,6 @@ public class ComunicazioniUtilities {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-			if("6".equals(impresa.getTipoImpresa())) {
-		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-		    } else {
-		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-		    }
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1448,14 +1446,9 @@ public class ComunicazioniUtilities {
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 		
 		int numDocDaProtocollare = 1 +
 			(documentiHelper.getRequiredDocs() == null ? 0 : documentiHelper.getRequiredDocs().size()) +
@@ -1585,8 +1578,9 @@ public class ComunicazioniUtilities {
 		byte[] contenutoPdf = null;
 		if(isActiveFunctionPdfA) {
 			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
+				ApsSystemUtils.getLogger().debug("Trasformazione contenuto in PDF-A");
 				contenutoPdf = UtilityStringhe.string2PdfA(contenuto,iccFilePath);
+				allegati[n2].setTipo("pdf/a");
 			} catch (com.itextpdf.text.DocumentException e) {
 				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
 				de.initCause(e);
@@ -1902,14 +1896,11 @@ public class ComunicazioniUtilities {
 	/**
 	 * Invia una comunicazione FS13 relativa alla generazione del pdf 
 	 * dell'offerta d'asta.
-	 * @throws IOException 
-	 * @throws GeneralSecurityException 
-	 * @throws ApsException 
-	 *  
+	 * @throws Exception 
 	 */
 	public Long sendComunicazioneGenerazioneOffertaAsta(
 			WizardOffertaAstaHelper helper,
-			boolean processata) throws IOException, GeneralSecurityException, ApsException 
+			boolean processata) throws Exception 
 	{
 		Long idComunicazione = null;
 		
@@ -2150,7 +2141,7 @@ public class ComunicazioniUtilities {
 		if(idComunicazione > 0 && idDocumento != null) {
 			// richiedi lo stream del file al servizio...
 			IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ApsWebApplicationUtils				
-				.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER,
+				.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER,
 						 ServletActionContext.getRequest());
 		
 			ComunicazioneType comunicazione = comunicazioniManager.getComunicazione(

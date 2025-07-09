@@ -123,7 +123,8 @@
 	<detail>
 		<band height="37" splitType="Prevent">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[($P{ITER_GARA}.isEmpty() || ("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta})))]]></printWhenExpression>
+			<printWhenExpression><![CDATA[!"8".equals($P{ITER_GARA})
+|| ("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta}))]]></printWhenExpression>
 			<frame>
 				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="483" height="20" backcolor="#CCCCCC" uuid="0a46d57a-d200-41f1-a3ed-6711e526fcb9">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -131,7 +132,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textField>
-					<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="483" height="19" uuid="2978da57-cea3-429e-93a5-37b72ab84533">
+					<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="483" height="20" uuid="2978da57-cea3-429e-93a5-37b72ab84533">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
@@ -264,6 +265,7 @@
 			</componentElement>
 		</band>
 		<band height="67">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA[(!"8".equals($P{ITER_GARA}))]]></printWhenExpression>
 			<frame>
 				<reportElement positionType="Float" x="0" y="0" width="483" height="17" uuid="3b56677a-2a25-48da-8b67-0a030820b18d">
@@ -616,6 +618,7 @@
 			</textField>
 		</band>
 		<band height="67">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA[("8".equals($P{ITER_GARA}) && !"0.0".equals($F{quantitaOfferta}))]]></printWhenExpression>
 			<frame>
 				<reportElement positionType="Float" x="0" y="17" width="483" height="47" uuid="ade910d6-c456-40c5-b744-4f45250b44ff">
@@ -789,6 +792,9 @@
 					<textFieldExpression><![CDATA[$F{unitaMisura} != null ? $F{unitaMisura} : ""]]></textFieldExpression>
 				</textField>
 			</frame>
+		</band>
+		<band height="10">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 		</band>
 	</detail>
 </jasperReport>

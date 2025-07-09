@@ -17,23 +17,32 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Document
 public interface IStipuleManager {
 
 	public ElencoStipuleContrattiOutType searchStipuleContratti(
-			String codiceStipula, String oggetto, Integer stato,
-			String stazioneAppaltante, String usernome,int indicePrimoRecord, int maxNumRecord)
-			throws ApsException;
+			String codiceStipula, 
+			String oggetto, 
+			Integer stato,
+			String stazioneAppaltante, 
+			String usernome,
+			int indicePrimoRecord, int maxNumRecord) 
+		throws ApsException;
 
-	public StipulaContrattoType dettaglioStipulacontratto(String codiceStipula, String username,  boolean pubblicata)
-			throws ApsException;
+	public StipulaContrattoType getDettaglioStipulaContratto(String codiceStipula, String username,  boolean pubblicata)
+		throws ApsException;
 	
 	public DocumentazioneStipulaContrattiType[] getDocumentiRichiestiStipulaContratto(String idStipula)
 		throws ApsException;
-
-	public AllegatoComunicazioneType getAllegatoStipula(String docId) throws ApsException;
 	
-	public void deleteAllegatoStipula(String docId) throws ApsException;
-
-	public void insertAllegatoStipula(String nomeFile, Long idDocStipula,
-			byte[] allegato, String note, DocumentiAllegatiFirmaBean checkFirma) throws ApsException;
+	public AllegatoComunicazioneType getDocumentoStipula(String docId) throws ApsException;
 	
+	public void deleteDocumentoStipula(String docId) throws ApsException;
+
+	public void insertAllegato(
+			String nomeFile, 
+			Long idDocStipula,
+			byte[] allegato, 
+			String note, 
+			DocumentiAllegatiFirmaBean checkFirma,
+			String contentType
+	) throws ApsException;
 
 	public void updateStipula(String codiceStipula, String username) throws ApsException;
 	

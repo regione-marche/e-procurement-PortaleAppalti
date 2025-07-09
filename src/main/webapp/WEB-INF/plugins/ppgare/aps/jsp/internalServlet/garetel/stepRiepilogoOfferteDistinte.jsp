@@ -30,6 +30,7 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/field_errors.jsp" />
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
+    <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_messages.jsp" />
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="${codiceBalloon}"/>
@@ -104,7 +105,7 @@
 			</div>
 		</div>
 
-		<div class="fieldset-row last-row">
+		<div class="fieldset-row">
 			<div class="label">
 				<label><wp:i18n key="LABEL_PARTECIPA_COME_MANDATARIA_RTI" /> : </label>
 			</div>
@@ -141,6 +142,16 @@
 			</s:if>
 		</s:if>
 		
+		<s:if test="%{#buste.invioOfferta}">
+			<div class="fieldset-row last-row">
+				<div class="label">
+					<label><wp:i18n key='LABEL_CODICE_CNEL'/> : </label>
+				</div>
+				<div class="element">
+					<s:property value="%{#partecipazione.codiceCNEL}" />
+				</div>
+			</div>
+		</s:if>
 	</fieldset>
 
 	<!--  BUSTA AMMINISTRASTIVA  -->
@@ -228,8 +239,6 @@
 					<div class="label">
 						<label>
 							<wp:i18n key="LABEL_DOCUMENTI_OBBLIGATORI_MANCANTI" /> <s:if test="%{docObbligatoriMancantiAmministrativa.size() > 0}">(<s:property value="%{docObbligatoriMancantiAmministrativa.size()}"/>) : </s:if> 
-							<a title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' aria-label='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageDocumenti.action" />&amp;tipoBusta=${BUSTA_AMMINISTRATIVA}&amp;codiceGara=${codiceGara}&amp;codice=${lotto}&amp;operazione=${operazione}&amp;${tokenHrefParams}'>
-							</a> 
 						</label>
 					</div>
 					<div class="element">
@@ -246,7 +255,23 @@
 					</div>
 				</div>
 			</s:if>
-			
+			<c:if test='${"1".equals(statoAmministrativa) || "".equals(statoAmministrativa)}'>
+				<form action="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/redirectSummaryEnv.action' />" method="post">
+					<div class="azioni">
+						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+						<input type="submit" value="Compila" title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="button" name="method:doModify" />
+						<c:if test='${"1".equals(statoAmministrativa)}'>
+							<input type="submit" value="<wp:i18n key='LABEL_ELIMINA' />" title="<wp:i18n key='LABEL_ELIMINA' />" class="button" name="method:doReset" />
+						</c:if>
+						<input type="hidden" name="tipoBusta" value="${BUSTA_AMMINISTRATIVA}" />
+						<input type="hidden" name="codiceGara" value="${codiceGara}" />
+						<input type="hidden" name="codice" value="${lotto}" />
+						<input type="hidden" name="operazione" value="${operazione}" />
+						<input type="hidden" name="offertaTelematica" value="${false}" />
+						<input type="hidden" name="backActionPath" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogoOfferteDistinte.action" />
+					</div>
+				</form>
+			</c:if>
 		</fieldset>
 	</s:if>
 	
@@ -365,8 +390,6 @@
 								<div class="label">
 									<label>
 										<wp:i18n key="LABEL_DOCUMENTI_OBBLIGATORI_MANCANTI" /> <s:if test="%{docObbligatoriMancantiTecnica.get(#lotto).size > 0}">(<s:property value="%{docObbligatoriMancantiTecnica.get(#lotto).size() - }"/>)</s:if> : 
-										<a title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' aria-label='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageDocumenti.action" />&amp;tipoBusta=${BUSTA_TECNICA}&amp;codiceGara=${codiceGara}&amp;codice=${lotto}&amp;operazione=${operazione}&amp;${tokenHrefParams}'>&nbsp;
-										</a>
 									</label>
 								</div>
 								<div class="element">
@@ -388,6 +411,23 @@
 								</div>
 							</div>
 						</s:if>
+						<c:if test='${"1".equals(statoTecnica[lotto]) || "".equals(statoTecnica[lotto])}'>
+							<form action="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/redirectSummaryEnv.action' />" method="post">
+								<div class="azioni">
+									<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+									<input type="submit" value="Compila" title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="button" name="method:doModify" />
+									<c:if test='${"1".equals(statoTecnica[lotto])}'>
+										<input type="submit" value="<wp:i18n key='LABEL_ELIMINA' />" title="<wp:i18n key='LABEL_ELIMINA' />" class="button" name="method:doReset" />
+									</c:if>
+									<input type="hidden" name="tipoBusta" value="${BUSTA_TECNICA}" />
+									<input type="hidden" name="codiceGara" value="${codiceGara}" />
+									<input type="hidden" name="codice" value="${lotto}" />
+									<input type="hidden" name="operazione" value="${operazione}" />
+									<input type="hidden" name="offertaTelematica" value="${false}" />
+									<input type="hidden" name="backActionPath" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogoOfferteDistinte.action" />
+								</div>
+							</form>
+						</c:if>
 					</fieldset>
 				</s:if>
 				
@@ -464,15 +504,6 @@
 								<div class="label">
 									<label>
 										<wp:i18n key="LABEL_DOCUMENTI_OBBLIGATORI_MANCANTI" /> <s:if test="%{docObbligatoriMancantiEconomica.get(#lotto).size() > 0}">(<s:property value="%{docObbligatoriMancantiEconomica.get(#lotto).size()}"/>)</s:if> : 
-											<s:if test="%{#wizardOfferta.get(#lotto)}">
-												<a title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' aria-label='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" 
-												   href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/initOffTel.action" />&amp;tipoBusta=3&amp;operazione=${operazione}&amp;codice=<s:property value="%{#lotto}"/>&amp;codiceGara=${codiceGara}&amp;${tokenHrefParams}'>
-												</a>
-											</s:if>
-											<s:else>
-												<a aria-label='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="bkg modify" href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openPageDocumenti.action" />&amp;tipoBusta=${BUSTA_ECONOMICA}&amp;codiceGara=${codiceGara}&amp;codice=${lotto}&amp;operazione=${operazione}&amp;${tokenHrefParams}'>
-												</a>
-											</s:else>
 									</label>
 								</div>
 								<div class="element">
@@ -495,7 +526,29 @@
 									</s:else>
 								</div>
 							</div>
-						</s:if>	
+						</s:if>
+						<c:if test='${"1".equals(statoEconomica[lotto]) || "".equals(statoEconomica[lotto])}'>
+							<form action="<wp:action path='/ExtStr2/do/FrontEnd/GareTel/redirectSummaryEnv.action' />" method="post">
+								<div class="azioni">
+									<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+									<input type="submit" value="Compila" title='<wp:i18n key="TITLE_MODIFICA_BUSTA" />' class="button" name="method:doModify" />
+									<c:if test='${"1".equals(statoEconomica[lotto])}'>
+										<input type="submit" value="<wp:i18n key='LABEL_ELIMINA' />" title="<wp:i18n key='LABEL_ELIMINA' />" class="button" name="method:doReset" />
+									</c:if>
+									<input type="hidden" name="tipoBusta" value="${BUSTA_ECONOMICA}" />
+									<input type="hidden" name="codiceGara" value="${codiceGara}" />
+									<input type="hidden" name="codice" value="${lotto}" />
+									<input type="hidden" name="operazione" value="${operazione}" />
+									<s:if test="%{#wizardOfferta.get(#lotto)}">
+										<input type="hidden" name="offertaTelematica" value="${true}" />
+									</s:if>
+									<s:else>
+										<input type="hidden" name="offertaTelematica" value="${false}" />
+									</s:else>
+									<input type="hidden" name="backActionPath" value="/ExtStr2/do/FrontEnd/GareTel/openRiepilogoOfferteDistinte.action" />
+								</div>
+							</form>
+						</c:if>
 					</fieldset>
 				</s:if>
 			</fieldset>
@@ -504,7 +557,7 @@
 
 
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBusteDistinte.action" />&amp;codice=${codiceGara}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/openGestioneBusteDistinte.action" />&amp;codice=${codiceGara}&amp;operazione=${operazione}&amp;progressivoOfferta=${progressivoOfferta}&amp;ext=${param.ext}">
 			<wp:i18n key="BUTTON_WIZARD_BACK_TO_MENU" />
 		</a>
 	</div>

@@ -1,5 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.ammtrasp;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.exception.ApsException;
+import com.opensymphony.xwork2.ModelDriven;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.AdempimentoAnticorruzioneType;
 import it.eldasoft.www.appalti.WSBandiEsitiAvvisi.AppaltoAggiudicatoAnticorruzioneType;
@@ -14,6 +17,9 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParam
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.ILeggeAnticorruzioneManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,13 +29,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.SessionAware;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.exception.ApsException;
-import com.opensymphony.xwork2.ModelDriven;
 
 /**
  * Classe Action per la gestione della ricerca e visualizzazione lista esiti per
@@ -254,13 +253,20 @@ public class AnticorruzioneFinderAction extends EncodedDataAction
 								.getConfigurationValue(AppParamManager.WS_BANDI_ESITI_AVVISI_AUTHENTICATION_TOKEN));
 
 				// estrazione dell'elenco dei bandi
-				listaAppalti = this.leggeAnticorruzioneManager
-						.getProspettoGareContrattiAnticorruzione(token, anno,
-								this.model.getCig(),
-								this.model.getProponente(),
-								this.model.getOggetto(),
-								this.model.getPartecipante(),
-								this.model.getAggiudicatario());
+				Pair<Integer, List<AppaltoAggiudicatoAnticorruzioneType>> result = leggeAnticorruzioneManager
+						.getProspettoGareContrattiAnticorruzione(
+								token
+								, anno
+								, model.getCig()
+								, model.getProponente()
+								, model.getOggetto()
+								, model.getPartecipante()
+								, model.getAggiudicatario()
+								, model.getIndicePrimoRecord()
+								, model.getiDisplayLength()
+						);
+				listaAppalti = result.getRight();
+				model.processResult(result.getLeft(), result.getLeft());
 				this.dataUltimoAggiornamento = this.getMaxDataUltimoAggiornamento(this.listaAdempimenti);
 				// salvataggio dei criteri di ricerca in sessione per la
 				// prossima riapertura della form
@@ -305,46 +311,70 @@ public class AnticorruzioneFinderAction extends EncodedDataAction
 			writer.print(StringUtilities.CSV_DELIMITER);
 			writer.print(this.getI18nLabel("LABEL_190_IMPORTO_SOMME_LIQUIDATE"));
 			writer.println();
-			
-			for (AppaltoAggiudicatoAnticorruzioneType appalto : this.listaAppalti) {
-				//WE870 : il cig fittizio viene passato come ="0000000000" altrimenti
-				//        excel lo presenta come 0
-				writer.print("=\""+ appalto.getCig()+"\"");
-				writer.print(StringUtilities.CSV_DELIMITER);
-				writer.print(StringUtilities.escapeCsv(appalto.getCodiceFiscaleProponente() + "-"
-						+ appalto.getDenominazioneProponente()));
-				writer.print(StringUtilities.CSV_DELIMITER);
-				//WE1181
-				writer.print(StringUtilities.escapeCsv(appalto.getOggetto()));
-				writer.print(StringUtilities.CSV_DELIMITER);
-				writer.print(appalto.getSceltaContraente());
-				writer.print(StringUtilities.CSV_DELIMITER);
 
-				printDatiOE(writer, appalto.getPartecipante());
-				
-				writer.print(StringUtilities.CSV_DELIMITER);
-				printDatiOE(writer, appalto.getAggiudicatario());
-				writer.print(StringUtilities.CSV_DELIMITER);
-				if (appalto.getImportoAggiudicazione() != null)
-					writer.print(BigDecimal.valueOf(appalto.getImportoAggiudicazione()).toPlainString());
-				writer.print(StringUtilities.CSV_DELIMITER);
-				if (appalto.getDataInizio() != null)
-					writer.print(this.getI18nLabel("LABEL_190_INIZIO") + " "
-							+ UtilityDate.convertiData(appalto.getDataInizio(),
-									UtilityDate.FORMATO_GG_MM_AAAA));
-				if (appalto.getDataUltimazione() != null)
-					writer.print(", " + this.getI18nLabel("LABEL_190_ULTIMAZIONE") + " "
-							+ UtilityDate.convertiData(
-									appalto.getDataUltimazione(),
-									UtilityDate.FORMATO_GG_MM_AAAA));
-				writer.print(StringUtilities.CSV_DELIMITER);
-				if (appalto.getImportoSommeLiquidate() != null)
-					writer.print(BigDecimal.valueOf(appalto.getImportoSommeLiquidate()).toPlainString());
-				writer.println();
+			String token = StringUtils
+					.stripToNull((String) this.appParamManager
+							.getConfigurationValue(AppParamManager.WS_BANDI_ESITI_AVVISI_AUTHENTICATION_TOKEN));
 
+			try {
+
+				List<AppaltoAggiudicatoAnticorruzioneType> list =
+						leggeAnticorruzioneManager.getProspettoGareContrattiAnticorruzione(
+								token
+								, Integer.parseInt(model.getAnno())
+								, model.getCig()
+								, model.getProponente()
+								, model.getOggetto()
+								, model.getPartecipante()
+								, model.getAggiudicatario()
+								, model.getIndicePrimoRecord()
+								, model.getiDisplayLength()
+						).getRight();
+				for (AppaltoAggiudicatoAnticorruzioneType appalto : list) {
+					//WE870 : il cig fittizio viene passato come ="0000000000" altrimenti
+					//        excel lo presenta come 0
+					writer.print("=\""+ appalto.getCig()+"\"");
+					writer.print(StringUtilities.CSV_DELIMITER);
+					writer.print(StringUtilities.escapeCsv(appalto.getCodiceFiscaleProponente() + "-"
+							+ appalto.getDenominazioneProponente()));
+					writer.print(StringUtilities.CSV_DELIMITER);
+					//WE1181
+					writer.print(StringUtilities.escapeCsv(appalto.getOggetto()));
+					writer.print(StringUtilities.CSV_DELIMITER);
+					writer.print(appalto.getSceltaContraente());
+					writer.print(StringUtilities.CSV_DELIMITER);
+
+					printDatiOE(writer, appalto.getPartecipante());
+
+					writer.print(StringUtilities.CSV_DELIMITER);
+					printDatiOE(writer, appalto.getAggiudicatario());
+					writer.print(StringUtilities.CSV_DELIMITER);
+					if (appalto.getImportoAggiudicazione() != null)
+						writer.print(BigDecimal.valueOf(appalto.getImportoAggiudicazione()).toPlainString());
+					writer.print(StringUtilities.CSV_DELIMITER);
+					if (appalto.getDataInizio() != null)
+						writer.print(this.getI18nLabel("LABEL_190_INIZIO") + " "
+								+ UtilityDate.convertiData(appalto.getDataInizio(),
+								UtilityDate.FORMATO_GG_MM_AAAA));
+					if (appalto.getDataUltimazione() != null)
+						writer.print(", " + this.getI18nLabel("LABEL_190_ULTIMAZIONE") + " "
+								+ UtilityDate.convertiData(
+								appalto.getDataUltimazione(),
+								UtilityDate.FORMATO_GG_MM_AAAA));
+					writer.print(StringUtilities.CSV_DELIMITER);
+					if (appalto.getImportoSommeLiquidate() != null)
+						writer.print(BigDecimal.valueOf(appalto.getImportoSommeLiquidate()).toPlainString());
+					writer.println();
+
+				}
+				this.inputStream = new ByteArrayInputStream(stream.toByteArray());
+				this.setTarget("export");
+			} catch (Exception e) {
+				ApsSystemUtils.logThrowable(e, this, "export");
+				ExceptionUtils.manageExceptionError(e, this);
+				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 			}
-			this.inputStream = new ByteArrayInputStream(stream.toByteArray());
-			this.setTarget("export");
+
 		}
 		return this.getTarget();
 	}

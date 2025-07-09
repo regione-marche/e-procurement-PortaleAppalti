@@ -19,6 +19,7 @@ import it.eldasoft.www.sil.WSPagoPASoap.RiferimentoOutType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -58,7 +59,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	private IPageManager pageManager;
 	
 	private Map<Integer,String> tipiCausalePagamento;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String followLink;
 	@Validate(EParamValidation.FILE_NAME)
 	private String filename;
@@ -91,7 +92,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	}
 
 	public PagoPaActionCrea() {
-		logger.info("PagoPaActionCrea()");
+		logger.debug("PagoPaActionCrea()");
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	}
 
 	public String nuovo() {
-		logger.info("PagoPaAction.nuovo");
+		logger.debug("PagoPaAction.nuovo");
 		this.model = new PagoPaPagamentoModel();
 		try {
 			
@@ -180,7 +181,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 			
 			
 			
-			logger.info("model: {}",model);
+			logger.debug("model: {}",model);
 			this.session.put("model", model);
 		} catch (Exception e) {
 			logger.error("Errorre in nuovo",e);
@@ -191,14 +192,14 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	
 	@SuppressWarnings("unchecked")
 	public String crea() {
-		logger.info("crea");
-		logger.info("model: {}",model);
+		logger.debug("crea");
+		logger.debug("model: {}",model);
 		//TODO chiamare il dettaglio gara
 		//alla conferma si apre la nuova finestra??
 		//azione successiva ??
 		this.tipiCausalePagamento = (Map<Integer, String>) this.session.get("tipiCausalePagamento");
 		if(validate(this.model)) {
-			logger.info("Modello valido facciamo quello che dobbiamo");
+			logger.debug("Modello valido facciamo quello che dobbiamo");
 			// richiedere dettaglio della gara per "verificare che la gara esista"
 			try {
 				UserDetails currentUser = (UserDetails)this.session.get(SystemConstants.SESSIONPARAM_CURRENT_USER);
@@ -225,7 +226,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 //							true);
 //				}
 				Date dt =Date.from(ZonedDateTime.now().plusDays(30).toInstant());
-				logger.info("Data scadenza fixed sysDate + 30d: {}",dt);
+				logger.debug("Data scadenza fixed sysDate + 30d: {}",dt);
 				this.model.setDataScadenza(dt);//TODO verificare in base alla tipologia
 				this.model.setDataInizioValidita(new Date());
 				this.model.setDataFineValidita(this.model.getDataScadenza());
@@ -265,10 +266,10 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	
 	@SuppressWarnings("unchecked")
 	public String eseguipagamento() {
-		logger.info("Richiesto pagamento per id {}",this.getModel().getId());
+		logger.debug("Richiesto pagamento per id {}",this.getModel().getId());
 		try {
 			this.followLink =  pagoPaManager.eseguiPagamento(this.model,configManager.getParam(SystemConstants.PAR_APPL_BASE_URL));
-			logger.info("Salvo in sessione id: {}",this.getModel().getId());
+			logger.debug("Salvo in sessione id: {}",this.getModel().getId());
 			this.session.put("id", this.getModel().getId());
 			return "follow";
 		} catch (Exception e) {
@@ -369,11 +370,11 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 	}
 	
 	public String scaricaRicevuta() {
-		logger.info("Invoked scaricaRicevuta with id: {}",this.model.getId());
+		logger.debug("Invoked scaricaRicevuta with id: {}",this.model.getId());
 		PagamentiOutType out;
 		try {
 			out = pagoPaManager.getPagamentoById(this.model.getId());
-			logger.info("Found pagamento: {}",out);
+			logger.debug("Found pagamento: {}",out);
 			this.inputStream = pagoPaManager.getRicevuta(out);
 			this.filename = out.getIuv()+".xml";
 		} catch (PagoPaException e) {
@@ -389,7 +390,7 @@ public class PagoPaActionCrea extends EncodedDataAction implements SessionAware,
 			this.addActionError(this.getI18nLabel("LABEL_PAGOPA_ERR_SRV"));
 			return "error";
 		}
-		logger.info("Return success -> {}",this.filename);
+		logger.debug("Return success -> {}",this.filename);
 		return SUCCESS;
 	}
 	

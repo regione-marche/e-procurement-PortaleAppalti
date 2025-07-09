@@ -33,7 +33,6 @@ public class GelLoginResponseAction extends BaseResponseAction {
 		return target;
 	}
 
-
 	/**
 	 * ...
 	 * @param configManager 
@@ -51,10 +50,10 @@ public class GelLoginResponseAction extends BaseResponseAction {
 		BaseAction action = (BaseAction)ActionContext.getContext().getActionInvocation().getAction();
 		try {
 			String url = (String) appParamManager
-			.getConfigurationValue(AppParamManager.GEL_WS_AUTHSERVICEGEL_URL);
+					.getConfigurationValue(AppParamManager.GEL_WS_AUTHSERVICEGEL_URL);
 			String authSystem = GEL_AUTHSYSTEM_DEFAULT;
 			String serviceProvider = (String) appParamManager
-			.getConfigurationValue(AppParamManager.GEL_SERVICEPROVIDER);
+					.getConfigurationValue(AppParamManager.GEL_SERVICEPROVIDER);
 			
 			if (SUCCESS.equals(target)) {
 				// imposta dinamicamente l'endpoint del proxy prima di
@@ -66,8 +65,7 @@ public class GelLoginResponseAction extends BaseResponseAction {
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");

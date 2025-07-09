@@ -64,109 +64,62 @@ public class Event implements Serializable {
 	private String ipAddress;
 	/** ID di sessione dell'utente connesso. */
 	private String sessionId;
+	/** solo per SSO: soggetto impresa (delegate user) loggato tramite SSO. */
+	private String delegate;
 	
-	/**
-	 * @return the id
-	 */
 	public Long getId() {
 		return id;
 	}
 
-	/**
-	 * @param level
-	 *            the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 	
-	/**
-	 * @return the eventDate
-	 */
 	public Date getEventDate() {
 		return eventDate;
 	}
 
-	/**
-	 * @param level
-	 *            the level to set
-	 */
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
 	
 	
-	/**
-	 * @return the level
-	 */
 	public Level getLevel() {
 		return level;
 	}
 
-	/**
-	 * @param level
-	 *            the level to set
-	 */
 	public void setLevel(Level level) {
 		this.level = level;
 	}
 
-	/**
-	 * @return the username
-	 */
 	public String getUsername() {
 		return username;
 	}
 
-	/**
-	 * @param username
-	 *            the username to set
-	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-	/**
-	 * @return the destination
-	 */
 	public String getDestination() {
 		return destination;
 	}
 
-	/**
-	 * @param destination
-	 *            the destination to set
-	 */
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
 
-	/**
-	 * @return the eventType
-	 */
 	public String getEventType() {
 		return eventType;
 	}
 
-	/**
-	 * @param eventType
-	 *            the eventType to set
-	 */
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
 
-	/**
-	 * @return the message
-	 */
 	public String getMessage() {
 		return message;
 	}
 
-	/**
-	 * @param message
-	 *            the message to set
-	 */
 	public void setMessage(String message) {
 		this.message = message;
 		if (StringUtils.length(this.message) > 500) {
@@ -174,9 +127,6 @@ public class Event implements Serializable {
 		}
 	}
 	
-	/**
-	 * @return the html detailMessage
-	 */
 	public String getHtmlDetailMessage() {
 		//String msg = StringEscapeUtils.escapeHtml(detailMessage);
 		String msg = detailMessage
@@ -191,17 +141,10 @@ public class Event implements Serializable {
 		return msg;
 	}
 
-	/**
-	 * @return the detailMessage
-	 */
 	public String getDetailMessage() {
 		return detailMessage;
 	}
 
-	/**
-	 * @param detailMessage
-	 *            the detailMessage to set
-	 */
 	public void setDetailMessage(String detailMessage) {
 		this.detailMessage = detailMessage;
 		if (StringUtils.length(this.detailMessage) > 4000) {
@@ -268,32 +211,28 @@ public class Event implements Serializable {
 		this.setDetailMessage(t);
 	}
 
-	/**
-	 * @return the ipAddress
-	 */
 	public String getIpAddress() {
 		return ipAddress;
 	}
 
-	/**
-	 * @param ipAddress the ipAddress to set
-	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
-	/**
-	 * @return the sessionId
-	 */
 	public String getSessionId() {
 		return sessionId;
 	}
 
-	/**
-	 * @param sessionID the sessionId to set
-	 */
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
 	}
 
+	public String getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(String delegate) {
+		this.delegate = delegate;
+	}
+	
 }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Iscrizione" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="41">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Iscrizione" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="41" uuid="8cb0c065-5357-4c6d-ad48-1abf0b91507a">
 	<property name="ireport.zoom" value="1.331000000000001"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="175"/>
-	<subDataset name="dsDT">
+	<subDataset name="dsDT" uuid="fb443a49-850e-45ea-9f3a-657bc4a3bc69">
 		<parameter name="INDEX_START" class="java.lang.Integer"/>
 		<queryString language="xPath">
 			<![CDATA[/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']]]>
@@ -267,30 +268,33 @@
 	<detail>
 		<band height="98" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="383" y="0" width="100" height="20"/>
+				<reportElement positionType="Float" x="383" y="0" width="100" height="20" uuid="c9a9ffe8-5c82-446b-b018-779afdc585e8">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
+				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Allegato A)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="30" width="483" height="58"/>
+				<reportElement positionType="Float" x="0" y="30" width="483" height="58" uuid="900b86b9-b167-4ee2-b491-6a15276b19a1"/>
 				<box rightPadding="5"/>
-				<textElement textAlignment="Justified" verticalAlignment="Top" lineSpacing="1_1_2">
+				<textElement textAlignment="Justified" verticalAlignment="Top">
 					<font fontName="Arial" size="11" isBold="true"/>
+					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
 				<text><![CDATA[Domanda di iscrizione agli elenchi degli operatori economici per l'affidamento di lavori ai sensi degli articoli 36 e 63 del D.Lgs. n. 50 del 2016, con autocertificazioni e dichiarazioni richieste ai fini dell’ammissione.]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="20" width="483" height="10"/>
+				<reportElement positionType="Float" x="0" y="20" width="483" height="10" uuid="d0073993-bb8b-437b-a961-2756405c23b8"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="88" width="482" height="10"/>
+				<reportElement positionType="Float" x="1" y="88" width="482" height="10" uuid="1e6b9574-e0b0-40b6-aad0-bf6810941c5c"/>
 			</frame>
 		</band>
 		<band height="111">
 			<staticText>
-				<reportElement positionType="Float" x="270" y="0" width="213" height="20"/>
+				<reportElement positionType="Float" x="270" y="0" width="213" height="20" uuid="b8b5d5fd-74c7-4d77-9632-86fb5e5794dc"/>
 				<box rightPadding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="Arial" size="11"/>
@@ -298,7 +302,7 @@
 				<text><![CDATA[Spett.le Città Metropolitana di Bari ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="269" y="20" width="214" height="20"/>
+				<reportElement positionType="Float" x="269" y="20" width="214" height="20" uuid="af1075f9-7e97-498b-88b2-b4be7f58598a"/>
 				<box rightPadding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="Arial" size="11"/>
@@ -306,7 +310,7 @@
 				<text><![CDATA[Servizio Stazione Unica Appaltante]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="269" y="40" width="214" height="20"/>
+				<reportElement positionType="Float" x="269" y="40" width="214" height="20" uuid="ffe76c0c-74cf-4ba0-bc1f-e3e393610508"/>
 				<box rightPadding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="Arial" size="11"/>
@@ -314,10 +318,10 @@
 				<text><![CDATA[Via Postiglione 44 – 70126 Bari ]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="101" width="483" height="10"/>
+				<reportElement positionType="Float" x="0" y="101" width="483" height="10" uuid="0bb54a54-abcd-49bb-87b0-40eb86dd43ae"/>
 			</frame>
 			<staticText>
-				<reportElement positionType="Float" x="133" y="60" width="351" height="14"/>
+				<reportElement positionType="Float" x="133" y="60" width="351" height="14" uuid="43dc4ebf-d192-4cd4-9793-ab38f4506136"/>
 				<box rightPadding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="11"/>
@@ -326,12 +330,12 @@
 			</staticText>
 		</band>
 		<band height="46">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="0" y="0" width="483" height="20"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="483" height="20" uuid="763ef5a7-e0f8-4343-bfd1-ec950333380f"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Il/La sottoscritto/a "
+				<textFieldExpression><![CDATA["Il/La sottoscritto/a "
 +
 ($P{LIBERO_PROFESSIONISTA}
     ? ($F{cognomeLiberoProfessionista}+" "+$F{nomeLiberoProfessionista})
@@ -359,81 +363,81 @@
 )]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="39" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="39" width="484" height="5" uuid="512ace24-c9a2-4722-9b22-11574fdf6a8c"/>
 			</frame>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="44" width="483" height="2" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="44" width="483" height="2" isRemoveLineWhenBlank="true" uuid="c5733ba7-64d5-4d13-9039-87a8fa7ef6fc"/>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//impresa/indirizzo")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "IndirizziImpresa.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "IndirizziImpresa.jasper"]]></subreportExpression>
 			</subreport>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="88" y="25" width="396" height="14"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="88" y="25" width="396" height="14" uuid="d90482f5-8120-423b-96c6-e185efabca26"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} + ", " + $F{capSedeLegale} + " " + $F{comuneSedeLegale} + ($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale}+ ") ") + " - " + $F{nazioneSedeLegale}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{indirizzoSedeLegale} + " " + $F{numCivicoSedeLegale} + ", " + $F{capSedeLegale} + " " + $F{comuneSedeLegale} + ($F{provinciaSedeLegale} == null ? "" : " (" + $F{provinciaSedeLegale}+ ") ") + " - " + $F{nazioneSedeLegale}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="25" width="88" height="14"/>
+				<reportElement positionType="Float" x="0" y="25" width="88" height="14" uuid="7c645a6f-1508-4ae3-a090-e81bb1f3baa3"/>
 				<textElement>
 					<font fontName="Arial" size="11" isBold="false" isItalic="false" isUnderline="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["sede legale"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["sede legale"]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="20" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="20" width="483" height="5" uuid="7faafcb0-08bc-42ef-91c8-07676c11d14f"/>
 			</frame>
 		</band>
 		<band height="69">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="69"/>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="263" y="27" width="219" height="20"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="69" uuid="26c147df-f375-4c4a-b150-19668ef20ed6"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="263" y="27" width="219" height="20" uuid="5c21941f-cded-4ed6-9353-10b023bc3c28"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Pec " + ($F{pecRecapito}== null ? "__________________________" : $F{pecRecapito})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Pec " + ($F{pecRecapito}== null ? "__________________________" : $F{pecRecapito})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="0" y="2" width="237" height="20"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="0" y="2" width="237" height="20" uuid="249ba894-ee9d-40d4-b982-89816a96fa3a"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["N. telefono "+ ($F{telefonoRecapito}== null ? " ____________________"  : $F{telefonoRecapito})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["N. telefono "+ ($F{telefonoRecapito}== null ? " ____________________"  : $F{telefonoRecapito})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="263" y="48" width="218" height="20"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="263" y="48" width="218" height="20" uuid="8cc8f9d3-c4f5-40dc-9950-041a5a4f5c13"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Partita Iva " + ($F{partitaIVA}== null ? "__________________________" : $F{partitaIVA})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Partita Iva " + ($F{partitaIVA}== null ? "__________________________" : $F{partitaIVA})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="1" y="27" width="236" height="20"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="1" y="27" width="236" height="20" uuid="0583983d-2408-4323-b43e-38782d7797a5"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["E-mail " + ($F{emailRecapito}== null ? "__________________________" : $F{emailRecapito})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["E-mail " + ($F{emailRecapito}== null ? "__________________________" : $F{emailRecapito})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="0" y="48" width="237" height="20"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="0" y="48" width="237" height="20" uuid="40a4c3fb-d253-4c02-98a5-df834d06298e"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Codice Fiscale " + ($F{codiceFiscale}== null ? "__________________________" : $F{codiceFiscale})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Codice Fiscale " + ($F{codiceFiscale}== null ? "__________________________" : $F{codiceFiscale})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="263" y="2" width="219" height="20"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="263" y="2" width="219" height="20" uuid="dd12a932-eef2-4280-a901-cef98ab1b3d6"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["N. fax "+ ($F{faxRecapito}== null ? " ____________________"  : $F{faxRecapito})]]></textFieldExpression>
+					<textFieldExpression><![CDATA["N. fax "+ ($F{faxRecapito}== null ? " ____________________"  : $F{faxRecapito})]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>
 		<band height="42">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="42"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="42" uuid="e42a6a68-72e8-4cdf-adc3-801ddf91eb77"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
@@ -442,31 +446,31 @@
 		</band>
 		<band height="32">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="27" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="27" isPrintWhenDetailOverflows="true" uuid="8d1f2f1c-f26d-4331-a15d-6be4372e9cda"/>
 				<textElement textAlignment="Justified" verticalAlignment="Middle">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[l’iscrizione dell’impresa all’ELENCO DEGLI OPERATORI ECONOMICI PER L’AFFIDAMENTO DI LAVORI per le procedure di cui agli artt. art. 36 e 63 del D.Lgs. n. 50 del 2016: ]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="27" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="27" width="483" height="5" uuid="3c4df3fb-3049-4002-a2ed-4797c5d57ef3"/>
 			</frame>
 		</band>
 		<band height="21">
 			<subreport>
-				<reportElement positionType="Float" x="-1" y="0" width="484" height="11"/>
+				<reportElement positionType="Float" x="-1" y="0" width="484" height="11" uuid="5f9b0144-951f-4026-8351-d7e670be8533"/>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//categorieIscrizione/categoria")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizione.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CategorieIscrizione.jasper"]]></subreportExpression>
 			</subreport>
 			<frame>
-				<reportElement positionType="Float" x="3" y="11" width="481" height="10"/>
+				<reportElement positionType="Float" x="3" y="11" width="481" height="10" uuid="f0e0cff2-78cf-47fa-8776-43a8af463682"/>
 			</frame>
 		</band>
 		<band height="53">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="53"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="53" uuid="e3602224-9b3a-404e-b691-bce366ab71e0"/>
 				<staticText>
-					<reportElement positionType="Float" x="2" y="0" width="481" height="53"/>
+					<reportElement positionType="Float" x="2" y="0" width="481" height="53" uuid="2239d750-0b07-4a21-a7d9-e3bbb82fc1e0"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -476,7 +480,7 @@
 		</band>
 		<band height="42">
 			<staticText>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="42"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="42" uuid="7fec37ee-161f-4538-bc30-04e2a5c41bc8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
@@ -485,9 +489,9 @@
 		</band>
 		<band height="36">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="26"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="26" uuid="5458634a-b457-4398-b62a-70c92780b180"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="484" height="26"/>
+					<reportElement positionType="Float" x="0" y="0" width="484" height="26" uuid="b39d1c6c-41e6-44d0-ae63-1199206ecd4c"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -495,12 +499,12 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="2" y="26" width="481" height="10"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="2" y="26" width="481" height="10" uuid="9efe4096-b352-42de-8866-50cef580910f"/>
 			</frame>
 		</band>
 		<band height="24">
 			<staticText>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="15"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="15" uuid="ad7dd5d6-793a-4829-828f-8a333499c29e"/>
 				<box leftPadding="10"/>
 				<textElement>
 					<font fontName="Arial" size="11" isBold="true"/>
@@ -508,12 +512,12 @@
 				<text><![CDATA[1 – REQUISITI DI ORDINE GENERALE]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="1" y="14" width="481" height="10"/>
+				<reportElement positionType="Float" x="1" y="14" width="481" height="10" uuid="e1c2d1f2-ad54-451d-a528-eb6db9522e4b"/>
 			</frame>
 		</band>
 		<band height="23">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="14"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="14" uuid="c51d7caa-0768-4f6f-8745-9f5c028e0ad9"/>
 				<box leftPadding="10"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
@@ -521,18 +525,18 @@
 				<text><![CDATA[Dichiarazioni sostitutive di certificazioni (art. 46 del DPR n. 445 del 2000), attestanti:]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="13" width="481" height="10"/>
+				<reportElement positionType="Float" x="0" y="13" width="481" height="10" uuid="20113758-6cf3-4102-b69e-b2e484d9cb4a"/>
 			</frame>
 		</band>
 		<band height="102">
 			<frame>
-				<reportElement positionType="Float" x="1" y="92" width="482" height="10"/>
+				<reportElement positionType="Float" x="1" y="92" width="482" height="10" uuid="6ec1b428-a094-4e40-8252-63b7dca95485"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="92"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="92" uuid="625a3f02-ef4e-4cae-8918-50bec504ba2c"/>
 			</frame>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="92"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="92" uuid="cad7743d-0ef6-4c34-9eab-35912cdd032e"/>
 				<box leftPadding="10"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
@@ -542,17 +546,17 @@
 		</band>
 		<band height="13">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="13"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="13" uuid="a38fe37e-754e-4c8e-baaa-e764dc04283a"/>
 				<componentElement>
-					<reportElement key="legaliRappresentanti" positionType="Float" x="22" y="0" width="461" height="13" isRemoveLineWhenBlank="true"/>
+					<reportElement key="legaliRappresentanti" positionType="Float" x="22" y="0" width="461" height="13" isRemoveLineWhenBlank="true" uuid="a8e9d949-bbdc-4480-af1c-a2394165dec2"/>
 					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-						<datasetRun subDataset="dsDT">
+						<datasetRun subDataset="dsDT" uuid="36c4ec4f-dad9-4dc0-8266-b06daaa600b9">
 							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/legaleRappresentante[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
 						</datasetRun>
-						<jr:column width="460">
+						<jr:column width="460" uuid="0d49b17b-ee83-4b90-9ae0-e431d8f753a4">
 							<jr:detailCell height="20" rowSpan="1">
-								<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-									<reportElement positionType="Float" x="0" y="0" width="460" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+								<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+									<reportElement positionType="Float" x="0" y="0" width="460" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="62ec8d4d-6243-420b-8d5c-ad3786901726"/>
 									<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3">
 										<pen lineWidth="0.5"/>
 										<topPen lineWidth="0.0"/>
@@ -563,7 +567,7 @@
 									<textElement textAlignment="Justified" verticalAlignment="Middle">
 										<font fontName="Arial" size="11"/>
 									</textElement>
-									<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -573,17 +577,17 @@
 		</band>
 		<band height="14">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="14"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="14" uuid="b7ef59b2-c8ba-4c42-94e0-7e095913796e"/>
 				<componentElement>
-					<reportElement key="soci" positionType="Float" x="22" y="0" width="461" height="13"/>
+					<reportElement key="soci" positionType="Float" x="22" y="0" width="461" height="13" uuid="8e47b70c-6e2e-42ee-84f6-566c45f02eb5"/>
 					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-						<datasetRun subDataset="dsDT">
+						<datasetRun subDataset="dsDT" uuid="7a157412-aaba-4f4b-ac18-49b3980d0e07">
 							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/collaboratore[not(dataFineIncarico) or dataFineIncarico='' and qualifica='Socio']")]]></dataSourceExpression>
 						</datasetRun>
-						<jr:column width="462">
+						<jr:column width="462" uuid="cd3834df-9233-4cb5-a621-2fdb8bf43e18">
 							<jr:detailCell height="20" rowSpan="1">
-								<textField isStretchWithOverflow="true">
-									<reportElement positionType="Float" x="0" y="0" width="461" height="20"/>
+								<textField textAdjust="StretchHeight">
+									<reportElement positionType="Float" x="0" y="0" width="461" height="20" uuid="ed9859e6-0475-4b40-b07b-ee066e18af3d"/>
 									<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3">
 										<topPen lineWidth="0.0"/>
 										<leftPen lineWidth="0.0"/>
@@ -593,7 +597,7 @@
 									<textElement textAlignment="Justified" verticalAlignment="Middle">
 										<font fontName="Arial" size="11"/>
 									</textElement>
-									<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -603,17 +607,17 @@
 		</band>
 		<band height="14">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="14"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="14" uuid="c0d9a31e-e991-4840-8b57-1857d09f88ce"/>
 				<componentElement>
-					<reportElement key="altreCariche" positionType="Float" mode="Opaque" x="22" y="0" width="461" height="13" isRemoveLineWhenBlank="true"/>
+					<reportElement key="altreCariche" positionType="Float" mode="Opaque" x="22" y="0" width="461" height="13" isRemoveLineWhenBlank="true" uuid="be1a4aee-bf0c-4ed5-bf93-cefc35ef1673"/>
 					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-						<datasetRun subDataset="dsDT">
+						<datasetRun subDataset="dsDT" uuid="6ad36975-6def-4c3e-a917-7061de928231">
 							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/altraCarica[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
 						</datasetRun>
-						<jr:column width="460">
+						<jr:column width="460" uuid="50a695ff-7e4e-4695-9b86-c210b4c94587">
 							<jr:detailCell height="20" rowSpan="1">
-								<textField isStretchWithOverflow="true">
-									<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="460" height="20" backcolor="#FFFFFF"/>
+								<textField textAdjust="StretchHeight">
+									<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="460" height="20" backcolor="#FFFFFF" uuid="89f46db8-f808-4594-a359-0c8fd4aa51af"/>
 									<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3">
 										<topPen lineWidth="0.0"/>
 										<leftPen lineWidth="0.0"/>
@@ -623,7 +627,7 @@
 									<textElement textAlignment="Justified" verticalAlignment="Middle">
 										<font fontName="Arial" size="11"/>
 									</textElement>
-									<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -633,17 +637,17 @@
 		</band>
 		<band height="21">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="16"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="16" uuid="3e8dc08a-85d0-4c9c-91df-0d086d18def1"/>
 				<componentElement>
-					<reportElement key="direttoriTecnici" positionType="Float" x="22" y="0" width="461" height="14" isRemoveLineWhenBlank="true"/>
+					<reportElement key="direttoriTecnici" positionType="Float" x="22" y="0" width="461" height="14" isRemoveLineWhenBlank="true" uuid="cd0cddd7-49fd-43d1-a8d3-d8655fbb2079"/>
 					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-						<datasetRun subDataset="dsDT">
+						<datasetRun subDataset="dsDT" uuid="ab7c9eb4-8df0-4d5d-a54c-a8af5778afb3">
 							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).dataSource("/IscrizioneImpresaElencoOperatori/datiImpresa/direttoreTecnico[not(dataFineIncarico) or dataFineIncarico='']")]]></dataSourceExpression>
 						</datasetRun>
-						<jr:column width="459">
+						<jr:column width="459" uuid="7fedd12c-1a01-425e-b1e6-f7e4c078f7e8">
 							<jr:detailCell height="20" rowSpan="1">
-								<textField isStretchWithOverflow="true">
-									<reportElement positionType="Float" x="0" y="0" width="459" height="20"/>
+								<textField textAdjust="StretchHeight">
+									<reportElement positionType="Float" x="0" y="0" width="459" height="20" uuid="da610aee-7022-43a9-8dfb-4886f2c0d267"/>
 									<box topPadding="3" leftPadding="3" bottomPadding="3" rightPadding="3">
 										<topPen lineWidth="0.0"/>
 										<leftPen lineWidth="0.0"/>
@@ -653,7 +657,7 @@
 									<textElement textAlignment="Justified" verticalAlignment="Middle">
 										<font fontName="Arial" size="11"/>
 									</textElement>
-									<textFieldExpression class="java.lang.String"><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{cognome} + " " + $F{nome} + ", nato/a il " + new SimpleDateFormat("dd/MM/yyyy").format($F{dataNascita}) + " a " + $F{comuneNascita} + ($F{provinciaNascita} != null ? " (" + $F{provinciaNascita} + ")" : "") + ", residente in " + $F{indirizzoResidenza} + " n. " + $F{numCivico} + ", " + $F{cap} + " " + $F{comune} + ($F{provincia} != null ? " (" + $F{provincia} + ")" : "") + ", codice fiscale " + $F{codiceFiscale} + ", in qualità di " + $F{qualifica}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -661,17 +665,17 @@
 				</componentElement>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="16" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="16" width="484" height="5" uuid="21e7b138-3a49-40fe-867c-da94191c93d3"/>
 			</frame>
 		</band>
 		<band height="105">
 			<frame>
-				<reportElement positionType="Float" x="1" y="102" width="482" height="3"/>
+				<reportElement positionType="Float" x="1" y="102" width="482" height="3" uuid="dd8cf4f3-a88b-4e24-926f-6930307402e7"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="102"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="102" uuid="5fe22888-5560-4ad5-9cf6-f0d42954cf48"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="481" height="102"/>
+					<reportElement positionType="Float" x="0" y="0" width="481" height="102" uuid="92267da5-cce5-4125-8258-4c6cfe31db1d"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -680,7 +684,7 @@
 				</staticText>
 			</frame>
 			<subreport>
-				<reportElement positionType="Float" mode="Opaque" x="1" y="16" width="482" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" mode="Opaque" x="1" y="16" width="482" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="fbe3bd59-4fea-46dd-8152-55063ef5db1f"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
 				</subreportParameter>
@@ -689,10 +693,10 @@
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//legaleRappresentante[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
 				<returnValue subreportVariable="REPORT_COUNT" toVariable="CESSATI_LR"/>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="33" width="483" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="33" width="483" height="1" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="22c868ca-24b0-497e-b045-f1540b3fc2d3"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
 				</subreportParameter>
@@ -701,10 +705,10 @@
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//direttoreTecnico[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
 				<returnValue subreportVariable="REPORT_COUNT" toVariable="CESSATI_DT"/>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="2" y="55" width="482" height="1" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="2" y="55" width="482" height="1" isPrintWhenDetailOverflows="true" uuid="88fe7c2e-ad61-483b-8e59-6f3bb5bb9072"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
 				</subreportParameter>
@@ -713,12 +717,12 @@
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//altraCarica[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
 				<returnValue subreportVariable="REPORT_COUNT" toVariable="CESSATI_AC" calculation="Sum"/>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="2">
 			<subreport>
-				<reportElement positionType="Float" mode="Opaque" x="1" y="0" width="482" height="2" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" mode="Opaque" x="1" y="0" width="482" height="2" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="460d90fd-65de-4915-8cfb-768e706e4c09"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
 				</subreportParameter>
@@ -726,12 +730,12 @@
 					<subreportParameterExpression><![CDATA[0]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//legaleRappresentante[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="2">
 			<subreport>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="2" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="2" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="7985e192-126b-4588-ad8d-ac0eb8fb2ee2"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
 				</subreportParameter>
@@ -739,12 +743,12 @@
 					<subreportParameterExpression><![CDATA[$V{CESSATI_LR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//direttoreTecnico[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="109">
 			<subreport>
-				<reportElement positionType="Float" x="1" y="0" width="482" height="2" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="1" y="0" width="482" height="2" isPrintWhenDetailOverflows="true" uuid="ded440c2-3f2b-4482-bf6c-03ff55a55401"/>
 				<subreportParameter name="STAMPA">
 					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
 				</subreportParameter>
@@ -752,14 +756,14 @@
 					<subreportParameterExpression><![CDATA[$V{CESSATI_LR}+$V{CESSATI_DT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("//altraCarica[translate(dataFineIncarico, '-', '') >= translate('"+$V{INIZIO_ANNO_CESSAZIONE}+"', '-', '') and translate(dataFineIncarico, '-', '') <= translate('"+$V{FINE_ANNO_CESSAZIONE}+"', '-', '')]")]]></dataSourceExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "SoggettiCessati.jasper"]]></subreportExpression>
 			</subreport>
 			<frame>
-				<reportElement positionType="Float" x="1" y="2" width="483" height="102" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="1" y="2" width="483" height="102" isRemoveLineWhenBlank="true" uuid="8c9604a1-3e90-4c11-9959-2f72ab7bd130">
 					<printWhenExpression><![CDATA[(($V{CESSATI_LR} == null? 0 : $V{CESSATI_LR}.intValue()) + ($V{CESSATI_DT} == null? 0 : $V{CESSATI_DT}.intValue()) + ($V{CESSATI_AC} == null? 0 : $V{CESSATI_AC}.intValue())) == 0]]></printWhenExpression>
 				</reportElement>
 				<frame>
-					<reportElement positionType="Float" x="20" y="0" width="462" height="17"/>
+					<reportElement positionType="Float" x="20" y="0" width="462" height="17" uuid="ad99bbf9-fa0f-42c8-8fad-e1cd5cb94e44"/>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.0"/>
@@ -768,31 +772,31 @@
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="20" y="17" width="462" height="17"/>
+					<reportElement positionType="Float" x="20" y="17" width="462" height="17" uuid="1858bc3b-e6be-49aa-b0ae-4d81c9202468"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="20" y="34" width="462" height="17"/>
+					<reportElement positionType="Float" x="20" y="34" width="462" height="17" uuid="41e00977-9f5f-4e36-a962-9ad5068208e0"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="20" y="51" width="462" height="17"/>
+					<reportElement positionType="Float" x="20" y="51" width="462" height="17" uuid="074643a8-a711-43f3-95f4-5df58ba0d464"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="20" y="68" width="462" height="17"/>
+					<reportElement positionType="Float" x="20" y="68" width="462" height="17" uuid="af40893c-e6c7-4257-87c1-c4b0694a2f00"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement x="20" y="85" width="462" height="17"/>
+					<reportElement x="20" y="85" width="462" height="17" uuid="6d85ea24-4d50-4139-8421-49f0b8c01f3e"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
@@ -801,9 +805,9 @@
 		</band>
 		<band height="146">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="136"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="136" uuid="919c3686-ac07-4629-841d-c282769a45d4"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="1" width="482" height="14"/>
+					<reportElement positionType="Float" x="0" y="1" width="482" height="14" uuid="2ace399c-a089-4a11-908a-8096e5d88127"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -811,7 +815,7 @@
 					<text><![CDATA[Si dichiara in nome e per conto dei soggetti indicati sub 2) che nei confronti degli stessi:]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="14" width="482" height="14"/>
+					<reportElement positionType="Float" x="0" y="14" width="482" height="14" uuid="8bf29e79-ee0b-4815-b2ad-b3da9d0d7f15"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11" isItalic="true"/>
@@ -819,12 +823,12 @@
 					<text><![CDATA[(barrare la casella che interessa):]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="106" width="482" height="3"/>
+					<reportElement positionType="Float" x="0" y="106" width="482" height="3" uuid="9e0852c4-be35-4592-9ebc-b913fddff476"/>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="0" y="28" width="481" height="54"/>
+					<reportElement positionType="Float" x="0" y="28" width="481" height="54" uuid="b8d74dcf-eb86-4c6e-a4c6-622762fffc59"/>
 					<staticText>
-						<reportElement x="29" y="0" width="452" height="39"/>
+						<reportElement x="29" y="0" width="452" height="39" uuid="418621fc-89cb-4332-be93-9e75478a8150"/>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -833,13 +837,13 @@
 <b>oppure</b>, in presenza di tali situazioni a loro carico (specificare quali e per chi):]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8" uuid="940bb849-74f6-4728-8c36-bc20d30a0811"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement positionType="Float" x="33" y="39" width="448" height="14"/>
+						<reportElement positionType="Float" x="33" y="39" width="448" height="14" uuid="ed048b36-c872-44a8-ab02-57b6350b41d8"/>
 						<textElement textAlignment="Justified" verticalAlignment="Top">
 							<font fontName="Arial" size="11"/>
 						</textElement>
@@ -847,9 +851,9 @@
 					</staticText>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="29" y="82" width="455" height="14"/>
+					<reportElement positionType="Float" x="29" y="82" width="455" height="14" uuid="46f33d76-593e-4210-a339-ec9aeef8671e"/>
 					<staticText>
-						<reportElement positionType="Float" x="4" y="0" width="448" height="14"/>
+						<reportElement positionType="Float" x="4" y="0" width="448" height="14" uuid="0a263d7c-057e-4536-89e4-983f7ee0217e"/>
 						<textElement textAlignment="Justified" verticalAlignment="Top">
 							<font fontName="Arial" size="11"/>
 						</textElement>
@@ -858,12 +862,12 @@
 				</frame>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="136" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="136" width="484" height="10" uuid="f277e9fb-435f-444f-adbc-f8054f57158e"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="106" width="482" height="26"/>
+				<reportElement positionType="Float" x="1" y="106" width="482" height="26" uuid="8b668e47-d229-450b-b30c-ae54fa7b3ebd"/>
 				<staticText>
-					<reportElement x="29" y="0" width="453" height="26"/>
+					<reportElement x="29" y="0" width="453" height="26" uuid="73031fdf-5e45-4390-a88a-2f40290799d7"/>
 					<box leftPadding="5"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -871,7 +875,7 @@
 					<text><![CDATA[il dichiarante ha già adottato misure di completa ed effettiva dissociazione dalla condotta penalmente sanzionata;]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8" uuid="e592b762-2d2c-4732-9cb3-6da5a5cf7b49"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
@@ -880,17 +884,17 @@
 		</band>
 		<band height="118">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="118"/>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="1" y="0" width="482" height="17" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="118" uuid="79608a60-be93-4b62-b1d7-5072e1788795"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="1" y="0" width="482" height="17" isPrintWhenDetailOverflows="true" uuid="10f181f0-bcf3-4c2c-aa65-39a9bbde2fd4"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["3) che l’impresa risulta iscritta alla Camera di Commercio della provincia in cui ha sede, al numero di REA " + ($F{REA}!=null? $F{REA}  : "____________________") +" e che è in regola con il pagamento del diritto annuale;"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["3) che l’impresa risulta iscritta alla Camera di Commercio della provincia in cui ha sede, al numero di REA " + ($F{REA}!=null? $F{REA}  : "____________________") +" e che è in regola con il pagamento del diritto annuale;"]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="26" width="453" height="40" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="30" y="26" width="453" height="40" isPrintWhenDetailOverflows="true" uuid="6faa55d8-06d2-4182-b897-00aa242a7785"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -899,24 +903,22 @@ ______________________________________________________________________
 ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="22" y="27" width="6" height="14"/>
-					<textElement/>
+					<reportElement positionType="Float" x="22" y="27" width="6" height="14" uuid="e47c9a06-e9b3-4626-a92a-200c11b2957d"/>
 					<text><![CDATA[•
 ………………………………………………………………………………………………………..
 ]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="28" width="484" height="10"/>
+					<reportElement positionType="Float" x="0" y="28" width="484" height="10" uuid="c410e6f4-2b5c-4f80-b2d7-fa65ece9c6d2"/>
 				</frame>
 				<staticText>
-					<reportElement positionType="Float" x="21" y="67" width="6" height="14"/>
-					<textElement/>
+					<reportElement positionType="Float" x="21" y="67" width="6" height="14" uuid="b31041a5-a003-4380-bccb-d4c820846466"/>
 					<text><![CDATA[•
 ………………………………………………………………………………………………………..
 ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="31" y="67" width="453" height="40" isPrintWhenDetailOverflows="true"/>
+					<reportElement positionType="Float" x="31" y="67" width="453" height="40" isPrintWhenDetailOverflows="true" uuid="7a8440c0-b1bb-4626-a918-9e21ed71c253"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -925,14 +927,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="108" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="108" width="483" height="10" uuid="de3f5cd1-a6ce-48a3-9504-4bd4195613b3"/>
 			</frame>
 		</band>
 		<band height="37">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="27"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="27" uuid="8d2b2eae-17fc-43e7-8ae6-ad8e26e55c50"/>
 				<staticText>
-					<reportElement x="0" y="0" width="483" height="27"/>
+					<reportElement x="0" y="0" width="483" height="27" uuid="7959e4e3-943d-4405-988e-09df013abc36"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -941,14 +943,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="27" width="481" height="10"/>
+				<reportElement positionType="Float" x="1" y="27" width="481" height="10" uuid="c445aaef-fe97-4b6f-9c53-73bbfe970465"/>
 			</frame>
 		</band>
 		<band height="64">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="54"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="54" uuid="1d92b0f9-8d27-4beb-aa34-35003f08a22a"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="482" height="54"/>
+					<reportElement positionType="Float" x="0" y="0" width="482" height="54" uuid="42c478a7-3984-4ff3-a7eb-4b0ef3e8507b"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -957,14 +959,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="2" y="54" width="481" height="10"/>
+				<reportElement positionType="Float" x="2" y="54" width="481" height="10" uuid="9fc53a33-7981-47e4-aade-dda872f3ab62"/>
 			</frame>
 		</band>
 		<band height="66">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="66"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="66" uuid="4a7cf6a7-ba8a-4610-8f21-d3a807f3ac0d"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="481" height="64"/>
+					<reportElement positionType="Float" x="1" y="0" width="481" height="64" uuid="2a5f54ab-8034-46ae-ab07-2ba0679e0b10"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -975,16 +977,16 @@ ________________________________________________________________________________
 		</band>
 		<band height="115">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="110"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="110" uuid="735f3d51-4482-485c-9f57-a46ad4634a85"/>
 				<staticText>
-					<reportElement positionType="Float" x="38" y="1" width="446" height="106"/>
+					<reportElement positionType="Float" x="38" y="1" width="446" height="106" uuid="a38c67ff-59b7-4c2b-a035-5d0d1165c132"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[delitti, consumati o tentati, di cui agli articoli 416, 416-bis del codice penale ovvero delitti commessi avvalendosi delle condizioni previste dal predetto articolo 416-bis ovvero al fine di agevolare l’attività delle associazioni previste dallo stesso articolo, nonché’ per i delitti, consumati o tentati, previsti dall’articolo 74 del decreto del Presidente della Repubblica 9 ottobre 1990, n. 309, dall’articolo 291-quater del decreto del Presidente della Repubblica 23 gennaio 1973, n. 43 e dall’articolo 260 del decreto legislativo 3 aprile 2006, n. 152, in quanto riconducibili alla partecipazione a un’organizzazione criminale, quale definita all’articolo 2 della decisione quadro 2008/841/GAI del Consiglio;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="999e09ea-3489-43f5-979b-5a27c88125f0"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -992,21 +994,21 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="110" width="483" height="5"/>
+				<reportElement positionType="Float" x="1" y="110" width="483" height="5" uuid="09788465-0c81-4039-bf79-45f3306f4a88"/>
 			</frame>
 		</band>
 		<band height="51">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="482" height="46"/>
+				<reportElement positionType="Float" x="1" y="0" width="482" height="46" uuid="c86443dd-85b6-44ba-98ad-f9f91d743e96"/>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="1" width="442" height="45"/>
+					<reportElement positionType="Float" x="39" y="1" width="442" height="45" uuid="a2994aa2-bede-4599-85f2-65945c8ef80a"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[delitti, consumati o tentati, di cui agli articoli 317, 318, 319, 319-ter, 319-quater, 320, 321, 322, 322-bis, 346-bis, 353, 353-bis, 354, 355 e 356 del codice penale nonché all’articolo 2635 del codice civile;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="2244437e-1d7d-4325-8a10-30017a526a97"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1014,21 +1016,21 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="46" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="46" width="484" height="5" uuid="8a7750de-03b7-48f6-8593-000cdcd09ce9"/>
 			</frame>
 		</band>
 		<band height="33">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="28"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="28" uuid="5d8b0356-3d73-447d-80e2-bb9fbf6fb922"/>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="1" width="444" height="26"/>
+					<reportElement positionType="Float" x="39" y="1" width="444" height="26" uuid="0c5b66bd-7ce5-4a16-baf9-3c602b449bf1"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[frode ai sensi dell’articolo 1 della convenzione relativa alla tutela degli interessi finanziari delle Comunità europee;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="c0a65f61-e128-4b30-8403-716ea5fbc937"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1036,21 +1038,21 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="28" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="28" width="484" height="5" uuid="63cfe95b-d246-4287-8544-294c4143f038"/>
 			</frame>
 		</band>
 		<band height="46">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="482" height="41"/>
+				<reportElement positionType="Float" x="1" y="0" width="482" height="41" uuid="fb3588c3-c16a-4c7e-b8f5-d85ebefd970d"/>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="1" width="443" height="39"/>
+					<reportElement positionType="Float" x="39" y="1" width="443" height="39" uuid="76770789-6b74-413d-803f-156c4773ca98"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[delitti, consumati o tentati, commessi con finalità di terrorismo, anche internazionale, e di eversione dell’ordine costituzionale reati terroristici o reati connessi alle attività terroristiche;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="65b1e4c0-718e-416a-91fa-101ee313795f"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1058,21 +1060,21 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="41" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="41" width="484" height="5" uuid="dde182d3-e9ed-4f12-97a0-af9ab6f81332"/>
 			</frame>
 		</band>
 		<band height="50">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="482" height="45"/>
+				<reportElement positionType="Float" x="1" y="0" width="482" height="45" uuid="27d88e8e-631b-432d-91d6-82b8b9dd0320"/>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="1" width="443" height="44"/>
+					<reportElement positionType="Float" x="39" y="1" width="443" height="44" uuid="be951950-eae4-4993-b3f2-edced62baa6f"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[delitti di cui agli articoli 648-bis, 648-ter e 648-ter.1 del codice penale, riciclaggio di proventi di attività criminose o finanziamento del terrorismo, quali definiti all’articolo 1 del decreto legislativo 22 giugno 2007, n. 109 e successive modificazioni;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="98563132-61a2-4a28-8255-31ca7d534bc4"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1080,21 +1082,21 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="45" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="45" width="483" height="5" uuid="9a079b8d-1e2a-4cd8-9a9c-b4c866feabe1"/>
 			</frame>
 		</band>
 		<band height="34">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="29"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="29" uuid="faa21b5d-29ee-4fe0-8efa-af23f10395e1"/>
 				<staticText>
-					<reportElement positionType="Float" x="39" y="1" width="444" height="28"/>
+					<reportElement positionType="Float" x="39" y="1" width="444" height="28" uuid="4d0e80dd-326c-4f33-9a38-b6d1f0562baa"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[sfruttamento del lavoro minorile e altre forme di tratta di esseri umani definite con il decreto legislativo 4 marzo 2014, n. 24;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="54463c4d-605f-48c5-9a25-f9dce2f76519"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1102,28 +1104,28 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="29" width="484" height="5"/>
+				<reportElement positionType="Float" x="0" y="29" width="484" height="5" uuid="ea7719f4-1d83-46cc-b98f-e223e74963c9"/>
 			</frame>
 		</band>
 		<band height="29">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="29"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="29" uuid="51490726-61d0-4c2b-9036-aef081f2d1be"/>
 				<staticText>
-					<reportElement positionType="Float" x="54" y="1" width="430" height="28"/>
+					<reportElement positionType="Float" x="54" y="1" width="430" height="28" uuid="7f703fcf-904d-43e2-a95f-fc19e7356507"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[ogni altro delitto da cui derivi, quale pena accessoria, l’incapacità di contrattare con la pubblica amministrazione]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="26" y="1" width="12" height="14"/>
+					<reportElement positionType="Float" x="26" y="1" width="12" height="14" uuid="3c4b61be-02ad-418a-bdf0-18f22413c181"/>
 					<textElement>
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[g)]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="41" y="5" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="41" y="5" width="8" height="8" uuid="486b9682-0900-4623-a5ea-a19c778ce5db"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
@@ -1132,9 +1134,9 @@ ________________________________________________________________________________
 		</band>
 		<band height="92">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="87"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="87" uuid="e89a80e2-7394-49c3-840b-6b7c3465c656"/>
 				<staticText>
-					<reportElement positionType="Float" x="54" y="0" width="430" height="87"/>
+					<reportElement positionType="Float" x="54" y="0" width="430" height="87" uuid="34bdeba7-acb8-4769-bba1-beb2d5ddce27"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1143,21 +1145,21 @@ ________________________________________________________________________________
 ]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="41" y="3" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="41" y="3" width="8" height="8" uuid="1b923b2f-30f2-4065-bb6f-c15541861282"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="87" width="483" height="5"/>
+				<reportElement positionType="Float" x="1" y="87" width="483" height="5" uuid="781cd9f6-1766-442f-8b56-7f41cc0e1b93"/>
 			</frame>
 		</band>
 		<band height="49">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="39"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="39" uuid="a85f9eca-bfa9-4585-952d-63a137b58708"/>
 				<staticText>
-					<reportElement positionType="Float" x="3" y="0" width="481" height="39"/>
+					<reportElement positionType="Float" x="3" y="0" width="481" height="39" uuid="78a35fec-d5c4-492f-850b-505cf77e7898"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1166,14 +1168,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="39" width="483" height="10"/>
+				<reportElement positionType="Float" x="0" y="39" width="483" height="10" uuid="3c85da60-64b4-48cf-b8ab-0449f868ecb9"/>
 			</frame>
 		</band>
 		<band height="38">
 			<frame>
-				<reportElement positionType="Float" x="2" y="0" width="482" height="29"/>
+				<reportElement positionType="Float" x="2" y="0" width="482" height="29" uuid="5dc334c6-e76a-4809-be79-4a7b32a1f026"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="481" height="27"/>
+					<reportElement positionType="Float" x="0" y="0" width="481" height="27" uuid="51f04c05-15ed-42c7-9d1a-348791e14521"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1182,14 +1184,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="28" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="28" width="484" height="10" uuid="e0a45b78-870d-4f5d-b6a3-21d9e214ff78"/>
 			</frame>
 		</band>
 		<band height="38">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="28"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="28" uuid="762e550a-9825-4053-b8c6-a8a30b5c8f9d"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="481" height="28"/>
+					<reportElement positionType="Float" x="1" y="0" width="481" height="28" uuid="02fe1163-e633-4e20-b2db-a550d05f09b6"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1198,14 +1200,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="2" y="28" width="482" height="10"/>
+				<reportElement positionType="Float" x="2" y="28" width="482" height="10" uuid="2ff76b92-3fd8-48f0-9e2e-75205618d795"/>
 			</frame>
 		</band>
 		<band height="38">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="28"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="28" uuid="2b1e80e8-4ca1-46ca-b53c-f4fce2d6dd41"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="482" height="28"/>
+					<reportElement positionType="Float" x="1" y="0" width="482" height="28" uuid="234864a6-7c41-4d08-8e29-cf3ae56d45e0"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1214,14 +1216,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="28" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="28" width="484" height="10" uuid="09e8271a-db2a-4dde-b43d-8e056b9c3878"/>
 			</frame>
 		</band>
 		<band height="111">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="101"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="101" uuid="21bb1295-e5c5-4bbc-bb5f-362ea17f565b"/>
 				<staticText>
-					<reportElement x="1" y="0" width="483" height="15"/>
+					<reportElement x="1" y="0" width="483" height="15" uuid="2fa6def2-1036-4872-913d-d38deee6c942"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11" isItalic="false"/>
@@ -1229,32 +1231,32 @@ ________________________________________________________________________________
 					<text><![CDATA[11) <i>(barrare la casella che interessa)</i>]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="15" width="484" height="30"/>
+					<reportElement positionType="Float" x="0" y="15" width="484" height="30" uuid="9fde9e94-483f-4406-a32d-33ac38d8788f"/>
 					<staticText>
-						<reportElement x="40" y="0" width="442" height="28"/>
+						<reportElement x="40" y="0" width="442" height="28" uuid="c74d9c39-8918-4f53-bfc8-ce2b8facbf00"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
 						</textElement>
 						<text><![CDATA[di non aver partecipato alla preparazione della procedura in oggetto di cui all’art.66 del d.lgs. 50/2016 ]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="29" y="2" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="29" y="2" width="8" height="8" uuid="abd27744-532d-4892-9b95-f9b67679c88e"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="0" y="45" width="484" height="54"/>
+					<reportElement positionType="Float" x="0" y="45" width="484" height="54" uuid="a6c157e6-f252-4645-9e84-a7fa70953525"/>
 					<staticText>
-						<reportElement x="41" y="0" width="443" height="54"/>
+						<reportElement x="41" y="0" width="443" height="54" uuid="2723463e-c909-474b-968a-1cd642a0a125"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
 						</textElement>
 						<text><![CDATA[che la propria partecipazione non determina una distorsione della concorrenza derivante dal proprio precedente coinvolgimento nella preparazione della procedura d’appalto di cui all’articolo 67 del D. Lgs. n. 50/2016 che non possa essere risolta con misure meno intrusive;]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="29" y="2" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="29" y="2" width="8" height="8" uuid="d687c21d-678c-4aba-a166-c6c060730615"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
@@ -1262,14 +1264,14 @@ ________________________________________________________________________________
 				</frame>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="-1" y="101" width="485" height="10"/>
+				<reportElement positionType="Float" x="-1" y="101" width="485" height="10" uuid="c8b89455-75a8-49b7-9943-eb67bea64266"/>
 			</frame>
 		</band>
 		<band height="65">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="482" height="55"/>
+				<reportElement positionType="Float" x="1" y="0" width="482" height="55" uuid="0715ae7a-4917-4c4e-a99a-5ac6cbfc6fdc"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="479" height="54"/>
+					<reportElement positionType="Float" x="1" y="0" width="479" height="54" uuid="b78df358-fa90-4d56-ad4a-2058ec348a16"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1278,14 +1280,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="55" width="483" height="10"/>
+				<reportElement positionType="Float" x="0" y="55" width="483" height="10" uuid="8661293a-2705-4b98-bd18-d3a558e8ca3d"/>
 			</frame>
 		</band>
 		<band height="50">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="40"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="40" uuid="8f796459-ef97-4245-a795-d742c07cc04e"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="483" height="38"/>
+					<reportElement positionType="Float" x="1" y="0" width="483" height="38" uuid="82d053cb-514e-49f0-909f-7a45731976b0"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1294,14 +1296,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="40" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="40" width="484" height="10" uuid="f6adfc94-0290-4f4e-9474-acb8f4f779a7"/>
 			</frame>
 		</band>
 		<band height="31">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="28"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="28" uuid="d42ade1c-64cb-4167-ab75-f15d9922823b"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="482" height="28"/>
+					<reportElement positionType="Float" x="1" y="0" width="482" height="28" uuid="a55775d4-c0ce-44bb-88c0-d70dc73569cf"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1310,14 +1312,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="28" width="483" height="3"/>
+				<reportElement positionType="Float" x="0" y="28" width="483" height="3" uuid="a92ca746-d9fd-49dc-996c-07d97aa464be"/>
 			</frame>
 		</band>
 		<band height="138">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="128"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="128" uuid="be373134-a28f-4d32-a5e6-2dcbf46d1748"/>
 				<staticText>
-					<reportElement x="1" y="0" width="482" height="15"/>
+					<reportElement x="1" y="0" width="482" height="15" uuid="ca7c47e8-aa12-40bd-8e2c-304b45e4b0bb"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1325,9 +1327,9 @@ ________________________________________________________________________________
 					<text><![CDATA[15) che l’operatore economico: <i>(Barrare la casella di interesse)</i>]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="15" width="483" height="44"/>
+					<reportElement positionType="Float" x="0" y="15" width="483" height="44" uuid="b342ba7e-3af1-4e40-84cc-6dee773243a1"/>
 					<staticText>
-						<reportElement x="29" y="0" width="454" height="41"/>
+						<reportElement x="29" y="0" width="454" height="41" uuid="38e98c16-1555-4745-9e74-627391e0c8d6"/>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -1335,22 +1337,22 @@ ________________________________________________________________________________
 						<text><![CDATA[non è stato vittima dei reati previsti e puniti dagli artt. 317 e 629 c.p., aggravati ai sensi dell’art. 7 del decreto legge 13 maggio 1991, n. 152, convertito, con modificazioni, dalla legge 12 luglio 1991 n. 203;]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8" uuid="b8043826-3258-4fba-9905-5f8410a99d60"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="0" y="59" width="483" height="15"/>
+					<reportElement positionType="Float" x="0" y="59" width="483" height="15" uuid="b36d8b7c-7e16-44dd-be94-7f445dfdd0de"/>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="21" y="4" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="21" y="4" width="8" height="8" uuid="0e86bca4-f678-4652-af07-ffbed4f4e822"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="29" y="0" width="453" height="15"/>
+						<reportElement x="29" y="0" width="453" height="15" uuid="beded323-b809-4fb8-a37b-09ac94504f68"/>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -1359,7 +1361,7 @@ ________________________________________________________________________________
 					</staticText>
 				</frame>
 				<staticText>
-					<reportElement x="29" y="74" width="454" height="54"/>
+					<reportElement x="29" y="74" width="454" height="54" uuid="c797aff8-eb0f-4fc3-8e98-b4084d1f23f5"/>
 					<box leftPadding="5"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1368,12 +1370,12 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="128" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="128" width="483" height="10" uuid="db8d6647-cce6-48b1-8237-7c703f034ccb"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="74" width="483" height="54"/>
+				<reportElement positionType="Float" x="0" y="74" width="483" height="54" uuid="a4673cf2-33e3-45a6-a064-c4ae15d5efb2"/>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="22" y="2" width="8" height="8" uuid="b1e77a8a-f134-413c-bc0f-c0a4f0ff518d"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
@@ -1382,9 +1384,9 @@ ________________________________________________________________________________
 		</band>
 		<band height="233">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="223"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="223" uuid="c5e48b06-48cc-42a6-a02e-d8c570f440bf"/>
 				<staticText>
-					<reportElement x="1" y="2" width="482" height="51"/>
+					<reportElement x="1" y="2" width="482" height="51" uuid="0c072e77-2540-4a2d-acab-bb152ed4f217"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1392,9 +1394,9 @@ ________________________________________________________________________________
 					<text><![CDATA[16)  di non trovarsi rispetto ad un altro partecipante alla medesima procedura di affidamento, in una situazione di controllo di cui all'articolo 2359 del codice civile o in una qualsiasi relazione, anche di fatto, se la situazione di controllo o la relazione comporti che le offerte sono imputabili ad un unico centro decisionale e di aver formulato autonomamente l'offerta; ]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="71" width="484" height="66"/>
+					<reportElement positionType="Float" x="0" y="71" width="484" height="66" uuid="f5613095-0fde-4626-81f2-c19a0c1888eb"/>
 					<staticText>
-						<reportElement x="33" y="0" width="451" height="65"/>
+						<reportElement x="33" y="0" width="451" height="65" uuid="d43e64d8-47f1-4e18-81ea-51573582eef0"/>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -1402,22 +1404,22 @@ ________________________________________________________________________________
 						<text><![CDATA[che l’operatore economico non è a conoscenza della partecipazione alla medesima procedura di soggetti che si trovano, rispetto ad essa, in una delle situazioni di controllo di cui all'articolo 2359 del codice civile, o in una qualsiasi relazione, anche di fatto con alcun soggetto, se la situazione di controllo o la relazione comporti che le offerte sono imputabili ad un unico centro decisionale e di aver formulato autonomamente l'offerta; ]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="23" y="3" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="23" y="3" width="8" height="8" uuid="d379a17e-883a-45f1-a292-ef4e9bb40c59"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="0" y="157" width="484" height="65"/>
+					<reportElement positionType="Float" x="0" y="157" width="484" height="65" uuid="1abbf8ce-6801-4878-894d-c77457456bb3"/>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="23" y="4" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="23" y="4" width="8" height="8" uuid="d7ab1914-3ecd-4000-95d2-7830cbbabde9"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="33" y="0" width="451" height="64"/>
+						<reportElement x="33" y="0" width="451" height="64" uuid="5258e461-80c6-4b57-b78d-2718b5966cc0"/>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -1426,14 +1428,14 @@ ________________________________________________________________________________
 					</staticText>
 				</frame>
 				<staticText>
-					<reportElement positionType="Float" x="36" y="51" width="93" height="20"/>
+					<reportElement positionType="Float" x="36" y="51" width="93" height="20" uuid="a3a146e7-09c9-450c-92e8-67922d47c247"/>
 					<textElement textAlignment="Justified" verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[ovvero]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="36" y="137" width="100" height="20"/>
+					<reportElement positionType="Float" x="36" y="137" width="100" height="20" uuid="51d3e6c4-ef0e-4acf-b74c-d485fb22de97"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1441,14 +1443,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="223" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="223" width="483" height="10" uuid="dce31f10-c9d6-4e6f-865a-c2f31ba3faa9"/>
 			</frame>
 		</band>
 		<band height="121">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="111"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="111" uuid="2c1e820d-2156-42b5-93c9-95b3e87bdd7b"/>
 				<staticText>
-					<reportElement x="1" y="2" width="483" height="26"/>
+					<reportElement x="1" y="2" width="483" height="26" uuid="c18ed569-11b7-4f0b-851b-45a6510e3077"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1456,67 +1458,114 @@ ________________________________________________________________________________
 					<text><![CDATA[17) di essere in regola con le norme che disciplinano il diritto al lavoro dei disabili (legge 68/99) in quanto <i>(selezionare una delle due dichiarazioni sottostanti)</i>:]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="28" width="484" height="43"/>
+					<reportElement positionType="Float" x="0" y="28" width="483" height="43" uuid="80683a78-e529-4fc8-ab7c-41ed2b1db8d7">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<staticText>
-						<reportElement x="35" y="0" width="449" height="42"/>
+						<reportElement x="36" y="0" width="445" height="42" uuid="91cff8d5-2bfe-452b-bcff-407ebe200f4c">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</reportElement>
 						<box leftPadding="5"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
 						</textElement>
 						<text><![CDATA[ha ottemperato al disposto della l. 68/99 art. 17, giacchè con organico oltre i 35 dipendenti o con organico da 15 a 35 dipendenti, che ha effettuato nuove assunzioni dopo il 18 gennaio 2000;]]></text>
 					</staticText>
+					<staticText>
+						<reportElement x="21" y="1" width="16" height="16" uuid="ca8d4c51-1315-4a75-a360-5d860b57af22">
+							<property name="com.jaspersoft.studio.unit.y" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<printWhenExpression><![CDATA[$F{assunzioniObbligate}  == "1"]]></printWhenExpression>
+						</reportElement>
+						<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+						<textElement textAlignment="Justified" markup="html">
+							<font fontName="Arial" size="11"/>
+						</textElement>
+						<text><![CDATA[[X]]]></text>
+					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="23" y="3" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="5" y="3" width="10" height="10" uuid="5e139839-80ec-425d-83e6-a0ec9c4de7b6">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.unit.x" value="px"/>
+							<printWhenExpression><![CDATA[false]]></printWhenExpression>
+						</reportElement>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 					<image>
-						<reportElement positionType="Float" x="23" y="3" width="8" height="8">
-							<printWhenExpression><![CDATA[$F{assunzioniObbligate}  == "1"]]></printWhenExpression>
+						<reportElement positionType="Float" x="6" y="4" width="8" height="8" uuid="efa2287b-2215-458b-8c91-ef033e55ea59">
+							<property name="com.jaspersoft.studio.unit.x" value="px"/>
+							<property name="com.jaspersoft.studio.unit.y" value="px"/>
+							<printWhenExpression><![CDATA[false && ($F{assunzioniObbligate}  == "1")]]></printWhenExpression>
 						</reportElement>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
-						<imageExpression class="java.lang.String"><![CDATA[$P{IMAGES_DIR} + "list_entry.jpg"]]></imageExpression>
+						<imageExpression><![CDATA[$P{IMAGES_DIR} + "list_entry.jpg"]]></imageExpression>
+						<hyperlinkTooltipExpression><![CDATA[selezionato]]></hyperlinkTooltipExpression>
 					</image>
 				</frame>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="-1" y="111" width="484" height="10"/>
+				<reportElement positionType="Float" x="-1" y="111" width="484" height="10" uuid="d6a32514-0110-4993-b1e8-4666e3552ec7"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="71" width="483" height="40"/>
-				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="23" y="4" width="8" height="8"/>
-					<graphicElement>
-						<pen lineWidth="0.5"/>
-					</graphicElement>
-				</rectangle>
+				<reportElement positionType="Float" x="0" y="71" width="483" height="40" uuid="8e1caa6c-42f4-49c3-9658-adbebaf3b942"/>
 				<staticText>
-					<reportElement x="36" y="0" width="445" height="40"/>
+					<reportElement x="36" y="0" width="445" height="40" uuid="b4b8ec3a-c9c9-4400-98e9-f41b63b22864"/>
 					<box leftPadding="5"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[non è assoggettato agli obblighi della l. 68/99 in quanto con organico fino a 15 dipendenti o con organico da 15 a 35 dipendenti che non ha effettuato nuove assunzioni dopo il 18 gennaio 2000]]></text>
 				</staticText>
-				<image>
-					<reportElement positionType="Float" x="23" y="4" width="8" height="8">
-						<printWhenExpression><![CDATA[$F{assunzioniObbligate}  == "0"]]></printWhenExpression>
+				<rectangle>
+					<reportElement positionType="Float" mode="Opaque" x="5" y="3" width="10" height="10" uuid="057a31a1-22e4-4c23-bfa5-405789ed030e">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<printWhenExpression><![CDATA[false]]></printWhenExpression>
 					</reportElement>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
-					<imageExpression class="java.lang.String"><![CDATA[$P{IMAGES_DIR} + "list_entry.jpg"]]></imageExpression>
+				</rectangle>
+				<image>
+					<reportElement positionType="Float" x="6" y="4" width="8" height="8" uuid="7e53e352-21cf-4744-a3dc-02fedf0cd3c2">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<printWhenExpression><![CDATA[false && ($F{assunzioniObbligate}  == "0")]]></printWhenExpression>
+					</reportElement>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+					<imageExpression><![CDATA[$P{IMAGES_DIR} + "list_entry.jpg"]]></imageExpression>
+					<hyperlinkTooltipExpression><![CDATA[selezionato]]></hyperlinkTooltipExpression>
 				</image>
+				<staticText>
+					<reportElement x="21" y="1" width="16" height="16" uuid="ac6c0b07-3feb-426d-a2eb-26453bb8e94e">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<printWhenExpression><![CDATA[$F{assunzioniObbligate}  == "0"]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+					<textElement textAlignment="Justified" markup="html">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<text><![CDATA[[X]]]></text>
+				</staticText>
 			</frame>
 		</band>
 		<band height="30">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="27"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="27" uuid="0037e2dd-4b21-46c4-8d5a-eed3a5e3c342"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="483" height="26"/>
+					<reportElement positionType="Float" x="1" y="0" width="483" height="26" uuid="1b6e769e-53f2-4286-b651-1452e88da359"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1525,14 +1574,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="-1" y="27" width="485" height="3"/>
+				<reportElement positionType="Float" x="-1" y="27" width="485" height="3" uuid="34c4cd65-5aae-41ac-ae28-b09eaaa045c2"/>
 			</frame>
 		</band>
 		<band height="130">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="130"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="130" uuid="8ded2172-027e-41f4-8ce4-d557d70b8fbf"/>
 				<staticText>
-					<reportElement x="1" y="2" width="482" height="15"/>
+					<reportElement x="1" y="2" width="482" height="15" uuid="a927b1a2-48ee-4ec2-8fec-1bda733a5bdf"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11" isItalic="false"/>
@@ -1540,9 +1589,9 @@ ________________________________________________________________________________
 					<text><![CDATA[19) <i>(barrare la casella che interessa) </i>]]></text>
 				</staticText>
 				<frame>
-					<reportElement positionType="Float" x="0" y="17" width="482" height="29"/>
+					<reportElement positionType="Float" x="0" y="17" width="482" height="29" uuid="6adb23fd-8993-4e58-a3d4-bf02e364b453"/>
 					<staticText>
-						<reportElement x="29" y="0" width="453" height="29"/>
+						<reportElement x="29" y="0" width="453" height="29" uuid="136036aa-8271-4705-b87d-50be6b8a31f5"/>
 						<box leftPadding="10"/>
 						<textElement textAlignment="Justified" markup="html">
 							<font fontName="Arial" size="11"/>
@@ -1550,14 +1599,14 @@ ________________________________________________________________________________
 						<text><![CDATA[l’insussistenza nei propri confronti e nei confronti dei soggetti indicati al Punto 1) di carichi pendenti        ]]></text>
 					</staticText>
 					<rectangle>
-						<reportElement positionType="Float" mode="Opaque" x="22" y="3" width="8" height="8"/>
+						<reportElement positionType="Float" mode="Opaque" x="22" y="3" width="8" height="8" uuid="43a8e504-bfe1-4f13-9d54-3bd83bdf9fdc"/>
 						<graphicElement>
 							<pen lineWidth="0.5"/>
 						</graphicElement>
 					</rectangle>
 				</frame>
 				<staticText>
-					<reportElement positionType="Float" x="28" y="46" width="100" height="20"/>
+					<reportElement positionType="Float" x="29" y="46" width="100" height="20" uuid="15316bb2-9329-429e-972b-e3a42f0edbec"/>
 					<box leftPadding="10"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
@@ -1566,15 +1615,15 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="66" width="484" height="64"/>
+				<reportElement positionType="Float" x="0" y="66" width="484" height="64" uuid="4a021318-a7a5-4b3a-a87b-7a8c8f28cd8f"/>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="22" y="3" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="22" y="3" width="8" height="8" uuid="a74bf41c-9a0f-4bd6-9f0a-6a62c680ff89"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement x="29" y="0" width="455" height="64"/>
+					<reportElement x="29" y="0" width="455" height="64" uuid="e379d6b8-46f8-4327-84c6-470e1f21c9f8"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1588,9 +1637,9 @@ ________________________________________________________________________________
 		</band>
 		<band height="89">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="79"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="79" uuid="a9e5c677-c1a0-4320-a6f2-2c8530c388ab"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="482" height="79"/>
+					<reportElement positionType="Float" x="1" y="0" width="482" height="79" uuid="afae2c71-d25b-43a8-aa8a-ae1548ece58b"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1599,14 +1648,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="79" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="79" width="484" height="10" uuid="80c90240-5b42-4452-85a2-c624a83a9dc1"/>
 			</frame>
 		</band>
 		<band height="41">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="41"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="41" uuid="7a911f0c-8800-47ea-8ddb-c86923f19c07"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="483" height="41"/>
+					<reportElement positionType="Float" x="1" y="0" width="483" height="41" uuid="dd21b52d-225b-4870-8dcd-51cf5a242dac"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1617,7 +1666,7 @@ ________________________________________________________________________________
 		</band>
 		<band height="37">
 			<staticText>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="37"/>
+				<reportElement positionType="Float" x="1" y="0" width="483" height="37" uuid="a56c9c32-f721-4a02-8b1a-4ef6046f05d8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
@@ -1626,12 +1675,12 @@ ________________________________________________________________________________
 		</band>
 		<band height="51">
 			<frame>
-				<reportElement positionType="Float" x="1" y="41" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="41" width="483" height="10" uuid="8486d97f-579d-4bad-8440-929f8ecbfc0c"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="41"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="41" uuid="d019b352-7f79-4ff6-8d41-be5608f2ea66"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="483" height="41"/>
+					<reportElement positionType="Float" x="1" y="0" width="483" height="41" uuid="c432eaf1-a4ce-4d0f-8455-a54cafaa7ec8"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1642,9 +1691,9 @@ ________________________________________________________________________________
 		</band>
 		<band height="63">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="53"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="53" uuid="e0ded8ff-ba23-42a7-81e7-74575367c7a8"/>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="0" width="482" height="53"/>
+					<reportElement positionType="Float" x="1" y="0" width="482" height="53" uuid="a099c7a7-7b1b-4ecc-a0cc-7d18f367ba7b"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1653,14 +1702,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="53" width="482" height="10"/>
+				<reportElement positionType="Float" x="0" y="53" width="482" height="10" uuid="f54fe374-086a-4335-b448-4c3acecc4f96"/>
 			</frame>
 		</band>
 		<band height="55">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="45"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="45" uuid="793bfc43-87d3-49e1-9d70-238980c6bfff"/>
 				<staticText>
-					<reportElement positionType="Float" x="2" y="0" width="480" height="45"/>
+					<reportElement positionType="Float" x="2" y="0" width="480" height="45" uuid="03a7bd9b-3266-45ff-9eb6-c50897691f66"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
@@ -1669,66 +1718,66 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="-1" y="45" width="484" height="10"/>
+				<reportElement positionType="Float" x="-1" y="45" width="484" height="10" uuid="386746bc-f7a3-4fe7-87d7-cfe6a100c3fd"/>
 			</frame>
 		</band>
 		<band height="24">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="15"/>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="false">
-					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="15" uuid="cdf7c589-01ee-4548-bad1-61f124cf181c"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true" uuid="1aea2a9b-6586-4ab1-b7a4-62bccbb172b9"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["4) che l’impresa è iscritta presso l’<b>INPS</b> Sede di " +($F{localitaIscrizioneINPS} != null? $F{localitaIscrizioneINPS} : " ___________________________________, ") + " Ufficio ____________________  " + "con <b>numero di matricola</b> " +($F{numIscrizioneINPS}!= null ? $F{numIscrizioneINPS} : " ___________________________;")]]></textFieldExpression>
+					<textFieldExpression><![CDATA["4) che l’impresa è iscritta presso l’<b>INPS</b> Sede di " +($F{localitaIscrizioneINPS} != null? $F{localitaIscrizioneINPS} : " ___________________________________, ") + " Ufficio ____________________  " + "con <b>numero di matricola</b> " +($F{numIscrizioneINPS}!= null ? $F{numIscrizioneINPS} : " ___________________________;")]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="14" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="14" width="483" height="10" uuid="89be1923-b515-4391-b880-4b6a4263b3b3"/>
 			</frame>
 		</band>
 		<band height="130">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="120"/>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="false">
-					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="120" uuid="3d0d9a2f-8a09-479b-aa31-b762f04f8933"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true" uuid="fe5a7019-6869-4ada-873d-b6f81315b058"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["5) che l’impresa è iscritta presso l’<b>INAIL</b> Sede di " +($F{localitaIscrizioneINAIL} != null? $F{localitaIscrizioneINAIL} : " ___________________________________, ") + " Ufficio ____________________  " + " <b>Codice cliente N° </b> " +($F{numIscrizioneINAIL}!= null ? $F{numIscrizioneINAIL} : " ___________________________;")]]></textFieldExpression>
+					<textFieldExpression><![CDATA["5) che l’impresa è iscritta presso l’<b>INAIL</b> Sede di " +($F{localitaIscrizioneINAIL} != null? $F{localitaIscrizioneINAIL} : " ___________________________________, ") + " Ufficio ____________________  " + " <b>Codice cliente N° </b> " +($F{numIscrizioneINAIL}!= null ? $F{numIscrizioneINAIL} : " ___________________________;")]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="19" y="14" width="465" height="20"/>
+					<reportElement positionType="Float" x="19" y="14" width="465" height="20" uuid="23e42e45-5979-456c-a2c6-0225f505106b"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[ovvero]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="11" y="34" width="473" height="20"/>
+					<reportElement positionType="Float" x="11" y="34" width="473" height="20" uuid="327602d1-b78d-48d1-99f2-3fabaf1c21aa"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[che l’impresa non è tenuta all’iscrizione presso _______________________________________]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="11" y="54" width="471" height="20" isPrintWhenDetailOverflows="true"/>
+					<reportElement x="11" y="54" width="471" height="20" isPrintWhenDetailOverflows="true" uuid="d5b8f5dd-a641-4aa0-bfd2-ae26ee0c1221"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[_________________________________________________________________________________]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="10" y="74" width="473" height="20"/>
+					<reportElement positionType="Float" x="10" y="74" width="473" height="20" uuid="cb5e2c99-3a8e-4a4f-8732-a98765e2ad45"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[per le seguenti motivazioni _______________________________________________________]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="11" y="94" width="473" height="20" isPrintWhenDetailOverflows="true"/>
+					<reportElement x="11" y="94" width="473" height="20" isPrintWhenDetailOverflows="true" uuid="cf347a53-c3a9-43eb-a389-967fe048c363"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1736,30 +1785,30 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="120" width="483" height="10"/>
+				<reportElement positionType="Float" x="1" y="120" width="483" height="10" uuid="47319c85-ba94-426e-8215-09f4cef5ac8e"/>
 			</frame>
 		</band>
 		<band height="34">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="24"/>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="false">
-					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="24" uuid="0ca4d37e-cd83-4aa0-9c2c-20f3647395e2"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+					<reportElement positionType="Float" x="1" y="0" width="483" height="14" isPrintWhenDetailOverflows="true" uuid="de8ee408-6376-432a-9119-9af71cb261a9"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["6) <i>(compilare ove ricorra la circostanza)</i>: che l’impresa applica il CCNL Edile e, pertanto, è iscritta presso la <b>Cassa Edile</b> (o altro Ente Paritetico, ____________________________________________________________________________) Sede di  " +($F{localitaIscrizioneCassaEdile} != null? $F{localitaIscrizioneCassaEdile} : " _________________, ") + " Ufficio ____________________  " + " <b>N° di posizione </b> " +($F{numIscrizioneCassaEdile}!= null ? $F{numIscrizioneCassaEdile} : " _________________;")]]></textFieldExpression>
+					<textFieldExpression><![CDATA["6) <i>(compilare ove ricorra la circostanza)</i>: che l’impresa applica il CCNL Edile e, pertanto, è iscritta presso la <b>Cassa Edile</b> (o altro Ente Paritetico, ____________________________________________________________________________) Sede di  " +($F{localitaIscrizioneCassaEdile} != null? $F{localitaIscrizioneCassaEdile} : " _________________, ") + " Ufficio ____________________  " + " <b>N° di posizione </b> " +($F{numIscrizioneCassaEdile}!= null ? $F{numIscrizioneCassaEdile} : " _________________;")]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="24" width="484" height="10"/>
+				<reportElement positionType="Float" x="1" y="24" width="484" height="10" uuid="1a108db8-5061-424e-94e4-0a5693927fdc"/>
 			</frame>
 		</band>
 		<band height="50">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="485" height="40"/>
+				<reportElement positionType="Float" x="0" y="0" width="485" height="40" uuid="4c6004d1-f07a-41f4-8ac7-182e63e08b9e"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="484" height="38"/>
+					<reportElement positionType="Float" x="0" y="0" width="484" height="38" uuid="901af3d3-f000-438f-9faa-c8a14fc44a05"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1768,14 +1817,14 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="40" width="481" height="10"/>
+				<reportElement positionType="Float" x="1" y="40" width="481" height="10" uuid="0df02152-a03f-4e10-91f4-4ef10ffc1efe"/>
 			</frame>
 		</band>
 		<band height="66">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="64"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="64" uuid="12272777-2eda-4754-ad3c-e9f8bca76d90"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="483" height="29"/>
+					<reportElement positionType="Float" x="0" y="0" width="483" height="29" uuid="9a97aa9e-8731-498e-b3cc-94ecd001a4eb"/>
 					<box leftPadding="10"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
@@ -1783,15 +1832,15 @@ ________________________________________________________________________________
 					<text><![CDATA[8) Che il conto corrente dedicato per la tracciabilità dei flussi finanziari ex art. 3 comma 7 della L. n. 136/2010 è il seguente:]]></text>
 				</staticText>
 				<textField>
-					<reportElement positionType="Float" x="1" y="29" width="482" height="20"/>
+					<reportElement positionType="Float" x="1" y="29" width="482" height="20" uuid="3d594954-c5e8-4115-a9e2-4e3fb87ce8fe"/>
 					<box leftPadding="5"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["IBAN : " + ($F{IBAN} != null ? $F{IBAN} : "__________________________________________________________________")]]></textFieldExpression>
+					<textFieldExpression><![CDATA["IBAN : " + ($F{IBAN} != null ? $F{IBAN} : "__________________________________________________________________")]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="49" width="482" height="15"/>
+					<reportElement positionType="Float" x="1" y="49" width="482" height="15" uuid="aba03f45-3654-4016-b47e-919a1b8d78c6"/>
 					<box leftPadding="5"/>
 					<textElement textAlignment="Justified" verticalAlignment="Middle">
 						<font fontName="Arial" size="11"/>
@@ -1800,49 +1849,49 @@ ________________________________________________________________________________
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="64" width="552" height="2"/>
+				<reportElement positionType="Float" x="1" y="64" width="552" height="2" uuid="8049ba4d-de81-4b03-b7bb-d8f72e8c6a57"/>
 			</frame>
 		</band>
 		<band height="20">
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="15" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="1" y="0" width="479" height="15" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="1" y="0" width="483" height="15" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="b20e1046-1318-4744-87c5-fdefeb105571"/>
+				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="1" y="0" width="479" height="15" isRemoveLineWhenBlank="true" uuid="cf9044dd-d03a-42ab-9b93-7055bbbd1aae">
 						<printWhenExpression><![CDATA[!$F{soggettiAbilitati}.isEmpty()]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{soggettiAbilitati} != null ? $F{soggettiAbilitati} : null]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{soggettiAbilitati} != null ? $F{soggettiAbilitati} : null]]></textFieldExpression>
 				</textField>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="15" width="485" height="5"/>
+				<reportElement positionType="Float" x="0" y="15" width="485" height="5" uuid="25db7c82-2e4a-4c28-80a1-7d6eb8679f11"/>
 			</frame>
 		</band>
 		<band height="54">
 			<printWhenExpression><![CDATA[$F{soggettiAbilitati}==null]]></printWhenExpression>
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="483" height="54" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="1" y="0" width="483" height="54" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="7a39e66d-470b-4d1b-969d-a95113d611e0">
 					<printWhenExpression><![CDATA[$F{soggettiAbilitati}==null]]></printWhenExpression>
 				</reportElement>
 				<frame>
-					<reportElement positionType="Float" x="29" y="21" width="454" height="13"/>
+					<reportElement positionType="Float" x="29" y="21" width="454" height="13" uuid="7640f351-e052-453f-8560-34ac66562b6c"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="29" y="38" width="453" height="13"/>
+					<reportElement positionType="Float" x="29" y="38" width="453" height="13" uuid="3e00ea18-cc24-4c39-9cac-39664b2b512e"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="5" y="2" width="24" height="17"/>
+					<reportElement positionType="Float" x="5" y="2" width="24" height="17" uuid="cf33b483-cb65-4ec2-aba9-5b05050db7d1"/>
 					<staticText>
-						<reportElement positionType="Float" x="0" y="0" width="15" height="17"/>
+						<reportElement positionType="Float" x="0" y="0" width="15" height="17" uuid="2fbbbc63-8938-4d96-84f5-a9a7e770f876"/>
 						<textElement verticalAlignment="Bottom">
 							<font fontName="Arial" size="11"/>
 						</textElement>
@@ -1850,9 +1899,9 @@ ________________________________________________________________________________
 					</staticText>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="5" y="19" width="24" height="17"/>
+					<reportElement positionType="Float" x="5" y="19" width="24" height="17" uuid="bffb0328-a71f-464b-b2f2-22d8ada12f67"/>
 					<staticText>
-						<reportElement positionType="Float" x="0" y="0" width="17" height="17"/>
+						<reportElement positionType="Float" x="0" y="0" width="17" height="17" uuid="01116e74-e2f1-47b8-ab2a-26a4099edbb2"/>
 						<textElement verticalAlignment="Bottom">
 							<font fontName="Arial" size="11"/>
 						</textElement>
@@ -1860,9 +1909,9 @@ ________________________________________________________________________________
 					</staticText>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="5" y="36" width="24" height="17"/>
+					<reportElement positionType="Float" x="5" y="36" width="24" height="17" uuid="945c6500-0780-489b-ad17-f29a76c43a37"/>
 					<staticText>
-						<reportElement positionType="Float" x="0" y="0" width="16" height="17"/>
+						<reportElement positionType="Float" x="0" y="0" width="16" height="17" uuid="20ea7614-45e2-493d-af67-5b5b698f93a1"/>
 						<textElement verticalAlignment="Bottom">
 							<font fontName="Arial" size="11"/>
 						</textElement>
@@ -1870,7 +1919,7 @@ ________________________________________________________________________________
 					</staticText>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="29" y="4" width="452" height="13"/>
+					<reportElement positionType="Float" x="29" y="4" width="452" height="13" uuid="ab1fa0b4-d0c5-4302-bc63-3320dfcb75f8"/>
 					<box>
 						<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 					</box>
@@ -1879,7 +1928,7 @@ ________________________________________________________________________________
 		</band>
 		<band height="28">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="484" height="26"/>
+				<reportElement positionType="Float" x="0" y="0" width="484" height="26" uuid="415ae73b-f27c-462f-ba99-2eb7729a1a46"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="11" isBold="true"/>
 				</textElement>
@@ -1888,9 +1937,9 @@ ________________________________________________________________________________
 		</band>
 		<band height="23">
 			<frame>
-				<reportElement positionType="Float" x="0" y="0" width="481" height="19"/>
+				<reportElement positionType="Float" x="0" y="0" width="481" height="19" uuid="b75853c2-888b-4fb5-982b-53af19fbf1b8"/>
 				<staticText>
-					<reportElement positionType="Float" x="2" y="0" width="469" height="19"/>
+					<reportElement positionType="Float" x="2" y="0" width="469" height="19" uuid="a0edf096-a7f3-41ab-bd99-4f1573d2592f"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
@@ -1904,101 +1953,101 @@ ________________________________________________________________________________
         ? $F{sentinellaTipoCategoria}.substring( 0, $F{sentinellaTipoCategoria}.indexOf( "*" ) ).trim()
         : null))]]></printWhenExpression>
 			<frame>
-				<reportElement positionType="Float" x="1" y="0" width="484" height="222"/>
+				<reportElement positionType="Float" x="1" y="0" width="484" height="222" uuid="3a28831a-f065-4789-b625-62c7123182f0"/>
 				<staticText>
-					<reportElement positionType="Float" x="29" y="0" width="455" height="65"/>
+					<reportElement positionType="Float" x="29" y="0" width="455" height="65" uuid="2902e221-f1be-4579-8c22-ee0997224c24"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[che l’operatore economico è in possesso dei requisiti previsti dall’art. 90 del D.P.R. 207/2010 e art. 216 c. 14 del D. Lgs 50/2016 (<u>come da documentazione allegata</u>) in misura non inferiore a quanto previsto dallo stesso articolo, e dichiara inoltre che il requisito di cui al comma 1, lettera a) del medesimo art. 90 è posseduto con riferimento a lavori per cui si chiede l’iscrizione all’elenco;]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="28" y="76" width="453" height="15"/>
+					<reportElement positionType="Float" x="28" y="76" width="453" height="15" uuid="21f702a3-df53-4d1d-a912-4b141ae96fd0"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[che l’operatore economico possiede altresì<i> (barrare la casella in caso affermativo)</i>:]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="32" y="104" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="32" y="104" width="8" height="8" uuid="f9bf06a3-d47f-46f0-81f3-697154595de4"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="51" y="101" width="432" height="14" isPrintWhenDetailOverflows="true"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="51" y="101" width="432" height="14" isPrintWhenDetailOverflows="true" uuid="0d833678-2ca8-4562-887f-aea604851d7a"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[" attestazione SOA di cui all’art. 84 c.1 del D. Lgs 50/2016, in corso di validità, n. "+($F{numIscrizioneSOA}!= null? $F{numIscrizioneSOA} : "___________________")+", rilasciata in data "+ ( $F{dataIscrizioneSOA}!= null?new SimpleDateFormat("dd/MM/yyyy").format($F{dataIscrizioneSOA}) : " _____________") +" dalla seguente Società di attestazione:" +($F{organismoCertificatoreSOA}!= null? $F{organismoCertificatoreSOA}:"____________________________________________________")+ " per le seguenti categorie di lavori e classifiche di importo:"]]></textFieldExpression>
+					<textFieldExpression><![CDATA[" attestazione SOA di cui all’art. 84 c.1 del D. Lgs 50/2016, in corso di validità, n. "+($F{numIscrizioneSOA}!= null? $F{numIscrizioneSOA} : "___________________")+", rilasciata in data "+ ( $F{dataIscrizioneSOA}!= null?new SimpleDateFormat("dd/MM/yyyy").format($F{dataIscrizioneSOA}) : " _____________") +" dalla seguente Società di attestazione:" +($F{organismoCertificatoreSOA}!= null? $F{organismoCertificatoreSOA}:"____________________________________________________")+ " per le seguenti categorie di lavori e classifiche di importo:"]]></textFieldExpression>
 				</textField>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="50" y="127" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="50" y="127" width="8" height="8" uuid="7c490431-0c8f-4080-b563-3745bd254ca1"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement positionType="Float" x="65" y="125" width="389" height="14"/>
+					<reportElement positionType="Float" x="65" y="125" width="389" height="14" uuid="06b5c988-7173-4ddf-bcea-2a62b1ceda63"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[categoria _________ per la classifica ________;]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="50" y="141" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="50" y="141" width="8" height="8" uuid="cf133055-669a-4b4d-967f-52ba3d9dff44"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement positionType="Float" x="65" y="139" width="389" height="14"/>
+					<reportElement positionType="Float" x="65" y="139" width="389" height="14" uuid="77058744-101c-4b3d-813c-d94f83c5fa63"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[categoria _________ per la classifica ________;]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="50" y="155" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="50" y="155" width="8" height="8" uuid="e3f08ce0-d583-4168-b8c9-3cd2e65d353b"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement positionType="Float" x="65" y="153" width="418" height="15"/>
+					<reportElement positionType="Float" x="65" y="153" width="418" height="15" uuid="969607b4-f57a-4e5e-b60f-cceca1e23141"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[categoria _________ per la classifica ________; ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="53" y="178" width="430" height="33"/>
+					<reportElement positionType="Float" x="53" y="178" width="430" height="33" uuid="bafbaac2-d274-4551-989e-04bc36778ea3"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[la CERTIFICAZIONE del sistema di qualità aziendale, in corso di validità, come previsto dall’art. 84 c.4 lett. c) del D. Lgs 50/2016.]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="32" y="178" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="32" y="178" width="8" height="8" uuid="f241da5a-6798-48f7-84ca-eacbfa5d6008"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
 				<frame>
-					<reportElement positionType="Float" x="3" y="168" width="481" height="10"/>
+					<reportElement positionType="Float" x="3" y="168" width="481" height="10" uuid="835135d2-dbaf-45ef-9490-b03c175931f0"/>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="2" y="115" width="479" height="10"/>
+					<reportElement positionType="Float" x="2" y="115" width="479" height="10" uuid="2f28451a-b971-404e-82c8-8b8893dfecc4"/>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="1" y="66" width="481" height="10"/>
+					<reportElement positionType="Float" x="1" y="66" width="481" height="10" uuid="272e0288-0b65-4f0d-a387-98e55420fdb5"/>
 				</frame>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="211" width="483" height="5"/>
+				<reportElement positionType="Float" x="0" y="211" width="483" height="5" uuid="8b855c67-79c5-41d2-989b-6cb6b7c78a35"/>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="1" y="86" width="482" height="10"/>
+				<reportElement positionType="Float" x="1" y="86" width="482" height="10" uuid="c9c76749-c906-47eb-ab2b-4895f3a0bed6"/>
 			</frame>
 		</band>
 		<band height="90">
@@ -2007,82 +2056,82 @@ ________________________________________________________________________________
         ? $F{sentinellaTipoCategoria}.substring( 0, $F{sentinellaTipoCategoria}.indexOf( "*" ) ).trim()
         : null))]]></printWhenExpression>
 			<frame>
-				<reportElement positionType="Float" x="0" y="1" width="485" height="85"/>
+				<reportElement positionType="Float" x="0" y="1" width="485" height="85" uuid="06209c17-5e9b-4953-af11-09142e4fd35f"/>
 				<staticText>
-					<reportElement positionType="Float" x="28" y="27" width="455" height="15"/>
+					<reportElement positionType="Float" x="28" y="27" width="455" height="15" uuid="645d3237-63f7-4153-9c4e-a33f6a4ece6b"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[che l’operatore economico possiede altresì <i>(barrare la casella in caso affermativo):</i>]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="52" y="52" width="431" height="33"/>
+					<reportElement positionType="Float" x="52" y="52" width="431" height="33" uuid="12b350a7-176c-4c3e-bbd3-12ef3031c473"/>
 					<textElement textAlignment="Justified">
 						<font fontName="Arial" size="11"/>
 					</textElement>
 					<text><![CDATA[la CERTIFICAZIONE del sistema di qualità aziendale, in corso di validità, come previsto dall’art. 84 c.4 lett. c) del D. Lgs 50/2016.]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement positionType="Float" mode="Opaque" x="33" y="55" width="8" height="8"/>
+					<reportElement positionType="Float" mode="Opaque" x="33" y="55" width="8" height="8" uuid="b1490dd9-64e1-49b0-a139-87011119f18d"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</rectangle>
-				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="28" y="0" width="453" height="26" isPrintWhenDetailOverflows="true"/>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="28" y="0" width="453" height="26" isPrintWhenDetailOverflows="true" uuid="6a1f4341-0b12-4a79-8172-11d528b13c2d"/>
 					<textElement textAlignment="Justified" markup="html">
 						<font fontName="Arial" size="11"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["attestazione SOA di cui all’art. 84 c.1 del D. Lgs 50/2016, in corso di validità, n. " + ($F{numIscrizioneSOA}!= null ?$F{numIscrizioneSOA}:"_______________________________________") +
+					<textFieldExpression><![CDATA["attestazione SOA di cui all’art. 84 c.1 del D. Lgs 50/2016, in corso di validità, n. " + ($F{numIscrizioneSOA}!= null ?$F{numIscrizioneSOA}:"_______________________________________") +
 ", rilasciata in data "+ ( $F{dataIscrizioneSOA}!= null?new SimpleDateFormat("dd/MM/yyyy").format($F{dataIscrizioneSOA}) : " ____________") +
 " dalla seguente Società di attestazione: " +($F{organismoCertificatoreSOA}!= null? $F{organismoCertificatoreSOA}:"__________________________________________________________________") +
 " per le categorie di lavori per cui si richiede l’iscrizione "]]></textFieldExpression>
 				</textField>
 				<frame>
-					<reportElement positionType="Float" x="0" y="26" width="485" height="10"/>
+					<reportElement positionType="Float" x="0" y="26" width="485" height="10" uuid="01e8856f-7a6b-4f15-8fad-c23263474ca4"/>
 				</frame>
 				<frame>
-					<reportElement positionType="Float" x="0" y="42" width="483" height="10"/>
+					<reportElement positionType="Float" x="0" y="42" width="483" height="10" uuid="cff70d8a-c113-4bab-af70-9871d9261b1b"/>
 				</frame>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="0" y="85" width="482" height="5"/>
+				<reportElement positionType="Float" x="0" y="85" width="482" height="5" uuid="d39baa81-1acb-493a-8108-fe7d51e6a418"/>
 			</frame>
 		</band>
 		<band height="88">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="78"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="78" uuid="2fb0caa9-c4a1-4b43-acb8-6ef41c106b9b"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[Dichiara infine di aver preso visione dell’informativa privacy di cui all’art. 10 dell’Avviso Pubblico di costituzione e  tenuta, in modalità digitale,  degli elenchi degli operatori economici e di autorizzare, ai sensi e per gli effetti di cui al D.Lgs. 196/03, la Città Metropolitana di Bari- Servizio Stazione Unica Appaltante al trattamento dei dati personali, anche con strumenti informatici, esclusivamente nell'ambito del procedimento per il quale la presente dichiarazione viene resa e per lo svolgimento delle  funzioni istituzionali.]]></text>
 			</staticText>
 			<frame>
-				<reportElement positionType="Float" x="0" y="78" width="484" height="10"/>
+				<reportElement positionType="Float" x="0" y="78" width="484" height="10" uuid="e29bb9cc-b24a-47fe-bffc-6492e8fcfe17"/>
 			</frame>
 		</band>
 		<band height="60">
 			<textField>
-				<reportElement positionType="Float" x="263" y="25" width="219" height="25"/>
+				<reportElement positionType="Float" x="263" y="25" width="219" height="25" uuid="dedf4f88-b425-4359-929e-c73a1de625d9"/>
 				<textElement textAlignment="Justified" verticalAlignment="Middle">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[(($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{cognome} == null ? "" : $F{cognome} + " ") + ($F{nome} == null ? "" : $F{nome}))]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="0" width="262" height="25"/>
+				<reportElement positionType="Float" x="2" y="0" width="262" height="25" uuid="805282f2-ca5a-4c80-aa96-108fb36c32a3"/>
 				<textElement textAlignment="Justified" verticalAlignment="Middle">
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{comuneSedeLegale} + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{comuneSedeLegale} + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement positionType="Float" x="0" y="50" width="483" height="10"/>
+				<reportElement positionType="Float" x="0" y="50" width="483" height="10" uuid="58cec862-d31d-43d8-9007-09f8a7513261"/>
 			</frame>
 		</band>
 		<band height="79">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="483" height="79"/>
+				<reportElement positionType="Float" x="0" y="0" width="483" height="79" uuid="05db1b3a-693b-476b-9b6b-b9c21c999515"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="11"/>
 				</textElement>
@@ -2094,7 +2143,7 @@ ________________________________________________________________________________
 		</band>
 		<band height="96">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="482" height="96"/>
+				<reportElement positionType="Float" x="0" y="0" width="482" height="96" uuid="0d7c2079-658a-41c9-bdb8-73bb445ffc1f"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="8"/>
 				</textElement>
@@ -2112,7 +2161,7 @@ Le dichiarazioni di cui al punto 7)  lettere a), b), c), d), e), f), g) del pres
 		</band>
 		<band height="28">
 			<staticText>
-				<reportElement positionType="Float" x="2" y="0" width="480" height="28"/>
+				<reportElement positionType="Float" x="2" y="0" width="480" height="28" uuid="56df57bd-30b0-4446-903b-7aa1f9a956a4"/>
 				<textElement textAlignment="Justified" markup="html">
 					<font fontName="Arial" size="8" isUnderline="true"/>
 				</textElement>

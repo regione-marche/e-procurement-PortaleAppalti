@@ -77,6 +77,7 @@
 //--><!]]>
 </script>
 
+
 <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/send_blockUI.jsp" />
 
 <jsp:include page="/WEB-INF/aps/jsp/models/inc/skin.jsp" >
@@ -104,109 +105,110 @@
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_ASSISTENZA_TECNICA_INS_RICHIESTA" /></legend>
 			 
-		<input type="hidden" name="infoSystem" id="infoSystem" value=""/>
-		
-		<label class="noscreen">
-			<s:textfield name="address" value="" maxlength="50" title="Parametro di sicurezza da non compilare" aria-required="true"/>
-			<span class="required-field">*</span>
-		</label>
-		
-		<c:if test="${not empty codiceStazioneAppaltante}">	
-			<div class="fieldset-row first-row">
+			<input type="hidden" name="infoSystem" id="infoSystem" value=""/>
+			
+			<label class="noscreen">
+				<s:textfield name="address" value="" maxlength="50" title="Parametro di sicurezza da non compilare" aria-required="true" autocomplete="off" />
+				<span class="required-field">*</span>
+			</label>
+			
+			<c:if test="${not empty codiceStazioneAppaltante}">	
+				<div class="fieldset-row first-row">
+					<div class="label">
+						<label><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /></label> : 
+					</div>
+					<div class="element">
+						${descStazioneAppaltante} (${codiceFiscaleStazioneAppaltante}) 
+						<%-- ${codiceStazioneAppaltante} --%> 
+					</div>
+				</div>
+			</c:if>
+			
+			<div class="fieldset-row <c:if test="${codiceStazioneAppaltante}">first-row</c:if>">
 				<div class="label">
-					<label><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /></label> : 
+					<label for="ente"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></label> : <span class="required-field">*</span>
 				</div>
 				<div class="element">
-					${descStazioneAppaltante} (${codiceFiscaleStazioneAppaltante}) 
-					<%-- ${codiceStazioneAppaltante} --%> 
+					<s:textfield name="ente" maxlength="50" autocomplete="off"/>
 				</div>
 			</div>
-		</c:if>
-		
-		<div class="fieldset-row <c:if test="${codiceStazioneAppaltante}">first-row</c:if>">
-			<div class="label">
-				<label for="ente"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></label> : <span class="required-field">*</span>
-			</div>
-			<div class="element">
-				<s:textfield name="ente" maxlength="50" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="referente"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_REFERENTE" /></label> : <span class="required-field">*</span>
-			</div>
-			<div class="element">
-				<s:textfield name="referente" maxlength="50" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="email"><wp:i18n key="LABEL_EMAIL" /></label> : <span class="required-field">*</span>
-			</div>
-			<div class="element">
-				<s:textfield name="email" maxlength="50" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="telefono"><wp:i18n key="LABEL_TELEFONO" /> : </label>
-			</div>
-			<div class="element">
-				<s:textfield name="telefono" maxlength="16" size="20" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="tipoRichiesta"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_TIPOLOGIA" /></label> : <span class="required-field">*</span>
-			</div>
-			<div class="element">
-				<wp:i18n key="OPT_ASSISTENZA_TECNICA_CHOOSE_TIPOLOGIA" var="headerValueTipoRichiesta" />
-				<s:select name="tipoRichiesta" list="maps['tipologieAssistenza']" 
-									headerKey="" headerValue="%{#attr.headerValueTipoRichiesta}" >
-				</s:select>
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="descrizione"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_DESCRIZIONE" /> : </label>
-			</div>
-			<div class="element">
-				<s:textarea name="descrizione" rows="5" cols="50" maxlength="2000" />
-			</div>
-		</div>
-
-		<div class="fieldset-row">
-			<div class="label">
-				<label for="allegato"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_ALLEGA_FILE" /> : </label>
-			</div>
-			<div class="element">
-				<input type="file" name="allegato" id="allegato" />
-				<div class="note">
-				<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="referente"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_REFERENTE" /></label> : <span class="required-field">*</span>
+				</div>
+				<div class="element">
+					<s:textfield name="referente" maxlength="50" autocomplete="off" />
 				</div>
 			</div>
-		</div>
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="email"><wp:i18n key="LABEL_EMAIL" /></label> : <span class="required-field">*</span>
+				</div>
+				<div class="element">
+					<s:textfield name="email" maxlength="50" autocomplete="off" />
+				</div>
+			</div>
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="telefono"><wp:i18n key="LABEL_TELEFONO" /> : </label>
+				</div>
+				<div class="element">
+					<s:textfield name="telefono" maxlength="16" size="20" autocomplete="off" />
+				</div>
+			</div>
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="tipoRichiesta"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_TIPOLOGIA" /></label> : <span class="required-field">*</span>
+				</div>
+				<div class="element">
+					<wp:i18n key="OPT_ASSISTENZA_TECNICA_CHOOSE_TIPOLOGIA" var="headerValueTipoRichiesta" />
+					<s:select name="tipoRichiesta" list="maps['tipologieAssistenza']" 
+										headerKey="" headerValue="%{#attr.headerValueTipoRichiesta}"  autocomplete="off" >
+					</s:select>
+				</div>
+			</div>
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="descrizione"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_DESCRIZIONE" /> : </label>
+				</div>
+				<div class="element">
+					<s:textarea name="descrizione" rows="5" cols="50" maxlength="2000" autocomplete="off" />
+				</div>
+			</div>
+	
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="allegato"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_ALLEGA_FILE" /> : </label>
+				</div>
+				<div class="element">
+					<input type="file" name="allegato" id="allegato" />
+					<div class="note">
+						<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp" />
+					</div>
+				</div>
+			</div>
 			
-		<div class="fieldset-row last-row">
-			<div class="label">
-				<label for="captchaConferma"><wp:i18n key="LABEL_ASSISTENZA_TECNICA_CAPTCHA" /></label> : <span class="required-field">*</span>
+			<div class="fieldset-row last-row">
+				<div class="label">
+					<label><wp:i18n key="LABEL_ASSISTENZA_TECNICA_CAPTCHA" /> : </label>
+				</div>
+				<div class="element">
+					<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/captcha.jsp">
+	    				<jsp:param name="submitForm" value="request_help_form" /> 
+	    				<jsp:param name="autoSubmitForm" value="0" />
+	    			</jsp:include>
+				</div>
 			</div>
-			<div class="element">
-				<s:url id="getcaptcha" namespace="/captcha" action="getimage" />
-				<img id="captchaImg" src="${getcaptcha}" alt="Captcha Image" />
-    			<input type="text" name="captchaConferma" id="captchaConferma" />
+ 
+ 			<div class="azioni">
+				<wp:i18n key="BUTTON_SEND" var="valueSendButton" />
+				<s:submit value="%{#attr.valueSendButton}" cssClass="button block-ui" />
 			</div>
-		</div>
-
-		<div class="azioni">
-			<wp:i18n key="BUTTON_SEND" var="valueSendButton" />
-			<s:submit value="%{#attr.valueSendButton}" cssClass="button block-ui" />
-		</div>
 		
 		</fieldset>
 	</form>

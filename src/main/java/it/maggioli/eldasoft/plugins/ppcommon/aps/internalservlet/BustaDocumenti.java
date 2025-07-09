@@ -35,8 +35,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -47,15 +45,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+
+
 /**
- * ... 
+ * generica busta con documenti allegati per una partecipazione o offerta di gara
  */
-public class BustaDocumenti extends BustaGara {
+public class BustaDocumenti extends BustaGara implements HttpSessionBindingListener {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = 5881082117048066847L;
-	private final Logger logger = ApsSystemUtils.getLogger();
 		
 	protected WizardDocumentiBustaHelper helperDocumenti;
 	protected List<DocumentazioneRichiestaType> documentiRichiestiDB;
@@ -104,7 +105,19 @@ public class BustaDocumenti extends BustaGara {
 		this.helperDocumenti = null;
 		//this.initHelper();
 	}
-		
+	
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		GestioneBuste.traceLog("BustaDocumenti.valueUnbound " + comunicazioneFlusso.getTipoComunicazione() + " " + codiceGara + " " + codiceLotto);
+		if(helperDocumenti != null) {
+			helperDocumenti.valueUnbound(event);
+		}
+	}
+	
 	/**
 	 * invia la busta al servizio con un determinato stato 
 	 */
@@ -131,8 +144,8 @@ public class BustaDocumenti extends BustaGara {
 		evento.setEventType(PortGareEventsConstants.SALVATAGGIO_COMUNICAZIONE);
 		evento.setIpAddress(action.getCurrentUser().getIpAddress());
 		evento.setSessionId(action.getRequest().getSession().getId());
-		evento.setMessage("Salvataggio comunicazione " + this.comunicazioneFlusso.getTipoComunicazione() 
-					      + " con id " + documenti.getIdComunicazione() 
+		// NB: piu' avanti il messaggio viene riaggiornato con id della comunicazione
+		evento.setMessage("Salvataggio comunicazione " + this.comunicazioneFlusso.getTipoComunicazione()
 						  + " in stato " + stato);
 		
 		try {
@@ -210,19 +223,32 @@ public class BustaDocumenti extends BustaGara {
 					documenti.resetStatiInvio( this.comunicazioneFlusso.getComunicazione() );
 					documenti.setDatiModificati(false);
 				
-					evento.setMessage(
-							"Salvataggio comunicazione " + this.comunicazioneFlusso.getTipoComunicazione() 
-							+ " con id " + this.comunicazioneFlusso.getId() 
-							+ " in stato " + dettaglioComunicazione.getStato());
+					if("99".equals(stato)) {
+						// reset della busta
+						evento.setMessage(String.format(action.getText("Event.reset.envelope")
+        												, comunicazioneFlusso.getTipoComunicazione()
+        												, comunicazioneFlusso.getId()
+										  ));
+					} else {
+						evento.setMessage("Salvataggio comunicazione " + this.comunicazioneFlusso.getTipoComunicazione()
+		  								  + " con id " + comunicazioneFlusso.getId() 
+		  								  + " in stato " + stato);
+					}
 					
 					// QUESTIONARI
 					// NB: se e' presente la gestione di un questionario
 					// il flusso viene ridiretto ad un'altra action che
 					// recupera l'helper documenti dalla sessione e quindi 
 					// l'helper va rimesso in sessione!!! 
-					if(documenti.isGestioneQuestionario()) {
+					if(documenti.isGestioneQuestionario())
 						this.gestioneBuste.putToSession();
-					}
+				}
+				
+				// se lo stato della busta e' 99 (reset/eliminata)
+				// si ricarica la busta come fosse vuota...
+				if("99".equals(stato)) {
+					this.comunicazioneFlusso.reset();
+					get();
 				}
 			}
 		} catch (ApsException e) {
@@ -256,7 +282,8 @@ public class BustaDocumenti extends BustaGara {
 	 * invia la busta al servizio con un determinato stato 
 	 */
 	public boolean send(String stato) throws Throwable {
-		logger.info("BustaDocumenti.send");
+		GestioneBuste.traceLog("BustaDocumenti.send");
+		this.helperDocumenti.correggiDocumentiRichiestiConBO(documentiRichiestiDB);
 		return this.send(this.helperDocumenti.getXmlDocument(), this.helperDocumenti, stato);
 	}
 	
@@ -416,6 +443,15 @@ public class BustaDocumenti extends BustaGara {
 	}
 	
 	/**
+	 * invalida i dati dell'helper associato alla busta  
+	 */
+	@Override
+	protected void invalidateHelper() throws Throwable {
+		// rimuove dalla sessione la busta ed elimina dalla cartella "temp" i file temporanei 
+		valueUnbound(null);
+	}
+
+	/**
 	 * inizializza un nuovo helper associato alla busta  
 	 */
 	@Override
@@ -495,31 +531,16 @@ public class BustaDocumenti extends BustaGara {
 		
 		// aggiorna la busta di riepilogo...
 		if(continua) {
-			// in caso di QFORM resetta le info
-			BustaRiepilogo bustaRiepilogo = this.gestioneBuste.getBustaRiepilogo();
 			String codLotto = (StringUtils.isNotEmpty(this.codiceLotto) && !this.codiceLotto.equals(this.codiceGara) 
 							   ? this.codiceLotto
 							   : null);
-			RiepilogoBustaBean riepilogo = null;
-			if(this.getTipoBusta() == BustaGara.BUSTA_PRE_QUALIFICA) {
-				riepilogo = bustaRiepilogo.getHelper().getBustaPrequalifica();
-			} else if(this.tipoBusta == BUSTA_AMMINISTRATIVA) {
-				riepilogo = bustaRiepilogo.getHelper().getBustaAmministrativa();
-			} else if(this.tipoBusta == BUSTA_TECNICA) {
-				if(codLotto != null) {
-					riepilogo = bustaRiepilogo.getHelper().getBusteTecnicheLotti().get(codLotto);
-				} else {
-					riepilogo = bustaRiepilogo.getHelper().getBustaTecnica();
-				}
-			} else if(this.tipoBusta == BUSTA_ECONOMICA) {
-				if(codLotto != null) {
-					riepilogo = bustaRiepilogo.getHelper().getBusteEconomicheLotti().get(codLotto);
-				} else {
-					riepilogo = bustaRiepilogo.getHelper().getBustaEconomica();
-				}
-			}
-
+			
+			BustaRiepilogo bustaRiepilogo = this.gestioneBuste.getBustaRiepilogo();
+			
+			// in caso di QFORM resetta le info
+			RiepilogoBustaBean riepilogo = bustaRiepilogo.getHelper().getRiepilogoBusta(this.tipoBusta, codLotto);
 			bustaRiepilogo.getHelper().resetQuestionario(riepilogo);
+			
 			continua = bustaRiepilogo.send(this);
 		}
 

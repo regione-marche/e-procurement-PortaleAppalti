@@ -184,22 +184,28 @@
 										
 											<s:if test="%{isDocFirmato}">
 												<%-- DOCUMENTO FIRMATO .P7M .TSD --%>
-												<s:set var="urlDownload"><wp:action path="/ExtStr2/do/FrontEnd/DocDig/downloadDocumentoPubblico.action"/>&amp;id=<s:property value="%{#documento.idfacsimile}"/>&amp;${tokenHrefParams}</s:set>
+												<s:set var="urlDownload"><wp:action path="/ExtStr2/do/FrontEnd/DocDig/downloadDocumentoPubblico.action"/></s:set>
 											</s:if>
 											<s:else>
-												<%-- DOCUMENTO SENZA FIRMATO --%>
-												<s:set var="urlDownload"><s:property value="%{#urlDownloadModello}"/>?id=<s:property value="%{#documento.idfacsimile}"/>&amp;${tokenHrefParams}</s:set>
+												<%-- DOCUMENTO SENZA FIRMA --%>
+												<s:set var="urlDownload"><s:property value="%{#urlDownloadModello}"/></s:set>
 											</s:else>
 
-											<c:choose>
-												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-													<s:a href="%{#urlDownload}" title="%{#attr.titleDownloadFacsimile}">%{#attr.valueDownloadFacsimile}</s:a>
-												</c:when>
-												<c:otherwise>
-													<s:a href="%{#urlDownload}" title="%{#attr.titleDownloadFacsimile}" cssClass="bkg download"></s:a>
-												</c:otherwise>
-											</c:choose>
-											
+											<form action='<s:property value="%{#urlDownload}"/>' method="post">
+												<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+												<input type="hidden" name="id" value='<s:property value="%{#documento.idfacsimile}"/>' />
+												<c:choose>
+													<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+														<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleDownloadFacsimile}">
+															${attr.valueDownloadFacsimile}
+														</a>
+													</c:when>
+													<c:otherwise>
+														<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleDownloadFacsimile}" class="bkg download">
+														</a>
+													</c:otherwise>
+												</c:choose>
+												</form>
 										</s:if>
 									</li>
 								</ul>
@@ -207,6 +213,7 @@
 							<td class="azioni">
 								<ul>
 									<s:set var="caricato" value="%{false}" />
+									
 									<s:iterator value="#helperDoc.docRichiestiId" var="idDoc" status="statusCaricato">
 										<s:if test="%{#idDoc == #documento.id && #helperDoc.docRichiestiVisibile.get(#statusCaricato.index)}">
 										
@@ -218,31 +225,51 @@
 											<s:if test='%{#firmaWarning}'>
 												<img class="resize-svg-16" title="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" alt="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" src="<s:property value='%{#imgDocNonFirmato}'/>">
 											</s:if>
-											<c:choose>
-												<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-													<li>
-														<s:a href="%{#urlDownloadDocRichiesto}?id=%{#statusCaricato.index}&amp;tipoElenco=%{#helper.tipoElenco}&amp;codice=%{#helper.codice}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleDownloadAllegato}">%{#attr.valueDownloadAllegato}</s:a> (<s:property value="%{#helperDoc.docRichiestiSize.get(#statusCaricato.index)}"/> KB)
-													</li>
-													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoElenco=<s:property value="%{#helper.tipoElenco}"/>&amp;codice=<s:property value="%{#helper.codice}"/>&amp;${tokenHrefParams}' title="${attr.titleEliminaAllegato}">
-															${attr.valueEliminaAllegato}
-														</a>
-													</li>
-												</c:when>
-												<c:otherwise>
-													<li <s:if test="%{#firmaWarning}">class="not-signed-alert"</s:if> >
-														<s:a href="%{#urlDownloadDocRichiesto}?id=%{#statusCaricato.index}&amp;tipoElenco=%{#helper.tipoElenco}&amp;codice=%{#helper.codice}&amp;%{#attr.tokenHrefParams}" 
-															title="%{#attr.titleDownloadAllegato}" cssClass="bkg download">
-															<s:property value="%{#helperDoc.docRichiestiFileName.get(#statusCaricato.index)}"/>
-														</s:a> 
-														(<s:property value="%{#helperDoc.docRichiestiSize.get(#statusCaricato.index)}"/> KB)
-													</li>
-													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoElenco=<s:property value="%{#helper.tipoElenco}"/>&amp;codice=<s:property value="%{#helper.codice}"/>&amp;${tokenHrefParams}' title="${attr.titleEliminaAllegato}" class="bkg delete">
-														</a>
-													</li>
-												</c:otherwise>
-											</c:choose>
+											<c:set var="notSignedAlert">
+												<c:if test="${skin != 'highcontrast' && skin != 'text'}">
+													<s:if test="%{#firmaWarning}">class="not-signed-alert"</s:if>
+												</c:if>
+											</c:set>
+											
+											<li ${notSignedAlert} >
+												<form action='<s:property value="%{#urlDownloadDocRichiesto}"/>' method="post">
+													<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+													<input type="hidden" name="id" value="${statusCaricato.index}" />
+													<input type="hidden" name="tipoElenco" value='<s:property value="%{#helper.tipoElenco}"/>' />
+													<input type="hidden" name="codice" value='<s:property value="%{#helper.codice}"/>' />
+													
+													<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleDownloadAllegato}" class="bkg download">
+														<c:choose>
+															<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+																${attr.valueDownloadAllegato}
+															</c:when>
+															<c:otherwise>
+																<s:property value="%{#helperDoc.docRichiestiFileName.get(#statusCaricato.index)}"/>
+															</c:otherwise>
+														</c:choose>
+													</a> (<s:property value="%{#helperDoc.docRichiestiSize.get(#statusCaricato.index)}"/> KB)
+												</form>
+											</li>
+											<li>
+												<form action='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoRichiesto.action"/>' method="post">
+													<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+													<input type="hidden" name="id" value="${statusCaricato.index}" />
+													<input type="hidden" name="tipoElenco" value='<s:property value="%{#helper.tipoElenco}"/>' />
+													<input type="hidden" name="codice" value='<s:property value="%{#helper.codice}"/>' />
+													<input type="hidden" name="ext" value='${param.ext}' />
+													
+													<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleEliminaAllegato}" class="bkg delete">
+														<c:choose>
+															<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+																${attr.valueEliminaAllegato}
+															</c:when>
+															<c:otherwise>
+															</c:otherwise>
+														</c:choose>
+													</a>
+												</form>
+											</li>
+											
 											<s:set var="caricato" value="%{true}" />
 										</s:if>
 									</s:iterator>
@@ -291,27 +318,50 @@
 										<s:if test='%{#firmaWarning}'>
 											<img class="resize-svg-16" title="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" alt="<wp:i18n key='LABEL_DOCUMENTO_FIRMA_NON_VERIFICATA' />" src="<s:property value='%{#imgDocNonFirmato}'/>">
 										</s:if> 
-										<c:choose>
-											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-												<li>
-													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#status.index}&amp;tipoElenco=%{#helper.tipoElenco}&amp;codice=%{#helper.codice}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleDownloadAllegato}">%{#attr.valueDownloadAllegato}</s:a> (<s:property value="%{#helperDoc.docUlterioriSize.get(#status.index)}" /> KB)
-												</li>
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoElenco=<s:property value="%{#helper.tipoElenco}"/>&amp;codice=<s:property value="%{#helper.codice}"/>&amp;${tokenHrefParams}' title="${attr.titleEliminaAllegato}">
-														${attr.valueEliminaAllegato}
-													</a>
-												</li>
-											</c:when>
-											<c:otherwise>
-												<li <s:if test="%{#firmaWarning}">class="not-signed-alert"</s:if>>
-													<s:a href="%{#urlDownloadDocUlteriore}?id=%{#status.index}&amp;tipoElenco=%{#helper.tipoElenco}&amp;codice=%{#helper.codice}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleDownloadAllegato}" cssClass="bkg download"><s:property value="%{#helperDoc.docUlterioriFileName.get(#status.index)}"/></s:a> (<s:property value="%{#helperDoc.docUlterioriSize.get(#status.index)}" /> KB)
-												</li>
-												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoElenco=<s:property value="%{#helper.tipoElenco}"/>&amp;codice=<s:property value="%{#helper.codice}"/>&amp;${tokenHrefParams}' title="${attr.titleEliminaAllegato}" class="bkg delete">
-													</a>
-												</li>
-											</c:otherwise>
-										</c:choose>
+										<c:set var="notSignedAlert">
+											<c:if test="${skin != 'highcontrast' && skin != 'text'}">
+												<s:if test="%{#firmaWarning}">class="not-signed-alert"</s:if>
+											</c:if>
+										</c:set>
+										
+										<li ${notSignedAlert}>
+											<form action='<s:property value="%{#urlDownloadDocUlteriore}"/>' method="post">
+												<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+												<input type="hidden" name="id" value="${status.index}" />
+												<input type="hidden" name="tipoElenco" value='<s:property value="%{#helper.tipoElenco}"/>' />
+												<input type="hidden" name="codice" value='<s:property value="%{#helper.codice}"/>' />
+												
+												<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleDownloadAllegato}" class="bkg download">
+													<c:choose>
+														<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+															${attr.valueDownloadAllegato}
+														</c:when>
+														<c:otherwise>
+															<s:property value="%{#helperDoc.docUlterioriFileName.get(#status.index)}"/>
+														</c:otherwise>
+													</c:choose>
+												</a> (<s:property value="%{#helperDoc.docUlterioriSize.get(#status.index)}" /> KB)
+											</form>
+										</li>
+										<li>
+											<form action='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDeleteDocRinnovoUlteriore.action"/>' method="post">
+												<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+												<input type="hidden" name="id" value="${status.index}" />
+												<input type="hidden" name="tipoElenco" value='<s:property value="%{#helper.tipoElenco}"/>' />
+												<input type="hidden" name="codice" value='<s:property value="%{#helper.codice}"/>' />
+												<input type="hidden" name="ext" value='${param.ext}' />
+												
+												<a href="javascript:;" onclick="parentNode.submit();" title="${attr.titleEliminaAllegato}" class="bkg delete">
+													<c:choose>
+														<c:when test="${skin == 'highcontrast' || skin == 'text'}">
+															${attr.valueEliminaAllegato}
+														</c:when>
+														<c:otherwise>
+														</c:otherwise>
+													</c:choose>
+												</a>
+											</form>
+										</li>
 									</ul>
 								</td>
 							</tr>
@@ -343,11 +393,10 @@
 				</tr>
 			</table>
 
-			<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-			<s:set var="kbDisponibili" value="%{limiteTotaleUploadDocIscrizione - dimensioneAttualeFileCaricati}"></s:set>
 			<p>
-				<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
-				<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <span class="important"><s:property value="%{#kbCaricati}" /></span> KB, <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" /> <strong><s:property value="%{#kbDisponibili}" /></strong> KB.
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+					<jsp:param name="dimensioneAttualeFileCaricati" value="<s:property value='%{dimensioneAttualeFileCaricati}'/>"/>
+				</jsp:include>
 			</p>
 		</fieldset>
 		
@@ -377,7 +426,7 @@
 		</c:if> 
 --%>
 		<div class="azioni">
-			<form action="<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDocumenti.action" />" method="post" id="mainForm">
+			<form action="<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/confirmDocumenti.action" />" method="post" id="mainForm" class="azione">
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 				
 				<div>

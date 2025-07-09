@@ -136,12 +136,12 @@
 						<div class="list-action">
 							<c:choose>
 								<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' title="<wp:i18n key="LINK_VIEW_DETAIL" />">
+									<a href='<wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/>' title="<wp:i18n key="LINK_VIEW_DETAIL" />">
 										<wp:i18n key="LINK_VIEW_DETAIL" />
 									</a>
 								</c:when>
 								<c:otherwise>
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' class="bkg detail-very-big" title="<wp:i18n key="LINK_VIEW_DETAIL" />">
+									<a href='<wp:action path="/ExtStr2/do/FrontEnd/Contratti/view.action" />&amp;codice=<s:property value="codice"/>' class="bkg detail-very-big" title="<wp:i18n key="LINK_VIEW_DETAIL" />">
 										<wp:i18n key="LINK_VIEW_DETAIL" />
 									</a>
 								</c:otherwise>

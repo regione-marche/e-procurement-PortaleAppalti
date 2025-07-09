@@ -1,10 +1,14 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.agiletec.aps.system.SystemConstants;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 
@@ -14,6 +18,11 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Valida
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.OFFERTA_GARA, 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class ProcessPageRTIAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -24,6 +33,8 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 	@Validate(EParamValidation.RAGIONE_SOCIALE)
 	private String denominazioneRTI;
 //	private String tipoRaggruppamento;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 
 	public Integer getRti() {
 		return rti;
@@ -48,11 +59,25 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 //	public void setTipoRaggruppamento(String tipoRaggruppamento) {
 //		this.tipoRaggruppamento = tipoRaggruppamento;
 //	}
-
 	
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
+		if (!StringUtils.equals(this.codiceCNEL, "n.a.")) {
+			this.codiceCNEL = StringUtils.upperCase(codiceCNEL);
+		}
+	}
+
+	/**
+	 * ... 
+	 */
 	@Override
 	public void validate() {
 		super.validate();
+		
 		if ((this.rti == 1 && this.denominazioneRTI.length() == 0)
 			 || (this.rti == 0 && this.denominazioneRTI.length() > 0)) 
 		{
@@ -64,6 +89,17 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 //		{
 //			this.addFieldError("tipoRaggruppamento", this.getText("Errors.wrongTipoRaggruppamento"));
 //		}
+
+		// valida CNEL solo per le gare, per gli elenchi operatore non e' previsto
+		GestioneBuste buste = GestioneBuste.getFromSession();
+		if (buste != null && buste.isInvioOfferta()) {
+			// codiceCNEL deve essere di 4 caratteri
+			if (StringUtils.isEmpty(this.codiceCNEL)) {
+				this.addFieldError("codiceCNEL", this.getText("Errors.requiredstring", new String[] { this.getTextFromDB("codiceCNEL") }));
+			} else if (this.codiceCNEL.length() != 4) {
+				this.addFieldError("codiceCNEL", this.getText("Errors.stringlength", new String[] { this.getTextFromDB("codiceCNEL"), "4" }));
+			}
+		}
 	}
 
 	/**
@@ -73,7 +109,8 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 	public String next() {
 		String target = SUCCESS;
 		
-		IRaggruppamenti helper = GestioneBuste.getPartecipazioneFromSession().getHelper();
+		GestioneBuste buste = GestioneBuste.getFromSession();
+		IRaggruppamenti helper = (buste != null ? buste.getBustaPartecipazione().getHelper() : null);
 		WizardPartecipazioneHelper partecipazioneHelper = (WizardPartecipazioneHelper)helper;
 		
 		if (helper != null &&
@@ -111,6 +148,10 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 				}
 			}
 
+			if(buste.isInvioOfferta()) {
+				partecipazioneHelper.setCodiceCNEL(codiceCNEL);
+			}
+			
 			// lo step STEP_COMPONENTI dipende dinamicamente dalla pagina JSP
 			// abilita sempre lo step dei componenti in "OpenPageRTIAction"  
 			// mentre in "ProcessPageRTIAction" viene deciso se lo step componenti
@@ -129,5 +170,5 @@ public class ProcessPageRTIAction extends AbstractProcessPageAction {
 		}
 		return target;
 	}
-
+	
 }

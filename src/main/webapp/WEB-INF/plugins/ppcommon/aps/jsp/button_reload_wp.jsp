@@ -13,6 +13,6 @@
 
 <script>
     $("#btnReload").click(function() {
-        window.location.href = "<wp:url page='${wp}' />?${tokenHrefParams}"
+        window.location.href = "<wp:url page='${wp}' />"
     });
 </script>

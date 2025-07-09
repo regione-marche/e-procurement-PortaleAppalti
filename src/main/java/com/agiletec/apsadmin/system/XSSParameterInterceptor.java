@@ -46,7 +46,7 @@ public class XSSParameterInterceptor extends ParametersInterceptor {
 	private void setEmptyValue(Map.Entry<String, Object> param) {
 		if (param.getValue().getClass().isArray()) {
 			log.error("The values: {}; for the field {} are not valid", StringUtils.join((Object[]) param.getValue(), ","), param.getKey());
-			param.setValue(Array.newInstance(param.getValue().getClass(), 0));
+			param.setValue( Array.newInstance(((Object[])param.getValue())[0].getClass(), 0) );
 		} else {
 			log.error("The value {} for the field {} is not valid", param.getValue(), param.getKey());
 			param.setValue("");

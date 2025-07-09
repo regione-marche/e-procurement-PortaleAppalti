@@ -36,18 +36,19 @@
 				</div>
 			</div>
 		</fieldset>
-		
-		<div class="azioni">
-			<wp:i18n key="BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA" var="valueAnnullaRinunciaButton" />
-			
-			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
-			<input type="hidden" name="codice" value="${codice}"/>
-			<s:submit value="%{#attr.valueAnnullaRinunciaButton}" cssClass="button" method="confirmAnnulla" />
-		</div>
+		<c:if test="${!garaSospesa}">
+			<div class="azioni">
+				<wp:i18n key="BUTTON_DETTAGLIO_GARA_ANNULLA_RINUNCIA" var="valueAnnullaRinunciaButton" />
+
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+				<input type="hidden" name="codice" value="${codice}"/>
+				<s:submit value="%{#attr.valueAnnullaRinunciaButton}" cssClass="button" method="confirmAnnulla" />
+			</div>
+		</c:if>
 	</form>
 	
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=${codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

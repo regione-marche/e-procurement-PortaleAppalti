@@ -11,8 +11,6 @@
 
 	<h2><wp:i18n key="TITLE_PAGE_GARETEL_APERTURA_DOC_AMMINISTRATIVA" /></h2>
 
-	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
-
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/balloon_info.jsp">
 		<jsp:param name="keyMsg" value="BALLOON_GARA_TEL_APERTURA_DOC_AMM"/>
 	</jsp:include>
@@ -33,7 +31,9 @@
 				<thead>
 					<tr>
 						<th scope="col"><wp:i18n key="LABEL_NUMERO_PLICO" /></th>
-						<th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						<s:if test="%{!hideFiscalCode}">
+						    <th scope="col"><wp:i18n key="LABEL_CODICE_FISCALE" /></th>
+						</s:if>
 						<th scope="col"><wp:i18n key="LABEL_RAGIONE_SOCIALE" /></th>
 						<th scope="col"><wp:i18n key="LABEL_BUSTA_AMMINISTRATIVA" /></th>
 						<c:if test="${showSoccorso}" >
@@ -56,9 +56,11 @@
 							<td>
 								<s:property value="#item.numeroPlico" /> 
 							</td>
-							<td>
-								<s:property value="#item.codiceFiscale" />
-							</td>
+							<s:if test="%{!hideFiscalCode}">
+                                <td>
+                                    <s:property value="#item.codiceFiscale" />
+                                </td>
+							</s:if>
 							<td>
 								<s:property value="#item.ragioneSociale" />
 							</td>
@@ -97,7 +99,7 @@
 							--%>
 							<td class="azioni">
 								<s:if test="%{#item.statoBusta == 2}" >
-								<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewDocAmmOperatore.action"/>&amp;codice=${param.codice}&amp;codiceOper=<s:property value="%{#item.codiceOperatore}"/>&amp;${tokenHrefParams}</c:set>
+								<c:set var="href"><wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraViewDocAmmOperatore.action"/>&amp;codice=${param.codice}&amp;codiceOper=<s:property value="%{#item.codiceOperatore}"/></c:set>
 								<c:choose>
 									<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 										<a href='${href}' title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PLICO" />'>
@@ -135,7 +137,7 @@
 </div>
 
 <div class="back-link">
-	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />&amp;codice=${codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+	<a href="<wp:action path="/ExtStr2/do/FrontEnd/GareTel/espletGaraFasi.action" />&amp;codice=${codice}&amp;ext=${param.ext}">
 		<wp:i18n key="LINK_BACK" />
 	</a>
 </div>

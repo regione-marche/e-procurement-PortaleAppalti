@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlboHeader" pageWidth="510" pageHeight="802" columnWidth="510" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 6.16.0.final utlizzo versione della libreria JasperReports6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DomandaIscrizioneAlboHeader" pageWidth="510" pageHeight="802" columnWidth="510" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="afac405c-8aaf-4da7-b2c6-0bd0367b4aaa">
 	<property name="ireport.zoom" value="1.6105100000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -47,7 +48,9 @@
 	<detail>
 		<band height="69" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="511" height="20"/>
+				<reportElement x="0" y="0" width="511" height="20" uuid="610b5338-cdab-49e3-a8ae-dbf9f4d4f9b1">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
+				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -56,7 +59,7 @@
 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="19" width="511" height="20">
+				<reportElement x="0" y="19" width="511" height="20" uuid="939ea481-f6f1-47ca-bc20-a55ca6b29303">
 					<printWhenExpression><![CDATA[$P{SERIAL_MARCA_BOLLO} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -66,67 +69,67 @@
 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="53" width="221" height="16"/>
+				<reportElement positionType="Float" x="0" y="53" width="221" height="16" uuid="a9de4a0e-9343-4a76-99dd-7fef3f6faa02"/>
 				<box rightPadding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="11"/>
 				</textElement>
 				<text><![CDATA[A:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="53" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="53" width="267" height="16" uuid="2cc6bb92-8849-4fcb-afc2-0544b722726c"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SA_DENOMINAZIONE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{SA_DENOMINAZIONE}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="0" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="0" width="267" height="16" uuid="98d693d6-f25d-4118-89a1-9b91f566fc73"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["C.F.: " + $P{SA_CF}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["C.F.: " + $P{SA_CF}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="0" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="0" width="267" height="16" uuid="ec3ad9de-3ef4-47e4-8bd4-030aa78a54e8"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SA_INDIRIZZO} + " " + $P{SA_CIVICO} + ", " + $P{SA_CAP} + " " + $P{SA_LOCALITA} + " (" + $P{SA_PROVINCIA} + ")"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{SA_INDIRIZZO} + " " + $P{SA_CIVICO} + ", " + $P{SA_CAP} + " " + $P{SA_LOCALITA} + " (" + $P{SA_PROVINCIA} + ")"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
 			<printWhenExpression><![CDATA[$P{SA_MAIL} != null && $P{SA_MAIL}.length()>0]]></printWhenExpression>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="0" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="0" width="267" height="16" uuid="b1f11801-1d60-42e3-9e60-a0ffc17d55a1"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Mail: " + $P{SA_MAIL}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Mail: " + $P{SA_MAIL}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
 			<printWhenExpression><![CDATA[$P{SA_PEC} != null && $P{SA_PEC}.length()>0]]></printWhenExpression>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="0" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="0" width="267" height="16" uuid="0ad0590f-26ab-46d5-8f40-ea1d0c31b497"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Pec: " + $P{SA_PEC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Pec: " + $P{SA_PEC}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16">
 			<printWhenExpression><![CDATA[$P{SA_WEB} != null && $P{SA_WEB}.length()>0]]></printWhenExpression>
-			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="243" y="0" width="267" height="16"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="243" y="0" width="267" height="16" uuid="9282bc8c-f957-4499-8adb-52ab4ebb64fd"/>
 				<textElement>
 					<font fontName="Arial" size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Web: " + $P{SA_WEB}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Web: " + $P{SA_WEB}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="16"/>

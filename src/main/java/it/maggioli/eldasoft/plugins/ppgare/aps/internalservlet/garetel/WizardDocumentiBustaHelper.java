@@ -57,7 +57,7 @@ public class WizardDocumentiBustaHelper extends DocumentiAllegatiHelper implemen
 
 	private int tipoBusta;
 	private String codiceGara;							// codice gara
-	private String codice;								// codice gara per gare a senza lotti, codice lotto per gare a lotti
+	private String codice;								// codice lotto per gare A LOTTI, altimenti e' il codice della gara 
 	private int operazione;
 	private Date dataTermine;
 	private boolean docOffertaPresente;
@@ -522,19 +522,18 @@ public class WizardDocumentiBustaHelper extends DocumentiAllegatiHelper implemen
 		// significa che la busta e' stata inviata e criptata
 		// In questo caso non risulta piu' leggibile e cosi' 
 		// come la chiave di sessione non e' piu' decifrabile...
-		boolean popola = (StringUtils.isEmpty(busta.getComunicazioneFlusso().getStato()) || 
-					      CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA.equals(busta.getComunicazioneFlusso().getStato()));
+		boolean refreshSessionKey = (StringUtils.isEmpty(busta.getComunicazioneFlusso().getStato()) || 
+					      			 CommonSystemConstants.STATO_COMUNICAZIONE_BOZZA.equals(busta.getComunicazioneFlusso().getStato()));
 		
 		// aggiorna la chiave di sessione in caso di cifratura
-		if(popola) {
+		if(refreshSessionKey) {
 			this.refreshChiaveSessione(busta);
 		}
 
 		// aggiorna i documenti dell'helper in base 
 		// agli allegati presenti nel documento xml della busta
-		if(popola && 
-		   listaDocumenti != null && busta.getId() > 0) 
-		{
+		boolean popola = false;
+		if(listaDocumenti != null && busta.getId() > 0) {
 			// NB: 
 			// la dimensione degli allegati non viene memorizzata nel documento XML
 			// relativo alla ma viene gestita direttamente dal servizio WSOperazioniGenerali
@@ -593,6 +592,8 @@ public class WizardDocumentiBustaHelper extends DocumentiAllegatiHelper implemen
 			super.popolaDocumentiFromXml(
 					listaDocumenti, 
 					busta.getId());
+			
+			popola = true;
 		}
 		
 		// (QCompiler/QFORM)

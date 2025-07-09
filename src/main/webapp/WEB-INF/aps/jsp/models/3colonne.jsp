@@ -87,7 +87,7 @@
 			<link rel="alternate" type="application/rss+xml" title="Bandi di gara scaduti" href="<wp:printHeadInfo />"/>
 		</wp:outputHeadInfo>
 
-		<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery-3.6.0.min.js"></script>
+		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery.jsp" />
 		<%-- inclusione dei js che filtrano i caratteri inseribili in campi di input e textarea --%>
 		<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.alphanum.js"></script>
 		<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.character.js"></script>
@@ -132,7 +132,7 @@
 						<hr class="noscreen"/>
 						<h2 class="noscreen information"><wp:i18n key="SECTION_MENU"/>:</h2>
 						<p class="noscreen">[ <a id="menu1" href="#mainarea"><wp:i18n key="SKIP_TO_MAIN_CONTENT"/></a> ]</p>
-						<wp:show frame="3"/>
+						<jsp:include page="/WEB-INF/aps/jsp/models/inc/frameLogin.jsp" />
 						<wp:show frame="4"/>
 						<wp:show frame="5"/>
 						<p class="noscreen">[ <a href="#pagestart"><wp:i18n key="BACK_TO_THE_TOP" /></a> ]</p>

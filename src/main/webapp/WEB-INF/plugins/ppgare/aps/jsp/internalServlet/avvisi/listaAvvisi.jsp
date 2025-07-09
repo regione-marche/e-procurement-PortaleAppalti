@@ -23,24 +23,9 @@
 	</div>
 		
 	<s:iterator var="avviso" value="listaAvvisi.dati" status="status">
+	
 		<div class="list-item">
 			<div class="list-item-row">
-                <c:choose>
-                    <c:when test="${skin != 'highcontrast' && skin != 'text'}">
-                    	<s:if test='%{isPnrr == "1"}'>
-                            <img src="<wp:imgURL />/PNRR.svg" alt="<wp:i18n key='LABEL_IS_PNRR' />" title="<wp:i18n key='LABEL_IS_PNRR' />" style="float:right;width:40px;height:auto;" />
-                        </s:if>
-                        <s:if test='%{isGreen == "1"}'>
-                            <img src="<wp:imgURL />/green-leaf.png" alt="<wp:i18n key='LABEL_IS_GREEN' />" title="<wp:i18n key='LABEL_IS_GREEN' />" style="float:right;width:55px;height:auto;" />
-                        </s:if>
-                        <s:if test='%{isRecycle == "1"}'>
-                            <img src="<wp:imgURL />/green-recycle.png" alt="<wp:i18n key='LABEL_IS_RECYCLE' />" title="<wp:i18n key='LABEL_IS_RECYCLE' />" style="float:right;width:50px;height:auto;" />
-                        </s:if>
-                    </c:when>
-                    <c:otherwise>
-
-                    </c:otherwise>
-                </c:choose>
 				<label><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /> : </label>
 				<c:choose>
 					<c:when test="${! empty stazAppUnica }">
@@ -50,7 +35,24 @@
 					<c:otherwise>
 						<s:property value="stazioneAppaltante" />
 					</c:otherwise>
-				</c:choose>			
+				</c:choose>
+				<div style="margin-left: auto;">
+					<c:choose>
+	                    <c:when test="${skin != 'highcontrast' && skin != 'text'}">
+	                    	<s:if test='%{isPnrr == "1"}'>
+	                            <img src="<wp:imgURL />/PNRR.svg" alt="<wp:i18n key='LABEL_IS_PNRR' />" title="<wp:i18n key='LABEL_IS_PNRR' />" style="float:right;width:40px;height:auto;" />
+	                        </s:if>
+	                        <s:if test='%{isGreen == "1"}'>
+	                            <img src="<wp:imgURL />/green-leaf.png" alt="<wp:i18n key='LABEL_IS_GREEN' />" title="<wp:i18n key='LABEL_IS_GREEN' />" style="float:right;width:55px;height:auto;" />
+	                        </s:if>
+	                        <s:if test='%{isRecycle == "1"}'>
+	                            <img src="<wp:imgURL />/green-recycle.png" alt="<wp:i18n key='LABEL_IS_RECYCLE' />" title="<wp:i18n key='LABEL_IS_RECYCLE' />" style="float:right;width:50px;height:auto;" />
+	                        </s:if>
+	                    </c:when>
+	                    <c:otherwise>
+	                    </c:otherwise>
+	                </c:choose>
+	        	</div>
 			</div>
 
 			<div class="list-item-row">
@@ -86,6 +88,13 @@
 				<s:property value="codice" />
 			</div>
 
+			<div class="list-item-row">
+				<label><wp:i18n key="LABEL_STATO_GARA" /> : </label>
+				<s:iterator value="maps['statiAvviso']">
+					<s:if test="%{key == stato}"><s:property value="%{value}"/></s:if>
+				</s:iterator>
+			</div>
+
 			<c:if test="${skin == 'highcontrast' || skin == 'text'}">
                 <s:if test='%{isGreen == "1"}'>
                     <div class="list-item-row">
@@ -96,7 +105,7 @@
                     <div class="list-item-row">
                         <label><wp:i18n key="LABEL_IS_RECYCLE" /> : </label><wp:i18n key="YES" />
                     </div>
-                </s:if>                
+                </s:if>
                 <s:if test='%{isPnrr == "1"}'>
                     <div class="list-item-row">
                         <label><wp:i18n key="LABEL_IS_PNRR" /> : </label><wp:i18n key="YES" />
@@ -107,13 +116,13 @@
 			<div class="list-action">
 				<c:choose>
 					<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>' 
 						   title='<wp:i18n key="LINK_VIEW_DETAIL" />'>
 									<wp:i18n key="LINK_VIEW_DETAIL" />
 						</a>
 					</c:when>
 					<c:otherwise>
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/Avvisi/view.action" />&amp;codice=<s:property value="codice"/>' 
 						   title='<wp:i18n key="LINK_VIEW_DETAIL" />' class="bkg detail-very-big">
 							<wp:i18n key="LINK_VIEW_DETAIL" />
 						</a>
@@ -122,13 +131,13 @@
 				<c:if test="${visTabIndicizzazione}">
 					<c:choose>
 						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Avviso&amp;${tokenHrefParams}' 
+							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Avviso' 
 							   title="<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />">
 								<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />
 							</a>
 						</c:when>
 						<c:otherwise>
-							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Avviso&amp;${tokenHrefParams}' 
+							<a href='<wp:url page="ppgare_tab_inf_dpcm" />?codice=<s:property value="codice"/>&amp;tipo=Avviso' 
 							   title="<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />" class="bkg table">
 								<wp:i18n key="LINK_VIEW_INDEXING_INFORMATION_TABLE" />
 							</a>
@@ -142,6 +151,8 @@
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
 </s:if>
 <s:else>
+	<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+	<input disabled="disabled" type="submit" style="display:none;"/>
 	<div class="list-summary">
 		<wp:i18n key="SEARCH_RESULTS_INTRO" />
 		<s:property value="model.iTotalDisplayRecords" />

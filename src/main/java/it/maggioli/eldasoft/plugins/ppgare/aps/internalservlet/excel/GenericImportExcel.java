@@ -6,15 +6,14 @@ import it.eldasoft.utils.excel.ExcelResultBean;
 import it.eldasoft.utils.utility.UtilityExcel;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.interceptor.SessionAware;
@@ -49,6 +48,7 @@ public abstract class GenericImportExcel extends EncodedDataAction implements Se
     private int rowIndex = getStartingRowIndex();  //Indice per lambda
     private Object row = null;
 
+    protected List<Object> rows;
     protected List<String> rowErrors = new ArrayList<>();
     protected List<String> columnNameWithError = new ArrayList<>();
 
@@ -57,25 +57,18 @@ public abstract class GenericImportExcel extends EncodedDataAction implements Se
             if (!isCurrentSessionExpired()) {
                 int allegatoSize = FileUploadUtilities.getFileSize(allegato);
 
-                // traccia l'evento di upload di un file...
-                Event evento = new Event();
-                evento.setUsername(getCurrentUser().getUsername());
-                evento.setDestination(this.codice);
-                evento.setLevel(Event.Level.INFO);
-                evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-                evento.setIpAddress(getCurrentUser().getIpAddress());
-                evento.setSessionId(getRequest().getSession().getId());
-                evento.setMessage("Import variazione prezzi scadenze:"
-                        + " file=" + allegatoFileName
-                        + ", dimensione=" + allegatoSize + "KB");
-
-                boolean controlliOk =
-                        checkFileSize(allegato, allegatoFileName, allegatoSize, appParamManager, evento)
-                        && checkFileName(allegatoFileName, evento)
-                        && checkFileFormat(allegato, allegatoFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL, evento, false);
-
-                if (controlliOk) {
-                    init();
+				// valida l'upload del documento...
+    			getUploadValidator()
+						.setDocumento(allegato)
+						.setDocumentoFileName(allegatoFileName)
+						.setDocumentoFormato(PortGareSystemConstants.DOCUMENTO_FORMATO_EXCEL)
+						.setOnlyP7m(false)
+						.setEventoDestinazione(codice)
+						.setEventoMessaggio("Import variazione prezzi scadenze: file=" + allegatoFileName 
+								 			+ ", dimensione=" + allegatoSize + "KB");
+				
+				if ( getUploadValidator().validate() ) {
+					init();
                     try {
                         Object sheet = UtilityExcel.leggiFoglioExcelPerImportazione(
                                 allegatoFileName,
@@ -97,7 +90,8 @@ public abstract class GenericImportExcel extends EncodedDataAction implements Se
                     actionErrorToFieldError();
                     setTarget(INPUT);
                 }
-                eventManager.insertEvent(evento);
+				
+                eventManager.insertEvent(getUploadValidator().getEvento());
             } else {
                 // la sessione e' scaduta, occorre riconnettersi
                 error(getText("Errors.sessionExpired"), CommonSystemConstants.PORTAL_ERROR);
@@ -130,7 +124,8 @@ public abstract class GenericImportExcel extends EncodedDataAction implements Se
         ThrowingSupplier<Object> readRow = () -> UtilityExcel.leggiRiga(sheet, rowIndex);
         ThrowingSupplier<Boolean> isEmptyRow = () -> UtilityExcel.rigaVuota(row);
 
-        List<Object> rows = new ArrayList<>(numberOfRows);  //Non ci possono essere più di <numberOfRows> valori da aggiungere all'array
+        rows = new ArrayList<>(numberOfRows);  //Non ci possono essere più di <numberOfRows> valori da aggiungere all'array
+        
         /*
           Con questo doWithoutThrow richiamo il metodo leggiRiga/rigaVuota senza dover gestire il try catch
           (lo gestisco nel doWithoutThrow)

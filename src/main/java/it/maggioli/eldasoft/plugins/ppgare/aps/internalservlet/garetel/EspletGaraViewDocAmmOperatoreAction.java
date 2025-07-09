@@ -1,20 +1,21 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletamentoElencoOperatoriSearch;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.util.EspletamentoUtil;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+import org.apache.struts2.interceptor.SessionAware;
 
 import java.util.List;
 import java.util.Map;
-
-import org.apache.struts2.interceptor.SessionAware;
-
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
 
 public class EspletGaraViewDocAmmOperatoreAction extends EncodedDataAction implements SessionAware {
 	/**
@@ -31,7 +32,8 @@ public class EspletGaraViewDocAmmOperatoreAction extends EncodedDataAction imple
 	@Validate(EParamValidation.USERNAME)
 	private String codiceOper;
 	private EspletGaraOperatoreType operatoreEconomico;
-		
+	private boolean hideFiscalCode = false;
+
 	@Override
 	public void setSession(Map<String, Object> arg0) {
 		this.session = arg0;
@@ -82,8 +84,13 @@ public class EspletGaraViewDocAmmOperatoreAction extends EncodedDataAction imple
 		{
 			try {
 				// recupera i dati dell'operatore economico...
-				List<EspletGaraOperatoreType> operatori = this.bandiManager
-					.getEspletamentoGaraDocAmmElencoOperatori(this.codice, this.codiceOper);
+				DettaglioGaraType dettGara = this.bandiManager.getDettaglioGara(this.codice);
+				hideFiscalCode = EspletamentoUtil.hasToHideFiscalCode(dettGara);
+				EspletamentoElencoOperatoriSearch search = new EspletamentoElencoOperatoriSearch();
+				search.setCodice(codice);
+				search.setCodiceOperatore(codiceOper);
+				search.setUsername(getCurrentUser().getUsername());
+				List<EspletGaraOperatoreType> operatori = bandiManager.getEspletamentoGaraDocAmmElencoOperatori(search);
 				
 				this.faseGara = this.bandiManager.getFaseGara(this.codice);
 				
@@ -113,7 +120,10 @@ public class EspletGaraViewDocAmmOperatoreAction extends EncodedDataAction imple
 		
 		return this.getTarget();
 	}
-	
+
+	public boolean getHideFiscalCode() {
+		return hideFiscalCode;
+	}
 }
 
 

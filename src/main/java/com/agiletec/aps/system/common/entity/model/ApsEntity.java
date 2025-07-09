@@ -17,7 +17,6 @@
  */
 package com.agiletec.aps.system.common.entity.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +41,7 @@ import com.agiletec.aps.system.services.category.Category;
  * defined in the configuration.
  * @author E. Santoboni.
  */
-public class ApsEntity implements IApsEntity, Serializable {
+public class ApsEntity implements IApsEntity {
 
 	/**
 	 * Initialization of the entity with its related elements.

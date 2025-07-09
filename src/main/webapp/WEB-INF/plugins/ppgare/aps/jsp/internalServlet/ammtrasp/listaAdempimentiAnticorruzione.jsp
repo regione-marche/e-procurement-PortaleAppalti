@@ -23,7 +23,7 @@
 	<ul>
 		<s:iterator var="anno" value="listaAnni" status="index">
 			<li>
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/openSearchAnticorruzione.action"/>&amp;model.anno=<s:property value="%{anno}"/>&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/openSearchAnticorruzione.action"/>&amp;model.anno=<s:property value="%{anno}"/>">
 					<wp:i18n key="LABEL_ANNO" /> <s:property value="%{anno}" />
 				</a>
 			</li>

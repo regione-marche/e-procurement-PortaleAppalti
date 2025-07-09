@@ -18,7 +18,7 @@
 <s:set var="lastTitolo" value="%{#categories[0].category.titolo}"/>
 <s:set var="lastLivello" value="%{#categories[0].category.livello}"/>
 
-<div id="${param.containerID}" data-name="categories_view">
+<div id="${param.containerID}" data-name="categories_view" class="categorie-list">
     <c:if test='${! param.isRiepilogo}'>
         <h3 data-name="categories_title"><wp:i18n key='${param.title_label}'/></h3>
     </c:if>

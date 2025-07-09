@@ -30,7 +30,7 @@
 			<input type="file" id="allegato" name="allegato" size="20" aria-label='<wp:i18n key="LABEL_FILE_PRODOTTI_DA_CARICARE" />'/>
 		</p>
 		<p>
-			(<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB)
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp" />
 		</p>
 		<div class="azioni">
 			<input type="hidden" name="ext" value="${param.ext}" />

@@ -1,10 +1,13 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet;
 
 import it.eldasoft.sil.portgare.datatypes.FirmatarioType;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.ComponenteHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IComponente;
 
@@ -68,7 +71,9 @@ public class ComponentiRTIList extends ArrayList<IComponente> implements Seriali
 	////////////////////////////////////////////////////////////////////////////
 	
 	// n-uple <chiave firmatario, firmatario, componente rti> associate ad una RTI
-	private Map<String, FirmatarioItem> firmatari = new HashMap<String, FirmatarioItem>();	
+	private Map<String, FirmatarioItem> firmatari = new HashMap<String, FirmatarioItem>();
+
+	// lista dei firmatari associati ai componenti di una RTI
 	private List<ISoggettoImpresa> listaFirmatari = new ArrayList<ISoggettoImpresa>();
 
 
@@ -165,8 +170,8 @@ public class ComponentiRTIList extends ArrayList<IComponente> implements Seriali
 			// crea la chiave hash nel formato "[PIVA]|[CF]" oppure "[PIVA]|[IDFISCEST]" 
 			if(StringUtils.isNotEmpty(piva) || StringUtils.isNotEmpty(cf) || StringUtils.isNotEmpty(idfe)) {
 				piva = (StringUtils.isNotEmpty(piva) ? piva : "");
-				cf = (piva.length() <= 0 && StringUtils.isNotEmpty(cf) ? cf : "");
-				idfe = (piva.length() <= 0 && StringUtils.isNotEmpty(idfe) ? idfe : "");
+				cf = (StringUtils.isNotEmpty(cf) ? cf : "");
+				idfe = (StringUtils.isNotEmpty(idfe) ? idfe : "");
 				if("2".equals(ambitoTer)) {
 					// per le ditte "estero" ricalcola la chiave come "[PIVA|IDFISCEST]"
 					cf = idfe;
@@ -402,6 +407,82 @@ public class ComponentiRTIList extends ArrayList<IComponente> implements Seriali
 			componente = (IComponente) obj;
 		}
 		return componente;
+	}
+
+	
+	/**
+	 * componi la lista dei soggetti firmatari della mandataria 
+	 */
+    /** 
+     * restituisce la lista dei firmatari per un'impresa mandataria 
+     */
+	public static List<FirmatarioBean> composeListaFirmatariMandataria(WizardDatiImpresaHelper impresa) {
+    	List<FirmatarioBean> firmatari = new ArrayList<FirmatarioBean>();
+    	
+    	if (impresa.isLiberoProfessionista()) {
+    		// Se la mandataria e' un libero professionista allora 
+    		// solo un possibile firmatario
+    		String nominativo = impresa.getAltriDatiAnagraficiImpresa().getCognome() != null && 
+    	    		   			 impresa.getAltriDatiAnagraficiImpresa().getNome() != null
+    	    		   			 ? StringUtils.capitalize(impresa.getAltriDatiAnagraficiImpresa().getCognome()) + " " + 
+    	    		   			   StringUtils.capitalize(impresa.getAltriDatiAnagraficiImpresa().getNome())
+    	    					 : impresa.getDatiPrincipaliImpresa().getRagioneSociale();
+    		
+    		String codiceFiscale = StringUtils.isNotEmpty(impresa.getDatiPrincipaliImpresa().getPartitaIVA())
+    							 ? impresa.getDatiPrincipaliImpresa().getPartitaIVA()
+    							 : impresa.getDatiPrincipaliImpresa().getCodiceFiscale();
+    		
+    		FirmatarioBean firmatario = new FirmatarioBean();
+    		firmatario.setNominativo(nominativo);
+    		firmatario.setCodiceFiscale(codiceFiscale);
+    		firmatari.add(firmatario);
+    	} else {
+    		// La mandantaria non e' un libero professionita 
+    		//  => possibili 1..N firmatari
+    		for (int i = 0; i < impresa.getLegaliRappresentantiImpresa().size(); i++) {
+    			ISoggettoImpresa soggetto = impresa.getLegaliRappresentantiImpresa().get(i);
+    			addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_LEGALI_RAPPRESENTANTI);
+    		}
+    		for (int i = 0; i < impresa.getDirettoriTecniciImpresa().size(); i++) {
+    			ISoggettoImpresa soggetto = impresa.getDirettoriTecniciImpresa().get(i);
+    			addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_DIRETTORI_TECNICI);
+    		}
+    		for (int i = 0; i < impresa.getAltreCaricheImpresa().size(); i++) {
+    			ISoggettoImpresa soggetto = impresa.getAltreCaricheImpresa().get(i);
+    			addListaFirmatariMandataria(firmatari, soggetto, i, CataloghiConstants.LISTA_ALTRE_CARICHE);
+    		}
+    	}
+    	return firmatari;
+    }
+
+	private static void addListaFirmatariMandataria(
+			List<FirmatarioBean> firmatari, 
+			ISoggettoImpresa soggetto, 
+			Integer index, 
+			String lista)
+	{
+		// aggiunti solo i soggetti impresa attivi e abilitati alla firma
+		if (soggetto.getDataFineIncarico() == null && "1".equals(soggetto.getResponsabileDichiarazioni())) {
+			// verifica se esiste gia' lo stesso soggetto impresa nella lista dei firmtari...
+			boolean esiste = firmatari.stream()
+					.anyMatch(f -> soggetto.getCodiceFiscale().equalsIgnoreCase(f.getCodiceFiscale()));
+			if(!esiste) {
+			    StringBuilder sb = new StringBuilder()
+			    		.append( StringUtils.capitalize(soggetto.getCognome()) )
+			    		.append(" ")
+			    		.append( StringUtils.capitalize(soggetto.getNome()) );
+
+			    FirmatarioBean firmatario = new FirmatarioBean();
+			    firmatario.setNominativo(sb.toString());
+			    firmatario.setIndex(index);
+			    firmatario.setLista(lista);
+			    // NB: CF serve solo QUI per la creazione della lista dei firmatari, 
+			    //     altrimenti non c'e' modo di capire se un soggetto impresa 
+			    //     e' gia' stato inserito nella lista
+			    firmatario.setCodiceFiscale(soggetto.getCodiceFiscale());
+			    firmatari.add(firmatario);
+			}
+		}
 	}
 
 }

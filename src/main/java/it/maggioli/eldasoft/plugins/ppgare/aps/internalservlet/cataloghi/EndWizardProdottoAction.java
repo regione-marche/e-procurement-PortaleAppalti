@@ -14,6 +14,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.C
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ProdottiCatalogoSessione;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -31,6 +33,7 @@ import java.util.Map;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class EndWizardProdottoAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -50,6 +53,7 @@ public class EndWizardProdottoAction extends EncodedDataAction implements Sessio
 	private String msgErroreInvioEmail;
 	private boolean bozza;
 	private boolean aggiornamento;
+	private String catalogo;
 
 	/**
 	 * Store state of StrutsConstants.STRUTS_MULTIPART_SAVEDIR setting.
@@ -113,6 +117,14 @@ public class EndWizardProdottoAction extends EncodedDataAction implements Sessio
 	public void setAggiornamento(boolean aggiornamento) {
 		this.aggiornamento = aggiornamento;
 	}
+	
+	public String getCatalogo() {
+		return catalogo;
+	}
+
+	public void setCatalogo(String catalogo) {
+		this.catalogo = catalogo;
+	}
 
 	@Inject(StrutsConstants.STRUTS_MULTIPART_SAVEDIR)
 	public void setMultipartSaveDir(String multipartSaveDir) {
@@ -126,7 +138,6 @@ public class EndWizardProdottoAction extends EncodedDataAction implements Sessio
 	 * @return il target a cui andare
 	 */
 	public String addSave() {
-
 		try {
 			WizardProdottoHelper prodottoHelper = (WizardProdottoHelper) this.session
 				.get(PortGareSystemConstants.SESSION_ID_DETT_PRODOTTO);
@@ -137,6 +148,9 @@ public class EndWizardProdottoAction extends EncodedDataAction implements Sessio
 				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 			} else {
 				boolean controlliOk = true;
+				
+				catalogo = prodottoHelper.getCodiceCatalogo();
+				
 				// la sessione non e' scaduta, per cui proseguo regolarmente
 				if (prodottoHelper.getArticolo().getDettaglioArticolo().isObbligoImmagine() && prodottoHelper.getDocumenti().getImmagine() == null) {
 					this.addActionError(this.getText("Errors.immagineMancante"));
@@ -292,6 +306,8 @@ public class EndWizardProdottoAction extends EncodedDataAction implements Sessio
 				this.addActionError(this.getText("Errors.sessionExpired"));
 				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
 			} else {
+				catalogo = prodottoHelper.getCodiceCatalogo();
+				
 				prodottoHelper.setDataOperazione(new Date());
 				CarrelloProdottiSessione carrelloProdotti = (CarrelloProdottiSessione) this.session
 					.get(PortGareSystemConstants.SESSION_ID_CARRELLO_PRODOTTI);

@@ -6,28 +6,26 @@ import com.agiletec.aps.system.exception.ApsException;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.DocumentiComunicazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardSoccorsoIstruttorioHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
-
 import java.io.File;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 /**
  * ...
  * 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.COMUNICAZIONE })
 public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocumentiNuovaComunicazioneAction {
 	/**
 	 * UID
@@ -93,6 +91,13 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 	}
 
 	/**
+	 * costruttore
+	 */
+	public ProcessPageDocumentiNuovoSoccorsoAction() {
+		super(new WizardSoccorsoIstruttorioHelper());
+	}
+
+	/**
 	 * aggiungi un allegato ulteriore allacomunicazione 
 	 */
 	@Override
@@ -106,53 +111,29 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 	public String addDocRich() {
 		String target = "backToDocumenti";
 
-		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper)this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 		
 		Event evento = null;
 		try {
+			evento = getUploadValidator().getEvento();
+			
 			DocumentiComunicazioneHelper documenti = helper.getDocumenti();
 	
-			int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docRichiesto);
-	
-			// traccia l'evento di upload di un file...
-			evento = new Event();
-			evento.setUsername(this.getCurrentUser().getUsername());
-			evento.setDestination(helper.getCodice());
-			evento.setLevel(Event.Level.INFO);
-			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-			evento.setIpAddress(this.getCurrentUser().getIpAddress());
-			evento.setSessionId(this.getRequest().getSession().getId());
-			evento.setMessage("Invia nuova comunicazione: " 
-							  + "allegato file=" + this.docRichiestoFileName + ", "
-							  + "dimensione=" + dimensioneDocumento + "KB");
-				
-			boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-
-			boolean controlliOk =
-					checkFileSize(
-							docRichiesto,
-							docRichiestoFileName,
-							Attachment.sumSize(documenti.getRequiredDocs()),
-							FileUploadUtilities.getLimiteUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_UPLOAD_FILE),
-							FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE),
-							evento
-					) && checkFileName(docRichiestoFileName, evento)
-					&& checkFileFormat(docRichiesto, docRichiestoFileName, formato, evento, onlyP7m);
-			//controlliOk = controlliOk && this.checkFileExtension(this.docRichiestoFileName, this.appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento);
-
-			if (controlliOk) {
-				Date checkDate = Date.from(Instant.now());
-				DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-						docRichiesto
-						, docRichiestoFileName
-						, formato
-						, checkDate
-						, evento
-						, onlyP7m
-						, appParamManager
-						, customConfigManager
-				);
+			// valida l'upload del documento...
+			getUploadValidator()
+					.setHelper(documenti)
+					.setDocumento(docRichiesto)
+					.setDocumentoFileName(docRichiestoFileName)
+					.setDocumentoFormato(formato)
+					.setCheckFileSignature(true)
+					.setLimiteUploadFile( FileUploadUtilities.getLimiteUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_UPLOAD_FILE) )
+					.setLimiteTotaleUploadFile( FileUploadUtilities.getLimiteUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE) )
+					.setEventoDestinazione(helper.getCodice())
+					.setEventoMessaggio("Invia nuova comunicazione: " 
+										+ "allegato file=" + this.docRichiestoFileName + ", "
+										+ "dimensione=" + FileUploadUtilities.getFileSize(this.docRichiesto) + "KB");
+			
+			if ( getUploadValidator().validate() ) {
 				// si inseriscono i documenti in sessione
 				if (Attachment.indexOf(documenti.getRequiredDocs(), Attachment::getId, docRichiestoId) == -1) {
 					documenti.addDocRichiesto(
@@ -160,8 +141,8 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 							, docRichiesto
 							, docRichiestoContentType
 							, docRichiestoFileName
-							, evento
-							, checkFirma
+							, getUploadValidator().getEvento()
+							, getUploadValidator().getCheckFirma()
 					);
 	
 					//if( !this.aggiornaAllegato() ) {
@@ -191,8 +172,7 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 	public String downloadAllegatoRichiesto() {
 		String target = SUCCESS;
 		
-		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper)this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 		DocumentiComunicazioneHelper documenti = helper.getDocumenti();
 		
 		if (documenti == null) {
@@ -231,8 +211,7 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 	public String deleteAllegatoRichiesto() {
 		String target = "backToDocumenti";
 		
-		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper)this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 		
 		if (helper == null) {
 			// la sessione e' scaduta, occorre riconnettersi
@@ -281,10 +260,9 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 
 		try {
 			if (null != this.getCurrentUser()
-				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-	
-				WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper) session
-						.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+				&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+			{	
+				helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 				DocumentiComunicazioneHelper documenti = helper.getDocumenti();
 				
 				// verifica la presenza degli allegati richiesti
@@ -292,7 +270,7 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 				
 				if(continua) {
 					this.setNextResultAction(InitNuovaComunicazioneAction.setNextResultAction(
-							helper.getNextStepNavigazione(WizardSoccorsoIstruttorioHelper.STEP_DOCUMENTI)));
+							helper.getNextStepNavigazione(helper.STEP_DOCUMENTI)));
 				} else {
 					target = INPUT;
 				}
@@ -318,13 +296,12 @@ public class ProcessPageDocumentiNuovoSoccorsoAction extends ProcessPageDocument
 		String target = SUCCESS;
 
 		if (null != this.getCurrentUser()
-			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-
-			WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper) session
-					.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
+			helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 			
 			this.setNextResultAction(InitNuovaComunicazioneAction.setNextResultAction(
-					helper.getPreviousStepNavigazione(WizardSoccorsoIstruttorioHelper.STEP_DOCUMENTI)));
+					helper.getPreviousStepNavigazione(helper.STEP_DOCUMENTI)));
 
 		} else {
 			this.addActionError(this.getText("Errors.sessionExpired"));

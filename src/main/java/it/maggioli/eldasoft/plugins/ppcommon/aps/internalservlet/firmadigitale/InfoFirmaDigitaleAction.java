@@ -64,12 +64,18 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 	private static final int DOWNLOAD_FILE 		= 3;
 	private static final int DOWNLOAD_INVITO	= 4;
 	private static final int DOWNLOAD_ALLEGATO	= 5;
-	
+
+	private static final String DOCUMENTO_MARCATURA_TEMPORALE	= "tsd";
+	private static final String DOCUMENTO_FIRMATO 				= "p7m";
+	private static final String DOCUMENTO_PDF					= "pdf";
+	private static final String DOCUMENTO_XML					= "xml";
+
+		
 	//private static final String SESSION_EXPIRED = 
 //		"Sessione scaduta, effettuare nuovamente l''accesso";
 	
 //	private static final String DOWNLOAD_NOT_ALLOWED = 
-//		"Impossibile scaricare un documento inesistente oppure di cui non si possiede la visibilit�";
+//		"Impossibile scaricare un documento inesistente oppure di cui non si possiede la visibilita'";
 
 	public int getDOWNLOAD_RISERVATO() 	{ return DOWNLOAD_RISERVATO; }
 	public int getDOWNLOAD_PUBBLICO() 	{ return DOWNLOAD_PUBBLICO; }
@@ -390,12 +396,13 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 							this.hiddenParams.put(item.getKey(), item.getValue());
 						} catch(Throwable t) {
 							// non dovrebbe succedere... 
-							ApsSystemUtils.getLogger().warn("InfoFirmaDigitaleAction", "view", "value=" + item.getValue());
 							Object o = item.getValue();
 							if (o instanceof String[]) {
 						        String[] v = (String[]) o;
-						        System.out.println("item.getValue()=[" + Arrays.toString(v) + "]");
-						    }
+								ApsSystemUtils.getLogger().warn("item.getValue()=[" + Arrays.toString(v) + "]");
+						    } else {
+								ApsSystemUtils.getLogger().warn("InfoFirmaDigitaleAction", "view", "value=" + item.getValue());
+							}
 						}
 					}
 				}
@@ -685,11 +692,16 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 						ComunicazioneType comunicazione = comunicazioniManager
 								.getComunicazione(CommonSystemConstants.ID_APPLICATIVO,
 												  Long.parseLong(dettaglio.getId()),
-												  dettaglio.getDocumentiAllegati()[dettaglio.getIdAllegato()].getUuid());
+												  dettaglio.getDocumentiAllegati()[dettaglio.getIdAllegato()].getUuid()
+						);
 						filename = comunicazione.getAllegato()[0].getNomeFile(); 
 						doc = new FileType(
 								filename, 
-								comunicazione.getAllegato()[0].getFile());
+								comunicazione.getAllegato()[0].getFile(),
+								null
+								, comunicazione.getAllegato()[0].getBucket_uuid()
+								, comunicazione.getAllegato()[0].getBucket_ref()
+						);
 					}
 				}
 			} else {
@@ -708,13 +720,21 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 					ComunicazioneType comunicazione = this.comunicazioniManager.getComunicazione(
 							CommonSystemConstants.ID_APPLICATIVO,  
 							this.idCom, 
-							this.uuid);
+							this.uuid
+					);
 					if(comunicazione != null && 
 					   comunicazione.getAllegato() != null && comunicazione.getAllegato().length > 0) 
-					{ 
-						doc = new FileType();
-						doc.setNome(comunicazione.getAllegato()[0].getNomeFile());
-						doc.setFile(comunicazione.getAllegato()[0].getFile());
+					{
+						doc = new FileType(
+								comunicazione.getAllegato()[0].getNomeFile(),
+								comunicazione.getAllegato()[0].getFile(),
+								null,
+								comunicazione.getAllegato()[0].getBucket_uuid(),
+								comunicazione.getAllegato()[0].getBucket_ref()
+						);
+
+						// Se sono qui vuol dire che l'idprg deve essere PA
+						idprg = CommonSystemConstants.ID_APPLICATIVO;
 					}
 				}
 			}
@@ -821,6 +841,8 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 		if (null != userDetails
 			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
 			// session ok, si pu� continuare...
+			if (id != 0 && idCom == 0)
+				idCom = id;
 			this.setTarget( this.download(DOWNLOAD_ALLEGATO, userDetails.getUsername()) );
 		} else {
 			// sessione scaduta
@@ -854,76 +876,73 @@ public class InfoFirmaDigitaleAction extends EncodedDataAction
 	
 				if(creaLista) {
 					lista = new ArrayList<String>();
-					// il I download � sempre l'allegato... 
+					// il I download e' sempre l'allegato stesso... 
 					lista.add(filename);
 				} 
 				
-				boolean termina = false;
-				while (!termina && content != null) {
+				//int i = filename.lastIndexOf(".");
+				String[] exts = filename.split("\\.");
+				String fileext = (exts != null && exts.length > 0 ? exts[exts.length - 1] : "");
+				
+				if(DOCUMENTO_MARCATURA_TEMPORALE.equals(fileext)) {
+					// recupera il contenuto del documento .tsd
+					byte[] tmp = checker.getContentTimeStamp(content);
+					//if(tmp != null) {
+					//	tmp = checker.getContent(tmp);
+						if(creaLista) {
+							lista.add(filename);
+						}
+					//}
+					content = tmp;
 					
-					int i = filename.lastIndexOf(".");
-					String fileext = (i < 0 ? "" : filename.substring(i).toLowerCase());
-					filename = (i < 0 ? filename : filename.substring(0, i));
-						
-					if(i < 0) {
-						// nessun contenuto da estrarre...
-						termina = true;
-					} else {
-						if(".tsd".equals(fileext)) {
-							// recupera il contenuto del documento .tsd
-							byte[] tmp = checker.getContentTimeStamp(content);
-							//if(tmp != null) {
-							//	tmp = checker.getContent(tmp);
-								if(creaLista) {
-									lista.add(filename);
-								}
-							//}
-							content = tmp;
-							
-						} else if(".p7m".equals(fileext)) {
-							// recupera il contenuto del documento .p7m
-							byte[] tmp = null;
-							try {
-								tmp = checker.getContent(content);
-							} catch(DigitalSignatureException e) {
-								// se non riesci a verificare la firma,
-								// restituisci comunque il contenuto...
-								tmp = content;
-								ApsSystemUtils.logThrowable(e, this, "esplodiAllegato", 
-										"Non e' possibile verificare il contenuto del " + 
-										"file " + filename + " nell'allegato " + allegato.getNome());
-								ExceptionUtils.manageExceptionError(e, this);
-							} 		
-							if(tmp != null) {
-								if(creaLista) {
-									lista.add(filename);
-								}
+				} else if(DOCUMENTO_FIRMATO.equals(fileext)) {
+					// recupera il contenuto del documento .p7m
+					String fileext2 = (exts != null && exts.length > 1 ? exts[exts.length - 2] : "");
+					boolean termina = false;
+					while (!termina && content != null) {
+						byte[] tmp = content;
+						try {
+							if (DOCUMENTO_MARCATURA_TEMPORALE.equals(fileext)) {
+								tmp = checker.getContentTimeStamp(content);
+			                    if (DOCUMENTO_FIRMATO.equals(fileext2)) {
+			                        tmp = checker.getContent(content);
+			                    } else {
+			                        // caso di file non firmato ma solamente marcato temporalmente
+			                        tmp = content;
+			                    }
+			                } else {
+			                	tmp = checker.getContent(content);
+			                }
+						} catch(Exception e) {
+							// sono finiti gli stream incapsulati nel documento P7M !!!
+							if(creaLista) {
+								lista.add(filename);
 							}
-							content = tmp;
-							
-						} else if(".pdf".equals(fileext)) {
-							//PdfReader readInputPDF = new PdfReader(content);
-							//...
-							//...
-							//...
-							termina = true;
-							
-						} else if(".xml".equals(fileext)) {
-							//...
-							//...
-							//...
-							termina = true;
-						} 
+			                termina = true;
+			            }
+						content = tmp;
+						
+			            if (filename.toLowerCase().indexOf("." + DOCUMENTO_FIRMATO) >= 0) {
+			            	filename = filename.substring(0, filename.toLowerCase().lastIndexOf("." + DOCUMENTO_FIRMATO));
+			            } else {
+			            	if (filename.toLowerCase().indexOf("." + DOCUMENTO_MARCATURA_TEMPORALE) >= 0) {
+			            		filename = filename.substring(0, filename.toLowerCase().lastIndexOf("." + DOCUMENTO_MARCATURA_TEMPORALE));
+			                }
+			            }
 					}
 					
-					// in caso di richiesta di un download specifico,
-					// restituisce l'array di byte corrispendenti al 
-					// download richiesto richiesto...
-					if(filename.equalsIgnoreCase(downloadFilename)) {
-						// restituisce il "content" trovato...
-						termina = true;
-					}
-				}
+				} else if(DOCUMENTO_PDF.equals(fileext)) {
+					//PdfReader readInputPDF = new PdfReader(content);
+					//...
+					//...
+					//...
+					
+				} else if(DOCUMENTO_XML.equals(fileext)) {
+					//...
+					//...
+					//...
+				} 
+				
 			} catch(DigitalSignatureException e) {
 				ApsSystemUtils.logThrowable(e, this, "esplodiAllegato");
 				ExceptionUtils.manageExceptionError(e, this);

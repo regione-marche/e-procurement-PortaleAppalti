@@ -3,7 +3,6 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
-import it.eldasoft.www.sil.WSGareAppalto.BandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.CategoriaBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
@@ -11,6 +10,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
@@ -39,27 +39,37 @@ public class InitRinnovoAction extends InitIscrizioneAction  {
 
 	
 	/**
-	 * ...
+	 * inizializza un rinnovo ad elenco operatori
 	 */
 	public String initRinnovo() {
 		return this.initRinnovo(PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD);
 	}
 
 	/**
-	 * ...
+	 * inizializza un rinnovo a catalogo
 	 */
 	public String initCatalogoRinnovo() {
 		return this.initRinnovo(PortGareSystemConstants.TIPOLOGIA_ELENCO_CATALOGO);
 	}
 	
 	/**
-	 * ...
+	 * inizializzazione generica di un elenco operatori/catalogo
 	 */
 	private String initRinnovo(int tipologia) {
 		
+		EFlussiAccessiDistinti flusso = (tipologia == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
+				? EFlussiAccessiDistinti.RINNOVO_ELENCO 
+				: EFlussiAccessiDistinti.RINNOVO_CATALOGO);
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(flusso, this.getCodice()) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
+		
 		if (null != this.getCurrentUser()
-			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			
+			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
+		{
 			Boolean datiInterpretati = new Boolean(false);
 			try {
 				// il rinnovo va effettuato entro la validita' elenco
@@ -80,8 +90,7 @@ public class InitRinnovoAction extends InitIscrizioneAction  {
 
 				// Pulisco la sessione da eventuali wizard pending, i quali 
 				// non sono stati annullati tramite l'operazione di "annulla" 
-				this.getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
-				this.getSession().remove(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
+				resetSessionHelper();
 				
 				// si estraggono dal B.O. i dati del bando a cui iscriversi
 				DettaglioBandoIscrizioneType dettBando = this.getBandiManager()
@@ -143,7 +152,7 @@ public class InitRinnovoAction extends InitIscrizioneAction  {
 					//rinnovoHelper.setIscrizioneDomandaVisible(this.getCustomConfigManager().isVisible("ISCRALBO-DOCUM", "PDFDOMANDA"));
 					rinnovoHelper.setIscrizioneDomandaVisible(this.getCustomConfigManager().isVisible("RINNALBO-DOCUM", "PDFDOMANDA"));
 					if(rinnovoHelper.isIscrizioneDomandaVisible()){
-						rinnovoHelper.setListaFirmatariMandataria(this.composeListaFirmatariMandataria(datiImpresaHelper));
+						rinnovoHelper.setListaFirmatariMandataria(rinnovoHelper.composeListaFirmatariMandataria());
 					}
 					if (dettBando.getDatiGeneraliBandoIscrizione().getAmmesseRTI()) {
 						rinnovoHelper.setAmmesseRTI(true);

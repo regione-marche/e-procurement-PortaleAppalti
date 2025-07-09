@@ -1,22 +1,23 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 
+import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.SystemConstants;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.eldasoft.www.sil.WSGareAppalto.EspletGaraOperatoreType;
+import it.eldasoft.www.sil.WSGareAppalto.EspletamentoElencoOperatoriSearch;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.util.EspletamentoUtil;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
-
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.SessionAware;
 
-import com.agiletec.aps.system.ApsSystemUtils;
-import com.agiletec.aps.system.SystemConstants;
+import java.util.List;
+import java.util.Map;
 
 public class EspletGaraViewValTecOperatoreAction extends EncodedDataAction implements SessionAware {
 	/**
@@ -35,7 +36,11 @@ public class EspletGaraViewValTecOperatoreAction extends EncodedDataAction imple
 	@Validate(EParamValidation.USERNAME)
 	private String codiceOper;
 	private EspletGaraOperatoreType operatoreEconomico;
-		
+	private boolean hideFiscalCode = false;
+	private boolean isConcorsoPrimoGrado;
+	private boolean with2Phase;
+
+
 	@Override
 	public void setSession(Map<String, Object> arg0) {
 		this.session = arg0;
@@ -80,6 +85,12 @@ public class EspletGaraViewValTecOperatoreAction extends EncodedDataAction imple
 	public void setOperatoreEconomico(EspletGaraOperatoreType operatoreEconomico) {
 		this.operatoreEconomico = operatoreEconomico;
 	}
+	public boolean isConcorsoPrimoGrado() {
+		return isConcorsoPrimoGrado;
+	}
+	public boolean isWith2Phase() {
+		return with2Phase;
+	}
 
 	/**
 	 * ...
@@ -96,10 +107,18 @@ public class EspletGaraViewValTecOperatoreAction extends EncodedDataAction imple
 				// recupera i dati dell'operatore economico...
 				boolean lottiDistinti = (!StringUtils.isEmpty(this.codiceLotto));
 				String codiceGara = (lottiDistinti ? this.codiceLotto : this.codice);
+				DettaglioGaraType dettGara = this.bandiManager.getDettaglioGara(this.codice);
+				hideFiscalCode = EspletamentoUtil.hasToHideFiscalCode(dettGara);
+				isConcorsoPrimoGrado = StringUtils.equals("9", dettGara.getDatiGeneraliGara().getIterGara());
+				with2Phase = dettGara.getDatiGeneraliGara().getTipoConcorso() != null
+						&& dettGara.getDatiGeneraliGara().getTipoConcorso() == 2;
 
-				List<EspletGaraOperatoreType> operatori = this.bandiManager
-					.getEspletamentoGaraValTecElencoOperatori(
-						this.codice, this.codiceLotto, this.codiceOper);
+				EspletamentoElencoOperatoriSearch search = new EspletamentoElencoOperatoriSearch();
+				search.setCodice(codice);
+				search.setCodiceLotto(codiceLotto);
+				search.setCodiceOperatore(codiceOper);
+				search.setUsername(getCurrentUser().getUsername());
+				List<EspletGaraOperatoreType> operatori = bandiManager.getEspletamentoGaraValTecElencoOperatori(search);
 				
 				int tipologiaGara = EspletGaraFasiAction.getTipologiaGara(this.session, this.codice);
 				if(tipologiaGara == PortGareSystemConstants.TIPOLOGIA_GARA_PIU_LOTTI_PLICO_UNICO) {
@@ -133,5 +152,8 @@ public class EspletGaraViewValTecOperatoreAction extends EncodedDataAction imple
 		
 		return this.getTarget();
 	}
-	
+
+	public boolean getHideFiscalCode() {
+		return hideFiscalCode;
+	}
 }

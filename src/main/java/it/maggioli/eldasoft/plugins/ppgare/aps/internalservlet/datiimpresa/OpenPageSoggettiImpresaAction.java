@@ -3,8 +3,11 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringUtils;
 
@@ -18,6 +21,11 @@ import java.util.Scanner;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageSoggettiImpresaAction extends AbstractOpenPageAction
 		implements ISoggettoImpresa 
 {
@@ -40,7 +48,7 @@ public class OpenPageSoggettiImpresaAction extends AbstractOpenPageAction
 	@Validate(EParamValidation.DATE_DDMMYYYY)
 	private String dataFineIncarico;
 	@Validate(EParamValidation.QUALIFICA)
-	private String qualifica;
+	private String qualifica;				// (vedi soggettoQualifica)	
 	@Validate(EParamValidation.SI_NO)
 	private String responsabileDichiarazioni;
 	@Validate(EParamValidation.COGNOME)
@@ -49,7 +57,7 @@ public class OpenPageSoggettiImpresaAction extends AbstractOpenPageAction
 	private String nome;
 	@Validate(EParamValidation.TITOLO_TECNICO)
 	private String titolo;
-	@Validate(EParamValidation.CODICE_FISCALE)
+	@Validate(value = EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO, error = @WithError(fieldLabel = "CODICE_FISCALE"))
 	private String codiceFiscale;
 	@Validate(EParamValidation.GENDER)
 	private String sesso;
@@ -90,8 +98,9 @@ public class OpenPageSoggettiImpresaAction extends AbstractOpenPageAction
 	/**
 	 * campo speciale contenente la concatenazione di tipologia soggetto e
 	 * qualifica, e serve solamente per l'interfaccia web.
+	 * (legali e direttori (1-,2-), altre cariche (3-1, 3-2, ...), collaboratori (4-1, 4-2, ...))
 	 */
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.SPEC_SOGG_QUALIFICA)
 	private String soggettoQualifica;
 
 	// campi di controllo per informazioni teoricamente obbligatorie ma che nel

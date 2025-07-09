@@ -13,6 +13,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.DocumentoMancanteBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
@@ -31,6 +33,7 @@ import java.util.Map;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageRiepilogoAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -56,6 +59,8 @@ public class OpenPageRiepilogoAction extends EncodedDataAction implements Sessio
 	private boolean rti;
 	@Validate(EParamValidation.DENOMINAZIONE_RTI)
 	private String denominazioneRti;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 	private boolean offertaTelematica;
 	
 	private DettaglioGaraType dettGara;
@@ -123,6 +128,14 @@ public class OpenPageRiepilogoAction extends EncodedDataAction implements Sessio
 //	public List<String> getLotti() {
 //		return lotti;
 //	}
+
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
+	}
 
 	public boolean isOffertaTecnica() {
 		return offertaTecnica;
@@ -244,7 +257,6 @@ public class OpenPageRiepilogoAction extends EncodedDataAction implements Sessio
 			try {
 				boolean domandaPartecipazione = (this.operazione == PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA);
 
-
 				GestioneBuste buste = GestioneBuste.getFromSession();
 				this.dettGara = buste.getDettaglioGara();
 				this.datiImpresa = buste.getImpresa();
@@ -270,6 +282,10 @@ public class OpenPageRiepilogoAction extends EncodedDataAction implements Sessio
 					this.rti = partecipazioneHelper.isRti();
 					if (partecipazioneHelper.isRti()) {
 						this.denominazioneRti = partecipazioneHelper.getDenominazioneRTI();
+					}
+					if(buste.isInvioOfferta()) {
+						// codice CNEL e' previsto solo per l'offerta
+						this.codiceCNEL = partecipazioneHelper.getCodiceCNEL();
 					}
 //				} else {
 //					retrieveDatiRTI();

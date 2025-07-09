@@ -28,7 +28,7 @@ public class FileUploadAsyncAction extends EncodedDataAction // <= extends Actio
 	private HttpServletResponse response;
 	private IEventManager eventManager;
 
-	@Validate(EParamValidation.URL)
+	@Validate(EParamValidation.ACTION)
 	private String actionUrl;				// url della pagina\action che utilizza l'upload
 	private InputStream inputStream;		// stream per la risposta json
 		

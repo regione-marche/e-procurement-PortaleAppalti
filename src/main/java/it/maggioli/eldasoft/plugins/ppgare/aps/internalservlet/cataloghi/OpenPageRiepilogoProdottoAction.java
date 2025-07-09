@@ -1,6 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi;
 
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CataloghiConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.CarrelloProdottiSessione;
 import com.agiletec.aps.system.exception.ApsException;
@@ -18,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class OpenPageRiepilogoProdottoAction extends AbstractOpenPageAction {
 	/**
 	 * UID

@@ -10,12 +10,14 @@ import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.aps.system.services.user.IUserManager;
-import com.agiletec.apsadmin.system.BaseAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.BaseResponseAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.HeaderParamsSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.cie.CieLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.cns.CnsLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.crs.CrsLoginResponseAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.eidas.EidasLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.federa.FederaLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.gel.GelLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.myid.MyIdLoginResponseAction;
@@ -23,11 +25,14 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.shibboleth.
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.spid.SpidLoginResponseAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti.LoggedUserInfo;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.IAuthServiceSPIDManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.WSAuthServiceSPIDWrapper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,8 +56,7 @@ import java.util.Map;
  * 
  * @author ...
  */
-public class AbilitaAccessoSSOAction extends BaseAction implements ServletResponseAware, SessionAware {
-	//extends SpidLoginResponseAction {
+public class AbilitaAccessoSSOAction extends EncodedDataAction implements ServletResponseAware, SessionAware {
 	/**
 	 * UID
 	 */
@@ -65,20 +69,25 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 	private WSAuthServiceSPIDWrapper wsAuthServiceSPID;
 	private IUserManager userManager;
 	private ConfigInterface configManager;
-	private List<String> autenticazioni;
+	
 	private HttpServletResponse response;
-	@Validate(EParamValidation.URL)
+	// contenitore dei dati di sessione
+	private Map<String, Object> session;
+	
+	private List<String> autenticazioni;
+	@ValidationNotRequired
 	private String urlLoginCohesion;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlRedirect;
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlLogin;
 	@Validate(EParamValidation.URL)
 	private String idp;
 	@Validate(EParamValidation.CODICE_FISCALE)
 	private String cfAssociato;
-	/** contenitore dei dati di sessione. */
-	private Map<String, Object> session;
+	private Integer loginMultiutente;
+	@Validate(EParamValidation.STAZIONE_APPALTANTE)
+	private String stazioneAppaltante;
 	
 	@Override
 	public void setSession(Map<String, Object> arg0) {
@@ -87,7 +96,7 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		
 	@Override
 	public void setServletResponse(HttpServletResponse arg0) {
-		this.response = arg0;		
+		this.response = arg0;
 	}	
 	
 	public void setAppParamManager(IAppParamManager appParamManager) {
@@ -166,6 +175,22 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		this.urlLoginCohesion = urlLoginCohesion;
 	}
 	
+	public Integer getLoginMultiutente() {
+		return loginMultiutente;
+	}
+
+	public void setLoginMultiutente(Integer loginMultiutente) {
+		this.loginMultiutente = loginMultiutente;
+	}
+
+	public String getStazioneAppaltante() {
+		return stazioneAppaltante;
+	}
+
+	public void setStazioneAppaltante(String stazioneAppaltante) {
+		this.stazioneAppaltante = stazioneAppaltante;
+	}
+
 	/**
 	 * ... 
 	 */
@@ -179,6 +204,7 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 			} else {
 				this.autenticazioni = appParamManager.loadEnabledAuthentications();
 				this.urlLoginCohesion = (String) appParamManager.getConfigurationValue("auth.sso.cohesion.login.url") + "Join" ;
+				this.loginMultiutente = appParamManager.getConfigurationValueIntDef(AppParamManager.SPID_LOGIN_MULTIUTENTE, 0).intValue();
 			}
 		}catch (Exception e) {
 			this.addActionError(this.getText("Errors.auth.generic", new String[] { "Maggioli Auth" }));
@@ -189,6 +215,65 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return target;
 	}
 	
+	/**
+	 * mette in sessione la stazione appaltante selezionata nella pagina di autenticazione di SPID e SPID BUSINESS
+	 */
+	public String initSpidSA() {
+		String target = SUCCESS;
+		
+		// aggiorna il filtro applicativo relativo alla stazione appaltante
+		setCodiceStazioneAppaltante(stazioneAppaltante);
+	
+		return target;
+	}
+	
+	/**
+	 * gestione dell'unlink account SSO
+	 */
+	public String unlink() {
+		String target = SUCCESS;
+		try {
+			this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), "");
+			this.getCurrentUser().setDelegateUser("");
+			this.urlRedirect = this.getPageURL("ppcommon_area_personale");
+		} catch (ApsSystemException e) {
+			this.addActionError(this.getText("Errors.unexpected"));
+			ApsSystemUtils.logThrowable(null, this, "unlink");
+			target = INPUT;
+		}
+		return target;
+	}	
+	
+	/**
+	 * gestione della risposta di login
+	 */
+	public String login() {
+		String target = SUCCESS;
+
+		try {
+			AccountSSO account = BaseResponseAction.validateLogin(
+					this.appParamManager,
+					this.authServiceSPIDManager,
+					this.wsAuthServiceSPID);
+			
+			if(account == null) {
+				target = INPUT;
+			} else {
+				this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), account.getLogin());
+				this.getCurrentUser().setDelegateUser(account.getLogin());
+				this.userManager.updateLastAccess(this.getCurrentUser());
+				putAccountInSession(account);
+				this.urlRedirect = this.getPageURL("ppcommon_area_personale");
+			}
+		} catch (ApsSystemException e) {
+			this.addActionError(this.getText("Errors.unexpected"));
+			ApsSystemUtils.logThrowable(null, this, "login");
+			target = INPUT;
+		}
+		
+		return target;
+	}
+
 	/**
 	 * prepara il login al servizio di autenticazione SPID 
 	 */
@@ -211,6 +296,9 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return target;
 	}
 	
+	/**
+	 * ...
+	 */
 	public String prepareLoginSpidBusiness() {
 		String target = SUCCESS;
 		
@@ -229,8 +317,6 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		}
 		return target;
 	}
-	
-	
 	
 	/**
 	 * prepara il login al servizio di autenticazione CIE 
@@ -295,7 +381,6 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return target;
 	}
 	
-	
 	/**
 	 * prepara il login al servizio di autenticazione GEL 
 	 */
@@ -338,7 +423,6 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return target;
 	}
 	
-	
 	/**
 	 * prepara il login al servizio di autenticazione Federa 
 	 */
@@ -360,9 +444,31 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return target;
 	}
 	
-	
-	
-	
+	/**
+	 * prepara il login al servizio di autenticazione EIDAS 
+	 */
+	/**
+	 * prepara il login al servizio di autenticazione SPID 
+	 */
+	public String prepareLoginEidas() {
+		String target = SUCCESS;
+
+		this.urlRedirect = EidasLoginResponseAction.prepareCallbackLogin(
+				"/do/FrontEnd/AreaPers/ssoMaggioliLoginResponse.action",
+				this.idp,
+				this.configManager,
+				this.appParamManager,
+				this.authServiceSPIDManager,
+				this.wsAuthServiceSPID);
+		
+		if(this.urlRedirect == null) {
+			this.addActionError(this.getText("Errors.unexpected"));
+			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
+			target = INPUT;
+		}
+		return target;
+	}
+
 	/**
 	 * prepara il login al servizio di autenticazione  
 	 */
@@ -374,58 +480,50 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		Integer ssoShibbolethAttivo = (Integer)appParamManager.getConfigurationValue(PortGareSystemConstants.TIPO_PROTOCOLLO_SSO_SHIBBOLETH);
 		
 		if(ssoShibbolethAttivo == 1) {
+			// prepara le informazioni relative ai parametri dell'header della risposta del sistema di autenticazione remoto
+			HeaderParamsSSO header = new HeaderParamsSSO(  
+					null, 
+					null,  
+					null,  
+					null, 
+					null, 
+					null, 
+					this.getClass().getName()
+			);
+			header.putToSession(); 
+			
+			// costruisci l'url per il redirect verso il sistema di autenticazione remoto 
+			// la chiamata viene in realta' intercettata da Apache che poi invia la richiesta al sistema di autenticazione 
+			// e restituisce la risposta al portale con i dati di autenticazione nell'header della risposta
 			StringBuilder sb = new StringBuilder(); 
 			sb.append(this.configManager.getParam(SystemConstants.PAR_APPL_BASE_URL))
-			  .append("do/FrontEnd/AreaPers/shibboletLoginResponse.action");
-			
+			  .append("do/SSO/ShibbolethLoginResponse.action");
+		
 			this.urlRedirect = sb.toString();
-		}	
-			
-		if(this.urlRedirect == null) {
-			this.addActionError(this.getText("Errors.unexpected"));			
-			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);			
-			target = INPUT;
 		}
 		
+		if(this.urlRedirect == null) {
+			this.addActionError(this.getText("Errors.unexpected"));
+			this.getRequest().getSession().setAttribute("ACTION_OBJECT", this);
+			target = INPUT;
+		}
+	
 		return target;
 	}
-	
 	
 	/**
-	 * gestione della risposta di login
+	 * ... 
 	 */
-	public String login() {
+	public String loginShibboleth() {
 		String target = SUCCESS;
 
 		try {
-			AccountSSO account = BaseResponseAction.validateLogin(
-					this.appParamManager,
-					this.authServiceSPIDManager,
-					this.wsAuthServiceSPID);
+			// recupera i paremetri del login (header della risposta del sistema di autenticazione remoto)
+			AccountSSO accountShib = ShibbolethLoginResponseAction.getSSOLogin(this.appParamManager);
 			
-			if(account == null) {
-				target = INPUT;
-			} else {
-				this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), account.getLogin());
-				this.getCurrentUser().setDelegateUser(account.getLogin());
-				this.userManager.updateLastAccess(this.getCurrentUser());
-				putAccountInSession(account);
-				this.urlRedirect = this.getPageURL("ppcommon_area_personale");
-			}
-		} catch (ApsSystemException e) {
-			this.addActionError(this.getText("Errors.unexpected"));
-			ApsSystemUtils.logThrowable(null, this, "login");
-			target = INPUT;
-		}
-		
-		return target;
-	}
-	
-	public String loginShibboleth() {		
-		String target = SUCCESS;
-
-		try {
-			AccountSSO accountShib = ShibbolethLoginResponseAction.validateLogin(this.appParamManager);
+			// rimuovi i parametri dalla sessione
+			HeaderParamsSSO.removeFromSession();
+			
 			if(accountShib == null) {
 				target = INPUT;
 			} else {
@@ -433,7 +531,9 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 				this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), accountShib.getLogin());
 				this.getCurrentUser().setDelegateUser(accountShib.getLogin());
 				this.userManager.updateLastAccess(this.getCurrentUser());
+				
 				putAccountInSession(accountShib);
+				
 				this.urlRedirect = this.getPageURL("ppcommon_area_personale");
 			}
 		} catch (ApsSystemException e) {
@@ -443,22 +543,11 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		}
 		
 		return target;
-	}	
-	
-
-	private void putAccountInSession(AccountSSO account) throws ApsSystemException{
-		try {
-			this.session.put(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO, account);
-			TrackerSessioniUtenti tracker = TrackerSessioniUtenti.getInstance(this.getRequest().getSession().getServletContext());
-			String sessionId = this.getRequest().getSession().getId();
-			String[] info = (String[]) tracker.getDatiSessioniUtentiConnessi().get(sessionId);
-			tracker.putSessioneUtente(this.getRequest().getSession(), info[0], account.getLogin(), info[2]);
-		} catch (Exception ex) {
-			throw new ApsSystemException("Errore nell'aggiornamento della sessione utenti in seguito a login SSO. Utente: "+account.getLogin(), ex);
-		}
 	}
 	
-	
+	/**
+	 * ... 
+	 */
 	public String loginCohesion() {
 		String target = SUCCESS;
 		String cohesionEncryptionKey = (String) appParamManager
@@ -470,43 +559,43 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 			String cohesionResponse = new String(base64Decode(token));
 			if (!"".equals(cohesionEncryptionKey)) {
 				try {
-					cohesionResponse = new String(cipher3DES(false,
+					cohesionResponse = new String(cipher3DES(
+							false,
 							base64Decode(token),
-							cohesionEncryptionKey.getBytes()));
+							cohesionEncryptionKey.getBytes())
+					);
 					Document cohesionResponseXML = getXmlDocFromString(cohesionResponse);
 					cohesionResponseXML.getDocumentElement().normalize();
 
 					String attributoLoginCodiceFiscale = (String) appParamManager
 							.getConfigurationValue("auth.sso.cohesion.mapping.login");
-					
-					String login = getCohesionElement(cohesionResponseXML,
-							attributoLoginCodiceFiscale);
-					this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), login);
-					this.getCurrentUser().setDelegateUser(login);
-					this.userManager.updateLastAccess(this.getCurrentUser());
 					String attributoNome = (String) appParamManager
-					.getConfigurationValue("auth.sso.cohesion.mapping.nome");
+							.getConfigurationValue("auth.sso.cohesion.mapping.nome");
 					String attributoCognome = (String) appParamManager
 							.getConfigurationValue("auth.sso.cohesion.mapping.cognome");
 					String attributoEmail = (String) appParamManager
 							.getConfigurationValue("auth.sso.cohesion.mapping.email");
 					String attributoTipoAutenticazione = (String) appParamManager
 							.getConfigurationValue("auth.sso.cohesion.mapping.tipoAutenticazione");
-					String nome = getCohesionElement(cohesionResponseXML,
-							attributoNome);
-					String cognome = getCohesionElement(cohesionResponseXML,
-							attributoCognome);
-					String email = getCohesionElement(cohesionResponseXML,
-							attributoEmail);
-					String tipoAutenticazione = getCohesionElement(
-							cohesionResponseXML, attributoTipoAutenticazione);
+					
+					String login = getCohesionElement(cohesionResponseXML, attributoLoginCodiceFiscale);
+					String nome = getCohesionElement(cohesionResponseXML, attributoNome);
+					String cognome = getCohesionElement(cohesionResponseXML, attributoCognome);
+					String email = getCohesionElement(cohesionResponseXML, attributoEmail);
+					String tipoAutenticazione = getCohesionElement(cohesionResponseXML, attributoTipoAutenticazione);
+					
+					// aggiorna il delegate user
+					this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), login);
+					this.getCurrentUser().setDelegateUser(login);
+					this.userManager.updateLastAccess(this.getCurrentUser());
+					
+					// crea l'account SSO
 					AccountSSO accountCohesion = new AccountSSO();
 					accountCohesion.setLogin(login);
 					accountCohesion.setNome(nome);
 					accountCohesion.setCognome(cognome);
 					accountCohesion.setEmail(email);
-					accountCohesion
-							.setTipoAutenticazione(tipoAutenticazione);
+					accountCohesion.setTipoAutenticazione(tipoAutenticazione);
 					accountCohesion.setTipologiaLogin(PortGareSystemConstants.TIPOLOGIA_LOGIN_COHESION_SSO);
 					putAccountInSession(accountCohesion);
 					
@@ -521,9 +610,25 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		}
 		return target;
 	}
-	
-	private Document getXmlDocFromString(String xml) {
 
+	/**
+	 * ... 
+	 */
+	private String getCohesionElement(Document doc, String name) {
+		String value = null;
+		try {
+			value = StringUtils.stripToNull(doc.getElementsByTagName(name)
+					.item(0).getTextContent());
+		} catch (Exception e) {
+			value = null;
+		}
+		return value;
+	}
+
+	/**
+	 * crea un documento da un xml 
+	 */
+	private Document getXmlDocFromString(String xml) {
 		Document xmlDoc = null;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -538,7 +643,8 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 	}
 
 	private byte[] cipher3DES(boolean encrypt, byte[] message, byte[] key)
-			throws Exception {
+			throws Exception 
+	{
 		byte[] cipher = new byte[0];
 		try {
 			if (key.length != 24) {
@@ -558,7 +664,6 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return cipher;
 	}
 	
-	
 	private byte[] base64Decode(String data) {
 		byte[] result = new byte[0];
 		try {
@@ -569,26 +674,29 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		return result;
 	}
 	
-	
 	/**
-	 * gestione dell'unlink account SSO
+	 * salva in sessione i dati dell'account SSO ed aggiorna il tracker delle sessioni 
 	 */
-	public String unlink() {
-		String target = SUCCESS;
-
+	private void putAccountInSession(AccountSSO account) throws ApsSystemException{
 		try {
-			this.userManager.setDelegateUser(this.getCurrentUser().getUsername(), "");
-			this.getCurrentUser().setDelegateUser("");
-			this.urlRedirect = this.getPageURL("ppcommon_area_personale");
-		} catch (ApsSystemException e) {
-			this.addActionError(this.getText("Errors.unexpected"));
-			ApsSystemUtils.logThrowable(null, this, "unlink");
-			target = INPUT;
+			// recupera le info utente dal tracker delle sessioni,
+			// va fatto prima del put in sessione dell'oggetto AccountSSO 
+			// altrimenti "put()" potrebbe chiamare un unbound() dell'oggetto dalla sessione
+			// prima di aggiornare la sessione 
+			TrackerSessioniUtenti tracker = TrackerSessioniUtenti.getInstance( this.getRequest().getSession().getServletContext() );
+			LoggedUserInfo info = tracker.getDatiSessioniUtentiConnessi().get( this.getRequest().getSession().getId() );
+			
+			// aggiorna la sessione con l'account SSO
+			this.session.put(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO, account);
+			
+			// aggiorna il tracker delle sessioni
+			tracker.putSessioneUtente(this.getRequest().getSession(), info.getIp(), account.getLogin(), info.getLoginTime());
+
+		} catch (Exception ex) {
+			throw new ApsSystemException("Errore nell'aggiornamento della sessione utenti in seguito a login SSO. "
+										 + "Utente: " + account.getLogin(), ex);
 		}
-		
-		return target;
 	}
-	
 	
 	/**
 	 * ... 
@@ -626,17 +734,6 @@ public class AbilitaAccessoSSOAction extends BaseAction implements ServletRespon
 		reqCtx.addExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE, pageDest);
 		PageURL url = this.urlManager.createURL(reqCtx);
 		return url.getURL();
-	}
-	
-	private String getCohesionElement(Document doc, String name) {
-		String value = null;
-		try {
-			value = StringUtils.stripToNull(doc.getElementsByTagName(name)
-					.item(0).getTextContent());
-		} catch (Exception e) {
-			value = null;
-		}
-		return value;
 	}
 	
 }

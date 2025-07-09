@@ -55,7 +55,7 @@ public class SAFilter implements Filter {
 
 		req.setCharacterEncoding("UTF-8");
 		
-		HttpServletRequest request = (HttpServletRequest) req;		
+		HttpServletRequest request = (HttpServletRequest) req;
 		boolean updateCookie = false;
 		String stazioneAppaltanteValue = null;
 
@@ -65,11 +65,11 @@ public class SAFilter implements Filter {
 		if(request.getCookies() != null) {
 			for(Cookie item : request.getCookies()) {
 				if(COOKIE_ID_STAZIONE_APPALTANTE.equals(item.getName())) {
-					cookie = item;					
+					cookie = item;
 					stazioneAppaltanteValue = cookie.getValue();
 				}
 			}
-		}		
+		}
 
 		// verifica se e' stato passato il parametro della stazione appaltante...
 		String sa = req.getParameter(REQUEST_PARAM_STAZIONE_APPALTANTE);
@@ -86,8 +86,8 @@ public class SAFilter implements Filter {
 			if(cookie == null)
 				cookie = new PortalCookie(COOKIE_ID_STAZIONE_APPALTANTE, stazioneAppaltanteValue, req);
 			cookie.setValue(stazioneAppaltanteValue);
-			cookie.setMaxAge(365 * 24 * 60 * 60);			
-			((HttpServletResponse) resp).addCookie(cookie);			
+			cookie.setMaxAge(365 * 24 * 60 * 60);
+			((HttpServletResponse) resp).addCookie(cookie);
 		} 
 		
 		// ...restituisci la gestione all'applicazione...
@@ -105,9 +105,9 @@ public class SAFilter implements Filter {
 			String stazioneAppaltante = (String)session
 				.getAttribute(PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE);
 			String stazioneAppaltanteCodiceFiscale = (String)session
-				.getAttribute(PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE_CF);		
+				.getAttribute(PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE_CF);
 			String stazioneAppaltanteDesc = (String)session
-				.getAttribute(PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE_DESC);					
+				.getAttribute(PortGareSystemConstants.SESSION_ID_STAZIONE_APPALTANTE_DESC);
 			
 			if(value != null) {
 				if( !value.equals(stazioneAppaltante) ) {
@@ -120,7 +120,7 @@ public class SAFilter implements Filter {
 						.getBean(PortGareSystemConstants.BANDI_MANAGER, request);
 					
 					DettaglioStazioneAppaltanteType sa = bandiManager
-						.getDettaglioStazioneAppaltante(stazioneAppaltante);									
+						.getDettaglioStazioneAppaltante(stazioneAppaltante);
 					if(sa != null) {
 						stazioneAppaltanteDesc = sa.getDenominazione();
 						stazioneAppaltanteCodiceFiscale = sa.getCodiceFiscale();
@@ -138,8 +138,8 @@ public class SAFilter implements Filter {
 				}
 			}
 		} catch (ApsException e) {
-			ApsSystemUtils.getLogger().info("Filtro su stazione appaltante con codice " + value + " non trovata");
-		}								
+			ApsSystemUtils.getLogger().error("Filtro su stazione appaltante con codice " + value + " non trovata");
+		}
 	}
 
 }

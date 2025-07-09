@@ -1,11 +1,10 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.text.MessageFormat;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
+import com.agiletec.aps.system.services.user.DelegateUser;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
@@ -19,6 +18,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.Comunicaz
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.helper.WizardOffertaAstaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -29,6 +30,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManag
  *
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class ProcessPageRiepilogoAction extends AbstractProcessPageAction {	
 	/**
 	 * UID 
@@ -191,6 +193,11 @@ public class ProcessPageRiepilogoAction extends AbstractProcessPageAction {
 	public String send() {
 		String target = SUCCESS;
 		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return target;
+		}
+
 		WizardOffertaAstaHelper helper = WizardOffertaAstaHelper.fromSession();
 		
 		if(helper == null) {
@@ -252,6 +259,8 @@ public class ProcessPageRiepilogoAction extends AbstractProcessPageAction {
 				helper.removeFromSession();
 			}
 		}
+		
+		unlockAccessoFunzione();
 		
 		return target;
 	}

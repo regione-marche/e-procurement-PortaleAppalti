@@ -9,6 +9,7 @@
 	<jsp:param name="cssName" value="application" />
 </jsp:include>
 
+<es:checkCustomization var="visRUP" objectId="ESITO" attribute="RUP" feature="VIS" />
 <es:checkCustomization var="visAderenti" objectId="GARE" attribute="ADERENTI" feature="VIS" />
 <es:getAppParam name = "denominazioneStazioneAppaltanteUnica" var = "stazAppUnica" scope = "page"/> 	
 
@@ -45,11 +46,19 @@
 				</c:otherwise>
 			</c:choose>
 		</div>
-		
-		<div class="detail-row">
-			<label><wp:i18n key="LABEL_RUP" /> : </label>
-			<s:property value="dettaglioEsito.stazioneAppaltante.rup" />
-		</div>
+
+		<c:if test="${visRUP}">
+            <div class="detail-row">
+                <label><wp:i18n key="LABEL_RUP" /> : </label>
+                <s:property value="dettaglioEsito.stazioneAppaltante.rup" />
+            </div>
+            <s:if test="%{dettaglioEsito.stazioneAppaltante.responsabileFaseAffidamento != null && !dettaglioEsito.stazioneAppaltante.responsabileFaseAffidamento.isEmpty()}">
+                <div class="detail-row">
+                    <label><wp:i18n key="LABEL_RESPONSABILE_FASE_AFFIDAMENTO" /> : </label>
+                    <s:property value="dettaglioEsito.stazioneAppaltante.responsabileFaseAffidamento" />
+                </div>
+            </s:if>
+		</c:if>
 		
 		<c:if test="${visAderenti}">
 			<s:if test="%{dettaglioEsito.soggettiAderenti.length > 0}" >
@@ -110,7 +119,7 @@
 		<div class="detail-row">
 			<ul class="list">
 				<li class='first last'>
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/viewLotti.action"/>&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/viewLotti.action"/>&amp;codice=${param.codice}&amp;ext=${param.ext}"
 					   class="bkg-big go"	<%-- class="bkg link" --%> 
 					   title="<wp:i18n key="LABEL_VISUALIZZA_LOTTI" />" >
 						<wp:i18n key="LABEL_LOTTI" />
@@ -119,13 +128,28 @@
 			</ul>
 		</div>
 		
+		<%-- BDNCP url trasparenza scheda ANAC --%>
+		<s:if test="%{dettaglioEsito.datiGenerali.BDNCPAnac != null}">
+			<div class="detail-row">
+				<ul class="list">
+					<li class='first last'>
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/viewBDNCP.action"/>&amp;codice=${param.codice}&amp;ext=${param.ext}"
+						   class="bkg-big go"
+						   title="<wp:i18n key="LABEL_VISUALIZZA_BDNCP" />" >
+							<wp:i18n key="LABEL_BDNCP" />
+						</a>
+					</li>
+				</ul>
+			</div>
+		</s:if>
+		
 		<div class="detail-row">
 			<ul class="list">
 				<li class='first last'>
-					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/viewAttiDocumenti.action"/>&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}"
+					<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/viewAttiDocumenti.action"/>&amp;codice=${param.codice}&amp;ext=${param.ext}"
 					   class="bkg-big go"	<%-- class="bkg link" --%> 
-					   title="<wp:i18n key="LABEL_VISUALIZZA_ATTI_DOC_ART29" />" >
-						<wp:i18n key="LABEL_ATTI_DOC_ART29" />
+					   title="<wp:i18n key="LABEL_VISUALIZZA_ALTRI_ATTI_DOCUMENTI" />" >
+						<wp:i18n key="LABEL_ALTRI_ATTI_DOCUMENTI" />
 					</a>
 				</li>
 			</ul>
@@ -164,7 +188,6 @@
 	</div>
 
 	<div class="azioni">
-
 		<c:if test="${empty (param.ext)}">
 			<c:if test="${menuBandiVisibile && !empty (dettaglioEsito.datiGenerali.dataPubblicazioneBando)}">
 				<form action="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />" method="post" class="azione">
@@ -189,34 +212,34 @@
 	</c:if>
 	
 	<c:choose>
+		<c:when test="${!empty sessionScope.fromPage && sessionScope.fromPage eq 'listSommeUrgenze'}">
+			<div class="back-link">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listSommeUrgenze.action" />${last}">
+					<wp:i18n key="LINK_BACK_TO_LIST" />
+				</a>
+			</div>
+		</c:when>
 		<c:when test="${empty param.ext}">
 			<c:choose>
 				<c:when test="${sessionScope.fromSearch}">
 					<div class="back-link">
-						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/search.action" />&amp;last=1&amp;${tokenHrefParams}">
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/search.action" />&amp;last=1">
 							<wp:i18n key="LINK_BACK_TO_SEARCH" />
 						</a>
 					</div>
 				</c:when>
 				<c:when test="${!empty sessionScope.fromPage}">
 					<div class="back-link">
-						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/${sessionScope.fromPage}.action" />${last}&amp;${tokenHrefParams}">
+						<a href="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/${sessionScope.fromPage}.action" />${last}">
 							<wp:i18n key="LINK_BACK_TO_LIST" />
 						</a>
 					</div>
 				</c:when>
 			</c:choose>
 		</c:when>
-		<c:when test="${!empty sessionScope.fromPage && sessionScope.fromPage eq 'listSommeUrgenze'}">
-			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/listSommeUrgenze.action" />${last}&amp;${tokenHrefParams}">
-					<wp:i18n key="LINK_BACK_TO_LIST" />
-				</a>
-			</div>
-		</c:when>
 		<c:otherwise>
 			<div class="back-link">
-				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>${last}&amp;${tokenHrefParams}">
+				<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;codice=<s:property value="codice"/>${last}">
 					<wp:i18n key="LINK_DETTAGLIO_ESITO_BACK_TO_GARA" />
 				</a>
 			</div>

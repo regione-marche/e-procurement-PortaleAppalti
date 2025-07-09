@@ -74,10 +74,18 @@
 				</s:if>
 				<s:else>
 					<s:hidden name="noConsorziate" value="1"/>
-					<wp:i18n key="BUTTON_WIZARD_PREVIOUS_ADD_CONSORZIATE" var="valuePreviousConsorziateButton" />
-					<wp:i18n key="TITLE_WIZARD_PREVIOUS_ADD_CONSORZIATE" var="titlePreviousConsorziateButton" />
-					<wp:i18n key="BUTTON_WIZARD_NEXT_NO_CONSORZIATE" var="valueNextConsorziateButton" />
-					<wp:i18n key="TITLE_WIZARD_NEXT_NO_CONSORZIATE" var="titleNextConsorziateButton" />
+					<s:if test="%{#partecipazione.tipoEvento == 2}">
+						<wp:i18n key="LABEL_YES" var="valuePreviousConsorziateButton" />
+						<wp:i18n key="TITLE_CONFIRM_DEL_YES" var="titlePreviousConsorziateButton" />
+						<wp:i18n key="LABEL_NO" var="valueNextConsorziateButton" />
+						<wp:i18n key="TITLE_CONFIRM_DEL_NO" var="titleNextConsorziateButton" />
+					</s:if>
+					<s:else>
+						<wp:i18n key="BUTTON_WIZARD_PREVIOUS_ADD_CONSORZIATE" var="valuePreviousConsorziateButton" />
+						<wp:i18n key="TITLE_WIZARD_PREVIOUS_ADD_CONSORZIATE" var="titlePreviousConsorziateButton" />
+						<wp:i18n key="BUTTON_WIZARD_NEXT_NO_CONSORZIATE" var="valueNextConsorziateButton" />
+						<wp:i18n key="TITLE_WIZARD_NEXT_NO_CONSORZIATE" var="titleNextConsorziateButton" />
+					</s:else>
 					<s:submit value="%{#attr.valuePreviousConsorziateButton}" title="%{#attr.titlePreviousConsorziateButton}"  cssClass="button" method="editConsorziate"></s:submit>
 					<s:submit value="%{#attr.valueNextConsorziateButton}" title="%{#attr.titleNextConsorziateButton}" cssClass="button" method="next"></s:submit>
 				</s:else>

@@ -414,7 +414,7 @@ public class WizardOffertaAstaHelper extends WizardOffertaHelper {
 							// recupera il "progressivoOfferta" dalla comunicazione (PROCESSATA->6) relativa al lotto...
 							// ogni lotto puo' essere associato ad un unico plico offerta !!!
 							ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
-							IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ctx.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER);
+							IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ctx.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER);
 							
 							DettaglioComunicazioneType filtri = new DettaglioComunicazioneType();
 							filtri.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);

@@ -62,7 +62,7 @@
 					<li>
 						<span class='<s:if test="foglia">file </s:if><s:else>folder </s:else>'>
 							<c:if test="${param.mercatoElettronico}">
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />&amp;${tokenHrefParams}' 
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />' 
 								   title="<wp:i18n key="LABEL_VISUALIZZA_LISTA_ARTICOLI_CATEGORIA" />">
 							</c:if>
 							<s:property value="codice" /> - <s:property value="descrizione" />
@@ -81,7 +81,7 @@
 				<li>
 					<span class='<s:if test="foglia">file </s:if><s:else>folder </s:else>'>
 						<c:if test="${param.mercatoElettronico}">
-							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />${tokenHrefParams}' 
+							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />' 
 							   title="<wp:i18n key="LABEL_VISUALIZZA_LISTA_ARTICOLI_CATEGORIA" />">
 						</c:if>
 						<s:property value="codice" /> - <s:property value="descrizione" />
@@ -95,7 +95,7 @@
 				<li>
 					<span class='<s:if test="foglia">file </s:if><s:else>folder </s:else>'>
 						<c:if test="${param.mercatoElettronico}">
-							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />&amp;${tokenHrefParams}' 
+							<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/searchArticoli.action" />&amp;codiceCatalogo=${param.codice}&amp;ext=${param.ext}&amp;model.codiceCategoria=<s:property value="codice" />' 
 							   title="<wp:i18n key="LABEL_VISUALIZZA_LISTA_ARTICOLI_CATEGORIA" />">
 						</c:if>
 							<s:property value="codice" /> - <s:property value="descrizione" />

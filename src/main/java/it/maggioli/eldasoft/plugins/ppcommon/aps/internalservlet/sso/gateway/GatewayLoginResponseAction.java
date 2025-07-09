@@ -1,21 +1,11 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.gateway;
 
-import java.util.Date;
-
-import javax.servlet.ServletContext;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.springframework.util.CollectionUtils;
-
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.opensymphony.xwork2.ActionContext;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
@@ -29,6 +19,13 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IA
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.IAuthServiceSPIDManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.spid.WSAuthServiceSPIDWrapper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.springframework.util.CollectionUtils;
+
+import javax.servlet.ServletContext;
+import java.util.Date;
 
 public class GatewayLoginResponseAction extends BaseResponseAction {
 	
@@ -117,14 +114,12 @@ public class GatewayLoginResponseAction extends BaseResponseAction {
 		try {
 			// recupera le info dell'utente dal servizio SPID tramite il
 			// token...
-
 			String jwtToken = this.getRequest().getParameter("jwtToken");
 			jwtToken = StringUtils.isEmpty(jwtToken) ? token : jwtToken;
 		    final String passphrase = StringUtils.stripToNull(getParamValue((AppParamManager.GATEWAY_PASSPHRASE)));
 		    
 		    JwtParser parser = Jwts.parser().setSigningKey(passphrase);
 			Jws<Claims> jws = parser.parseClaimsJws(jwtToken);
-			  
 			
 			if (MapUtils.isNotEmpty(jws.getBody())) {
 				String codiceFiscale = jws.getBody().get("codiceFiscale", String.class);
@@ -156,13 +151,15 @@ public class GatewayLoginResponseAction extends BaseResponseAction {
 				}
 
 			} else {
-				action.addActionError(action.getText("Errors.sso.readingData", new String[] { "Maggioli SPID" }));
+				action.addActionError(action.getText("Errors.sso.readingData", new String[] { "Gateway" }));
 				action.getRequest().getSession().setAttribute("ACTION_OBJECT", action);
 				ApsSystemUtils.logThrowable(null, null, "validateLogin");
 				target = INPUT;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			action.addActionError(action.getText("Errors.sso.configuration", new String[] { "Gateway" }));
+			action.getRequest().getSession().setAttribute("ACTION_OBJECT", action);
+			ApsSystemUtils.logThrowable(e, this, "validate");
 		}
 		
 		if(!SUCCESS.equals(target)) {

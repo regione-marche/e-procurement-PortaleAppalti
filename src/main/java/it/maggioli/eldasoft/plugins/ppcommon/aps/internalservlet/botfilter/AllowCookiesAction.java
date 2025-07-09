@@ -10,19 +10,28 @@ import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
 import com.agiletec.aps.system.services.user.IAuthenticationProviderManager;
 import com.agiletec.apsadmin.system.BaseAction;
-import com.opensymphony.xwork2.ActionContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.BotFilter;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ValidationNotRequired;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
+
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,7 +53,7 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 	private Map<String, Object> session;
 	private HttpServletResponse response;
 
-	@Validate(EParamValidation.URL)
+	@ValidationNotRequired
 	private String urlRedirect;
 
 	@Override
@@ -83,8 +92,6 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 	public String allowCookies() {
 		String target = SUCCESS;
 		try {
-			session.put(BotFilter.CREATE_USER_ACCESS_COOKIE, null);
-			
 			HttpServletRequest request = (HttpServletRequest) this.getRequest();
 			
 			String ipAddress = request.getHeader("X-Forwarded-For");
@@ -93,8 +100,7 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 			}
 
 			// recupera la whitelist accessi degli utenti autorizzati
-			Map<String, Object> application = ActionContext.getContext().getApplication();
-			Map<String, Date> whitelist = BotFilter.getWhiteList(request);
+			Map<String, Date> whitelist = BotFilter.getWhiteList();
 			
 			// registra l'ip nella white list come utente reale
 			if(whitelist != null) {			
@@ -107,11 +113,7 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 				
 				try {
 					// aggiungi l'ip alla lista degli utenti validi 
-					whitelist.put(ipAddress, new Date());					
-					application.put(BotFilter.USER_WHITE_LIST, whitelist);
-					
-					// imposta in sessione un flag per disabilitare la visualizzazione del dialog dei cookies
-					session.put(BotFilter.CREATE_USER_ACCESS_COOKIE, "1");
+					whitelist.put(ipAddress, new Date());
 					
 					this.urlRedirect = getPageURL("homepage");
 					target = SUCCESS;
@@ -139,8 +141,6 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 	public String cancelCookies() {
 		String target = SUCCESS;
 		try {
-			session.put(BotFilter.CREATE_USER_ACCESS_COOKIE, null);
-			
 			HttpServletRequest request = (HttpServletRequest) this.getRequest();
 			
 			String ipAddress = request.getHeader("X-Forwarded-For");
@@ -148,8 +148,7 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 				ipAddress = this.getRequest().getRemoteAddr();
 			}
 	
-			Map<String, Object> application = ActionContext.getContext().getApplication();
-			Map<String, Date> blacklist = BotFilter.getBlackList(request);
+			Map<String, Date> blacklist = BotFilter.getBlackList();
 
 			// registra l'ip nella black list come utente non valido
 			if(blacklist != null) {
@@ -162,8 +161,7 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 
 				try {
 					// aggiungi l'ip alla blacklist degli ip da bloccare...
-					blacklist.put(ipAddress, new Date());					
-					application.put(BotFilter.HONEYPOT_BLACK_LIST, blacklist);
+					blacklist.put(ipAddress, new Date());
 					
 					// 403 !!!
 					response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -188,6 +186,38 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 	}
 
 	/**
+	 * abilita l'accesso all'utente con Captcha
+	 */
+	public String allowCaptcha() {
+		String target = SUCCESS;
+		try {
+			HttpServletRequest req = (HttpServletRequest) this.getRequest();
+			HttpServletResponse resp = (HttpServletResponse)this.response;
+			
+			String url = req.getHeader("referer");
+			
+			boolean success = CaptchaUtils.validate(req);
+			if(success) {
+				// genera il cookie con un nuovo captcha token
+				Cookie cookie = BotFilter.generateUserAccessCookie(req);
+				target = allowCookies(); 
+				if(SUCCESS.equals(target)) {
+					this.urlRedirect = url;
+					if(cookie != null)
+						resp.addCookie(cookie);
+				}
+			} else {
+				target = cancelCookies();
+			}
+			
+		} catch (Throwable t) {
+			ApsSystemUtils.getLogger().error("allowCaptcha", t);
+			target = INPUT;
+		}
+		return target;
+	}
+	
+	/**
 	 * Genera la url per il redirezionamento ad una specifica pagina.
 	 * @param page codice pagina
 	 * @return url per la redirect alla pagina
@@ -203,6 +233,5 @@ public class AllowCookiesAction extends BaseAction implements SessionAware, Serv
 		PageURL url = this.urlManager.createURL(reqCtx);
 		return url.getURL();
 	}
-
 
 }

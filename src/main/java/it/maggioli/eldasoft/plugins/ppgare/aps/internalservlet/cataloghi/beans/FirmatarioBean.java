@@ -28,6 +28,8 @@ public class FirmatarioBean implements Serializable {
 	private Integer index;
 	@Validate(EParamValidation.GENERIC)
 	private String lista;
+	@Validate(EParamValidation.GENERIC)
+	private String codiceFiscale;
 
 	public String getNominativo() {
 		return nominativo;
@@ -51,6 +53,14 @@ public class FirmatarioBean implements Serializable {
 
 	public void setLista(String lista) {
 		this.lista = lista;
+	}
+	
+	public String getCodiceFiscale() {
+		return codiceFiscale;
+	}
+
+	public void setCodiceFiscale(String codiceFiscale) {
+		this.codiceFiscale = codiceFiscale;
 	}
 
 	/**

@@ -17,13 +17,19 @@
 */
 package com.agiletec.plugins.jacms.aps.system.services.content.parse.extraAttribute;
 
+import java.io.IOException;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import com.agiletec.aps.system.common.entity.parse.attribute.TextAttributeHandler;
+import com.agiletec.plugins.jacms.aps.system.JacmsSystemConstants;
 import com.agiletec.plugins.jacms.aps.system.services.content.model.extraAttribute.ResourceAttributeInterface;
 import com.agiletec.plugins.jacms.aps.system.services.resource.IResourceManager;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 
 /**
  * Classe handler per l'interpretazione della porzione di xml 
@@ -31,6 +37,18 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
  * @author E.Santoboni
  */
 public class ResourceAttributeHandler extends TextAttributeHandler {
+	
+	/**
+	 * In ambiente cluster (Redis) le istanze dei manager non possono essere serializzate/deserializzate 
+	 */
+	private void readObject(java.io.ObjectInputStream stream) throws ClassNotFoundException, IOException {
+		stream.defaultReadObject();
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			this._resourceManager = (IResourceManager) ctx.getBean(JacmsSystemConstants.RESOURCE_MANAGER);
+		} catch (Exception e) {
+		}
+	}
 	
 	@Override
 	public Object getAttributeHandlerPrototype() {
@@ -90,6 +108,6 @@ public class ResourceAttributeHandler extends TextAttributeHandler {
 		this._resourceManager = resourceManager;
 	}
 	
-	private IResourceManager _resourceManager;
+	private transient IResourceManager _resourceManager;
 	
 }

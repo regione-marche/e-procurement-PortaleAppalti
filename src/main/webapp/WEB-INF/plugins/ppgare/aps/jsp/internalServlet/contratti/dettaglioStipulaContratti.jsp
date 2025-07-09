@@ -110,7 +110,7 @@
 		                (sessionScope.fromPage eq 'openPageDettaglioComunicazioneInviata' ||
 		                 sessionScope.fromPage eq 'openPageDettaglioComunicazioneRicevuta')}">
 		
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromStipula=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}&amp;${tokenHrefParams}" >
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Comunicazioni/${sessionScope.fromPage}.action"/>&amp;fromStipula=1&amp;idComunicazione=${idComunicazione}&amp;idDestinatario=${idDestinatario}" >
 				<c:choose>
 					<c:when test="${sessionScope.fromPage eq 'openPageDettaglioComunicazioneInviata'}">
 						<wp:i18n key="LINK_BACK_TO_COMMUNICATIONS_SENT" />
@@ -122,7 +122,7 @@
 			</a>
 		</c:when>
 		<c:otherwise>
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Contratti/searchStipulaContratti.action" />&amp;last=1&amp;${tokenHrefParams}">
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Contratti/searchStipulaContratti.action" />&amp;last=1">
 				<wp:i18n key="LINK_BACK_TO_LIST" />
 			</a>
 		</c:otherwise>

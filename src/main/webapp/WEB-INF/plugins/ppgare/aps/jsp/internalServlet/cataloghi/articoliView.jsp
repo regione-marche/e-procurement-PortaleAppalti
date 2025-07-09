@@ -135,7 +135,7 @@
 						<s:iterator var="riga" value="listaArticoli">
 							<tr>
 								<td class="detail-link-content">
-									<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewArticolo.action" />&amp;codiceCatalogo=${codiceCatalogo}&amp;ext=${param.ext}&amp;articoloId=${id}&amp;${tokenHrefParams}">
+									<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewArticolo.action" />&amp;codiceCatalogo=${codiceCatalogo}&amp;ext=${param.ext}&amp;articoloId=${id}">
 										<s:property value="codice"/>
 									</a>
 								</td>
@@ -147,18 +147,20 @@
 					</tbody>
 				</table>
 			</div>
+			
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/pagination.jsp"></jsp:include>
+			
 			<s:if test="%{#session.currentUser.username != 'guest' && impresaAbilitataAlCatalogo}">
 				<p>
 					<wp:i18n key="TITLE_SCARICA_ARTICOLI" var="titleScaricaArticoli"/>
 					<c:choose>
 						<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-							<s:a href="%{#urlDownloadExcel}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaArticoli}" cssClass="important">
+							<s:a href="%{#urlDownloadExcel}" title="%{#attr.titleScaricaArticoli}" cssClass="important">
 								<wp:i18n key="LINK_SCARICA_ARTICOLI" />
 							</s:a>
 						</c:when>
 						<c:otherwise>
-							<s:a href="%{#urlDownloadExcel}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaArticoli}" cssClass="bkg xls">
+							<s:a href="%{#urlDownloadExcel}" title="%{#attr.titleScaricaArticoli}" cssClass="bkg xls">
 								<wp:i18n key="LINK_SCARICA_ARTICOLI" />
 							</s:a>
 						</c:otherwise>
@@ -167,6 +169,8 @@
 			</s:if>
 		</s:if>
 		<s:else>
+			<%-- Accessibility Fix Criterion 3.2.2: insert an invisible "submit" button as workaraound --%>
+			<input disabled="disabled" type="submit" style="display:none;"/>
 			<div class="list-summary">
 				<wp:i18n key="SEARCH_NOTHING_FOUND" />.
 			</div>
@@ -175,12 +179,12 @@
 		
 	<div class="back-link">
 		<s:if test='%{#session.formSearchArticoli.codiceCategoria != null && !#session.formSearchArticoli.codiceCategoria.equals("")}'>
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewCategorieIscrizione.action" />&amp;codice=${codiceCatalogo}&amp;mercatoElettronico=true&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewCategorieIscrizione.action" />&amp;codice=${codiceCatalogo}&amp;mercatoElettronico=true&amp;ext=${param.ext}">
 				<wp:i18n key="LINK_BACK_TO_CATEGORIE" />
 			</a>
 		</s:if>
 		<s:else>
-			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=${codiceCatalogo}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+			<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />&amp;codice=${codiceCatalogo}&amp;ext=${param.ext}">
 				<wp:i18n key="LINK_BACK_TO_ISCRIZIONE" />
 			</a>
 		</s:else>

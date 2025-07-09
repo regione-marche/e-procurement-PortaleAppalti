@@ -17,6 +17,8 @@
 */
 package com.agiletec.plugins.jacms.aps.system.services.resource.model.util;
 
+import java.io.Serializable;
+
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceDataBean;
 import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInterface;
@@ -25,7 +27,7 @@ import com.agiletec.plugins.jacms.aps.system.services.resource.model.ResourceInt
  * Interfaccia base per le classi Helper per la gestione delle istanze delle risorse.
  * @author E.Santoboni
  */
-public interface IResourceInstanceHelper {
+public interface IResourceInstanceHelper extends Serializable {
 	
 	/**
      * Salva un file (ralativo ad un'istanza).

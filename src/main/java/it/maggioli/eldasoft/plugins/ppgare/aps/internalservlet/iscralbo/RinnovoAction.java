@@ -7,9 +7,7 @@ import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.apsadmin.system.BaseAction;
 import com.agiletec.plugins.jpmail.aps.services.mail.IMailManager;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.IUserProfile;
-import com.lowagie.text.DocumentException;
 import it.eldasoft.utils.utility.UtilityDate;
-import it.eldasoft.utils.utility.UtilityStringhe;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
@@ -18,12 +16,12 @@ import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoTypeVerso;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioBandoIscrizioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
 import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
-import it.eldasoft.www.sil.WSGareAppalto.TipoPartecipazioneType;
-import it.maggioli.eldasoft.digitaltimestamp.beans.DigitalTimeStampResult;
+import it.maggioli.eldasoft.digitaltimestamp.model.ITimeStampResult;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.report.JRPdfExporterEldasoft;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -38,6 +36,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.Marcatura
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.wsdm.IWSDMManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.IDatiPrincipaliImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageProtocollazioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -86,6 +86,10 @@ import java.util.Properties;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class RinnovoAction extends AbstractProcessPageAction implements SessionAware {
 	/**
 	 * UID
@@ -277,11 +281,16 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 	}
 	
 	/**
-	 * ...
+	 * invia il flusso di rinnovo ad elenco
 	 */
 	public String rinnovo() {
 		String target = INPUT;
 		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
+
 		WizardRinnovoHelper rinnovoHelper = (WizardRinnovoHelper) session
 			.get(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
 		
@@ -357,30 +366,22 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 					this.eventManager.insertEvent(event);
 				}
 
-				boolean isActiveFunctionPdfA = false;
-				InputStream iccFilePath = null;
+				// verifica la correttezza dei documenti...
+				if(continua && !SaveWizardIscrizioneAction.verificaDocumenti(rinnovoHelper, this)) {
+					//addActionError(getText("Errors.invio.nullSurvey"));
+					continua = false;
+					target = INPUT;
+				}
+
+				// completa l'invio della domanda di rinnovo
 				if(continua) {
-					isActiveFunctionPdfA = false;
-					try {
-						isActiveFunctionPdfA = this.customConfigManager.isActiveFunction("PDF", "PDF-A");
-					} catch (Exception e1) {
-						throw new ApsException(e1.getMessage(), e1);
-					}
-					iccFilePath = null;
-					if(isActiveFunctionPdfA) {
-						//iccFilePath = new FileInputStream(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH));
-						iccFilePath = new ByteArrayInputStream(FileUtils.readFileToByteArray(
-								new File(this.getRequest().getSession().getServletContext().getRealPath(PortGareSystemConstants.PDF_A_ICC_PATH))));
-					}
-					// completa l'invio della domanda di rinnovo
 					nuovaComunicazione = sendComunicazione(
-							this.tipoProtocollazione,	// completamento ed invio della comunicazione
-							rinnovoHelper,
-							this.session, 
-							this,
-							this.dataInvio, 
-							isActiveFunctionPdfA, 
-							iccFilePath);
+							this.tipoProtocollazione		// completamento ed invio della comunicazione
+							, rinnovoHelper
+							, this.session
+							, this
+							, this.dataInvio
+					);
 					
 					if(nuovaComunicazione != null) {
 						inviataComunicazione = true;
@@ -482,14 +483,13 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 							}
 
 							WSDMProtocolloDocumentoInType wsdmProtocolloDocumentoIn = creaInputProtocollazioneWSDM(
-									rinnovoHelper,
-									datiImpresaHelper, 
-									prefissoLabel,
-									fascicoloBackOffice, 
-									nuovaComunicazione, 
-									bando, 
-									isActiveFunctionPdfA, 
-									iccFilePath);
+									rinnovoHelper
+									, datiImpresaHelper 
+									, prefissoLabel
+									, fascicoloBackOffice 
+									, nuovaComunicazione 
+									, bando
+							);
 
 							ris = this.wsdmManager.inserisciProtocollo(loginAttr, wsdmProtocolloDocumentoIn);
 							this.annoProtocollo = ris.getAnnoProtocollo();
@@ -612,7 +612,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 					} catch (Throwable t) {
 						ApsSystemUtils.getLogger()
 							.error("Per errori durante la connessione al server di posta, non e' stato possibile inviare all'impresa {} la ricevuta della richiesta di iscrizione per {}.",
-								new Object[] { this.getCurrentUser().getUsername(), this.codice});
+									new Object[] { this.getCurrentUser().getUsername(), this.codice});
 						this.msgErrore = this.getText("Errors.sendMailError");
 						ApsSystemUtils.logThrowable(t, this, "send");
 						evento.setError(t);
@@ -639,45 +639,42 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			// concludi la protocollazione
 			this.appParamManager.setStazioneAppaltanteProtocollazione(null);
 		}
+		
+		unlockAccessoFunzione();
 			
 		return target;
 	}
 	
 	/**
 	 * salva/aggiorna un allegato relativo alla domanda di rinnovo 
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
 	 */
 	public static String saveDocumenti(
-			WizardRinnovoHelper helper,
-			Map<String, Object> session,
-			BaseAction action,
-			Date dataInvio, boolean isActiveFunctionPdfA, InputStream iccFilePath) 
-	{
+			WizardRinnovoHelper helper
+			, Map<String, Object> session
+			, BaseAction action
+			, Date dataInvio
+	) {
 		ComunicazioneType comunicazione = sendComunicazione(
-				null, 	// aggiornamento comunicazione per caricamento documenti 
-				helper, 
-				session, 
-				action,
-				dataInvio, isActiveFunctionPdfA, iccFilePath);
+				null 	// aggiornamento comunicazione per caricamento documenti 
+				, helper 
+				, session 
+				, action
+				, dataInvio
+		);
 		return (comunicazione != null ? SUCCESS : INPUT);
 	}
 	
 	/**
 	 * Inserimento/aggiornamento della comunicazione di rinnovo 
 	 * (aggiunta documento o completamento domanda di rinnovo) 
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
 	 */
 	private static ComunicazioneType sendComunicazione(
-			Integer tipoProtocollazione,
-			WizardRinnovoHelper helper,
-			Map<String, Object> session,
-			BaseAction action,
-			Date dataInvio, 
-			boolean isActiveFunctionPdfA, 
-			InputStream iccFilePath) 
-	{
+			Integer tipoProtocollazione
+			, WizardRinnovoHelper helper
+			, Map<String, Object> session
+			, BaseAction action
+			, Date dataInvio 
+	) {
 		String target = INPUT;
 		
 		boolean controlliOk = true;
@@ -692,17 +689,9 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 						 ServletActionContext.getRequest());
 
 			IComunicazioniManager comunicazioniManager = (IComunicazioniManager) ApsWebApplicationUtils
-				.getBean(PortGareSystemConstants.COMUNICAZIONI_MANAGER,
+				.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER,
 						 ServletActionContext.getRequest());
 
-//			INtpManager ntpManager = (INtpManager) ApsWebApplicationUtils
-//				.getBean(PortGareSystemConstants.NTP_MANAGER,
-//						 ServletActionContext.getRequest());
-//			
-//			IAppParamManager appParamManager = (IAppParamManager) ApsWebApplicationUtils
-//				.getBean(PortGareSystemConstants.APPPARAM_MANAGER,
-//						 ServletActionContext.getRequest());
-		
 			String username = action.getCurrentUser().getUsername();
 //			String codice = helper.getIdBando();
 			String tipoRinnovoDefaultLocale = helper.getTipologia() == PortGareSystemConstants.TIPOLOGIA_ELENCO_STANDARD
@@ -749,7 +738,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			}
 			
 			if (controlliOk) {
-				// verifica se � gi� stata inviata la comunicazione (stato DA PROCESSARE)  
+				// verifica se e' gia' stata inviata la comunicazione (stato DA PROCESSARE)  
 				DettaglioComunicazioneType dettComunicazioneRinnovoInviata = ComunicazioniUtilities
 					.retrieveComunicazione(
 						comunicazioniManager,
@@ -782,23 +771,22 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 				//  - aggiunta/rimozione di un documento    (stato = BOZZA)
 				//  - conferma ed invio del rinnovo  		(stato = DA PROCESSARE o DA PROTOCOLLARE)
 				nuovaComunicazione = sendComunicazioneRinnovo(
-						helper, 
-						username, 
-						ragioneSociale, 
-						tipoRinnovoDefaultLocale,
-						statoInvioRinnovo,
-						comunicazioniManager,
-						eventManager,
-						action, 
-						isActiveFunctionPdfA, 
-						iccFilePath);
+						helper
+						, username
+						, ragioneSociale
+						, tipoRinnovoDefaultLocale
+						, statoInvioRinnovo
+						, comunicazioniManager
+						, eventManager
+						, action
+				);
 				target = SUCCESS;
 				
 				// ogni volta che si invia questa comunicazione viene fatto
 				// per allegare/rimuovere un documento oppure per completare ed 
 				// inviare la domanda di rinnovo...
 				// nel caso di allega/rimuovi un documento significa che la 
-				// comunicazione � ancora in stato BOZZA e quindi si memorizza
+				// comunicazione e' ancora in stato BOZZA e quindi si memorizza
 				// l'idComunicazione nello helper... 
 				if(!completaInvio && nuovaComunicazione != null) {
 					helper.setIdComunicazioneBozza(nuovaComunicazione.getDettaglioComunicazione().getId());
@@ -835,24 +823,20 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 	}
 	
 	/**
-	 * invio della comunicazione di rinnovo FS3 
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
+	 * invio della comunicazione di rinnovo FS3
+	 * 
 	 * @throws Throwable 
 	 */
 	private static ComunicazioneType sendComunicazioneRinnovo(
-			WizardRinnovoHelper rinnovoHelper,
-			String username, 
-			String ragioneSociale, 
-			String tipoRinnovo, 
-			String stato,
-			IComunicazioniManager comunicazioniManager,
-			IEventManager eventManager,
-			BaseAction action, 
-			boolean isActiveFunctionPdfA, 
-			InputStream iccFilePath) 
-		throws Throwable 
-	{
+			WizardRinnovoHelper rinnovoHelper
+			, String username
+			, String ragioneSociale 
+			, String tipoRinnovo 
+			, String stato
+			, IComunicazioniManager comunicazioniManager
+			, IEventManager eventManager
+			, BaseAction action
+	) throws Throwable {
 		Event evento = new Event();
 		ComunicazioneType comunicazione = null;
 		evento.setUsername(username);
@@ -915,59 +899,59 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 				if(CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROCESSARE.equals(stato)
 				   || CommonSystemConstants.STATO_COMUNICAZIONE_DA_PROTOCOLLARE.equals(stato))
 				{
-						byte[] pdfRiepilogo = trasformaStringaInPdf(getPdfRiepilogo(rinnovoHelper.getDocumenti()), isActiveFunctionPdfA, iccFilePath);
-						
-						ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
+					byte[] pdfRiepilogo = getPdfRiepilogo(rinnovoHelper.getDocumenti(), action);
+					
+					ICustomConfigManager customConfigManager = (ICustomConfigManager) ApsWebApplicationUtils
 							.getBean(CommonSystemConstants.CUSTOM_CONFIG_MANAGER,
 									 ServletActionContext.getRequest());
-						
-						IAppParamManager appParamManager = (IAppParamManager) ApsWebApplicationUtils
+					
+					IAppParamManager appParamManager = (IAppParamManager) ApsWebApplicationUtils
 							.getBean(CommonSystemConstants.APP_PARAM_MANAGER,
 									 ServletActionContext.getRequest());
-						
-						AllegatoComunicazioneType[] allegati = comunicazione.getAllegato();
-						if(customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")){
-							try{
-								DigitalTimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogo, appParamManager);
-								if(resultMarcatura.getResult() == false){
-									ApsSystemUtils.getLogger().error(
-											"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage(),
-											new Object[] { action.getCurrentUser().getUsername(), "marcaturaTemporale" });
-									throw new ApsException("Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage());
-								} else {
-									pdfRiepilogo = resultMarcatura.getFile();
-								}
-								AllegatoComunicazioneType pdfMarcatoTemporale = new AllegatoComunicazioneType();
-								pdfMarcatoTemporale.setFile(pdfRiepilogo);
-								pdfMarcatoTemporale.setNomeFile(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE);
-								pdfMarcatoTemporale.setTipo("tsd");
-								pdfMarcatoTemporale.setDescrizione("File di riepilogo allegati con marcatura temporale");
-								// Aggiungo il file agli allegati della comunicazionw
-								AllegatoComunicazioneType[] newAllegati = new AllegatoComunicazioneType[allegati.length+1];
-								for (int i = 0; i < allegati.length; i++) {
-									newAllegati[i] = allegati[i];
-								}
-								newAllegati[allegati.length] = pdfMarcatoTemporale;
-								comunicazione.setAllegato(newAllegati);
-							}catch(Exception e){
-								ApsSystemUtils.logThrowable(e, action, "marcaturaTemporale");
-								action.addActionError(action.getText("Errors.marcatureTemporale.generic")); 
-								throw e;
+					
+					AllegatoComunicazioneType[] allegati = comunicazione.getAllegato();
+					if(customConfigManager.isActiveFunction("INVIOFLUSSI", "MARCATEMPORALE")){
+						try{
+							ITimeStampResult resultMarcatura = MarcaturaTemporaleFileUtils.eseguiMarcaturaTemporale(pdfRiepilogo, appParamManager);
+							if(resultMarcatura.getResult() == false){
+								ApsSystemUtils.getLogger().error(
+										"Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage(),
+										new Object[] { action.getCurrentUser().getUsername(), "marcaturaTemporale" });
+								throw new ApsException("Errore in fase di marcatura temporale. ErrorCode = " + resultMarcatura.getErrorCode() + " ErrorMessage="+ resultMarcatura.getErrorMessage());
+							} else {
+								pdfRiepilogo = resultMarcatura.getFile();
 							}
-						} else {
-							AllegatoComunicazioneType pdfRiepilogoNonMarcato = new AllegatoComunicazioneType();
-							pdfRiepilogoNonMarcato.setFile(pdfRiepilogo);
-							pdfRiepilogoNonMarcato.setNomeFile(PortGareSystemConstants.FILENAME_RIEPILOGO);
-							pdfRiepilogoNonMarcato.setTipo("pdf");
-							pdfRiepilogoNonMarcato.setDescrizione("File di riepilogo allegati");
+							AllegatoComunicazioneType pdfMarcatoTemporale = new AllegatoComunicazioneType();
+							pdfMarcatoTemporale.setFile(pdfRiepilogo);
+							pdfMarcatoTemporale.setNomeFile(PortGareSystemConstants.FILENAME_RIEPILOGO_MARCATURA_TEMPORALE);
+							pdfMarcatoTemporale.setTipo("tsd");
+							pdfMarcatoTemporale.setDescrizione("File di riepilogo allegati con marcatura temporale");
 							// Aggiungo il file agli allegati della comunicazionw
 							AllegatoComunicazioneType[] newAllegati = new AllegatoComunicazioneType[allegati.length+1];
 							for (int i = 0; i < allegati.length; i++) {
 								newAllegati[i] = allegati[i];
 							}
-							newAllegati[allegati.length] = pdfRiepilogoNonMarcato;
+							newAllegati[allegati.length] = pdfMarcatoTemporale;
 							comunicazione.setAllegato(newAllegati);
-						}	
+						}catch(Exception e){
+							ApsSystemUtils.logThrowable(e, action, "marcaturaTemporale");
+							action.addActionError(action.getText("Errors.marcatureTemporale.generic")); 
+							throw e;
+						}
+					} else {
+						AllegatoComunicazioneType pdfRiepilogoNonMarcato = new AllegatoComunicazioneType();
+						pdfRiepilogoNonMarcato.setFile(pdfRiepilogo);
+						pdfRiepilogoNonMarcato.setNomeFile(PortGareSystemConstants.FILENAME_RIEPILOGO);
+						pdfRiepilogoNonMarcato.setTipo("pdf");
+						pdfRiepilogoNonMarcato.setDescrizione("File di riepilogo allegati");
+						// Aggiungo il file agli allegati della comunicazionw
+						AllegatoComunicazioneType[] newAllegati = new AllegatoComunicazioneType[allegati.length+1];
+						for (int i = 0; i < allegati.length; i++) {
+							newAllegati[i] = allegati[i];
+						}
+						newAllegati[allegati.length] = pdfRiepilogoNonMarcato;
+						comunicazione.setAllegato(newAllegati);
+					}	
 				}
 				// FASE 4: invio comunicazione
 				Long idCom = comunicazioniManager.sendComunicazione(comunicazione);
@@ -1006,7 +990,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			ComunicazioneType comunicazione, 
 			WizardRinnovoHelper helper,
 			String nomeFile, 
-			String descrizioneFile) throws IOException 
+			String descrizioneFile) throws Exception 
 	{	
 		HashMap<String, String> suggestedPrefixes = new HashMap<String, String>();
 		suggestedPrefixes.put("http://www.eldasoft.it/sil/portgare/datatypes", "");
@@ -1225,22 +1209,8 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		throws ApsException 
 	{
 		boolean controlliOk = true;
-		
-		IBandiManager bandiManager = (IBandiManager) ApsWebApplicationUtils
-			.getBean(PortGareSystemConstants.BANDI_MANAGER,
-					 ServletActionContext.getRequest());
 
-		TipoPartecipazioneType tipoPartecipazione = bandiManager
-			.getTipoPartecipazioneImpresa(
-					action.getCurrentUser().getUsername(), 
-					helper.getCodice(),
-					null);
-
-		List<DocumentazioneRichiestaType> documentiRichiesti = bandiManager
-			.getDocumentiRichiestiRinnovoIscrizione(
-					helper.getCodice(),
-					tipoImpresa, 
-					tipoPartecipazione.isRti());
+		List<DocumentazioneRichiestaType> documentiRichiesti = helper.getDocumentiRichiestiBO();
 
 		Long documentoId;
 		String documentoName;
@@ -1289,24 +1259,20 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 
 	/**
 	 * ...
-	 * @param isActiveFunctionPdfA 
-	 * @param iccFilePath 
-	 * @throws DocumentException 
 	 */
 	private WSDMProtocolloDocumentoInType creaInputProtocollazioneWSDM(
-			WizardRinnovoHelper rinnovoHelper,
-			WizardDatiImpresaHelper datiImpresaHelper, 
-			String prefissoLabel,
-			FascicoloProtocolloType fascicoloBackOffice,
-			ComunicazioneType comunicazione, 
-			DettaglioBandoIscrizioneType bando, boolean isActiveFunctionPdfA, InputStream iccFilePath) throws IOException, ApsException, DocumentException 
-	{
+			WizardRinnovoHelper rinnovoHelper
+			, WizardDatiImpresaHelper datiImpresaHelper 
+			, String prefissoLabel
+			, FascicoloProtocolloType fascicoloBackOffice
+			, ComunicazioneType comunicazione
+			, DettaglioBandoIscrizioneType bando 
+	) throws Exception {
 		// ATTENZIONE:
 		// L'UTILIZZO DEL CAST A INTEGER SUL METODO appParamManager.getConfigurationValue(...)
 		// E' DEPRECATO, IN QUANTO NON E' SEMPRE VERO CHE IN PPCOMMON_PROPERTIES ESISTA
 		// LA DEFINIZIONE DEL TIPO DI DATO DA RESTITUIRE (INT, BOOLEAN, STRING)
 		// TUTTI I NUOVI PARAMETRI ANDREBBERO CONSIDERATI SEMPRE COME STRINGHE
-		WizardDocumentiHelper documentiHelper = rinnovoHelper.getDocumenti();
 		
 		String codiceSistema = (String) this.appParamManager
 			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_CODICE_SISTEMA);
@@ -1365,7 +1331,11 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		wsdmProtocolloDocumentoIn.setTipoDocumento( (String)this.appParamManager
 					.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_ISCRIZIONE_TIPO_DOCUMENTO) );
 		wsdmProtocolloDocumentoIn.setChannelCode(channelCode);
-		
+
+		if(IWSDMManager.CODICE_SISTEMA_ARCHIFLOW.equals(codiceSistema)) {
+			wsdmProtocolloDocumentoIn.setGenericS12(rup);
+			wsdmProtocolloDocumentoIn.setGenericS42( (String)this.appParamManager.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_DIVISIONE) );
+		}
 		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
 			wsdmProtocolloDocumentoIn.setGenericS11(sottoTipo);
 			wsdmProtocolloDocumentoIn.setGenericS12(rup);
@@ -1447,6 +1417,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		IDatiPrincipaliImpresa impresa = datiImpresaHelper.getDatiPrincipaliImpresa();
 		WSDMProtocolloAnagraficaType[] mittenti = new WSDMProtocolloAnagraficaType[1];
 		mittenti[0] = new WSDMProtocolloAnagraficaType();
+		mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		// JPROTOCOL: "Cognomeointestazione" accetta al massimo 100 char 
 		if(IWSDMManager.CODICE_SISTEMA_JPROTOCOL.equals(codiceSistema)) {
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 100));
@@ -1454,14 +1425,6 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			mittenti[0].setCognomeointestazione(StringUtils.left(ragioneSociale, 200));
 		} else {
 			mittenti[0].setCognomeointestazione(ragioneSociale);
-		}
-		if(IWSDMManager.CODICE_SISTEMA_ENGINEERINGDOC.equals(codiceSistema)) {
-//			if("6".equals(impresa.getTipoImpresa())) {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.PERSONA);
-//		    } else {
-//		    	mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
-//		    }
-			mittenti[0].setTipoVoceRubrica(WSDMTipoVoceRubricaType.IMPRESA);
 		}
 		if (usaCodiceFiscaleMittente) {
 			mittenti[0].setCodiceFiscale(codiceFiscale);
@@ -1518,30 +1481,24 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 				: this.getI18nLabelFromDefaultLocale("LABEL_AL_MERCATO_ELETTRONICO")
 		);
 
-		// recupera gli allegati
-		List<DocumentazioneRichiestaType> listaDocRichiesti = this.bandiManager
-				.getDocumentiRichiestiRinnovoIscrizione(
-						rinnovoHelper.getIdBando(), 
-						rinnovoHelper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(), 
-						rinnovoHelper.isRti());
-		
-		
 		// prepara 1+N allegati...
 		// inserire prima gli allegati e poi l'allegato della comunicazione
 		// ...verifica in che posizione inserire "comunicazione.pdf" (in testa o in coda)
-		boolean inTesta = false;		// default, inserisci in coda
-		if(IWSDMManager.CODICE_SISTEMA_JDOC.equals(codiceSistema)) {
-			String v = (String) this.appParamManager
-				.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
-			if("1".equals(v)) {
-				inTesta = true;
-			}
-		}
+		String v = (String) this.appParamManager
+			.getConfigurationValue(AppParamManager.PROTOCOLLAZIONE_WSDM_POSIZIONE_ALLEGATO_COMUNICAZIONE);
+		boolean inTesta = (v != null && "1".equals(v));
 		
-		WSDMProtocolloAllegatoType[] allegati = createAttachments(rinnovoHelper, comunicazione, isActiveFunctionPdfA,
-				iccFilePath, documentiHelper, ragioneSociale, codiceFiscale, indirizzo, email, partitaIVA, tipoRinnovo,
-				listaDocRichiesti, inTesta);
-		
+		WSDMProtocolloAllegatoType[] allegati = createAttachments(
+				rinnovoHelper, 
+				comunicazione, 
+				ragioneSociale, 
+				codiceFiscale, 
+				indirizzo, 
+				email, 
+				partitaIVA, 
+				tipoRinnovo,
+				inTesta
+		);		
 		wsdmProtocolloDocumentoIn.setAllegati(allegati);
 		
 		// INTERVENTI ARCHIFLOW
@@ -1576,22 +1533,38 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		return wsdmProtocolloDocumentoIn;
 	}
 
-	private WSDMProtocolloAllegatoType[] createAttachments(WizardRinnovoHelper rinnovoHelper,
-			ComunicazioneType comunicazione, boolean isActiveFunctionPdfA, InputStream iccFilePath,
-			WizardDocumentiHelper documentiHelper, String ragioneSociale, String codiceFiscale, String indirizzo,
-			String email, String partitaIVA, String tipoRinnovo, List<DocumentazioneRichiestaType> listaDocRichiesti,
-			boolean inTesta) throws ApsException, DocumentException, IOException {
+	/**
+	 * prepara l'elenco degli allegati da inviare al protocollo  
+	 * @throws Exception 
+	 */
+	private WSDMProtocolloAllegatoType[] createAttachments(
+			WizardRinnovoHelper rinnovoHelper,
+			ComunicazioneType comunicazione, 
+			String ragioneSociale, 
+			String codiceFiscale, 
+			String indirizzo,
+			String email, 
+			String partitaIVA, 
+			String tipoRinnovo, 
+			boolean inTesta
+	) throws Exception 
+	{
+		// recupera gli allegati definiti in BO
+		List<DocumentazioneRichiestaType> listaDocRichiesti = rinnovoHelper.getDocumentiRichiestiBO();
+		WizardDocumentiHelper documenti = rinnovoHelper.getDocumenti(); 
+		
 		WSDMProtocolloAllegatoType[] allegati = new WSDMProtocolloAllegatoType[
-		    	documentiHelper.getRequiredDocs().size() + documentiHelper.getAdditionalDocs().size() + 2
-			];
+	    	documenti.getRequiredDocs().size() + documenti.getAdditionalDocs().size() + 2
+		];
 		
 		int n = 0;
 		if(inTesta) {
 			n++;
 		}
 		
-		// allega gli eventuali documenti richiesti...
-		for(Attachment attachment : documentiHelper.getRequiredDocs()) {
+		// crea l'elenco degli allegati da inviare al protocollo...
+		// per gli allegati richiesti recupera il "titolo" dalla descrizione del documento definito in BO
+		for(Attachment attachment : documenti.getRequiredDocs()) {
 			boolean titoloFound = false;
 			allegati[n] = new WSDMProtocolloAllegatoType();
 			allegati[n].setNome(attachment.getFileName());
@@ -1604,8 +1577,8 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 					titoloFound = true;
 				}
 			}
-			//byte[] bf = FileUtils.readFileToByteArray(documentiHelper.getDocRichiesti().get(j));
-			allegati[n].setContenuto(documentiHelper.getContenutoDocRichiesto(attachment));
+			
+			allegati[n].setContenuto(documenti.getContenutoDocRichiesto(attachment));
 			// serve per Titulus
 			allegati[n].setIdAllegato("W_INVCOM/"
 					+ CommonSystemConstants.ID_APPLICATIVO + "/"
@@ -1614,13 +1587,12 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		}
 		
 		// allega gli eventuali documenti ulteriori...
-		for(Attachment attachment : documentiHelper.getAdditionalDocs()) {
+		for(Attachment attachment : documenti.getAdditionalDocs()) {
 			allegati[n] = new WSDMProtocolloAllegatoType();
 			allegati[n].setNome(attachment.getFileName());
 			allegati[n].setTipo(StringUtils.substringAfterLast(attachment.getFileName(), "."));
 			allegati[n].setTitolo(attachment.getDesc());
-			//byte[] bf = FileUtils.readFileToByteArray(documentiHelper.getDocUlteriori().get(j));
-			allegati[n].setContenuto(documentiHelper.getContenutoDocUlteriore(attachment));
+			allegati[n].setContenuto(documenti.getContenutoDocUlteriore(attachment));
 			// serve per Titulus
 			allegati[n].setIdAllegato("W_INVCOM/"
 					+ CommonSystemConstants.ID_APPLICATIVO + "/"
@@ -1669,20 +1641,22 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			}
 			n++;
 		}
-		
+				
 		// allegato del file comunicazione.pdf...
-		int n2 = n;
-		if(inTesta) {
-			n2 = 0;
+		String titolo = MessageFormat.format(
+				this.getI18nLabelFromDefaultLocale("NOTIFICA_RINNOVO_OGGETTO"),
+				new Object[] { tipoRinnovo, this.codice }
+		);
+		
+		// customizzazione PDF|PDF-A 
+		boolean isActiveFunctionPdfA = false;
+		try {
+			isActiveFunctionPdfA = this.customConfigManager.isActiveFunction("PDF", "PDF-A");
+		} catch (Exception e) {
+			throw new ApsException(e.getMessage(), e);
 		}
 		
-		allegati[n2] = new WSDMProtocolloAllegatoType();
-		allegati[n2].setNome("comunicazione.pdf");
-		allegati[n2].setTipo("pdf");
-		allegati[n2].setTitolo(MessageFormat.format(
-				this.getI18nLabelFromDefaultLocale("NOTIFICA_RINNOVO_OGGETTO"),
-				new Object[] { tipoRinnovo, this.codice }));
-		String contenuto = MessageFormat
+		String comunicazioneTxt = MessageFormat
 				.format(this.getI18nLabelFromDefaultLocale("MAIL_RINNOVO_PROTOCOLLO_TESTOCONALLEGATI"),
 						new Object[] {
 								ragioneSociale,
@@ -1690,12 +1664,23 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 								partitaIVA,
 								email,
 								indirizzo,
-								UtilityDate.convertiData(this.getDataInvio(),
-										UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
+								UtilityDate.convertiData(this.getDataInvio(), UtilityDate.FORMATO_GG_MM_AAAA_HH_MI_SS),
 								rinnovoHelper.getDescBando(), tipoRinnovo });
-		byte[] contenutoPdf = trasformaStringaInPdf(contenuto, isActiveFunctionPdfA, iccFilePath);
-		allegati[n2].setContenuto(contenutoPdf);
+		byte[] comunicazionePdf = JRPdfExporterEldasoft.textToPdf(
+				comunicazioneTxt
+				, "Riepilogo comunicazione"
+				, this
+		);
 		
+		int n2 = n;
+		if(inTesta) {
+			n2 = 0;
+		}
+		allegati[n2] = new WSDMProtocolloAllegatoType();
+		allegati[n2].setNome("comunicazione.pdf");
+		allegati[n2].setTipo(isActiveFunctionPdfA ? "pdf/a" : "pdf");
+		allegati[n2].setTitolo(titolo);
+		allegati[n2].setContenuto(comunicazionePdf);
 		// serve per Titulus
 		allegati[n2].setIdAllegato("W_INVCOM/"
 				+ CommonSystemConstants.ID_APPLICATIVO + "/"
@@ -1715,7 +1700,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 			Long idComunicazione, 
 			String descBando,
 			WizardRinnovoHelper helper) 
-	{			
+	{
 		Event evento = new Event();
 		evento.setUsername(this.getCurrentUser().getUsername());
 		evento.setDestination(this.codice);
@@ -1724,7 +1709,7 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		evento.setMessage("Annullamento comunicazione con id " + idComunicazione);
 		evento.setIpAddress(this.getCurrentUser().getIpAddress());
 		evento.setSessionId(this.getRequest().getSession().getId());
-		try {				
+		try {
 			// verifica se la comunicazione inviata era in stato BOZZA
 			// prima dell'invio... 
 			if(helper.getIdComunicazioneBozza() != null && 
@@ -1747,30 +1732,22 @@ public class RinnovoAction extends AbstractProcessPageAction implements SessionA
 		}
 	}
 
-	private static String getPdfRiepilogo(WizardDocumentiHelper documenti) {
+	/**
+	 * crea lo stream del pdf di riepilogo 
+	 */
+	private static byte[] getPdfRiepilogo(WizardDocumentiHelper documenti, BaseAction action) throws Exception {
 		StringBuilder sb = new StringBuilder();
-
 		sb.append(Attachment.toPdfRiepilogo(documenti.getRequiredDocs()));
 		sb.append(Attachment.toPdfRiepilogo(documenti.getAdditionalDocs()));
+		String text = (sb.length() > 0 ? sb.toString() : "Nessun documento allegato");
 
-		return sb.length() > 0
-			   ? sb.toString()
-			   : "Nessun documento allegato";
+		byte[] pdfRiepilogo = JRPdfExporterEldasoft.textToPdf(
+				text
+				, "Riepilogo allegati"
+				, action
+		); 
+		
+		return pdfRiepilogo;
 	}
 
-	private static byte[] trasformaStringaInPdf(String contenuto, boolean isActiveFunctionPdfA, InputStream iccFilePath) throws DocumentException, IOException {
-		if(isActiveFunctionPdfA) {
-			try {
-				ApsSystemUtils.getLogger().info("Trasformazione contenuto in PDF-A");
-				iccFilePath.reset();	// e' un ByteArrayInputStream
-				return UtilityStringhe.string2PdfA(contenuto, iccFilePath);
-			} catch (com.itextpdf.text.DocumentException e) {
-				DocumentException de = new DocumentException("Impossibile creare il contenuto in PDF-A.");
-				de.initCause(e);
-				throw de;
-			}
-		} else {
-			return UtilityStringhe.string2Pdf(contenuto);
-		}
-	}
 }

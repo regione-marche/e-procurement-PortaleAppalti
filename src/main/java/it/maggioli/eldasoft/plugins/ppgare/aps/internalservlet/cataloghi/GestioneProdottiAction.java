@@ -25,6 +25,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.P
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.ProdottiSearchBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardArticoloHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.helpers.WizardProdottoHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -52,6 +54,7 @@ import java.util.Map;
  * @author Stefano.Sabbadin
  *
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.PRODOTTI })
 public class GestioneProdottiAction extends EncodedDataAction implements SessionAware, ModelDriven<ProdottiSearchBean> {
 	/**
 	 * UID
@@ -404,6 +407,12 @@ public class GestioneProdottiAction extends EncodedDataAction implements Session
 	 */
 	public String openGestioneProdotti() {
 		this.setTarget(SUCCESS);
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.PRODOTTI, this.catalogo) ) {
+			this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+			return this.getTarget();
+		}
 		
 		this.listaProdotti = new ArrayList<WizardProdottoHelper>();
 		if (null != this.getCurrentUser() 

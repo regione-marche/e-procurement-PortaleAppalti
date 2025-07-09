@@ -87,6 +87,8 @@ public final class ClassFieldValidator {
                             .setValidator(annotation.value())
                             .setInvocation(invocation)
                             .setParentName(parentFieldName)
+                            .setErrorMessage(annotation.error().messageError())
+                            .setErrorFieldLabel(annotation.error().fieldLabel())
                             .cleanFieldIfNotValid(true) //Ripulisco il campo se non valido
                         .build()
                     .validate();    //Metodo che mi permette di effettuare la validazione (e la pulizia) dei parametri
@@ -110,7 +112,7 @@ public final class ClassFieldValidator {
      * @param startClass
      * @return
      */
-    private static List<Field> getAllFieldsIncludingParent(Class<?> startClass) {
+    public static List<Field> getAllFieldsIncludingParent(Class<?> startClass) {
         List<Field> toReturn = new ArrayList<>(100);    //Confido non ci siano pi\u00F9 di 100 variabili globali
 
         Class<?> currentClass = startClass; //Classe di partenza

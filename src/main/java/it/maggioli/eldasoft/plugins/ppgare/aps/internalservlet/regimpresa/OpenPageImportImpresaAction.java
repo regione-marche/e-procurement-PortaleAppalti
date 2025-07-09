@@ -1,6 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 
@@ -12,6 +14,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Valida
  * @author
  * @since 2.3.0
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class OpenPageImportImpresaAction extends EncodedDataAction {
 	/**
      * UID
@@ -27,6 +30,12 @@ public class OpenPageImportImpresaAction extends EncodedDataAction {
      * Tipo di formato del file XML da importare: file XML di un modello DGUE.
      */
 	public static final String XML_IMPORT_DGUE		= "DGUE";
+	
+	/**
+     * importazione da servizio Michelangelo (SACE)
+     */
+	public static final String IMPORT_MICHELANGELO	= "MICHELANGELO";
+	
 	
     /** Memorizza il tipo di importazione selezionata. */
 	@Validate(EParamValidation.TIPO_IMPORT)
@@ -53,6 +62,14 @@ public class OpenPageImportImpresaAction extends EncodedDataAction {
      */
     public String openPageFromDGUE() {
     	this.tipoImport = XML_IMPORT_DGUE;
+    	return SUCCESS;    	
+    }
+    
+    /**
+     * Apre la pagina per la richiesta dati al servizio Michelangelo (SACE)
+     */
+    public String openPageFromMichelangelo() {
+    	this.tipoImport = IMPORT_MICHELANGELO;
     	return SUCCESS;    	
     }
     

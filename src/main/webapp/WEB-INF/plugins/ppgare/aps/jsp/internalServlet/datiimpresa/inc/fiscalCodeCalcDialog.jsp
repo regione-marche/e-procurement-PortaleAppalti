@@ -1,8 +1,7 @@
 <%@ taglib prefix="wp" uri="aps-core.tld" %>
 <%@ taglib prefix="s"  uri="/struts-tags" %>
 
-<script src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 
 <style>
 

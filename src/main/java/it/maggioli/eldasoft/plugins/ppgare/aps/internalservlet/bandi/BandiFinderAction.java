@@ -1,25 +1,23 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.bandi;
 
-import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.services.user.UserDetails;
-import com.opensymphony.xwork2.ModelDriven;
+
 import it.eldasoft.www.sil.WSGareAppalto.GaraType;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.BaseSearchAction;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.CsvExport;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.cataloghi.SearchResult;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Date;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,25 +26,32 @@ import java.util.Map;
  * @version 1.0
  * @author Stefano.Sabbadin
  */
-public class BandiFinderAction extends EncodedDataAction implements
-	SessionAware, ModelDriven<BandiSearchBean> {
+public class BandiFinderAction extends BaseSearchAction<BandiSearchBean, GaraType> {
     /**
 	 * UID
 	 */
 	private static final long serialVersionUID = -3463997215453176670L;
 		
-	private static final String FROM_PAGE_OWNER					= "bandi"; 
+	private static final String STATO_IN_CORSO					= "1";
+	private static final String STATO_IN_AGGIUDICAZIONE			= "2";
+	private static final String STATO_CONCLUSE					= "3";
 	
+	private static final int GARE_PRIVATISTICHE_VENDITA			= 1;
+	private static final int GARE_PRIVATISTICHE_ACQUISTO		= 2;
+		
+			
+	//*****************************************************************************************************************
 	// inizializzazione delle costanti per le liste e ricerche...
 	// NB: il valore delle costanti corrisponde alla action!!!
-	private static final String LIST_ALL_IN_CORSO 				= "listAllInCorso";
-	private static final String LIST_ALL_RICHIESTE_OFFERTA 		= "listAllRichiesteOfferta";
-	private static final String LIST_ALL_RICHIESTE_DOCUMENTI	= "listAllRichiesteDocumenti";
-	private static final String LIST_ALL_ASTE_IN_CORSO 			= "listAllAsteInCorso";
-	private static final String LIST_ALL_SCADUTI 				= "listAllScaduti";
-	private static final String SEARCH 							= "search";
-	private static final String SEARCH_PROCEDURE 				= "searchProcedure";
-	private static final String SEARCH_BANDI_CON_ESITO		    = "searchBandiConEsito";
+	public static final String LIST_ALL_BANDI					= "listAllBandi";
+	public static final String LIST_ALL_IN_CORSO 				= "listAllInCorso";
+	public static final String LIST_ALL_RICHIESTE_OFFERTA 		= "listAllRichiesteOfferta";
+	public static final String LIST_ALL_RICHIESTE_DOCUMENTI		= "listAllRichiesteDocumenti";
+	public static final String LIST_ALL_ASTE_IN_CORSO 			= "listAllAsteInCorso";
+	public static final String LIST_ALL_SCADUTI 				= "listAllScaduti";
+	public static final String SEARCH 							= "search";
+	public static final String SEARCH_PROCEDURE 				= "searchProcedure";
+	public static final String SEARCH_BANDI_CON_ESITO		    = "searchBandiConEsito";
 	// FNM gare privatistiche acquisto/vendita
 	private static final String LIST_ALL_ACQ_SCADUTI			= "listAllAcqRegimePrivScaduti";
 	private static final String LIST_ALL_ACQ_RICHIESTE_OFFERTA	= "listAllRichiesteOffertaAcqRegimePriv";
@@ -57,103 +62,249 @@ public class BandiFinderAction extends EncodedDataAction implements
 	private static final String SEARCH_PROCEDURE_VEND 			= "searchProcedureVendRegimePriv";
 	private static final String LIST_ALL_VEND_IN_CORSO 			= "listAllVendRegimePrivInCorso";
 		
-	private static final Map<String, String> SESSIONID_MAP;
-	static {
-		// crea l'associazione lista/ricerca con il proprio session id...
-		SESSIONID_MAP = new HashMap<String, String>();
-		SESSIONID_MAP.put(LIST_ALL_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_IN_CORSO_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_RICHIESTE_OFFERTA_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_RICHIESTE_DOCUMENTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_RICHIESTE_DOCUMENTI_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_ASTE_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_ASTE_IN_CORSO_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_SCADUTI_BANDI);
-		SESSIONID_MAP.put(SEARCH, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI);
-		SESSIONID_MAP.put(SEARCH_PROCEDURE, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_PROC_AGG);
-		SESSIONID_MAP.put(SEARCH_BANDI_CON_ESITO, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_CON_ESITO);		
-		SESSIONID_MAP.put(LIST_ALL_ACQ_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_SCADUTI_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_ACQ_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_RICHIESTE_OFFERTA_BANDI);
-		SESSIONID_MAP.put(SEARCH_PROCEDURE_ACQ, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_ACQ);
-		SESSIONID_MAP.put(LIST_ALL_ACQ_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_IN_CORSO_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_VEND_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_SCADUTI_BANDI);
-		SESSIONID_MAP.put(LIST_ALL_VEND_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_RICHIESTE_OFFERTA_BANDI);
-		SESSIONID_MAP.put(SEARCH_PROCEDURE_VEND, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_VEND);
-		SESSIONID_MAP.put(LIST_ALL_VEND_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_IN_CORSO_BANDI);
-    }
-		
+	// crea l'associazione lista/ricerca con il proprio session id...
+	private static final Map<String, String> SESSIONID_MAP = new HashMap<String, String>() {{
+	    put(LIST_ALL_BANDI, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI);
+		put(LIST_ALL_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_IN_CORSO_BANDI);
+		put(LIST_ALL_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_RICHIESTE_OFFERTA_BANDI);
+		put(LIST_ALL_RICHIESTE_DOCUMENTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_RICHIESTE_DOCUMENTI_BANDI);
+		put(LIST_ALL_ASTE_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_ASTE_IN_CORSO_BANDI);
+		put(LIST_ALL_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_SCADUTI_BANDI);
+		put(SEARCH, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI);
+		put(SEARCH_PROCEDURE, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_PROC_AGG);
+		put(SEARCH_BANDI_CON_ESITO, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_CON_ESITO);
+		// FNM gare privatistiche acquisto/vendita
+		put(LIST_ALL_ACQ_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_SCADUTI_BANDI);
+		put(LIST_ALL_ACQ_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_RICHIESTE_OFFERTA_BANDI);
+		put(SEARCH_PROCEDURE_ACQ, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_ACQ);
+		put(LIST_ALL_ACQ_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_ACQ_IN_CORSO_BANDI);
+		put(LIST_ALL_VEND_SCADUTI, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_SCADUTI_BANDI);
+		put(LIST_ALL_VEND_RICHIESTE_OFFERTA, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_RICHIESTE_OFFERTA_BANDI);
+		put(SEARCH_PROCEDURE_VEND, PortGareSystemConstants.SESSION_ID_SEARCH_BANDI_VEND);
+		put(LIST_ALL_VEND_IN_CORSO, PortGareSystemConstants.SESSION_ID_LIST_ALL_VEND_IN_CORSO_BANDI);
+	}};
+	//*****************************************************************************************************************
+
 	
 	private IBandiManager bandiManager;
-
-	private Map<String, Object> session;
-
-	@Validate
-    private BandiSearchBean model = new BandiSearchBean();
-
-	@Validate(EParamValidation.DIGIT)
-    private String last;
-
-    private SearchResult<GaraType> listaBandi = null;
-
-	@Validate(EParamValidation.DATE_DDMMYYYY)
-    private Date dataUltimoAggiornamento;
-	@Validate(EParamValidation.STAZIONE_APPALTANTE)
-    private String stazioneAppaltante;
-    
+	private IAppParamManager appParamManager;
+		
+	private String statoInApertura; 				// MEMBRO NON ESPOSTO: parametro "ricercaBandi.statoApertura"
+	private InputStream inputStream;
+		
 	public void setBandiManager(IBandiManager bandiManager) {
 		this.bandiManager = bandiManager;
 	}
 	
-	public void setSession(Map<String, Object> session) {
-		this.session = session;
-	}
-
-	@Override
-	public BandiSearchBean getModel() {
-		return this.model;
+	public void setAppParamManager(IAppParamManager appParamManager) {
+		this.appParamManager = appParamManager;
 	}
 	
-	public String getLast() {
-		return last;
-	}
-
-	public void setLast(String last) {
-		this.last = last;
+	public InputStream getInputStream() {
+		return inputStream;
 	}
 
 	public SearchResult<GaraType> getListaBandi() {
-		return listaBandi;
-	}
-
-	public Date getDataUltimoAggiornamento() {
-		return dataUltimoAggiornamento;
-	}
-	
-	public String getStazioneAppaltante() {
-		return stazioneAppaltante;
+		return list;
 	}
 
 	/**
-	 * calcola la MAX data di ultimo aggiormento nell'elenco bandi  
+	 * ...
 	 */
-	private Date getMaxDataUltimoAggiornamento(List<GaraType> lista) {
-		Date dta = null;
-		if(lista != null) {			
-			for(int i = 0; i < lista.size(); i++) {
-				if( dta == null ) {
-					dta = lista.get(i).getDataUltimoAggiornamento();
-				} 
-				if( lista.get(i).getDataUltimoAggiornamento() != null && 
-					lista.get(i).getDataUltimoAggiornamento().compareTo(dta) > 0 ) {
-					dta = lista.get(i).getDataUltimoAggiornamento();					
-				}				
+	@Override
+	protected BandiSearchBean newModel() {
+		return new BandiSearchBean();
+	}
+
+	/**
+	 * ...
+	 */
+	@Override
+	protected String getFromPageOwner() {
+		return FROM_PAGE_OWNER_BANDI;
+	}
+	
+	/**
+	 * ...
+	 */
+	@Override
+	protected String getModelSessionId() {
+		return SESSIONID_MAP.get(fromPage);
+	}
+
+	/**
+	 * ... 
+	 */
+	private boolean isRicercaProcedure(String fromPage) {
+		return fromPage.equalsIgnoreCase(LIST_ALL_BANDI)
+			   || fromPage.equalsIgnoreCase(LIST_ALL_IN_CORSO)
+			   || fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_OFFERTA)
+			   || fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_DOCUMENTI)
+			   || fromPage.equalsIgnoreCase(LIST_ALL_ASTE_IN_CORSO)
+			   || fromPage.equalsIgnoreCase(LIST_ALL_SCADUTI)
+			   || fromPage.equalsIgnoreCase(SEARCH)
+			   || fromPage.equalsIgnoreCase(SEARCH_PROCEDURE)
+			   || fromPage.equalsIgnoreCase(SEARCH_BANDI_CON_ESITO);
+	}
+
+	/**
+	 * ... 
+	 */
+	private boolean isRicercaProcedurePrivatisticheVendita(String fromPage) {
+		return fromPage.equalsIgnoreCase(LIST_ALL_VEND_SCADUTI) 
+				|| fromPage.equalsIgnoreCase(LIST_ALL_VEND_RICHIESTE_OFFERTA) 
+				|| fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_VEND) 
+				|| fromPage.equalsIgnoreCase(LIST_ALL_VEND_IN_CORSO);
+	}
+	
+	/**
+	 * ... 
+	 */
+	private boolean isRicercaProcedurePrivatisticheAcquisto(String fromPage) {
+		return fromPage.equalsIgnoreCase(LIST_ALL_ACQ_SCADUTI)
+			    || fromPage.equalsIgnoreCase(LIST_ALL_ACQ_RICHIESTE_OFFERTA)
+			    || fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_ACQ)
+			    || fromPage.equalsIgnoreCase(LIST_ALL_ACQ_IN_CORSO);
+	}
+
+	/**
+	 * ... 
+	 */
+	private boolean isRicercaProcedurePrivatistiche(String fromPage) {
+		return isRicercaProcedurePrivatisticheVendita(fromPage) || isRicercaProcedurePrivatisticheAcquisto(fromPage);
+	}
+
+	/**
+	 * recupeara la configurazione "ricercaBandi.statoApertura"
+	 * (Valori ammessi: 0=nessun filtro, 1=In corso [DEFAULT], 2=In aggiudicazione, 3=Conclusa)
+	 */
+	private String getParamStatoInApertura() {
+		String value = null;
+		Integer paramValue = (Integer) appParamManager.getConfigurationValue(AppParamManager.RICERCA_BANDI_STATO_APERTURA);
+		if(paramValue != null) 
+			value = 
+				0 == paramValue.intValue() ? null
+				: 1 == paramValue.intValue() ? STATO_IN_CORSO
+				: 2 == paramValue.intValue() ? STATO_IN_AGGIUDICAZIONE
+				: 3 == paramValue.intValue() ? STATO_CONCLUSE
+				: null;
+		return value;
+	}
+	
+	/**
+	 * Restituisce la lista di bandi in base ai filtr\ impostati
+	 */
+	@Override
+	protected SearchResult<GaraType> prepareResultList(BandiSearchBean model) throws ApsException {
+		// valida gli input...
+		//
+		list = null;
+		
+		statoInApertura = getParamStatoInApertura();
+		
+		// se e' la prima volta che viene aperta la pagina di ricerca imposta "stato" e "ordinamento"
+		if(model.isFirstSearch()) {
+			if(fromPage.equalsIgnoreCase(LIST_ALL_BANDI))
+				// apertura di default sui  bandi in corso
+				model.setStato(STATO_IN_CORSO);
+			else if(StringUtils.isNotEmpty(statoInApertura))
+				// apertura di default in base alla configurazione dello stato in apertura
+				model.setStato(statoInApertura);
+			setDefaultOrderCriteria(model.getStato());
+		}
+		
+		// se cambia lo il filtro "stato" reimposta l'ordinamento di default associato al tipo di lista
+		if(fromPage.equalsIgnoreCase(LIST_ALL_BANDI)) {
+			if(lastModel != null && model.getStato() != null && !model.getStato().equals(lastModel.getStato())) {
+				setDefaultOrderCriteria(model.getStato());
 			}
-		}		
-		return dta;		
+		}
+
+		// se e' stata impostata una stazione appaltante nei parametri del portale
+		// allora i dati vanno sempre filtrati per questa stazione appaltante...
+		stazioneAppaltante = getCodiceStazioneAppaltante();
+		if(stazioneAppaltante != null) {
+			model.setStazioneAppaltante(stazioneAppaltante);
+		}
+
+		// validazione delle date (se valorizzate)
+		boolean dateOk = model.checkDataPubblicazioneDa(this, fromPage)
+						 && model.checkDataPubblicazioneA(this, fromPage)
+						 && model.checkScadenzaDa(this, fromPage)
+						 && model.checkScadenzaA(this, fromPage);
+
+//		// filtro CUC
+//		if (StringUtils.isNotEmpty(this.model.getAltriSoggetti())) {
+//			this.model.setAltriSoggetti(null);
+//		}
+
+		// gare privatistiche 
+		if(isRicercaProcedurePrivatisticheVendita(fromPage))
+			model.setGaraPrivatistica(GARE_PRIVATISTICHE_VENDITA);
+		else if(isRicercaProcedurePrivatisticheAcquisto(fromPage))
+			model.setGaraPrivatistica(GARE_PRIVATISTICHE_ACQUISTO);
+
+		// esegui la ricerca ed estrai l'elenco dei bandi...
+		//
+		if (dateOk) {
+			model.setTokenRichiedente(getCurrentUser().getUsername());
+			// "stato" indica quali tipi di bandi cercare
+			if (fromPage.equalsIgnoreCase(LIST_ALL_BANDI))
+				list = bandiManager.searchBandi(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_IN_CORSO))
+				list = bandiManager.getElencoBandi(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_OFFERTA))
+				list = bandiManager.getElencoBandiPerRichiesteOfferta(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_DOCUMENTI))
+				list = bandiManager.getElencoBandiPerRichiesteCheckDocumentazione(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_ASTE_IN_CORSO))
+				list = bandiManager.getElencoBandiPerAsteInCorso(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_SCADUTI))
+				list = bandiManager.getElencoBandiScaduti(model);
+			else if (fromPage.equalsIgnoreCase(SEARCH))
+				list = bandiManager.searchBandi(model);
+			else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE))
+				list = bandiManager.searchBandiPerProcInAggiudicazione(model);
+			else if (fromPage.equalsIgnoreCase(SEARCH_BANDI_CON_ESITO))
+				list = bandiManager.searchBandiConEsito(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_SCADUTI))
+				list = bandiManager.getElencoBandiScadutiPrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_RICHIESTE_OFFERTA))
+				list = bandiManager.getElencoBandiPerRichiesteOffertaPrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_ACQ))
+				list = bandiManager.searchBandiPerProcInAggiudicazionePrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_IN_CORSO))
+				list = bandiManager.getElencoBandiPrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_SCADUTI))
+				list = bandiManager.getElencoBandiScadutiPrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_RICHIESTE_OFFERTA))
+				list = bandiManager.getElencoBandiPerRichiesteOffertaPrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_VEND))
+				list = bandiManager.searchBandiPerProcInAggiudicazionePrivatistiche(model);
+			else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_IN_CORSO))
+				list = bandiManager.getElencoBandiPrivatistiche(model);
+			//else if (fromPage.equalsIgnoreCase(LIST_ALL_...))
+			//	listaBandi = bandiManager.getElenco...(model);
+			
+			dataUltimoAggiornamento = getMaxDataUltimoAggiornamento(list.getDati(), GaraType::getDataUltimoAggiornamento);
+		}
+		
+		return list;
+	}
+
+	/**
+	 * Restituisce la lista di tutti i bandi in corso/scaduti
+	 */
+	public String listAllBandi() {
+		this.setTarget( getList(LIST_ALL_BANDI) );
+		return this.getTarget();
 	}
 
 	/**
 	 * Restituisce la lista di tutti i bandi in corso
 	 */
 	public String listAllInCorso() {
-		this.setTarget( this.getListaBandi(LIST_ALL_IN_CORSO) );
+		this.setTarget( getList(LIST_ALL_IN_CORSO) );
 		return this.getTarget();
 	}
 
@@ -163,9 +314,8 @@ public class BandiFinderAction extends EncodedDataAction implements
      */
     public String listAllRichiesteOfferta() {
 		UserDetails userDetails = this.getCurrentUser();
-		if (null != userDetails
-			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(LIST_ALL_RICHIESTE_OFFERTA) );
+		if (null != userDetails && !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			this.setTarget( getList(LIST_ALL_RICHIESTE_OFFERTA) );
 		} else {
 		    this.addActionError(this.getText("Errors.sessionExpired"));
 		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -179,9 +329,8 @@ public class BandiFinderAction extends EncodedDataAction implements
      */
     public String listAllRichiesteDocumenti() {
 		UserDetails userDetails = this.getCurrentUser();
-		if (null != userDetails
-			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(LIST_ALL_RICHIESTE_DOCUMENTI) );
+		if (null != userDetails && !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			this.setTarget( getList(LIST_ALL_RICHIESTE_DOCUMENTI) );
 		} else {
 		    this.addActionError(this.getText("Errors.sessionExpired"));
 		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -195,9 +344,8 @@ public class BandiFinderAction extends EncodedDataAction implements
      */
     public String listAllAsteInCorso() {
     	UserDetails userDetails = this.getCurrentUser();
-    	if (null != userDetails
-    		&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-    		this.setTarget( this.getListaBandi(LIST_ALL_ASTE_IN_CORSO) );
+    	if (null != userDetails && !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+    		this.setTarget( getList(LIST_ALL_ASTE_IN_CORSO) );
     	} else {
     		this.addActionError(this.getText("Errors.sessionExpired"));
     		this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -209,7 +357,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi scaduti.
 	 */
 	public String listAllScaduti() {
-		this.setTarget( this.getListaBandi(LIST_ALL_SCADUTI) );
+		this.setTarget( getList(LIST_ALL_SCADUTI) );
 		 // si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 		this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		return this.getTarget();
@@ -219,7 +367,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi in corso per gare privatistiche di acquisto
 	 */
 	public String listAllAcqRegimePrivInCorso() {
-		this.setTarget( this.getListaBandi(LIST_ALL_ACQ_IN_CORSO) );
+		this.setTarget( getList(LIST_ALL_ACQ_IN_CORSO) );
 		return this.getTarget();
 	}
 
@@ -229,9 +377,8 @@ public class BandiFinderAction extends EncodedDataAction implements
      */
     public String listAllRichiesteOffertaAcqRegimePriv() {
 		UserDetails userDetails = this.getCurrentUser();
-		if (null != userDetails
-			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(LIST_ALL_ACQ_RICHIESTE_OFFERTA) );
+		if (null != userDetails && !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			this.setTarget( getList(LIST_ALL_ACQ_RICHIESTE_OFFERTA) );
 		} else {
 		    this.addActionError(this.getText("Errors.sessionExpired"));
 		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -243,7 +390,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi scaduti per gare privatistiche di acquisto
 	 */
 	public String listAllAcqRegimePrivScaduti() {
-		this.setTarget( this.getListaBandi(LIST_ALL_ACQ_SCADUTI) );
+		this.setTarget( getList(LIST_ALL_ACQ_SCADUTI) );
 		 // si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 		this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		return this.getTarget();
@@ -253,7 +400,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi in corso per gare privatistiche di vendita
 	 */
 	public String listAllVendRegimePrivInCorso() {
-		this.setTarget( this.getListaBandi(LIST_ALL_VEND_IN_CORSO) );
+		this.setTarget( getList(LIST_ALL_VEND_IN_CORSO) );
 		return this.getTarget();
 	}
 
@@ -263,9 +410,8 @@ public class BandiFinderAction extends EncodedDataAction implements
      */
     public String listAllRichiesteOffertaVendRegimePriv() {
 		UserDetails userDetails = this.getCurrentUser();
-		if (null != userDetails
-			&& !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(LIST_ALL_VEND_RICHIESTE_OFFERTA) );
+		if (null != userDetails && !userDetails.getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
+			this.setTarget( getList(LIST_ALL_VEND_RICHIESTE_OFFERTA) );
 		} else {
 		    this.addActionError(this.getText("Errors.sessionExpired"));
 		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
@@ -277,15 +423,27 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi scaduti per gare privatistiche di vendita
 	 */
 	public String listAllVendRegimePrivScaduti() {
-		this.setTarget( this.getListaBandi(LIST_ALL_VEND_SCADUTI) );
+		this.setTarget( getList(LIST_ALL_VEND_SCADUTI) );
 		 // si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 		this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		return this.getTarget();
 	}
 
-    
 	/**
-	 * Verifica che tipologia di ricerca è impostata e quindi demanda l'apertura
+	 * predisponi il tipo di ordinamento della lista in base allo stato selezionato 
+	 */
+	private void setDefaultOrderCriteria(String stato) {
+		if(STATO_IN_CORSO.equals(model.getStato())) { 
+			model.setOrderCriteria(InterceptorEncodedData.ORDER_CRITERIA_DATA_SCADENZA_ASC);
+		} else if(STATO_IN_AGGIUDICAZIONE.equals(model.getStato())) { 
+			model.setOrderCriteria(InterceptorEncodedData.ORDER_CRITERIA_DATA_SCADENZA_DESC);
+		} else if(STATO_CONCLUSE.equals(model.getStato())) { 
+			model.setOrderCriteria(InterceptorEncodedData.ORDER_CRITERIA_DATA_PUBBLICAZIONE_ASC);
+		}
+	}
+
+	/**
+	 * Verifica che tipologia di ricerca ï¿½ impostata e quindi demanda l'apertura
 	 * della form corrispondente.
 	 */
 	public String init() {
@@ -313,11 +471,11 @@ public class BandiFinderAction extends EncodedDataAction implements
 	public String openSearch() {
 		this.setTarget(SUCCESS);
 		
-		// se è stata impostata una stazione appaltante nei parametri del portale
+		// se e' stata impostata una stazione appaltante nei parametri del portale
 		// allora i dati vanno sempre filtrati per questa stazione appaltante...
 		this.stazioneAppaltante = this.getCodiceStazioneAppaltante(); 
 		if(this.stazioneAppaltante != null) {
-			this.model.setStazioneAppaltante(this.stazioneAppaltante);
+			model.setStazioneAppaltante(this.stazioneAppaltante);
 		}
 
 		this.session.put(PortGareSystemConstants.SESSION_ID_TYPE_SEARCH_BANDI,
@@ -325,142 +483,12 @@ public class BandiFinderAction extends EncodedDataAction implements
 		
 		return this.getTarget();
 	}
-
-	/**
-	 * Restituisce la lista di bandi in base ai filtri impostati
-	 */
-	private String getListaBandi(String fromPage) {
-		this.setTarget(SUCCESS);
-
-		this.listaBandi = null;
-		
-		String sessionId = SESSIONID_MAP.get(fromPage);
-		boolean fromSearch = (fromPage.equalsIgnoreCase(SEARCH) ||
-				      		  fromPage.equalsIgnoreCase(SEARCH_PROCEDURE) ||
-				      		  fromPage.equalsIgnoreCase(SEARCH_BANDI_CON_ESITO));
-
-		BandiSearchBean finder = (sessionId != null 
-			? (BandiSearchBean) this.session.get(sessionId) : null);
-		
-		// se viene riaperta una ricerca salvata in precedenza, 
-		// si ricaricano i filtri con i valori della sessione...
-		if(finder != null && fromPage != null) {
-			String lastFrom = (String)this.session.get(PortGareSystemConstants.SESSION_ID_FROM_PAGE_OWNER) +
-			                  (String)this.session.get(PortGareSystemConstants.SESSION_ID_FROM_PAGE);
-			if(!(FROM_PAGE_OWNER + fromPage).equalsIgnoreCase(lastFrom)) {
-				this.model.restoreFrom(finder);
-			}
-		}
-
-		if ("1".equals(this.last) && finder != null) {
-			// se si richiede il rilancio dell'ultima estrazione effettuata,
-			// allora si prendono dalla sessione i filtri applicati e si
-			// caricano nel presente oggetto
-			this.model.restoreFrom(finder);
-		}
-		
-		// se è stata impostata una stazione appaltante nei parametri del portale
-		// allora i dati vanno sempre filtrati per questa stazione appaltante...
-		stazioneAppaltante = getCodiceStazioneAppaltante();
-		if(stazioneAppaltante != null) {
-			model.setStazioneAppaltante(stazioneAppaltante);
-		}
-
-		// validazione delle date (se valorizzate)
-		boolean dateOk = model.checkDataPubblicazioneDa(this, fromPage)
-							& model.checkDataPubblicazioneA(this, fromPage)
-							& model.checkScadenzaDa(this, fromPage)
-							& model.checkScadenzaA(this, fromPage);
-
-//		// filtro CUC
-//		if (StringUtils.isNotEmpty(this.model.getAltriSoggetti())) {
-//			this.model.setAltriSoggetti(null);
-//		}
-
-		// gare privatistiche: 1=vendita, 2=acquisto
-		Integer garaPrivatistica = null;
-		if(fromPage.equalsIgnoreCase(LIST_ALL_VEND_SCADUTI) ||
-		   fromPage.equalsIgnoreCase(LIST_ALL_VEND_RICHIESTE_OFFERTA) ||
-		   fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_VEND) ||
-		   fromPage.equalsIgnoreCase(LIST_ALL_VEND_IN_CORSO)) {
-			model.setGaraPrivatistica(1);
-		} else if(fromPage.equalsIgnoreCase(LIST_ALL_ACQ_SCADUTI) ||
-	       fromPage.equalsIgnoreCase(LIST_ALL_ACQ_RICHIESTE_OFFERTA) ||
-	       fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_ACQ) ||
-	       fromPage.equalsIgnoreCase(LIST_ALL_ACQ_IN_CORSO)) {
-			model.setGaraPrivatistica(2);
-		}
-		
-		if (SUCCESS.equals(this.getTarget()) && dateOk) {
-			// estrazione dell'elenco dei bandi...
-			model.setTokenRichiedente(getCurrentUser().getUsername());
-			try {
-
-				//Da java 12 gli switch possono ritornare i valori, quindi, non servirebbe fare l'assegnazione ogni volta
-				if (fromPage.equalsIgnoreCase(LIST_ALL_IN_CORSO))
-					listaBandi = bandiManager.getElencoBandi(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_OFFERTA))
-					listaBandi = bandiManager.getElencoBandiPerRichiesteOfferta(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_RICHIESTE_DOCUMENTI))
-					listaBandi = bandiManager.getElencoBandiPerRichiesteCheckDocumentazione(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_ASTE_IN_CORSO))
-	    			listaBandi = bandiManager.getElencoBandiPerAsteInCorso(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_SCADUTI))
-					listaBandi = bandiManager.getElencoBandiScaduti(model);
-				else if (fromPage.equalsIgnoreCase(SEARCH))
-					listaBandi = bandiManager.searchBandi(model);
-				else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE))
-					listaBandi = bandiManager.searchBandiPerProcInAggiudicazione(model);
-				else if (fromPage.equalsIgnoreCase(SEARCH_BANDI_CON_ESITO))
-					listaBandi = bandiManager.searchBandiConEsito(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_SCADUTI))
-					listaBandi = bandiManager.getElencoBandiScadutiPrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_RICHIESTE_OFFERTA))
-					listaBandi = bandiManager.getElencoBandiPerRichiesteOffertaPrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_ACQ))
-					listaBandi = bandiManager.searchBandiPerProcInAggiudicazionePrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_ACQ_IN_CORSO))
-					listaBandi = bandiManager.getElencoBandiPrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_SCADUTI))
-					listaBandi = bandiManager.getElencoBandiScadutiPrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_RICHIESTE_OFFERTA))
-					listaBandi = bandiManager.getElencoBandiPerRichiesteOffertaPrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(SEARCH_PROCEDURE_VEND))
-					listaBandi = bandiManager.searchBandiPerProcInAggiudicazionePrivatistiche(model);
-				else if (fromPage.equalsIgnoreCase(LIST_ALL_VEND_IN_CORSO))
-					listaBandi = bandiManager.getElencoBandiPrivatistiche(model);
-
-				
-				this.model.processResult(this.listaBandi.getNumTotaleRecord(), 
-		                 				 this.listaBandi.getNumTotaleRecordFiltrati());
-
-				this.dataUltimoAggiornamento = this.getMaxDataUltimoAggiornamento(
-						this.listaBandi.getDati());
-				
-				// salvataggio dei criteri di ricerca in sessione per la
-				// prossima riapertura della form...
-				if(sessionId != null) {
-					this.session.put(sessionId, this.model);
-				}
-				this.session.put(PortGareSystemConstants.SESSION_ID_FROM_SEARCH, fromSearch);
-				this.session.put(PortGareSystemConstants.SESSION_ID_FROM_PAGE, fromPage);
-				this.session.put(PortGareSystemConstants.SESSION_ID_FROM_PAGE_OWNER, FROM_PAGE_OWNER);
-				
-			} catch (ApsException t) {
-				ApsSystemUtils.logThrowable(t, this, fromPage);
-				ExceptionUtils.manageExceptionError(t, this);
-				this.setTarget(CommonSystemConstants.PORTAL_ERROR);
-			}
-		}
-
-		return this.getTarget();
-	}
-
+	
 	/**
 	 * Restituisce la lista di bandi in base ai filtri impostati
 	 */
 	public String find() {
-		this.setTarget( this.getListaBandi(SEARCH) );
+		this.setTarget( getList(SEARCH) );
 		return this.getTarget();
 	}
 
@@ -473,7 +501,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(SEARCH_PROCEDURE) );
+			this.setTarget( getList(SEARCH_PROCEDURE) );
 			 // si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 			this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		} else {
@@ -488,7 +516,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	 * Restituisce la lista di tutti i bandi 
 	 */
 	public String findBandiConEsito() {
-		this.setTarget( this.getListaBandi(SEARCH_BANDI_CON_ESITO) );
+		this.setTarget( getList(SEARCH_BANDI_CON_ESITO) );
 //		// si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 //		this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		return this.getTarget();
@@ -503,7 +531,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(SEARCH_PROCEDURE_ACQ) );
+			this.setTarget( getList(SEARCH_PROCEDURE_ACQ) );
 //			// si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 //			this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		} else {
@@ -523,7 +551,7 @@ public class BandiFinderAction extends EncodedDataAction implements
 	
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
-			this.setTarget( this.getListaBandi(SEARCH_PROCEDURE_VEND) );
+			this.setTarget( getList(SEARCH_PROCEDURE_VEND) );
 //		    // si rimuove lo stato "in corso" in quanto non ha senso in questo caso
 //			this.getMaps().get(InterceptorEncodedData.LISTA_STATI_GARA).remove("1");
 		} else {
@@ -533,5 +561,79 @@ public class BandiFinderAction extends EncodedDataAction implements
 		
 		return this.getTarget();
 	}
+		
+	/**
+	 * esporta la lista 
+	 */
+	public String export() {
+		this.setTarget("export");
+		
+		try {
+			// recupera i filtri dell'ultima ricerca
+			fromPage = (String)session.get(PortGareSystemConstants.SESSION_ID_FROM_PAGE);
+	    	model = ("1".equals(this.last)
+	    	    	// se si richiede il rilancio dell'ultima estrazione effettuata,
+	    	        // allora si prendono dalla sessione i filtri applicati e si caricano nel presente oggetto
+	    			? (BandiSearchBean) session.get(getModelSessionId())
+	        		: getModel()
+	        );
+	    	model.setiDisplayLength(Integer.MAX_VALUE);
+			
+	    	// recupera la lista dei risultati
+	    	SearchResult<GaraType> list = prepareResultList(model);
 
+	    	// prepare l'export CSV
+	    	CsvExport csv = new CsvExport();
+	    	
+			// intestazione...
+	        csv.writeLine(
+	        		getI18nLabel("LABEL_STAZIONE_APPALTANTE")
+	        		, getI18nLabel("LABEL_TITOLO")
+	        		, getI18nLabel("LABEL_TIPO_APPALTO")
+	        		, getI18nLabel("LABEL_CIG")
+	        		, getI18nLabel("LABEL_IMPORTO_BANDO")
+	        		, getI18nLabel("LABEL_DATA_PUBBLICAZIONE_BANDO")
+	        		, getI18nLabel("LABEL_DATA_SCADENZA_BANDO")
+	        		, getI18nLabel("LABEL_RIFERIMENTO_PROCEDURA")
+	        		, getI18nLabel("LABEL_STATO_GARA")
+	        		, getI18nLabel("LABEL_IS_PNRR")
+	        		, getI18nLabel("LABEL_IS_GREEN")
+	        		, getI18nLabel("LABEL_IS_RECYCLE")
+	        		, "Url"
+	        );
+	        
+			// ...dati
+	        list.getDati().forEach(bando ->
+	    			csv.writeLine(
+	    					bando.getStazioneAppaltante()
+	    					, bando.getOggetto()
+	    					, bando.getTipoAppalto()
+	    					, (SEARCH_BANDI_CON_ESITO.equalsIgnoreCase(fromPage) ? csv.wrapForExcel(bando.getCig()) : "")
+	    					, (!"7".equals(bando.getIterGara()) && bando.getNascondiImportoBaseGara() != 1
+	    							? csv.moneyToString(bando.getImporto()) 
+	    							: ""
+	    					)
+	    					, csv.dateToString(bando.getDataPubblicazione())
+	    					, csv.dateToString(bando.getDataTermine()) + (bando.getOraTermine() != null 
+	    							? " " + getI18nLabel("LABEL_ENTRO_LE_ORE") + " " + bando.getOraTermine() 
+	    							: ""
+	    					)
+	    					, csv.wrapForExcel(bando.getCodice())
+	    					, (bando.getStato() != null ? bando.getStato() + (StringUtils.isNotEmpty(bando.getEsito()) ? " - " + bando.getEsito() : ""): "")
+	    					, ("1".equals(bando.getIsPnrr()) ? getI18nLabel("YES") : "")
+	    					, ("1".equals(bando.getIsGreen()) ? getI18nLabel("YES") : "")
+	    					, ("1".equals(bando.getIsRecycle()) ? getI18nLabel("YES") : "")
+	    					, csv.getLinkTo("it/ppgare_bandi_lista.wp?actionPath=/ExtStr2/do/FrontEnd/Bandi/view.action&currentFrame=7&codice=" + bando.getCodice())
+					)
+	        );
+        
+			this.inputStream = csv.getStream();
+		} catch (ApsException e) {
+			this.addActionError(this.getText("Errors.sessionExpired"));
+		    this.setTarget(CommonSystemConstants.PORTAL_ERROR);
+		}
+		
+        return this.getTarget();
+	}
+	
 }

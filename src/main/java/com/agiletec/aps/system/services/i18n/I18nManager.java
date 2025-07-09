@@ -22,10 +22,7 @@ import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.AbstractService;
 import com.agiletec.aps.util.ApsProperties;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,7 +75,7 @@ public class I18nManager extends AbstractService implements II18nManager {
 		if (labelsProp != null)
 			label = labelsProp.getProperty(langCode);
 		else if (printError)
-			ApsSystemUtils.getLogger().error("Reperita label in localstrings nulla per " + key + " (lang " + langCode + ")");
+			ApsSystemUtils.getLogger().warn("Reperita label in localstrings nulla per " + key + " (lang " + langCode + ")");
 
 		return label;
 	}
@@ -129,17 +126,18 @@ public class I18nManager extends AbstractService implements II18nManager {
 	public void updateLabelGroup(String key, ApsProperties labels) throws ApsSystemException {
 		try {
 			ApsProperties old = this._labelGroups.get(key);
-			Enumeration<Object> langKeys = labels.keys();
-			while (langKeys.hasMoreElements()) {
-				String lang = (String) langKeys.nextElement();
-				
+			String[] langKeys = labels.keySet().toArray(new String[0]);
+			// Nelle chiavi dentro "labels" (label.keys()) si trovano sia le lingue che le lingue con flag custom (es: it.custom).
+			// Vanno escluse tali chiavi a cui non corrispondono valori di label tradotti in lingua, pertanto ciclo sull'array pulito
+			// in quanto labels.setCustomized aggiunge chiavi "<lingua>.custom" direttamente dentro a label.keys()
+			for (String lang: langKeys) {
 				String oldlbl = old.getProperty(lang);
 				String newlbl = labels.getProperty(lang);
 				int custom = old.getCustomized(lang);
 				if( !newlbl.equals(oldlbl) ) {
 					custom = 1;
 				}
-				if(custom != 0) { 
+				if(custom != 0) {
 					labels.setCustomized(lang, 1);
 				}
 			}

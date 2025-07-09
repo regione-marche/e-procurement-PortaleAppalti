@@ -4,11 +4,19 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParam
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import org.apache.commons.lang3.StringUtils;
 
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractOpenPageAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardNuovaComunicazioneHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardSoccorsoIstruttorioHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
-public class OpenPageNuovaComunicazioneAction extends AbstractOpenPageAction {
+/**
+ * ...
+ * 
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.COMUNICAZIONE, EFlussiAccessiDistinti.COMUNICAZIONE_STIPULA })
+public class OpenPageNuovaComunicazioneAction extends AbstractOpenPageComunicazioneAction {
 	/**
 	 * UID
 	 */
@@ -24,7 +32,7 @@ public class OpenPageNuovaComunicazioneAction extends AbstractOpenPageAction {
 	private String from;
 	@Validate(EParamValidation.DIGIT)
 	private String id;
-
+	
 	public String getTipoRichiesta() {
 		return tipoRichiesta;
 	}
@@ -64,38 +72,42 @@ public class OpenPageNuovaComunicazioneAction extends AbstractOpenPageAction {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	/**
+	 * costruttore
+	 */
+	public OpenPageNuovaComunicazioneAction() {
+		this(new WizardNuovaComunicazioneHelper());
+	}
 	
-	// "costanti" per la pagina jsp
-	public String getSTEP_TESTO_COMUNICAZIONE() {
-		return WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE;
-	}
-
-	public String getSTEP_DOCUMENTI() {
-		return WizardNuovaComunicazioneHelper.STEP_DOCUMENTI;
-	}
-
-	public String getSTEP_INVIO_COMUNICAZIONE() {
-		return WizardNuovaComunicazioneHelper.STEP_INVIO_COMUNICAZIONE;
+	public OpenPageNuovaComunicazioneAction(WizardNuovaComunicazioneHelper helper) {
+		super(helper, PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
 	}
 	
 	/**
 	 * ... 
 	 */
+	@Override
 	public String openPage() {
-		WizardNuovaComunicazioneHelper helper = (WizardNuovaComunicazioneHelper)this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		helper = (WizardNuovaComunicazioneHelper) getWizardFromSession();
+		
 		if(helper != null) {
+			boolean rettifica = (helper instanceof WizardRettificaHelper);
+			boolean soccorsoIstruttorio = (helper instanceof WizardSoccorsoIstruttorioHelper);
+			boolean comunicazione = (!rettifica && ! soccorsoIstruttorio);
+			boolean contrattoLFS = (PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equals(helper.getEntita()));
 			
-			// solo in caso di contratti LFS
-			boolean contrattoLFS = (PortGareSystemConstants.ENTITA_CONTRATTO_LFS.equals(helper.getEntita()));			
-			if(contrattoLFS && StringUtils.isNotEmpty(helper.getTipoRichiesta())) {
-				this.setTipoRichiesta(helper.getTipoRichiesta());
-			}
 			this.setOggetto(helper.getOggetto());
 			this.setTesto(helper.getTesto());
+			
+			// solo per le comunizioni standard e solo in caso di contratti LFS
+			if(comunicazione && contrattoLFS && StringUtils.isNotEmpty(helper.getTipoRichiesta())) {
+				this.setTipoRichiesta(helper.getTipoRichiesta());
+			}
 		}
 
-		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE);
+		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, helper.STEP_TESTO_COMUNICAZIONE);
+		
 		return SUCCESS;
 	}
 
@@ -103,7 +115,7 @@ public class OpenPageNuovaComunicazioneAction extends AbstractOpenPageAction {
 	 * ... 
 	 */
 	public String openPageAfterError() {
-		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, WizardNuovaComunicazioneHelper.STEP_TESTO_COMUNICAZIONE);
+		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, helper.STEP_TESTO_COMUNICAZIONE);
 		return this.getTarget();
 	}
 

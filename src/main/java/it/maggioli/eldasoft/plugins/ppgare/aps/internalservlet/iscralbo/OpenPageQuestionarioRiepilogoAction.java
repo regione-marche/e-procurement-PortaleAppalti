@@ -9,6 +9,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -24,6 +26,10 @@ import java.util.List;
  * 
  * @author ...
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageQuestionarioRiepilogoAction extends AbstractOpenPageAction {
     /**
 	 * UID
@@ -157,11 +163,12 @@ public class OpenPageQuestionarioRiepilogoAction extends AbstractOpenPageAction 
 			logger.debug("OpenPageQuestionarioRiepilogoAction - openPage - this.categorieSelezionate {}",(this.categorieSelezionate));
 
 			try {
-				this.documentiRichiesti  = this.bandiManager
+				this.documentiRichiesti = this.bandiManager
 						.getDocumentiRichiestiBandoIscrizione(
 								helper.getIdBando(), 
 								helper.getImpresa().getDatiPrincipaliImpresa().getTipoImpresa(),
 								helper.isRti());
+//				this.documentiRichiesti = helper.getDocumentiRichiestiBO();
 				logger.debug("documentiRichiesti {}",(this.documentiRichiesti));
 			} catch (Throwable t) {
 				ApsSystemUtils.logThrowable(t, this, "openPage");
@@ -190,12 +197,5 @@ public class OpenPageQuestionarioRiepilogoAction extends AbstractOpenPageAction 
 		return rettifica;
 	}
 	
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-	
-	public Integer getLimiteTotaleUploadDocIscrizione() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
 
 }

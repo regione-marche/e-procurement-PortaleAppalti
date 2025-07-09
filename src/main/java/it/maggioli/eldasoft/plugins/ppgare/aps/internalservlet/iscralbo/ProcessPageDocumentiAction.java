@@ -5,25 +5,22 @@ import com.agiletec.aps.system.exception.ApsException;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
-import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import java.io.File;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
-import java.util.Date;
 
 /**
  * Action di gestione delle operazioni nella pagina dei documenti del wizard
@@ -31,6 +28,10 @@ import java.util.Date;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -158,22 +159,6 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 		return inputStream;
 	}
 
-	/**
-	 * tipologia messaggio per la tracciatura nel log eventi del portale 
-	 */
-	protected String getFunzione(WizardIscrizioneHelper iscrizioneHelper) {
-		String funzione = "Iscrizione";
-		if (iscrizioneHelper.isAggiornamentoIscrizione()) {
-			if (iscrizioneHelper.isAggiornamentoSoloDocumenti()) {
-				funzione = "Aggiornamento documenti";
-			} else {
-				funzione = "Aggiornamento dati/documenti";
-			}
-		} else if (iscrizioneHelper.isRinnovoIscrizione()) {
-			funzione = "Rinnovo iscrizione";
-		}
-		return funzione;
-	}
 
 	/**
 	 * ... 
@@ -182,7 +167,7 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 		String target = "backToDocumenti";
 		
 		boolean controlliOk = true;
-		try {			
+		try {
 			WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
 				.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
 
@@ -192,54 +177,36 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {
 				// la sessione non e' scaduta, per cui proseguo regolarmente
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docRichiesto);
-	
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(iscrizioneHelper.getIdBando());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(this.getFunzione(iscrizioneHelper) + ": documento richiesto" 
-						+ " con id=" + this.docRichiestoId
-						+ ", file=" + this.docRichiestoFileName
-						+ ", dimensione=" + dimensioneDocumento + "KB");
-	
-				boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				controlliOk =
-						checkFileSize(docRichiesto, docRichiestoFileName, getActualTotalSize(iscrizioneHelper.getDocumenti()), appParamManager, evento)
-						&& checkFileName(docRichiestoFileName, evento)
-						&& checkFileFormat(docRichiesto, docRichiestoFileName, formato, evento, onlyP7m);
-	
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docRichiesto
-							, docRichiestoFileName
-							, formato
-							, checkDate
-							, evento
-							, onlyP7m
-							, appParamManager
-							, customConfigManager
-					);
+				WizardDocumentiHelper documentiHelper = iscrizioneHelper.getDocumenti();
+				
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(iscrizioneHelper)
+						.setDocumento(docRichiesto)
+						.setDocumentoFileName(docRichiestoFileName)
+						.setDocumentoFormato(formato)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(iscrizioneHelper.getIdBando())
+						.setEventoMessaggio(iscrizioneHelper.getDescrizioneFunzione() + ": documento richiesto" 
+											+ " con id=" + this.docRichiestoId
+											+ ", file=" + this.docRichiestoFileName
+											+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docRichiesto) + "KB");
+				
+				if ( getUploadValidator().validate() ) {
 					// si inseriscono i documenti in sessione
-					WizardDocumentiHelper documentiHelper = iscrizioneHelper.getDocumenti();
-
 					if (Attachment.indexOf(documentiHelper.getRequiredDocs(), Attachment::getId, docRichiestoId) == -1) {
 						// in questo modo evito che si ripeta un inserimento
 						// effettuando F5 con il browser in quanto controllo se
 						// esiste gia' il documento con tale id, dato che posso
 						// inserirlo solo se non e' tra quelli inseriti in
 						// precedenza
-
 						documentiHelper.addDocRichiesto(
 								this.docRichiestoId, 
 								this.docRichiesto, 
 								this.docRichiestoContentType, 
 								this.docRichiestoFileName,
-								evento,checkFirma);
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma());
 							
 						if( !this.aggiornaAllegato() ) {
 							target = CommonSystemConstants.PORTAL_ERROR;
@@ -247,8 +214,9 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 					} else {
 						target = INPUT;
 					}
-					this.eventManager.insertEvent(evento);
 				}
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		} catch (GeneralSecurityException e) {
 			ApsSystemUtils.logThrowable(e, this, "addDocRich", "Errore durante la cifratura dell'allegato richiesto " + this.docRichiestoFileName);
@@ -284,28 +252,24 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {
 				// la sessione non e' scaduta, per cui proseguo regolarmente
+				WizardDocumentiHelper documentiHelper = iscrizioneHelper.getDocumenti();
+				
 				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docUlteriore);
-	
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(iscrizioneHelper.getIdBando());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(this.getFunzione(iscrizioneHelper) + ": documento ulteriore" 
-								  + ", file=" + this.docUlterioreFileName
-								  + ", dimensione=" + dimensioneDocumento + "KB");
-	
-				boolean controlliOk =
-						checkFileDescription(docUlterioreDesc, evento)
-						&& checkFileSize(docUlteriore, docUlterioreFileName, getActualTotalSize(iscrizioneHelper.getDocumenti()), appParamManager, evento)
-						&& checkFileName(docUlterioreFileName, evento)
-						&& checkFileExtension(docUlterioreFileName, appParamManager, AppParamManager.ESTENSIONI_AMMESSE_DOC, evento)
-						&& checkFileFormat(docUlteriore, docUlterioreFileName, null, evento, false);
+				
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(iscrizioneHelper)
+						.setDocumentoDescrizione(docUlterioreDesc)
+						.setDocumento(docUlteriore)
+						.setDocumentoFileName(docUlterioreFileName)
+						.setOnlyP7m(false)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(iscrizioneHelper.getIdBando())
+						.setEventoMessaggio(iscrizioneHelper.getDescrizioneFunzione() + ": documento ulteriore" 
+								  			+ ", file=" + this.docUlterioreFileName
+								  			+ ", dimensione=" + dimensioneDocumento + "KB");
 
-
-				if (controlliOk) {
+				if ( getUploadValidator().validate() ) {
 //					String sha1 = null; 
 //					try {
 //						sha1 = this.getSha1Digest(this.docUlteriore, evento);
@@ -315,12 +279,10 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 //					}
 					
 					// si inseriscono i documenti in sessione
-					WizardDocumentiHelper documentiHelper = iscrizioneHelper.getDocumenti();
-
 					if (Attachment.indexOf(documentiHelper.getAdditionalDocs(), Attachment::getDesc, docUlterioreDesc) != -1) {
 						this.addActionError(this.getText("Errors.docUlteriorePresent"));
-						evento.setLevel(Event.Level.ERROR);
-						evento.setDetailMessage(
+						getUploadValidator().getEvento().setLevel(Event.Level.ERROR);
+						getUploadValidator().getEvento().setDetailMessage(
 								"Il file " + this.docUlterioreFileName +
 								" viene scartato in quanto esiste già un documento ulteriore caricato con la stessa descrizione (" +
 								this.docUlterioreDesc + ")");
@@ -330,9 +292,7 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 						// esiste gia' il documento con tale id, dato che posso
 						// inserirlo solo se non e' tra quelli inseriti in
 						// precedenza
-						Date checkDate = Date.from(Instant.now());
-						DocumentiAllegatiFirmaBean checkFirma = this.checkFileSignature(this.docUlteriore, this.docUlterioreFileName, null,checkDate, evento, false, this.appParamManager, this.customConfigManager);
-						evento.setMessage(this.getFunzione(iscrizioneHelper) + ": documento ulteriore" 
+						getUploadValidator().getEvento().setMessage(iscrizioneHelper.getDescrizioneFunzione() + ": documento ulteriore" 
 								  + ", file=" + this.docUlterioreFileName
 								  + ", dimensione=" + dimensioneDocumento + "KB"
 								  + ", descrizione=" + this.docUlterioreDesc);
@@ -342,7 +302,8 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 								this.docUlteriore, 
 								this.docUlterioreContentType, 
 								this.docUlterioreFileName,
-								evento,checkFirma);
+								getUploadValidator().getEvento(),
+								getUploadValidator().getCheckFirma());
 						
 						if( !this.aggiornaAllegato() ) {
 							target = CommonSystemConstants.PORTAL_ERROR;
@@ -353,7 +314,8 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 				} else {
 					target = INPUT;
 				}
-				this.eventManager.insertEvent(evento);
+				
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		} catch (GeneralSecurityException e) {
 			ApsSystemUtils.logThrowable(e, this, "addUltDoc", "Errore durante la cifratura dell'allegato ulteriore " + this.docUlterioreFileName);
@@ -372,11 +334,9 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 	 */
 	public String next() {
 		String target = SUCCESS;
-		
 		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session
-			.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
-		
-		this.nextResultAction = helper.getNextAction(WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);	
+				.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+		this.nextResultAction = helper.getNextAction(WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);		
 		return target;
 	}
 
@@ -389,24 +349,12 @@ public class ProcessPageDocumentiAction extends AbstractProcessPageAction {
 		// nel caso di assenza di categorie si deve saltare alla pagina
 		// precedente (a sua volta, se esiste un'unica stazione appaltante
 		// si deve saltare direttamente alla pagina precedente)
-		WizardIscrizioneHelper iscrizioneHelper = (WizardIscrizioneHelper) this.session
-						.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
-
-		this.nextResultAction = iscrizioneHelper.getPreviousAction(WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);
+		WizardIscrizioneHelper helper = (WizardIscrizioneHelper) this.session
+				.get(PortGareSystemConstants.SESSION_ID_DETT_ISCR_ALBO);
+		this.nextResultAction = helper.getPreviousAction(WizardIscrizioneHelper.STEP_DOCUMENTAZIONE_RICHIESTA);
 		return target;
 	}
 
-	/**
-	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
-	 *
-	 * @param helper helper dei documenti
-	 *
-	 * @return totale in KB dei file caricati
-	 */
-	protected int getActualTotalSize(WizardDocumentiHelper helper) {
-		return Attachment.sumSize(helper.getRequiredDocs()) + Attachment.sumSize(helper.getRequiredDocs());
-	}
-	
 	/**
 	 * ...  
 	 */

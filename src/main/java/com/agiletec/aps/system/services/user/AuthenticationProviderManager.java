@@ -240,20 +240,20 @@ public class AuthenticationProviderManager extends AbstractService implements IA
 	}
 		
 	@Override
-	public int logLogin(String username, String ipAddress, String sessionId) throws ApsSystemException {
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException {
 		int exitCode = 0;
 		if (StringUtils.isNotBlank(username) && (StringUtils.isNotBlank(ipAddress) || StringUtils.isNotBlank(sessionId))) {
-			exitCode = this.getUserManager().logLogin(username, ipAddress, sessionId);
+			exitCode = this.getUserManager().logLogin(username, delegate, ipAddress, sessionId);
 			this.getUserManager().clearWrongAccessAttempts(username, ipAddress, sessionId);
 		}
 		return exitCode;
 	}
 
 	@Override
-	public boolean logLogout(String username, String ipAddress, String sessionId) throws ApsSystemException {
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId) throws ApsSystemException {
 		boolean logout = false;
 		if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(ipAddress)) {
-			logout = this.getUserManager().logLogout(username, ipAddress, sessionId);
+			logout = this.getUserManager().logLogout(username, delegate, ipAddress, sessionId);
 		}
 		return logout;
 	}
@@ -534,15 +534,16 @@ public class AuthenticationProviderManager extends AbstractService implements IA
 			evento.setMessage("Inizio blocco IP per tentativo di accesso a honeypot");
 			try {
 				// aggiungi l'ip alla blacklist degli ip da bloccare...
-				Map<String, Object> application = ActionContext.getContext().getApplication();
+//				Map<String, Object> application = ActionContext.getContext().getApplication();
 				
-				Map<String, Date> blacklist = (Map<String, Date>)application.get(BotFilter.HONEYPOT_BLACK_LIST);
+//				Map<String, Date> blacklist = (Map<String, Date>)application.get(BotFilter.HONEYPOT_BLACK_LIST);
+				Map<String, Date> blacklist = BotFilter.getBlackList();
 				if(blacklist == null) {
 					blacklist = new HashMap<String, Date>();
 				}
 				blacklist.put(ipAddress, new Date());
 				
-				application.put(BotFilter.HONEYPOT_BLACK_LIST, blacklist);
+//				application.put(BotFilter.HONEYPOT_BLACK_LIST, blacklist);
 				
 				esito = true;
 			} catch (Throwable t) {
@@ -554,12 +555,13 @@ public class AuthenticationProviderManager extends AbstractService implements IA
 			}
 		} else {
 			// se il modulo privacy e' disabilitato, si svuota la blacklist
-			Map<String, Object> application = ActionContext.getContext().getApplication();
+//			Map<String, Object> application = ActionContext.getContext().getApplication();
 			
-			Map<String, Date> blacklist = (Map<String, Date>)application.get(BotFilter.HONEYPOT_BLACK_LIST);
+//			Map<String, Date> blacklist = (Map<String, Date>)application.get(BotFilter.HONEYPOT_BLACK_LIST);
+			Map<String, Date> blacklist = BotFilter.getBlackList();
 			if(blacklist != null) {
 				blacklist.clear();
-				application.put(BotFilter.HONEYPOT_BLACK_LIST, blacklist);
+//				application.put(BotFilter.HONEYPOT_BLACK_LIST, blacklist);
 			}
 		}
 		return esito;

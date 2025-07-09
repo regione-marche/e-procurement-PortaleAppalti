@@ -9,22 +9,20 @@ import it.maggioli.eldasoft.hda.client.HdaHelpDesk;
 import it.maggioli.eldasoft.hda.client.HdaHelpDeskConfiguration;
 import it.maggioli.eldasoft.hda.client.HdaTicket;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.servlet.CaptchaServlet;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.UploadValidator;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.botfilter.CaptchaUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
-import nl.captcha.Captcha;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
-
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.File;
@@ -66,8 +64,6 @@ public class AssistenzaAction extends EncodedDataAction {
 	@Validate(EParamValidation.FILE_NAME)
 	private String allegatoFileName;
 	@Validate(EParamValidation.GENERIC)
-	private String captchaConferma;
-	@Validate(EParamValidation.GENERIC)
 	private String infoSystem;
 	
 	private IAppParamManager appParamManager;
@@ -75,148 +71,81 @@ public class AssistenzaAction extends EncodedDataAction {
 	private IEventManager eventManager;
 	private DataSource dataSource;
 
-	private static final int ASSISTENZA_DISABILITATA = 0;
-	private static final int ASSISTENZA_CON_SERVIZIO = 1;
-	private static final int ASSISTENZA_VIA_MAIL = 2;
+	private static final int ASSISTENZA_DISABILITATA 	= 0;
+	private static final int ASSISTENZA_CON_SERVIZIO 	= 1;
+	private static final int ASSISTENZA_VIA_MAIL 		= 2;
 
-	private static final String NOME_PRODOTTO = "Portale Appalti";
-	private static final String VERSION_FILE = "/WEB-INF/PA_VER.TXT";
-		
+	private static final String NOME_PRODOTTO 			= "Portale Appalti";
+	private static final String VERSION_FILE 			= "/WEB-INF/PA_VER.TXT";
+	
+	private static final String SESSION_ID_CAPTCHA_OK	= "captchaValidated";
+	
 	private String ticketId;
 
-	/**
-	 * @param appParamManager the appParamManager to set
-	 */
 	public void setAppParamManager(IAppParamManager appParamManager) {
 		this.appParamManager = appParamManager;
 	}
-
-	/**
-	 * @param mailManager the mailManager to set
-	 */
+	
 	public void setMailManager(IMailManager mailManager) {
 		this.mailManager = mailManager;
 	}
-
-	/**
-	 * @param eventManager the eventManager to set
-	 */
+	
 	public void setEventManager(IEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
-
-	/**
-	 * @param dataSource the dataSource to set
-	 */
+	
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
-	/**
-	 * @return the ente
-	 */
 	public String getEnte() {
 		return ente;
 	}
 
-	/**
-	 * @param ente the ente to set
-	 */
 	public void setEnte(String ente) {
 		this.ente = ente;
 	}
 
-	/**
-	 * @return the referente
-	 */
 	public String getReferente() {
 		return referente;
 	}
 
-	/**
-	 * @param referente the referente to set
-	 */
 	public void setReferente(String referente) {
 		this.referente = referente;
 	}
 
-	/**
-	 * @return the email
-	 */
 	public String getEmail() {
 		return email;
 	}
 
-	/**
-	 * @param email the email to set
-	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	/**
-	 * @return the telefono
-	 */
 	public String getTelefono() {
 		return telefono;
 	}
 
-	/**
-	 * @param telefono the telefono to set
-	 */
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 
-	/**
-	 * @return the tipoRichiesta
-	 */
 	public String getTipoRichiesta() {
 		return tipoRichiesta;
 	}
 
-	/**
-	 * @param tipoRichiesta the tipoRichiesta to set
-	 */
 	public void setTipoRichiesta(String tipoRichiesta) {
 		this.tipoRichiesta = tipoRichiesta;
 	}
 
-	/**
-	 * @return the descrizione
-	 */
 	public String getDescrizione() {
 		return descrizione;
 	}
 
-	/**
-	 * @param descrizione the descrizione to set
-	 */
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
 	}
-
-	/**
-	 * @return the captchaConferma
-	 */
-	public String getCaptchaConferma() {
-		return captchaConferma;
-	}
-
-	/**
-	 * @param captchaConferma the captchaConferma to set
-	 */
-	public void setCaptchaConferma(String captchaConferma) {
-		this.captchaConferma = captchaConferma;
-	}
-
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
 	
-	/**
-	 * @return the modoAssistenza
-	 */
 	public Integer getModoAssistenza() {
 		Integer modo = (Integer) this.appParamManager.getConfigurationValue(AppParamManager.MODO_ASSISTENZA);
 		if (modo == null || modo < 0) {
@@ -225,9 +154,6 @@ public class AssistenzaAction extends EncodedDataAction {
 		return modo;
 	}
 
-	/**
-	 * @return the mailAssistenza
-	 */
 	public String getMailAssistenza() {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.MAIL_ASSISTENZA);
 	}
@@ -236,112 +162,91 @@ public class AssistenzaAction extends EncodedDataAction {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.TELEFONO_ASSISTENZA);
 	}
 
-	/**
-	 * @return the nomeCliente
-	 */
 	public String getNomeCliente() {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.NOME_CLIENTE);
 	}
 
-	/**
-	 * @return the urlServizio
-	 */
 	public String getUrlServizio() {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.URL_SERVIZIO_ASSISTENZA);
 	}
 
-	/**
-	 * @return the usrServizio
-	 */
 	public String getUsrServizio() {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.USER_SERVIZIO_ASSISTENZA);
 	}
 
-	/**
-	 * @return the pwdServizio
-	 */
 	public String getPwdServizio() {
 		return (String) this.appParamManager.getConfigurationValue(AppParamManager.PASSWORD_SERVIZIO_ASSISTENZA);
 	}
 
-	/**
-	 * @return the idProdottoServizio
-	 */
 	public Integer getIdProdottoServizio() {
 		return (Integer) this.appParamManager.getConfigurationValue(AppParamManager.IDPRODOTTO_SERVIZIO_ASSISTENZA);
 	}
 	
-	/**
-	 * @return the allegato
-	 */
 	public File getAllegato() {
 		return allegato;
 	}
 
-	/**
-	 * @param allegato the allegato to set
-	 */
 	public void setAllegato(File allegato) {
 		this.allegato = allegato;
 	}
 
-	/**
-	 * @return the allegatoContentType
-	 */
 	public String getAllegatoContentType() {
 		return allegatoContentType;
 	}
 
-	/**
-	 * @param allegatoContentType the allegatoContentType to set
-	 */
 	public void setAllegatoContentType(String allegatoContentType) {
 		this.allegatoContentType = allegatoContentType;
 	}
 
-	/**
-	 * @return the allegatoFileName
-	 */
 	public String getAllegatoFileName() {
 		return allegatoFileName;
 	}
 
-	/**
-	 * @param allegatoFileName the allegatoFileName to set
-	 */
 	public void setAllegatoFileName(String allegatoFileName) {
 		this.allegatoFileName = allegatoFileName;
 	}
 
-	/**
-	 * @return the infoSystem
-	 */
 	public String getInfoSystem() {
 		return infoSystem;
 	}
 
-	/**
-	 * @param infoSystem the infoSystem to set
-	 */
 	public void setInfoSystem(String infoSystem) {
 		this.infoSystem = infoSystem;
 	}
 
-	/**
-	 * @return the ticketId
-	 */
 	public String getTicketId() {
 		return ticketId;
 	}
 
-	/**
-	 * @param ticketId the ticketId to set
-	 */
 	public void setTicketId(String ticketId) {
 		this.ticketId = ticketId;
 	}
+		
+	/**
+	 * ... 
+	 */
+	@Override
+    public void validate() {
+		super.validate();
+		
+		try {
+			getRequest().getSession().removeAttribute(SESSION_ID_CAPTCHA_OK);
+			Boolean captchaValidated = CaptchaUtils.validate(getRequest());
+			getRequest().getSession().setAttribute(SESSION_ID_CAPTCHA_OK, captchaValidated);
+			 
+			if ( !captchaValidated ) {
+				this.addActionError(this.getText("Errors.captcha"));
+			}
+		} catch (Exception ex) {
+			ApsSystemUtils.logThrowable(ex, this, "validate");
+			this.addActionError(this.getText("Errors.unexpected"));
+			this.setTarget(INPUT);
+		}
+    }
 
-	
+	/**
+	 * visualizza la pagina di assistenza  
+	 */
 	public String view() {
 		this.setTarget(SUCCESS);
 		switch (getModoAssistenza()) {
@@ -372,6 +277,9 @@ public class AssistenzaAction extends EncodedDataAction {
 		return this.getTarget();
 	}
 
+	/**
+	 * ... 
+	 */
 	public String help() {
 		// si effettuano i medesimi test sulla configurazione
 		view();
@@ -388,10 +296,8 @@ public class AssistenzaAction extends EncodedDataAction {
 		}
 		evento.setSessionId(this.getRequest().getSession().getId());
 		evento.setEventType(PortGareEventsConstants.HELPDESK);
-		evento.setMessage("Inserimento richiesta di assistenza da parte di "
-				+ this.ente
-				+ " con referente "
-				+ this.referente
+		evento.setMessage("Inserimento richiesta di assistenza da parte di " + this.ente
+				+ " con referente " + this.referente
 				+ " (mail " + this.email + ")");
 		if (continua) {
 			evento.setLevel(Event.Level.INFO);
@@ -409,20 +315,10 @@ public class AssistenzaAction extends EncodedDataAction {
 		
 		// si puo' procedere a gestire la richiesta con una gestione errori che
 		// riporta alla pagina di compilazione richiesta
-
 		if (continua) {
 			// controllo bloccante: verifica del codice di sicurezza (captcha)
-			Captcha captcha = (Captcha)this.getRequest().getSession().getAttribute(CaptchaServlet.SESSION_ID_CAPTCHA);		
-			if (captcha== null) {
-				// non dovrebbe accadere mai, puo' accadere solo se si invia una
-				// richiesta senza prima essere passati per la pagina che apre
-				// la form
-				this.addActionError(this.getText("Errors.noSessionCaptcha"));
-				evento.setDetailMessage(this.getTextFromDefaultLocale("Errors.noSessionCaptcha"));
-				evento.setLevel(Event.Level.ERROR);
-				this.setTarget(INPUT);
-				continua = false;
-			} else if (!captcha.isCorrect(this.captchaConferma) ) {
+			Boolean captchaValidated = (Boolean)getRequest().getSession().getAttribute(SESSION_ID_CAPTCHA_OK);
+			if ( !captchaValidated ) {
 				this.addActionError(this.getText("Errors.captcha"));
 				evento.setDetailMessage(this.getTextFromDefaultLocale("Errors.captcha"));
 				evento.setLevel(Event.Level.ERROR);
@@ -433,8 +329,10 @@ public class AssistenzaAction extends EncodedDataAction {
 
 		// Verifico la validita' del file allegato
 		if (continua && this.getAllegato() != null) {
-			continua = this.checkFileSize(this.getAllegato(), this.getAllegatoFileName(), 0, this.appParamManager, evento);
+			continua = this.checkFileSize(this.getAllegato(), this.getAllegatoFileName(), 0, evento);
 			continua = continua && this.checkFileName(this.getAllegatoFileName(), evento);
+			continua = continua && getUploadValidator().checkTikaFileContent(this.getAllegato(), this.getAllegatoFileName(), evento);
+			continua = continua && !getUploadValidator().isMaliciousPdf(this.getAllegato(), this.getAllegatoFileName(), evento);
 			if (!continua) {
 				this.setTarget(INPUT);
 			}
@@ -447,29 +345,25 @@ public class AssistenzaAction extends EncodedDataAction {
 				
 				switch (getModoAssistenza()) {
 				case ASSISTENZA_VIA_MAIL:
-					evento.setMessage("Inserimento richiesta di assistenza via mail da parte di "
-							+ this.ente
-							+ " con referente "
-							+ this.referente
+					evento.setMessage("Inserimento richiesta di assistenza via mail da parte di " + this.ente
+							+ " con referente " + this.referente
 							+ " (mail " + this.email + ")");
 					sendEmail(tipoAssistenza);
 					break;
 				case ASSISTENZA_CON_SERVIZIO:
-					evento.setMessage("Inserimento richiesta di assistenza su HDA da parte di "
-							+ this.ente
-							+ " con referente "
-							+ this.referente
+					evento.setMessage("Inserimento richiesta di assistenza su HDA da parte di " + this.ente
+							+ " con referente " + this.referente
 							+ " (mail " + this.email + ")");
 					hdaService(tipoAssistenza);		
-					evento.setMessage("Inserimento richiesta di assistenza numero "
-							+ this.ticketId
-							+ " su HDA da parte di "
-							+ this.ente
-							+ " con referente "
-							+ this.referente
+					evento.setMessage("Inserimento richiesta di assistenza numero " + this.ticketId
+							+ " su HDA da parte di " + this.ente
+							+ " con referente " + this.referente
 							+ " (mail " + this.email + ")");
 					break;
 				}
+				
+				getRequest().getSession().removeAttribute(SESSION_ID_CAPTCHA_OK);
+				
 			} catch (ApsSystemException ex) {
 				ApsSystemUtils.logThrowable(ex, this, "help");
 				this.addActionError(this.getText("Errors.requestNotSent"));
@@ -480,12 +374,12 @@ public class AssistenzaAction extends EncodedDataAction {
 				this.addActionError(this.getText("Errors.hdaServiceNotRunning"));
 				evento.setError(ex);
 				this.setTarget(INPUT);
-			} catch (HdaException ex) {				
+			} catch (HdaException ex) {
 				ApsSystemUtils.logThrowable(ex, this, "help");
 				this.addActionError(this.getText("Errors.hdaServiceConfigurazioneErrata"));
 				evento.setError(ex);
 				this.setTarget(INPUT);
-			} catch (Exception ex) {				
+			} catch (Exception ex) {
 				ApsSystemUtils.logThrowable(ex, this, "help");
 				this.addActionError(this.getText("Errors.unexpected"));
 				evento.setError(ex);
@@ -497,7 +391,10 @@ public class AssistenzaAction extends EncodedDataAction {
 		
 		return this.getTarget();
 	}
-
+	
+	/**
+	 * ... 
+	 */
 	private String getTestoMail(String tipoAssistenza) {
 		StringBuilder testo = new StringBuilder(); 
 		try {
@@ -541,7 +438,10 @@ public class AssistenzaAction extends EncodedDataAction {
 		}
 		return testo.toString();
 	}
-		
+	
+	/**
+	 * ... 
+	 */
 	private void sendEmail(String tipoAssistenza) throws ApsSystemException, IOException, SQLException, NullPointerException {
 		String[] receiver = {getMailAssistenza()};
 		StringBuilder oggetto = new StringBuilder().append(this.getTextFromDefaultLocale("oggettoMail")).append(": ").append(tipoAssistenza);
@@ -557,6 +457,9 @@ public class AssistenzaAction extends EncodedDataAction {
 		}
 	}
 
+	/**
+	 * ... 
+	 */
 	private String getVersion() throws IOException {
 		ServletContext context = (ServletContext) ServletActionContext.getServletContext();
 		InputStream is = new FileInputStream(context.getRealPath(VERSION_FILE));
@@ -569,21 +472,21 @@ public class AssistenzaAction extends EncodedDataAction {
 	 * @return risultato dell'invio
 	 * @throws RemoteException
 	 */
-	private void hdaService(String tipoAssistenza) throws IOException, HdaException {			
+	private void hdaService(String tipoAssistenza) throws IOException, HdaException {
 		String testo =
 			"[PORTALE] " + 
 			"Richiesta di assistenza: " + tipoAssistenza + 
 			"\n" + 
 			"\n" +
 			getTestoMail(tipoAssistenza);
-						
-		HdaHelpDeskConfiguration hdaConf = new HdaHelpDeskConfiguration();		
-		hdaConf.setHostname(getUrlServizio());				
+		
+		HdaHelpDeskConfiguration hdaConf = new HdaHelpDeskConfiguration();
+		hdaConf.setHostname(getUrlServizio());
 		hdaConf.setUsername(getUsrServizio());
 		hdaConf.setPassword(getPwdServizio());
 		
-		HdaHelpDesk hhd = new HdaHelpDesk(hdaConf, null);		
-		HdaTicket ticket = new HdaTicket(new Long(getIdProdottoServizio()), testo.toString(), false);		
+		HdaHelpDesk hhd = new HdaHelpDesk(hdaConf, null);
+		HdaTicket ticket = new HdaTicket(new Long(getIdProdottoServizio()), testo.toString(), false);
 		FileInputStream fis = null;
 		
 		hhd.login();
@@ -595,17 +498,17 @@ public class AssistenzaAction extends EncodedDataAction {
 			}
 			
 			// invia la richiesta...
-			this.ticketId = hhd.insertTicket(ticket);					
+			this.ticketId = hhd.insertTicket(ticket);
 		} finally {
 			try {
 				hhd.logout();
-			} catch(Exception e) {				
+			} catch(Exception e) {
 			}
 			
 			if(fis != null) {
 				try {
 					fis.close();
-				} catch(Exception t) {					
+				} catch(Exception t) {
 				}
 			}
 		}

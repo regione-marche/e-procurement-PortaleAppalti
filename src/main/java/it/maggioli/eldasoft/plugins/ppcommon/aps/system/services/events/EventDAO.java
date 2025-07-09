@@ -1,20 +1,17 @@
 package it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events;
 
 
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,7 +20,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.services.AbstractDAO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Data Access Object per la tracciatura eventi.
@@ -33,9 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class EventDAO extends AbstractDAO implements IEventDAO {
 
-	private final String EVENT_INSERT = "INSERT INTO ppcommon_events (eventlevel, username, destination, eventtype, message, detailMessage, ipaddress, sessionid, eventtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private final String EVENT_SEARCH = "SELECT id, eventtime, eventlevel, username, destination, eventtype, message, detailmessage, ipaddress, sessionid FROM ppcommon_events where ";
-	private final String EVENT_BY_ID  = "SELECT id, eventtime, eventlevel, username, destination, eventtype, message, detailmessage, ipaddress, sessionid FROM ppcommon_events where id = ? "; 
+	private final String EVENT_INSERT = "INSERT INTO ppcommon_events (eventlevel, username, destination, eventtype, message, detailMessage, ipaddress, sessionid, eventtime, delegate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private final String EVENT_SEARCH = "SELECT id, eventtime, eventlevel, username, destination, eventtype, message, detailmessage, ipaddress, sessionid, delegate FROM ppcommon_events where ";
+	private final String EVENT_BY_ID  = "SELECT id, eventtime, eventlevel, username, destination, eventtype, message, detailmessage, ipaddress, sessionid, delegate FROM ppcommon_events where id = ? "; 
 	private final String COUNT_EVENTS = "SELECT COUNT(*) FROM ppcommon_events where ";
 	
 	// traccia gli eventi su file di log
@@ -68,8 +64,16 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 			stat.setString(5, event.getMessage());
 			stat.setString(6, event.getDetailMessage());
 			stat.setString(7, event.getIpAddress());
-			stat.setString(8, event.getSessionId());
+			String sessionId = event.getSessionId();
+			if (sessionId != null) {
+				// il session id viene persistito in DB come sha1, in modo tale da consentire
+				// ancora di reperire info correlate all'operativita' di un utente, ma senza
+				// esporre l'informazione reale e rendere possibile un furto di sessione
+				sessionId = DigestUtils.sha1Hex(sessionId);
+			}
+			stat.setString(8, sessionId);
 			stat.setTimestamp(9, new java.sql.Timestamp(event.getEventDate().getTime())); 
+			stat.setString(10, event.getDelegate());
 			stat.executeUpdate();
 			ResultSet rs = stat.getGeneratedKeys();
 			long id = (rs.next() ? rs.getLong(1) : -1);
@@ -93,7 +97,8 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 					 .append(CSV_VALUE_BEGIN).append((event.getMessage() != null ? event.getMessage() : "")).append(CSV_VALUE_END).append(CSV_SEPARATOR)
 					 .append(CSV_VALUE_BEGIN).append(event.getDetailMessage() != null ? event.getDetailMessage() : "").append(CSV_VALUE_END).append(CSV_SEPARATOR)
 					 .append(CSV_VALUE_BEGIN).append(event.getIpAddress() != null ? event.getIpAddress() : "").append(CSV_VALUE_END).append(CSV_SEPARATOR)
-					 .append(CSV_VALUE_BEGIN).append(event.getSessionId() != null ? event.getSessionId() : "").append(CSV_VALUE_END).append(CSV_SEPARATOR);
+					 .append(CSV_VALUE_BEGIN).append(event.getSessionId() != null ? event.getSessionId() : "").append(CSV_VALUE_END).append(CSV_SEPARATOR)
+					 .append(CSV_VALUE_BEGIN).append(event.getDelegate() != null ? event.getDelegate() : "").append(CSV_VALUE_END).append(CSV_SEPARATOR);
 				this.logger.info(value);
 			}  
 		} catch (Throwable t) {
@@ -102,12 +107,15 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 					"Errore rilevato durante l'inserimento del record in ppcommon_events ("
 							+ "eventlevel=" + event.getLevel().getLevel()
 							+ ",username=" + event.getUsername()
+							+ ",delegate=" + event.getDelegate()
 							+ ",destination=" + event.getDestination()
 							+ ",eventtype=" + event.getEventType()
 							+ ",message=" + event.getMessage() 
 							+ ",detailMessage=" + event.getDetailMessage()
 							+ ",ipAddress=" + event.getIpAddress() 
-							+ ",sessionId=" + event.getSessionId() + ")");
+							+ ",sessionId=" + event.getSessionId()
+							+ ",delegate=" + event.getDelegate() 
+							+ ")");
 		} finally {
 			closeDaoResources(null, stat, conn);
 		}
@@ -116,12 +124,20 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 	/**
 	 * Restituisce il numero di eventi relativo ai filtri impostati
 	 */
-	public int countEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message){
-		
+	public int countEvents(
+			Date dateFrom, 
+			Date dateTo, 
+			String username, 
+			String destination, 
+			String type, 
+			String level, 
+			String message, 
+			String delegate) 
+	{	
 		StringBuilder s = new StringBuilder(COUNT_EVENTS);
 		ArrayList<Object> listaParametri = new ArrayList<Object>();
 		int numRis = -1;
-		buildWhereCondition(dateFrom, dateTo, username, destination, type, level, message, listaParametri, s);
+		buildWhereCondition(dateFrom, dateTo, username, destination, type, level, message, delegate, listaParametri, s);
 
 		try {
 			JdbcTemplate jt = new JdbcTemplate(this.getDataSource());
@@ -170,6 +186,7 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 			}
 			event.setIpAddress(rs.getString(9));
 			event.setSessionId(rs.getString(10));
+			event.setDelegate(rs.getString(11));
 			return event;
 		}
 		
@@ -180,11 +197,22 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 	 * @param String condizioni di filtro impostate tramite maschera di input
 	 * @return La lista completa di eventi (oggetti Event)
 	 */
-	public List<Event> searchEvents(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, final int startRow, final int pageSize) {
+	public List<Event> searchEvents(
+			Date dateFrom, 
+			Date dateTo, 
+			String username, 
+			String destination, 
+			String type, 
+			String level, 
+			String message, 
+			String delegate, 
+			final int startRow, 
+			final int pageSize) 
+	{
 		StringBuilder s = new StringBuilder(EVENT_SEARCH);
 		ArrayList<Object> listaParametri = new ArrayList<Object>();
 		
-		buildWhereCondition(dateFrom, dateTo, username, destination, type, level, message, listaParametri, s);
+		buildWhereCondition(dateFrom, dateTo, username, destination, type, level, message, delegate, listaParametri, s);
 		
 		final List<Event> events = new ArrayList<Event>();
 		try {
@@ -246,8 +274,18 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 	 * Metodo che mi permette di costruire la condizione di filtro per la ricerca in base ai parametri che passo
 	 *  
 	 */
-	private void buildWhereCondition(Date dateFrom, Date dateTo, String username, String destination, String type, String level, String message, ArrayList<Object> listaParametri, StringBuilder s){
-	
+	private void buildWhereCondition(
+			Date dateFrom, 
+			Date dateTo, 
+			String username, 
+			String destination, 
+			String type, 
+			String level, 
+			String message, 
+			String delegate, 
+			ArrayList<Object> listaParametri, 
+			StringBuilder s)
+	{
 		if(dateFrom != null && dateTo != null){
 			s.append("eventtime >= ? and eventtime <= ? ");
 			listaParametri.add(dateFrom);
@@ -267,6 +305,15 @@ public class EventDAO extends AbstractDAO implements IEventDAO {
 				s.append(" and UPPER(username) like ? ");;
 			}
 			listaParametri.add("%"+username.toUpperCase()+"%");
+		}
+		
+		if(StringUtils.isNotEmpty(delegate)){
+			if(listaParametri.isEmpty()){
+				s.append("UPPER(delegate) like ? ");
+			}else{
+				s.append(" and UPPER(delegate) like ? ");;
+			}
+			listaParametri.add("%"+delegate.toUpperCase()+"%");
 		}
 		
 		if(StringUtils.isNotEmpty(destination)){

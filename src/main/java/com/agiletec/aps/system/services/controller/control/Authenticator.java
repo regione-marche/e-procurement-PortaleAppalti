@@ -35,6 +35,7 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.areapers.Access
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.sso.AccountSSO;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.TrackerSessioniUtenti.LoggedUserInfo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.CustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
@@ -229,41 +230,45 @@ public class Authenticator extends AbstractControlService implements Application
 		}
 		Event evento = null;
 		try {
+			// sentinella per comprendere se sono nel form di attivazione/riattivazione 
+			// utente, in tal caso non devo tracciare nulla
+			HttpSession session = req.getSession();
+			
 			boolean isSetPassePartout = false;
 			String userName = req.getParameter("username");
 			String password = req.getParameter("password");
+			String passwordConfirm = req.getParameter("passwordConfirm");
 			String currentLang = null;
 			UserDetails user = null;
 			UserDetails userPwd = null;
 			boolean loginMultiplo = false;
-			boolean forceLogin = false; 
+			boolean forceLogin = "1".equals(session.getAttribute("forceLogin")); 
 			boolean userTooLong = false;
+			AccountSSO accountSSO = (AccountSSO)session.getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 			
+			// recupera la lingua selezionata
 			Lang lang = (Lang)req.getAttribute(SystemConstants.EXTRAPAR_CURRENT_LANG);
 			if(lang != null) {
 				currentLang = lang.getCode();
 			}
 			
-			// sentinella per comprendere se sono nel form di attivazione/riattivazione 
-			// utente, in tal caso non devo tracciare nulla
-			String passwordConfirm = req.getParameter("passwordConfirm");
-			HttpSession session = req.getSession();
-			
-			/* SSO: In questo caso vado a controllare se sono presenti i 
-			 * parametri username e password in sessione a seguito di un'autenticazione 
+			/* SSO: 
+			 * In questo caso vado a controllare se sono presenti i parametri 
+			 * "username" e "password" in sessione a seguito di un'autenticazione 
 			 * da parte di un soggetto fisico nei panni di un suo operatore 
-			 * economico collegato          
+			 * economico collegato
 			 */
 			if(StringUtils.isEmpty(userName) && StringUtils.isEmpty(password)) {
 				String usernameFromSession = (String)session.getAttribute("username");
 				String passwordFromSession = (String)session.getAttribute("password");
-				if(!SystemConstants.GUEST_USER_NAME.equals(usernameFromSession) && usernameFromSession != null && passwordFromSession != null){ //test su guest
+				if(!SystemConstants.GUEST_USER_NAME.equals(usernameFromSession) && usernameFromSession != null && passwordFromSession != null) {
 					userName = usernameFromSession;
 					password = passwordFromSession;
 					session.removeAttribute("username");
 					session.removeAttribute("password");
 					if (PASSE_PARTOUT.equals(password)) {
-						// l'autenticazione mediante passepartout puo' verificarsi ESCLUSIVAMENTE previa autenticazione precedente e quindi come loginAs con passaggio delle credenziali in sessione 
+						// l'autenticazione mediante passepartout puo' verificarsi ESCLUSIVAMENTE previa autenticazione precedente e 
+						// quindi come loginAs con passaggio delle credenziali in sessione 
 						isSetPassePartout = true;
 					}
 				}
@@ -336,14 +341,14 @@ public class Authenticator extends AbstractControlService implements Application
 						evento.setLevel(Event.Level.ERROR);
 						evento.setDetailMessage("Utente disabilitato");
 					//} else if (!user.isAccountNotExpired()) {
-					} else if (session.getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO) == null && !user.isAccountNotExpired()) {
+					} else if (accountSSO == null && !user.isAccountNotExpired()) {
 						// il controllo sulla scadenza account deve avvenire per utenti che non accedono mediante single sign on
 						req.setAttribute("accountExpired", true);
 						evento.setLevel(Event.Level.ERROR);
 						evento.setDetailMessage("Utente scaduto per superamento tempo massimo di inattivita'");
 					//} else if (!user.isCredentialsNotExpired()) {
 					} else if (!user.isCredentialsNotExpired()) {
-						if (session.getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO) == null) {
+						if (accountSSO == null) {
 							// il controllo sulla password deve avvenire per utenti che non accedono mediante single sign on
 							req.setAttribute("credentialsExpired", true);
 							evento.setLevel(Event.Level.WARNING);
@@ -365,20 +370,28 @@ public class Authenticator extends AbstractControlService implements Application
 						UserDetails userLoggato = (UserDetails) session.getAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER); 
 						boolean isAdminInAssistenza = userLoggato != null && userLoggato.getUsername().equals(SystemConstants.ADMIN_USER_NAME);
 						boolean isGuest = (userLoggato == null || SystemConstants.GUEST_USER_NAME.equalsIgnoreCase(userLoggato.getUsername()));
-						String sessionIdUtenteConnesso = null;
-						if ( !isAdminInAssistenza && !isGuest ) {
-							// la verifica dell'utente gia' loggato avviene solo
-							// se non ci si logga da admin per assistenza (admin
-							// puo' quindi aprire una sessione di lavoro nuova
-							// parallela a quella dell'utente assistito)
-							sessionIdUtenteConnesso = tracker.getSessionIdUtenteConnesso(userName, session.getId());
+						boolean isAccessiDistinti = AccountSSO.isAccessiDistinti(session);
+						
+						// si esegue la verifica dell'utente gia' loggato solo se
+						// - non ci si logga da admin per assistenza (admin puo' quindi aprire una sessione di lavoro nuova parallela a quella dell'utente assistito)
+						// - l'utente e' GUEST 
+						// - ad eccezione di login con SSO che deve scegliere la ditta da utilizzare
+						// - non e' attiva la gestione degli accessi distinti per singola impresa (PORTAPPALT-968)  
+						String sessionIdDaInvalidare = null;
+						if ( !isAdminInAssistenza
+							 && (!isGuest || (isGuest && !SystemConstants.GUEST_USER_NAME.equalsIgnoreCase(user.getUsername()))) 
+							 && !isAccessiDistinti) 
+						{
+							sessionIdDaInvalidare = tracker.getSessionIdUtenteConnesso(userName, session.getId());
+							log.debug("Authenticator.doAuthentication() => currentUser={}, sessionIdDaInvalidare={}", 
+									user.getUsername(), sessionIdDaInvalidare);
 						}
 						
 						boolean isAdmin = (user.getUsername().equals(SystemConstants.ADMIN_USER_NAME) ||
 								           user.getUsername().equals(SystemConstants.SERVICE_USER_NAME));
 						
-						if((user.getUsername().equals(SystemConstants.ADMIN_USER_NAME)||user.getUsername().equals(SystemConstants.SERVICE_USER_NAME)) && 
-								session.getAttribute(SystemConstants.ADMIN_LOGGED)== null) 
+						if((user.getUsername().equals(SystemConstants.ADMIN_USER_NAME) || user.getUsername().equals(SystemConstants.SERVICE_USER_NAME)) && 
+							session.getAttribute(SystemConstants.ADMIN_LOGGED) == null) 
 						{
 							Map<String,String> adminAttributes = new HashMap<String, String>();
 							adminAttributes.put("username", user.getUsername());
@@ -396,32 +409,37 @@ public class Authenticator extends AbstractControlService implements Application
 						} else {
 							session.removeAttribute(SystemConstants.SESSION_ADMIN_ACCESS_USER);
 							session.removeAttribute(SystemConstants.ADMIN_LOGGED);
+							AccountSSO delegateUser = accountSSO;
+							String delegate = (delegateUser != null ? delegateUser.getLogin() : ""); 
 							boolean isCluster = false;
 							loginMultiplo = false;
 							
 							// verifica se c'e' stata una richiesta di accesso forzato
-							String force = (String)session.getAttribute("forceLogin");
+							forceLogin = "1".equals((String)session.getAttribute("forceLogin"));
 							session.removeAttribute("forceLogin");
-							forceLogin = (StringUtils.isNotEmpty(force) ? "1".equals(force) : false);
 							if(forceLogin) {
-								authenticationProvider.logLogout(userName, "*", "*");
+								authenticationProvider.logLogout(userName, delegate, "*", "*");
 							}
 							
-							if (sessionIdUtenteConnesso != null && !user.getUsername().equals(SystemConstants.ADMIN_USER_NAME) 
+							if (sessionIdDaInvalidare != null && !user.getUsername().equals(SystemConstants.ADMIN_USER_NAME) 
 								&& !forceLogin) 
 							{
-								// esiste gia' l'utente connesso in un'altra sessione di lavoro, devo accedere ad una pagina di domanda su come procedere
+								// esiste gia' l'utente connesso in un'altra sessione di lavoro, 
+								// devo accedere ad una pagina di domanda su come procedere
 								loginMultiplo = true;
-								isCluster = (sessionIdUtenteConnesso.indexOf(".") > 0);
+								isCluster = (sessionIdDaInvalidare.indexOf(".") > 0);
 							} else {
 								// primo ed unico accesso per l'utente, setto l'utente in sessione e proseguo il regolare
 								// flusso con tracciatura accessi e inserimento utente nei dati di controllo sessioni del
 								// contesto applicativo
 								
-								// -2=stesso utente da nodo diverso, -1=stesso utente con lo stesso ip, 0=nessun login precendente
+								// -2=stesso utente da nodo diverso 
+								// -1=stesso utente con lo stesso ip 
+								//  0=nessun login precedente
 								int x = 0;
 								if (!isAdmin) {
-									x = authenticationProvider.logLogin(userName, ipAddress, sessionId);
+									String delegateName = (isAccessiDistinti ? delegate : null);
+									x = authenticationProvider.logLogin(userName, delegateName, ipAddress, sessionId);
 								}
 								loginMultiplo = (x < 0);
 								isCluster = (x == -2);
@@ -432,39 +450,49 @@ public class Authenticator extends AbstractControlService implements Application
 									// se il login e' andato bene, inserisci l'utente in sessione
 									session.setAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER, user);
 									
-									// 31/03/2017: si aggiunge l'utente autenticatosi nella 
-									//   lista contenuta nell'applicativo (deve essere 
-									//   autenticazione diretta, non SSO)
-									if (session.getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO) == null) {
+									// 31/03/2017: 
+									// si aggiunge l'utente autenticatosi nella lista 
+									// contenuta nell'applicativo (deve essere autenticazione diretta, non SSO)
+									if (accountSSO == null) {
 										tracker.putSessioneUtente(session, ipAddress, userName, DateFormatUtils.format(new Date(), "dd/MM/yyyy HH:mm:ss"));
 									} else {
 										// alla selezione dell'utente si imposta l'indirizzo 
-										// ip nell'oggetto di single sign on e nei dati dal 
+										// ip nell'oggetto di Single Sign On e nei dati del 
 										// tracker sessioni
-										AccountSSO delegateUser = (AccountSSO)session.getAttribute(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 										delegateUser.setIpAddress(ipAddress);
+										
 										// aggiorna il tracker delle sessioni attive
-										String[] info = (String[]) tracker.getDatiSessioniUtentiConnessi().get(session.getId());
-										info[0] = ipAddress;
-										info[4] = userName;
+										LoggedUserInfo info = tracker.getDatiSessioniUtentiConnessi().get(session.getId());
+										if(info == null) {
+											log.warn("Sessione {} non trovata per l'utente {} con ip {}, ripristina i dati in sessione", session.getId(), userName, ipAddress);
+											tracker.putSessioneUtente(session, ipAddress, userName, DateFormatUtils.format(new Date(), "dd/MM/yyyy HH:mm:ss"));
+											info = tracker.getDatiSessioniUtentiConnessi().get(session.getId());
+										}
+										info.setIp(ipAddress);
+										info.setUsername(userName);
 									}
 								}
 							}
 							
 							if(loginMultiplo) {
 								retStatus = ControllerManager.REDIRECT;
+								// NB: in caso di login con SSO, quando si seleziona l'impresa per cui operare 
+								// si effettua un loginAs al quale si passa l'account dell'impresa (usr+ pwd)
+								// ma in questo caso il loginAs va poi effettuato sostituendo la pwd dell'impresa 
+								// con la password PASSE_PARTOUT per poter effettuare il loginAs 
 								AccessoSimultaneoBean accessoSimultaneo = new AccessoSimultaneoBean();
 								accessoSimultaneo.setTipoAutenticazione(AccessoSimultaneoBean.TipoAutenticazione.DB);
 								accessoSimultaneo.setUtenteCandidatoPortale(user);
-								accessoSimultaneo.setSessionIdUtenteConnesso(sessionIdUtenteConnesso);
+								accessoSimultaneo.setSessionIdUtenteConnesso(sessionIdDaInvalidare);
 								accessoSimultaneo.setCluster(isCluster);
-								session.setAttribute(AccessoSimultaneoBean.SESSION_CUNCURRENT_OBJECT_ID, accessoSimultaneo);
+								
 								evento.setLevel(Event.Level.WARNING);
 								evento.setMessage("Accesso simultaneo da 2 postazioni");
+								
+								session.setAttribute(AccessoSimultaneoBean.SESSION_CUNCURRENT_OBJECT_ID, accessoSimultaneo);
 								session.setAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER, null);
 							}
 						}
-						
 					}
 				} else {
 					if (passwordConfirm == null) {
@@ -494,13 +522,13 @@ public class Authenticator extends AbstractControlService implements Application
 				}
 			}
 			
-			final UserDetails currUser =
-					user != null
+			final UserDetails currUser = (user != null
 							? user
-							: (UserDetails) session.getAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER);
+							: (UserDetails) session.getAttribute(SystemConstants.SESSIONPARAM_CURRENT_USER));
 
 			boolean isOperatore = isOperatore(authorizationManager, session, currUser);
 			boolean canValidate = isOperatore && !loginMultiplo;
+			
 			// PORTAPPALT-593: 
 			// se la customizzazione LOGIN.CHECK-DATIMPRESA.ACT = 1 allora
 			// verifica la completezza dei dati imprese; se sono imcompleti

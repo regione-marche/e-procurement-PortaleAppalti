@@ -7,6 +7,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.IEncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -27,6 +29,10 @@ import java.util.Set;
  *
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageCategorieAction extends AbstractProcessPageAction 
 	implements IEncodedDataAction 
 {
@@ -55,9 +61,9 @@ public class ProcessPageCategorieAction extends AbstractProcessPageAction
 	private boolean[] obblNota;
 
 	private Set<String> catErrata = new HashSet<String>();
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
 	private String filtroCategorie;
-	@Validate(EParamValidation.GENERIC)
+	@Validate(EParamValidation.CODICE_CATEGORIA)
 	private String filtroCategorieNew;
 	@Validate(EParamValidation.SI_NO)
 	private String requisitiCoordinatoreSicurezza;		// "Possesso requisiti Coordinatore della Sicurezza - art. 98 D.Lgs. 81/2008" 

@@ -41,7 +41,7 @@
 	</s:if>
 
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;ext=${param.ext}&amp;codice=${codice}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Bandi/view.action" />&amp;ext=${param.ext}&amp;codice=${codice}">
 			<wp:i18n key="LINK_BACK_TO_PROCEDURE" />
 		</a>
 	</div>

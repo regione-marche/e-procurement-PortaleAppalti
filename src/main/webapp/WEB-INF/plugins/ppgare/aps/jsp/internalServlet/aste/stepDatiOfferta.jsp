@@ -66,7 +66,7 @@
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 		
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/mandatory_fields_message.jsp" />
-				
+		
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_GARETEL_DATI_DELLA_GARA" /></legend>
 			<div class="fieldset-row first-row">
@@ -132,23 +132,23 @@
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_OFFERTA_ASTA" /></legend>
 
-			<div class="fieldset-row first-row">										
+			<div class="fieldset-row first-row">
 				<div class="label">
 					<label><wp:i18n key="LABEL_DATA_RILANCIO" /> : </label>
 				</div>
 				<div class="element">
 					<s:date name="#asta.dataUltimoRilancio" format="dd/MM/yyyy HH:mm:ss" />
-				</div>				
+				</div>
 			</div>
-						
-			<div class="fieldset-row last-row">										
+			
+			<div class="fieldset-row last-row">
 				<s:if test="%{#asta.tipoOfferta == 1}">
 					<div class="label">
 						<label><wp:i18n key="LABEL_RIBASSO_PERCENTUALE_FINALE" /> : </label>
 					</div>
 					<div class="element">
 						<s:text name="format.money5dec"><s:param value="%{#asta.ribassoUltimoRilancio}"/></s:text> %
-					</div>				
+					</div>
 				</s:if>
 				<s:else>
 					<div class="label">
@@ -156,9 +156,9 @@
 					</div>
 					<div class="element">
 						<s:text name="format.money5dec"><s:param value="%{#asta.importoUltimoRilancio}"/></s:text> &euro;
-					</div>				
+					</div>
 				</s:else>
-<%--					
+<%--				
 					<c:set var="vociDettaglio" scope="request" value="${gara.vociDettaglio}"/>
 					<c:choose>
 						<c:when test="${vociDettaglio == null}">
@@ -171,7 +171,7 @@
 						</c:when>
 						<c:otherwise>
 							<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/inc/iteratorPrezziUnitari.jsp" >
-								<jsp:param name="vociDettaglioSummary" value="Tabella riepilogo lavorazioni e forniture di dettaglio per l'offerta prezzi unitari" />											
+								<jsp:param name="vociDettaglioSummary" value="Tabella riepilogo lavorazioni e forniture di dettaglio per l'offerta prezzi unitari" />
 								<jsp:param name="vociDettaglioColonneVisibili" value="voce,descrizione,unitaMisura,quantita,astePrezzoUnitario,asteImportoUnitario" />
 								<jsp:param name="vociDettaglioTitoliColonne" value="Voce,Descrizione,udm,Qta,Prezzo unitario,Importo" />
 								<jsp:param name="vociDettaglioTipiColonne" value="7,7,7,5,2,2" />
@@ -179,7 +179,7 @@
 								<jsp:param name="vociDettaglioColQta" value="quantita" />
 								<jsp:param name="vociDettaglioColPrz" value="astePrezzoUnitario" />
 								<jsp:param name="vociDettaglioColImp" value="asteImportoUnitario" />
-								<jsp:param name="vociDettaglioEditabile" value="false" />																					
+								<jsp:param name="vociDettaglioEditabile" value="false" />
 							</jsp:include>
 						</c:otherwise>
 					</c:choose>
@@ -187,8 +187,10 @@
 			</div>
 		</fieldset>
 		
-		<div class="azioni">	
+		<div class="azioni">
 			<input type="hidden" name="page" value="datiofferta"/>
+			<input type="hidden" name="codice" value="<s:property value='%{#asta.codice}'/>"/>
+			<input type="hidden" name="codiceLotto" value="<s:property value='%{#asta.codiceLotto}'/>"/>
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_previous.jsp" />
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_next.jsp" />
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_cancel.jsp" />

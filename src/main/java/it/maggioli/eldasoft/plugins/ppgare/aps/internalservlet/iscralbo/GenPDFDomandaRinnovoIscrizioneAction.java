@@ -14,6 +14,8 @@ import com.agiletec.aps.system.exception.ApsSystemException;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioStazioneAppaltanteType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.FirmatarioBean;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
 
@@ -24,6 +26,10 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManag
  * @author eleonora.favaro
  * @since 1.8.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class GenPDFDomandaRinnovoIscrizioneAction extends GenPDFDomandaIscrizioneAction { 
 	/**
      * UID

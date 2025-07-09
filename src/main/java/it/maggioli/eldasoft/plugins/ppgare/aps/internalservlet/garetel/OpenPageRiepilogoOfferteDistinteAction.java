@@ -3,14 +3,19 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel;
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsException;
+
+import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.ComunicazioneFlusso;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.DocumentoMancanteBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.WizardPartecipazioneHelper;
@@ -18,6 +23,8 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParam
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.bandi.IBandiManager;
+
+import org.apache.pdfbox.pdmodel.font.CIDFontMapping;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.io.IOException;
@@ -26,9 +33,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
-
+/**
+ * ... 
+ *
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction implements SessionAware {
 	/**
 	 * UID
@@ -54,6 +67,8 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 	private boolean rti;
 	@Validate(EParamValidation.DENOMINAZIONE_RTI)
 	private String denominazioneRti;
+	@Validate(EParamValidation.CODICE_CNEL)
+	private String codiceCNEL;
 	private boolean offertaTelematica;
 
 	private DettaglioGaraType dettGara;
@@ -61,8 +76,14 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 
 	private boolean offertaTecnica;
 
-	private HashMap<String, List<DocumentoMancanteBean>> docObbligatoriMancantiTecnica;
-	private HashMap<String, List<DocumentoMancanteBean>> docObbligatoriMancantiEconomica;
+	private Map<String, List<DocumentoMancanteBean>> docObbligatoriMancantiTecnica;
+	private Map<String, List<DocumentoMancanteBean>> docObbligatoriMancantiEconomica;
+	
+	// stato delle comunicazioni delle buste
+	private String statoPrequalifica;
+	private String statoAmministrativa;
+	private Map<String, String> statoEconomica;
+	private Map<String, String> statoTecnica;
 
 	@Override
 	public void setSession(Map<String, Object> session) {
@@ -129,6 +150,14 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 //		return lotti;
 //	}
 
+	public String getCodiceCNEL() {
+		return codiceCNEL;
+	}
+
+	public void setCodiceCNEL(String codiceCNEL) {
+		this.codiceCNEL = codiceCNEL;
+	}
+
 	public boolean isOffertaTecnica() {
 		return offertaTecnica;
 	}
@@ -177,31 +206,42 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 		this.offertaTelematica = offertaTelematica;
 	}
 
-	public HashMap<String, List<DocumentoMancanteBean>> getDocObbligatoriMancantiTecnica() {
+	public Map<String, List<DocumentoMancanteBean>> getDocObbligatoriMancantiTecnica() {
 		return docObbligatoriMancantiTecnica;
 	}
 
-	public void setDocObbligatoriMancantiTecnica(HashMap<String, List<DocumentoMancanteBean>> docObbligatoriMancantiTecnica) {
+	public void setDocObbligatoriMancantiTecnica(Map<String, List<DocumentoMancanteBean>> docObbligatoriMancantiTecnica) {
 		this.docObbligatoriMancantiTecnica = docObbligatoriMancantiTecnica;
 	}
 
-	public HashMap<String, List<DocumentoMancanteBean>> getDocObbligatoriMancantiEconomica() {
+	public Map<String, List<DocumentoMancanteBean>> getDocObbligatoriMancantiEconomica() {
 		return docObbligatoriMancantiEconomica;
 	}
 
-	public void setDocObbligatoriMancantiEconomica(HashMap<String, List<DocumentoMancanteBean>> docObbligatoriMancantiEconomica) {
+	public void setDocObbligatoriMancantiEconomica(Map<String, List<DocumentoMancanteBean>> docObbligatoriMancantiEconomica) {
 		this.docObbligatoriMancantiEconomica = docObbligatoriMancantiEconomica;
 	}
 	
+	public String getStatoPrequalifica() {
+		return statoPrequalifica;
+	}
+
+	public String getStatoAmministrativa() {
+		return statoAmministrativa;
+	}
+
+	public Map<String, String> getStatoEconomica() {
+		return statoEconomica;
+	}
+
+	public Map<String, String> getStatoTecnica() {
+		return statoTecnica;
+	}
 
 	public int getPresentaPartecipazione() { return PortGareSystemConstants.TIPOLOGIA_EVENTO_PARTECIPA_GARA; }
-
 	public int getInviaOfferta() { return PortGareSystemConstants.TIPOLOGIA_EVENTO_INVIA_OFFERTA; }
-
 	public int getBUSTA_AMMINISTRATIVA() { return PortGareSystemConstants.BUSTA_AMMINISTRATIVA; }
-
 	public int getBUSTA_TECNICA() { return PortGareSystemConstants.BUSTA_TECNICA; }
-
 	public int getBUSTA_ECONOMICA() { return PortGareSystemConstants.BUSTA_ECONOMICA; }
 
 	
@@ -229,10 +269,16 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 			try {
 				this.dettGara = buste.getDettaglioGara();
 
+				getStatiBuste();
+				
 				if (partecipazioneHelper != null) {
 					this.rti = partecipazioneHelper.isRti();
 					if (partecipazioneHelper.isRti()) {
 						this.denominazioneRti = partecipazioneHelper.getDenominazioneRTI();
+					}
+					if(buste.isInvioOfferta()) {
+						// codice CNEL e' previsto solo per l'offerta
+						this.codiceCNEL = partecipazioneHelper.getCodiceCNEL();
 					}
 				}
 
@@ -308,6 +354,37 @@ public class OpenPageRiepilogoOfferteDistinteAction extends EncodedDataAction im
 		}
 
 		return target;
+	}	
+	
+	/**
+	 * ricarica gli stati delle comunicazioni delle buste 
+	 * @throws ApsException 
+	 */
+	private void getStatiBuste() throws ApsException {
+		statoPrequalifica = "99";
+		statoAmministrativa = "99";
+		statoEconomica = new HashMap<String, String>();
+		statoTecnica = new HashMap<String, String>();
+
+		// cerca tutte le comunicazioni per la coppia (like username%, like codiceGara%) 
+		DettaglioComunicazioneType filtri = new DettaglioComunicazioneType();
+		filtri.setApplicativo(CommonSystemConstants.ID_APPLICATIVO);
+		filtri.setChiave1(getCurrentUser().getUsername());
+		filtri.setChiave2(codiceGara);
+		List<DettaglioComunicazioneType> comunicazioni = comunicazioniManager.searchElencoComunicazioni(filtri);
+		
+		// verifica che le comunicazioni corrispondano all'utente...
+		if(comunicazioni != null) 
+			comunicazioni.stream()
+				.filter(c -> c.getChiave1().equals(getCurrentUser().getUsername()))
+				.forEach(c -> {
+					if(ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_AMMINISTRATIVA.equals(c.getTipoComunicazione()))
+						statoAmministrativa = c.getStato();
+					if(ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_TECNICA.equals(c.getTipoComunicazione()))
+						statoTecnica.put(c.getChiave2(), c.getStato());
+					if(ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_ECONOMICA.equals(c.getTipoComunicazione()))
+						statoEconomica.put(c.getChiave2(), c.getStato());
+				});
 	}
 
 }

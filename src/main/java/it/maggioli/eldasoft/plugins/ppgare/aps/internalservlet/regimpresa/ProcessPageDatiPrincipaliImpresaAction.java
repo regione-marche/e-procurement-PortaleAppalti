@@ -308,11 +308,19 @@ public class ProcessPageDatiPrincipaliImpresaAction
 				}
 			} else {
 				// operatore UE o EXTRA EU
-				if (this.bandiManager.isImpresaRegistrata(this.getCodiceFiscale(), null, false)) {
+				// verifica se esiste gia' un altro OE estero con lo stesso CF o PIVA
+				// NB: in vecchie versioni era possibile inserire CF e PIVA che quindi potrebbero essere diversi
+				boolean oeExists = false;
+				if(StringUtils.isNotEmpty(this.getCodiceFiscale())) {
+					oeExists = this.bandiManager.isImpresaRegistrata(this.getCodiceFiscale(), null, false);
+				} 
+				if(!oeExists && StringUtils.isNotEmpty(this.getPartitaIVA())) {
+					oeExists = oeExists || this.bandiManager.isImpresaRegistrata(null, this.getPartitaIVA(), false);
+				}
+				if (oeExists) {
 					this.addFieldError("idFiscaleEstero",
 									   this.getText("Errors.impresaUEAlreadyPresent"));
 				}
-				
 			}
 
 		} catch (Throwable t) {

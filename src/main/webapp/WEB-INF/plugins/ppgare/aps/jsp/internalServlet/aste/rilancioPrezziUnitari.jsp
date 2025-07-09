@@ -4,10 +4,9 @@
 <%@ taglib prefix="s"   uri="/struts-tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
 <link href="<wp:resourceURL/>static/css/parsley.css" rel="stylesheet"></link>
 
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.dataTables.min.js"></script>
 
 <c:set var="maxDimensioneDescrizione" value="20" />
@@ -54,7 +53,7 @@
 					<div class="label">
 						<label><wp:i18n key="LABEL_VISUALIZZA_VOCI" /> : </label>
 					</div>
-					<div class="element">
+					<div class="element-orizontal">
 						<input type="radio" value="${VOCI_SOGGETTE_RIBASSO}" name="discriminante" 
 							<s:if test="%{discriminante == VOCI_SOGGETTE_RIBASSO}">checked="checked"</s:if> /> <wp:i18n key="LABEL_VOCI_SOGGETTE_RIBASSO" />
 						&nbsp;&nbsp;&nbsp;&nbsp;

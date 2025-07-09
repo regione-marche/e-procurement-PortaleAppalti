@@ -2,7 +2,6 @@ package it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +9,8 @@ import java.util.List;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
@@ -17,6 +18,7 @@ import com.agiletec.aps.system.exception.ApsException;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.SpringAppContext;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 
@@ -191,6 +193,13 @@ public class ComunicazioneFlusso implements Serializable {
 			String applicativo, 
 			Long id) 
 	{
+		try {
+			ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(SpringAppContext.getServletContext());
+			comunicazioniManager = (IComunicazioniManager) ctx.getBean(CommonSystemConstants.COMUNICAZIONI_MANAGER);
+		} catch (Throwable t) {
+			ApsSystemUtils.getLogger().error("ComunicazioneFlusso", t);
+		}
+		
 		this.comunicazione = null;
 		
 		if(id != null) {
@@ -345,7 +354,7 @@ public class ComunicazioneFlusso implements Serializable {
 						allegati[j++] = attachments.get(i);
 					}
 				}
-				logger.info("Imposto allegati alla comunicazione");
+				logger.debug("Imposto allegati alla comunicazione");
 				this.comunicazione.setAllegato(allegati);
 			}
 			
@@ -503,7 +512,7 @@ public class ComunicazioneFlusso implements Serializable {
 			} else {
 				long maxId = -1;
 				for (DettaglioComunicazioneType comunicazione : comunicazioni) {
-					if (stati.contains(comunicazione.getStato()) && comunicazione.getId().longValue() > maxId) {
+					if(stati.contains(comunicazione.getStato()) && comunicazione.getId().longValue() > maxId) {
 						maxId = comunicazione.getId().longValue();
 						dettaglio = comunicazione;
 					}

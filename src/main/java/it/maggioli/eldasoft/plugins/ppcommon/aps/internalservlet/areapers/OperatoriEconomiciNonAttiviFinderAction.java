@@ -94,6 +94,20 @@ public class OperatoriEconomiciNonAttiviFinderAction extends BaseAction
 	}
 
 	/**
+	 * validate 
+	 */
+	@Override
+	public void validate() {
+		// funzionalità accessibile sono da amministratore!!!
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
+			redirectToHome();
+			return;
+		} 
+		
+		super.validate();
+	}
+
+	/**
 	 * Predispone l'apertura della pagina con l'elenco degli operatori non
 	 * ancora registrati (di default sono estratti tutti quelli non registrati).
 	 * 
@@ -103,7 +117,7 @@ public class OperatoriEconomiciNonAttiviFinderAction extends BaseAction
 		String target = SUCCESS;
 
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null || !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		} else {
@@ -127,7 +141,7 @@ public class OperatoriEconomiciNonAttiviFinderAction extends BaseAction
 		boolean paramOK = true;
 
 		// funzionalita' disponibile solo per utenti amministratori loggati
-		if (this.getCurrentUser() == null || !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE)) {
+		if ( !this.isCurrentUserMemberOf(SystemConstants.ADMIN_ROLE) ) {
 			this.addActionError(this.getText("Errors.function.notEnabled"));
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}else{

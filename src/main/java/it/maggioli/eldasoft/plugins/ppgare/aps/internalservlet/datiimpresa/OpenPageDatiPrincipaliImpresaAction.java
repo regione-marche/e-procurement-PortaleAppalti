@@ -8,9 +8,12 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.InterceptorEncodedData;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.codifiche.ICodificheManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.WizardRegistrazioneImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.services.datiimpresa.DatiImpresaChecker;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +25,11 @@ import org.apache.commons.lang.StringUtils;
  * @author Stefano.Sabbadin
  * @since 1.2
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.MODIFICA_IMPRESA, EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA,
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO, 
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO
+	})
 public class OpenPageDatiPrincipaliImpresaAction extends AbstractOpenPageAction
 				implements IDatiPrincipaliImpresa {
 	/**
@@ -41,7 +49,7 @@ public class OpenPageDatiPrincipaliImpresaAction extends AbstractOpenPageAction
 	private String tipoImpresa;
 	@Validate(EParamValidation.AMBITO_TERRITORIALE)
 	private String ambitoTerritoriale;		// 1=operatore italiano, 2=operaore UE, 3=operatore extra UE
-	@Validate(EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO)
+	@Validate(value = EParamValidation.CODICE_FISCALE_O_IDENTIFICATIVO, error = @WithError(fieldLabel = "CODICE_FISCALE_O_IDENTIFICATIVO"))
 	private String codiceFiscale;
 	@Validate(EParamValidation.PARTITA_IVA)
 	private String partitaIVA;
@@ -165,6 +173,17 @@ public class OpenPageDatiPrincipaliImpresaAction extends AbstractOpenPageAction
 	@Override
 	public void setPartitaIVA(String partitaIVA) {
 		this.partitaIVA = partitaIVA;
+	}
+	
+	@Override
+	public String getIdAnagraficaEsterna() {
+		WizardDatiImpresaHelper helper = getSessionHelper();
+		return (helper != null ? helper.getDatiPrincipaliImpresa().getIdAnagraficaEsterna() : null);
+	}
+
+	@Override
+	public void setIdAnagraficaEsterna(String idAnagraficaEsterna) {
+		// NON VIENE GESTITO COME INPUT A VIDEO
 	}
 
 	@Override

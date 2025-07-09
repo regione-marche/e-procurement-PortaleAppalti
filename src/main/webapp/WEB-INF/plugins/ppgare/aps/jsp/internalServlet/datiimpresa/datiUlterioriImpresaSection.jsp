@@ -3,22 +3,6 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="es" uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
-<s:set var="impresa" value="%{#session['dettAnagrImpresa']}" />
-<s:if test="%{#session['dettAnagrImpresa'] == null}" >
-	<s:set var="impresa" value="%{#session['dettRegistrImpresa']}" />
-</s:if>
-<s:set var="helper" value="%{#session['dettRegistrImpresa']}" />
-
-<s:set var="bloccoEdit">${param.noEdit}</s:set>
-<c:if test="${param.noEdit}">
-	<s:set var="classBlocco" value="%{'no-editable'}" />
-</c:if>
-
-<c:set var="registrazioneDitta" value="false"/>
-<c:if test="${param.registrazione}">
-	<c:set var="registrazioneDitta" value="${param.registrazione}"/>
-</c:if>
-
 <es:checkCustomization var="visDataNullaOstaAntimafiaCCIAA" objectId="IMPRESA-DATIULT-CCIAA" attribute="DATANULLAOSTAANTIMAFIA" feature="VIS" />
 <es:checkCustomization var="obblDataNullaOstaAntimafiaCCIAA" objectId="IMPRESA-DATIULT-CCIAA" attribute="DATANULLAOSTAANTIMAFIA" feature="MAN" />
 <es:checkCustomization var="visSezAbilitPreventiva" objectId="IMPRESA-DATIULT-SEZ" attribute="ABILITAZIONEPREVENTIVA" feature="VIS" />
@@ -42,8 +26,31 @@
 <es:checkCustomization var="isoVisible" objectId="IMPRESA-DATIULT" attribute="ISO" feature="VIS" />
 <es:checkCustomization var="whitelistVisible" objectId="IMPRESA-DATIULT" attribute="WHITELIST" feature="VIS" />
 <es:checkCustomization var="altridatiVisible" objectId="IMPRESA-DATIULT" attribute="ALTRIDATI" feature="VIS" />
-<es:checkCustomization var="obbIban" objectId="IMPRESA-DATIULT-ALTRIDATI" attribute="IBAN" feature="MAN" />
+<es:checkCustomization var="obbIban" objectId="IMPRESA-DATIULT-ALTRIDATI" attribute="CCDEDICATO" feature="MAN" />
 
+<s:set var="impresa" value="%{#session['dettAnagrImpresa']}" />
+<s:if test="%{#session['dettAnagrImpresa'] == null}" >
+	<s:set var="impresa" value="%{#session['dettRegistrImpresa']}" />
+</s:if>
+
+<c:set var="idAnagraficaEsterna"><s:property value="%{#impresa.datiPrincipaliImpresa.idAnagraficaEsterna}" /></c:set>
+
+<c:set var="registrazioneDitta" value="false"/>
+<c:if test="${param.registrazione}">
+	<c:set var="registrazioneDitta" value="${param.registrazione}"/>
+</c:if>
+
+<%-- noEdit=False indica registrazione nuovo operatore, True viceversa --%>
+<s:set var="bloccoEdit">${param.noEdit}</s:set>
+<s:set var="bloccoIscrittoCCIAA">${(not empty idAnagraficaEsterna && not empty iscrittoCCIAA)}</s:set>
+<s:set var="bloccoNumIscrizioneCCIAA">${(not empty idAnagraficaEsterna && not empty numIscrizioneCCIAA)}</s:set>
+<s:set var="bloccoSedeCCIAA">${(not empty idAnagraficaEsterna && not empty provinciaIscrizioneCCIAA)}</s:set>
+
+<%-- classi la visualizzazione degli input bloccati/disabilitati --%>
+<s:set var="readonlyClass" value="%{'no-editable'}" />
+<c:if test="${param.noEdit}"> <s:set var="classBlocco" value="%{#readonlyClass}" /> </c:if>
+<c:if test="${bloccoIscrittoCCIAA}"> <s:set var="iscrittoCCIAAClass" value="%{#readonlyClass}" /> </c:if>
+<c:if test="${bloccoNumIscrizioneCCIAA}"> <s:set var="numIscrizioneCCIAAClass" value="%{#readonlyClass}" /> </c:if>
 
 <wp:i18n key="OPT_CHOOSE_ORGANISMO" var="headerValueOrganismo" />
 
@@ -62,9 +69,11 @@
 	<input type="hidden" name="strNumDipendenti" value="" aria-required="true"/>
 </c:if>
 
+<s:set var="withAreaIBAN" value="" />
 
 <s:set var="tipoImpresa" value="%{#impresa.datiPrincipaliImpresa.tipoImpresa}" />
 <input type="hidden" name="tipoImpresa" value="<s:property value='%{#tipoImpresa}'/>" aria-required="true"/>
+
 
 
 <c:if test="${cciaVisible || previdenzaVisible|| soaVisible || isoVisible || whitelistVisible || visRating || visIscrizioneElenchi189}">
@@ -84,15 +93,21 @@
 						<s:set var="iscrittoCCIAAvalue" value="%{iscrittoCCIAA}" />
 						<s:select list="maps['sino']" name="iscrittoCCIAA" id="iscrittoCCIAA" value="%{#iscrittoCCIAAvalue}"
 										headerKey="" headerValue=""
-										 aria-required="true">
+										disabled="%{#bloccoIscrittoCCIAA}" cssClass="%{#iscrittoCCIAAClass}"
+										aria-required="true" >
 						</s:select>
+						<s:if test="%{#bloccoIscrittoCCIAA}">
+							<s:hidden name="iscrittoCCIAA" value="%{iscrittoCCIAAvalue}"/>
+						</s:if>
 					</div>
 					<div class="contents-group cciaa">
 						<label for="numIscrizioneCCIAA"><wp:i18n key="LABEL_NUM_ISCRIZIONE_CCIAA" /> :
 							<span class="required-field">*</span>
 						</label>
 						<s:textfield name="numIscrizioneCCIAA" id="numIscrizioneCCIAA" value="%{numIscrizioneCCIAA}"
-												 size="16" maxlength="16" aria-required="true" />
+												 size="16" maxlength="16" 
+												 readonly="%{#bloccoNumIscrizioneCCIAA}" cssClass="%{#numIscrizioneCCIAAClass}"
+												 aria-required="true" />
 					</div>
 					<div class="contents-group cciaa">
 						<label for="dataIscrizioneCCIAA"><wp:i18n key="LABEL_DATA_ISCRIZIONE" /> (<wp:i18n key="LABEL_FORMATO_DATA" />) :
@@ -117,13 +132,26 @@
 												 size="10" maxlength="10" aria-required="true" />
 					</div>
 					<div class="contents-group cciaa">
-						<label for="provinciaIscrizioneCCIAA"><wp:i18n key="LABEL_SEDE" /> :
+						<c:set var="lblSedeCCIAA"><wp:i18n key="LABEL_SEDE" /></c:set>
+						<label for="provinciaIscrizioneCCIAA">${lblSedeCCIAA} :
 							<span class="required-field">*</span>
 						</label>
-						<wp:i18n key="OPT_CHOOSE_PROVINCIA" var="headerValueProvincia" />
-						<s:select list="maps['province']" name="provinciaIscrizioneCCIAA" id="provinciaIscrizioneCCIAA" value="%{provinciaIscrizioneCCIAA}"
-											headerKey="" headerValue="%{#attr.headerValueProvincia}" aria-required="true" >
-						</s:select>
+						<s:if test="%{#bloccoSedeCCIAA}">
+							<s:iterator value="maps['province']">
+								<s:if test="%{key == provinciaIscrizioneCCIAA}">
+									<s:textfield name="descProvinciaIscrizioneCCIAA" id="descProvinciaIscrizioneCCIAA" value="%{value}" 
+												readonly="true" cssClass="%{#readonlyClass}" aria-required="true"
+												aria-label="${lblSedeCCIAA}" />
+								</s:if>
+							</s:iterator>
+							<s:hidden name="provinciaIscrizioneCCIAA" value="%{provinciaIscrizioneCCIAA}"/>					
+						</s:if>
+						<s:else>
+							<wp:i18n key="OPT_CHOOSE_PROVINCIA" var="headerValueProvincia" />
+							<s:select list="maps['province']" name="provinciaIscrizioneCCIAA" id="provinciaIscrizioneCCIAA" value="%{provinciaIscrizioneCCIAA}"
+												headerKey="" headerValue="%{#attr.headerValueProvincia}" aria-required="true" >
+							</s:select>
+						</s:else>
 					</div>
 					<div class="contents-group cciaa">
 						<input type="hidden" name="obblOggettoSociale" value="${obblOggettoSociale}" />
@@ -187,6 +215,20 @@
 				</div>
 			</div>
 
+			<div class="fieldset-row">
+				<div class="label">
+					<label for="codiceCNEL"><wp:i18n key="LABEL_CODICE_CNEL" /> : </label>
+				</div>
+				<div class="element">
+					<div class="contents-group">
+						<s:textfield name="codiceCNEL" id="codiceCNEL" value="%{codiceCNEL}" size="4" maxlength="4"/>
+					</div>
+					<div class="note">
+						<wp:i18n key="LABEL_NOTE_CNEL" />
+					</div>
+				</div>
+			</div>
+			
 			<div class="fieldset-row">
 				<div class="label">
 					<label><wp:i18n key="LABEL_ISCRIZIONE_INPS" /> : </label>
@@ -254,6 +296,7 @@
 												rows="5" cols="68" />
 				</div>
 			</div>
+			
 			<div class="fieldset-row">
 				<div class="label">
 					<label><wp:i18n key="LABEL_ISCRIZIONE_INAIL" /> : </label>
@@ -548,11 +591,28 @@
 			</div>
 			<div class="element">
 				<div class="contents-group">
+					<label for="withIBAN"><wp:i18n key="LABEL_AREA_IBAN" /> :
+						<c:if test="${obbIban}">
+							<span class="required-field">*</span>
+						</c:if>
+					</label>
+					<s:select list="maps['sino']" name="withIBAN" id="withIBAN" value="%{withIBAN}"
+							  headerKey="" headerValue="" aria-required="true">
+					</s:select>
+				</div>
+				<div class="contents-group">
 					<label for="codiceIBANCCDedicato"><wp:i18n key="LABEL_IBAN" /> :
-					<c:if test="${obbIban}"><span class="required-field">*</span></c:if>
+						<span class="required-field" id="obblIBAN" style="display: none">*</span>
 					</label>
 					<s:textfield name="codiceIBANCCDedicato" id="codiceIBANCCDedicato" value="%{codiceIBANCCDedicato}"
 											 size="50" maxlength="50" />
+				</div>
+				<div class="contents-group">
+					<label for="codiceIBANCCDedicato"><wp:i18n key="LABEL_NUMERO_CONTO_CORRENTE" />:
+						<span class="required-field" id="obblNumConto" style="display: none">*</span>
+					</label>
+					<s:textfield name="numeroConto" id="numeroConto" value="%{numeroConto}"
+								 size="50" maxlength="50" />
 				</div>
 				<div class="contents-group">
 					<label for="codiceBICCCDedicato"><wp:i18n key="LABEL_BIC" /> :</label>
@@ -735,6 +795,9 @@
 									</c:choose>
 								</span>
 							</td>
+							<td>
+								<%-- QUESTO RESTA VUOTO --%>
+							</td>
 						</tr>
 					</table>
 				</div>
@@ -770,7 +833,7 @@
 										headerKey="" headerValue="" value="%{assunzioniObbligate}" aria-required="true">
 					</s:select>
 					<div class="note">
-					<wp:i18n key="LABEL_ASSUNZIONI_OBBLIGATE_NOTA" />
+						<wp:i18n key="LABEL_ASSUNZIONI_OBBLIGATE_NOTA" />
 					</div>
 				</div>
 				<br/>
@@ -874,10 +937,10 @@
 	// visualizza/nasconde una sezione (display e WCAG 2.1)
 	function showElement(element, value) {
 		if(!value) {
-			element.hide();
+			element.hide(300);
 			element.attr('aria-hidden', 'true');	// WCAG 2.1 validation
 		} else {
-			element.show();
+			element.show(300);
 			element.attr('aria-hidden', 'false');	// WCAG 2.1 validation
 		}
 	}
@@ -972,16 +1035,25 @@
 			$("#aggiornamentoRatingLegalita").val(null);
 		}
 	});
-	
-// apertura della pagina...
-$(document).ready(function() {
 
-	visualizzaRequiredFieldCCIAA();
-	visualizzaRequiredFieldWhitelistAntimafia();
-	visualizzaRequiredFieldIscrittoAnagrafeAntimafia();
-	visualizzaRequiredFieldRatingLegale();
-	
-});	
+	$("#withIBAN").change(function() {
+		changeWithAreaIBANMandatory()
+	});
+	function changeWithAreaIBANMandatory() {
+		const withIBAN = $("#withIBAN :selected").val();
+
+		showElement($("#obblIBAN"), withIBAN === "1")
+		showElement($("#obblNumConto"), withIBAN === "0")
+	}
+
+// apertura della pagina...
+	$(document).ready(function() {
+		visualizzaRequiredFieldCCIAA();
+		visualizzaRequiredFieldWhitelistAntimafia();
+		visualizzaRequiredFieldIscrittoAnagrafeAntimafia();
+		visualizzaRequiredFieldRatingLegale();
+		changeWithAreaIBANMandatory()
+	});
 //--><!]]>
 </script>
 

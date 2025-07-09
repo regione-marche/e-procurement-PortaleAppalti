@@ -9,7 +9,7 @@
 <form id="search-form" action="<wp:url page="search_result" />" >
 	<div>
 		<label for="search"><wp:i18n key="SEARCH" /></label>: 
-		<input type="text" name="search" class="text" id="search" value=""/>
+		<input type="text" name="search" class="text" id="search" value="" autocomplete="off" />
 		<input type="submit" value="<wp:i18n key="BUTTON_SEARCH_IN_CMS_OK" />" class="button" title="<wp:i18n key="TITLE_SEARCH_IN_CMS" />"/>
 	</div>
 </form>

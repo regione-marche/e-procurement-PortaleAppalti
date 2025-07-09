@@ -1,6 +1,8 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo;
 
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.IRaggruppamenti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
@@ -10,13 +12,17 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  *
  * @author Marco.Perazzetta
  */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class OpenPageRTIAction extends it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.richpartbando.OpenPageRTIAction {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -5939974240229775029L;
 
-	
+
 	public String getSTEP_IMPRESA() {
 		return WizardIscrizioneHelper.STEP_IMPRESA;
 	}

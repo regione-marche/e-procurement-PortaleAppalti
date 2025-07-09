@@ -13,6 +13,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event.Level;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
@@ -29,6 +31,7 @@ import java.util.Map;
  * 
  * @author Stefano.Sabbadin
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA })
 public class InitRegistrazioneImpresaAction extends BaseAction implements SessionAware {
     /**
      * UID
@@ -80,6 +83,13 @@ public class InitRegistrazioneImpresaAction extends BaseAction implements Sessio
 	 */
 	public String init() {
 		this.target = SUCCESS;
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA, null) ) {
+			target = CommonSystemConstants.PORTAL_ERROR;
+			return target;
+		}
+		
 		this.session.put(PortGareSystemConstants.SESSION_ID_DETT_REGISTRAZIONE_IMPRESA,
 						 this.createWizardRegistrazioneImpresa(null));
 		return this.target;
@@ -96,6 +106,12 @@ public class InitRegistrazioneImpresaAction extends BaseAction implements Sessio
     public String initSSO() throws ApsSystemException {
     	this.target = SUCCESS;
     	
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione 
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.REGISTRAZIONE_IMPRESA, null) ) {
+			target = CommonSystemConstants.PORTAL_ERROR;
+			return target;
+		}
+
 		AccountSSO accountSSO = (AccountSSO)this.session.get(CommonSystemConstants.SESSION_OBJECT_ACCOUNT_SSO);
 		List<String> authentications = appParamManager.loadEnabledAuthentications();
 		boolean ssoEnabled = false;

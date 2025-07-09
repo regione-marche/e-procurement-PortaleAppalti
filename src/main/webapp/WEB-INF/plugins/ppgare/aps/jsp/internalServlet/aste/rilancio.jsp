@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
  
 <s:set var="gara" value="%{#session['dettGara']}"/>
 <c:set var="simboloOfferta"><s:if test="%{dettaglioAsta.tipoOfferta == 1}">%</s:if><s:else>&euro;</s:else></c:set>

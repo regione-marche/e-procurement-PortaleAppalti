@@ -183,7 +183,7 @@ function enableButton(button){
 						<label for="domainMail"><wp:i18n key="LABEL_DOMAIN_EMAIL" />
 						</label> : <span class="required-field">*</span>
 					</div>
-					<div class="element">
+					<div class="element-orizontal">
 						<s:textfield id="mail-portoken" name="domainMail" maxlength="50" value=""
 							tabindex="1" cssClass="text" /> @maggioli.it
 					</div>

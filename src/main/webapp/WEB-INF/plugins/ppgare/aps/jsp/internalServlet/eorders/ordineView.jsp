@@ -3,8 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="es"   uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
+
 <c:set var="showAccetta" value="false"/>
 <c:set var="showRifiuta" value="false"/>
 <c:set var="backLink" value="ordiniTutti"/>
@@ -306,7 +306,7 @@ function openDialog(){
 	</c:if>
 		
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/EOrders/${backLink}.action"/>&amp;last=1&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/EOrders/${backLink}.action"/>&amp;last=1">
 			<wp:i18n key="LINK_BACK_TO_LIST" />
 		</a>
 	</div>

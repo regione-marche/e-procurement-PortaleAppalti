@@ -4,18 +4,17 @@
 <%@ taglib prefix="s"   uri="/struts-tags" %>
 <%@ taglib prefix="es" uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
 <link href="<wp:resourceURL/>static/css/parsley.css" rel="stylesheet"></link>
 <es:checkCustomization var="withAdvancedUI" objectId="UI-ADVANCED" attribute="DATATABLE" feature="ACT" />
 
-<script src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script src="<wp:resourceURL/>static/js/jquery.dataTables.min.js"></script>
 
 <%-- Parametri da passare a questa jsp 
 	
 		vociDettaglio			<= QUESTO E' L'UNICO DA PASSARE ESTERNAMENTE!!!
 		vociDettaglioAction
-		vociDettaglioSummary			
+		vociDettaglioSummary
 		vociDettaglioColonneVisibili
 		vociDettaglioTitoliColonne
 		vociDettaglioTipiColonne
@@ -28,14 +27,14 @@
 
 	Esempio di chiamata alla jsp
 			
-		<c:set var="vociDettaglio" scope="request" value="${...}"/>		
+		<c:set var="vociDettaglio" scope="request" value="${...}"/>
 		<jsp:include page="/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/aste/inc/dialogPrezziUnitari.jsp" />
 			<jsp:param name="vociDettaglioSummary" value="..." />
 			...
 		</jsp:include> 
 --%>
 
-<c:set var="formatoInteger" value="15.0"/>			               							                
+<c:set var="formatoInteger" value="15.0"/>
 <c:set var="formatoDouble" value="15.5"/>	        <%-- sempre 5 decimali --%>
 <c:set var="formatoString" value="20"/>
 <c:set var="formatoString2" value="60"/>
@@ -48,7 +47,7 @@
 
 <c:set var="visibleColumns" value="${fn:split(param.vociDettaglioColonneVisibili, ',')}"/>
 <c:set var="columnTitles" value="${fn:split(param.vociDettaglioTitoliColonne, ',')}"/>
-<c:set var="columnFormats" value="${fn:split(param.vociDettaglioTipiColonne, ',')}" />					
+<c:set var="columnFormats" value="${fn:split(param.vociDettaglioTipiColonne, ',')}" />
 <c:set var="enabledColumns" value=""/>
 <c:if test="${not empty param.vociDettaglioColonneEditabili}" >
 	<c:set var="enabledColumns" value="${fn:split(param.vociDettaglioColonneEditabili, ',')}"/>

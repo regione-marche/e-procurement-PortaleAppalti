@@ -69,7 +69,7 @@
 				</div>
 				<div class="element">
 					<s:textfield name="model.codice" id="model.codice" cssClass="text" value="%{#searchForm.codice}" 
-											 maxlength="50" size="30" /> / *
+											 maxlength="50" size="30" />
 				</div>
 			</div>	
 			<div class="fieldset-row">
@@ -126,7 +126,7 @@
 						<s:property value="ngara" />
 					</div>
 					<div class="list-action">
-						<a href='<wp:action path="/ExtStr2/do/FrontEnd/ContrattiLFS/dettaglio.action" />&amp;nappal=<s:property value="nappal"/>&amp;codice=<s:property value="codice"/>&amp;&amp;${tokenHrefParams}' 
+						<a href='<wp:action path="/ExtStr2/do/FrontEnd/ContrattiLFS/dettaglio.action" />&amp;nappal=<s:property value="nappal"/>&amp;codice=<s:property value="codice"/>' 
 							   title='<wp:i18n key="LINK_VIEW_DETAIL" />' class="bkg detail-very-big">
 							<wp:i18n key="LINK_VIEW_DETAIL" />
 						</a>

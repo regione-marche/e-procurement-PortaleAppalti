@@ -10,8 +10,9 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.qcompiler.inc.QCQuestionario;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.dgue.DgueBuilder;
-import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.iscralbo.WizardDocumentiHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -21,6 +22,7 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
  *
  * @author 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class OpenPageQuestionarioBustaAction extends AbstractOpenPageAction {
 	/**
 	 * UID
@@ -106,18 +108,20 @@ public class OpenPageQuestionarioBustaAction extends AbstractOpenPageAction {
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) 
 		{
 			try {
-				WizardDocumentiBustaHelper documentiBustaHelper = getWizardDocumentiBustaHelper();
+				// per gare a lotti... 
+				// ...aggiorna lo stato di primo accesso ai lotti (busta tecnica ed conomica)
+				GestioneBuste buste = GestioneBuste.getFromSession(); 
+				BustaDocumenti busta = buste.getBusta(this.tipoBusta);
+				BustaRiepilogo bustaRiepilogo = buste.getBustaRiepilogo();
+				busta.get();
+				bustaRiepilogo.get();
+				RiepilogoBusteHelper riepilogo = bustaRiepilogo.getHelper();
+				WizardDocumentiBustaHelper documentiBustaHelper = busta.getHelperDocumenti();
 				
 				// verifica se la modulistica del questionario e' cambiata in BO
 				if(documentiBustaHelper.isQuestionarioModulisticaVariata()) {
 					this.setTarget(MODULISTICA_CAMBIATA);
 				}
-				
-				// per gare a lotti... 
-				// ...aggiorna lo stato di primo accesso ai lotti (busta tecnica ed conomica)
-				BustaRiepilogo bustaRiepilogo = GestioneBuste.getBustaRiepilogoFromSession();
-				BustaDocumenti busta = bustaRiepilogo.getGestioneBuste().getBusta(this.tipoBusta);
-				RiepilogoBusteHelper riepilogo = bustaRiepilogo.getHelper();
 				
 				if(this.tipoBusta == BustaGara.BUSTA_PRE_QUALIFICA) {
 					if(riepilogo.getBustaPrequalifica() != null) {
@@ -149,15 +153,13 @@ public class OpenPageQuestionarioBustaAction extends AbstractOpenPageAction {
 				} 
 
 				ApsSystemUtils.getLogger().debug("Cerco il file del questionario se presente");
-				if(documentiBustaHelper.getAdditionalDocs() != null) {
-					QCQuestionario questionario = documentiBustaHelper.getQuestionarioAllegato(WizardDocumentiHelper.QUESTIONARIO_GARE_FILENAME);
-					ApsSystemUtils.getLogger().debug("questionario.isNull? {}",(questionario==null));
-					if(questionario!=null) {
-						questionario.addServerFilesUuids(documentiBustaHelper);
-						ApsSystemUtils.getLogger().debug("Impostati i serverFiles");
-						String json = questionario.getQuestionario();
-						documentiBustaHelper.updateQuestionario(json);
-					}
+				QCQuestionario questionario = documentiBustaHelper.getQuestionarioGare(this.tipoBusta);
+				ApsSystemUtils.getLogger().debug("questionario.isNull? {}",(questionario==null));
+				if(questionario != null) {
+					questionario.addServerFilesUuids(documentiBustaHelper);
+					ApsSystemUtils.getLogger().debug("Impostati i serverFiles");
+					String json = questionario.getQuestionario();
+					documentiBustaHelper.updateQuestionario(json);
 				}
 				
 				// DGUE - genera i link "second" e "third" per la gestione del DGUE

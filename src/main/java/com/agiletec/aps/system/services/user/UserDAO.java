@@ -20,6 +20,7 @@ package com.agiletec.aps.system.services.user;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.aps.system.services.AbstractDAO;
+import com.agiletec.aps.system.services.user.DelegateUser.DelegateUserBuilder;
 import com.agiletec.aps.util.IApsEncrypter;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
@@ -620,51 +621,96 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 	 * (ip, sessionId o nodo cluster diverso) restituisce False altrimenti True
 	 * 
 	 * @return 0 se l'utente non ha un login
-	 *         -1 se l'utente ha gia' un login 
-	 *         -2 se l'utente ha gia' un login da un altro nodo (cluster)
+	 *        -1 se l'utente ha gia' un login 
+	 *        -2 se l'utente ha gia' un login da un altro nodo (cluster)
 	 */
-	private int isNewUserLogin(String username, String ipAddress, String sessionId) {
+	private int isNewUserLogin(String username, String delegate, String ipAddress, String sessionId) {
 		Connection conn = null;
 		PreparedStatement stat = null;
 		ResultSet result = null;
 		int exitCode = 0;
 		boolean found = false;
 		try {
+			boolean isCluster = (StringUtils.isNotEmpty(sessionId) ? sessionId.indexOf(".") > 0 : false);
+			
 			conn = this.getConnection();
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
+			// SELECT ipaddress, sessionid FROM ppcommon_accesses WHERE username = ? AND logouttime IS NULL
 			stat = conn.prepareStatement(IS_NEW_USER_LOGIN);
 			stat.setString(1, username);
 			//stat.setString(2, ipAddress);
 			//stat.setString(3, sessionId);
 			result = stat.executeQuery();
+			
 			if (result != null) {
+				boolean isLoginAccessiDistinti = StringUtils.isNotEmpty(delegate);
+				boolean execLoginAccessiDistinti = false;
+				
+				// verifica se in PPCOMMON_ACCESSES esiste gia' un login per "username" (impresa)
 				boolean empty = !result.next();
 				if( empty ) {
 					found = false;
+					execLoginAccessiDistinti = isLoginAccessiDistinti;
 				} else {
-					String ip = (StringUtils.isNotEmpty(result.getString(1)) ? result.getString(1) : "");
-					String id = (StringUtils.isNotEmpty(result.getString(2)) ? result.getString(2) : "");
-					boolean isCluster = (StringUtils.isNotEmpty(sessionId) ? sessionId.indexOf(".") > 0 : false);
+					String dbIp = (StringUtils.isNotEmpty(result.getString(1)) ? result.getString(1) : "");
+					String dbSessionId = (StringUtils.isNotEmpty(result.getString(2)) ? result.getString(2) : "");
 					
-					if( !isCluster ) {
-						// c'e' un altro login dallo stesso pc per l'utente
-						//if( !ip.equals(ipAddress) ) {
-							exitCode = -1;
-						//}
-					} else {
-						if(StringUtils.isNotEmpty(id)) {
-							// se l'id sessione e' diverso allora l'utente tenta l'autenticazione 
-							// da un client diverso o da un nodo-cluster diverso 
-							// che e' gia' loggato
-							if( !id.equals(sessionId) ) {
-								if(sessionId.indexOf(".") > 0) {
-									exitCode = -2;		// login da nodo-cluster diverso
+					if(isLoginAccessiDistinti) {
+						// LOGIN CON ACCESSI DISTINTI PER OE (username, delegate)
+						// NB: 
+						// se viene effettuato un accesso come soggetto impresa (delegate presente)
+						// si permette l'accesso simultaneo per la stessa ditta/OE
+						// quindi
+						// e possibile avere in PPCOMMON_ACCESES piu' righe per lo stesso username, ma con session id diversi 
+						// ovvero uno per ogni soggetto impresa che si autentica per la ditta (username, delegate) 
+						if( !"*".equals(sessionId) ) {
+							if( StringUtils.isNotEmpty(dbSessionId) && !dbSessionId.equals(sessionId) ) {
+								// verifica se in PPCOMMON_DELEGATE_ACCESSES esiste gia' un login (username, delegate)
+								boolean exists = existsLoginProfiloSSO(username, delegate);
+								if( !exists ) {
+									// effettua un nuovo login del soggetto impresa (username, delegate)
+									execLoginAccessiDistinti = true;
 								} else {
-									exitCode = -1;		// login dallo stesso pc
+									// esiste gia' un login per il soggetto impresa (username, delegate) 
+								}
+							} else {
+								// stessa sessione, quindi lo stesso identico utente dalla stessa postazione
+								// effettua un nuovo login del soggetto impresa (username, delegate)
+								execLoginAccessiDistinti = true;
+							}
+						}
+						
+					} else  {
+						// LOGIN STANDARD PER OE (username) 
+						if( !isCluster ) {
+							// c'e' un altro login dallo stesso pc per l'utente
+							//if( !ip.equals(ipAddress) ) {
+								exitCode = -1;
+							//}
+						} else {
+							if(StringUtils.isNotEmpty(dbSessionId)) {
+								// se l'id sessione e' diverso allora l'utente tenta l'autenticazione 
+								// da un client diverso o da un nodo-cluster diverso 
+								// che e' gia' loggato
+								if( !dbSessionId.equals(sessionId) ) {
+									exitCode = (sessionId.indexOf(".") > 0
+												? -2		// login da nodo-cluster diverso
+												: -1		// login dallo stesso pc
+									);
 								}
 							}
 						}
+					}
+				}
+				
+				// LOGIN CON ACCESSI DISTINTI PER OE (username, delegate)
+				// se necessario esegui il login del soggetto impresa
+				if(execLoginAccessiDistinti) {
+					boolean loginOk = loginProfiloSSOAccess(username, delegate);
+					if( !loginOk ) {
+						// lo stesso (utente, delegate) ha gia' effettuando il login su un'altra postazione...
+						exitCode = (isCluster ? -2 : -1);  
 					}
 				}
 			}
@@ -677,12 +723,14 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 	}
 
 	@Override
-	public int logLogin(String username, String ipAddress, String sessionId) {
+	public int logLogin(String username, String delegate, String ipAddress, String sessionId) {
 		Connection conn = null;
 		PreparedStatement stat = null;
 		int exitCode = 0;
 		boolean found = false;
 		try {
+			delegate = (StringUtils.isNotEmpty(delegate) ? delegate : null);	// se non c'e' si normalizza a NULL
+			
 			// chiudi tutti i login aperti e non chiusi da oltre 24h
 			Date now = new java.util.Date();
 			Calendar cal = Calendar.getInstance();
@@ -702,7 +750,7 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 			conn.close();
 			
 			// effettua il login
-			exitCode = this.isNewUserLogin(username, ipAddress, sessionId);
+			exitCode = this.isNewUserLogin(username, delegate, ipAddress, sessionId);
 			found = (exitCode != 0);
 			
 			conn = this.getConnection();
@@ -726,12 +774,12 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 	}
 
 	@Override
-	public boolean logLogout(String username, String ipAddress, String sessionId) {
+	public boolean logLogout(String username, String delegate, String ipAddress, String sessionId) {
 		Connection conn = null;
 		PreparedStatement stat = null;
 		boolean logout = false;
 		try {
-			int exitCode = this.isNewUserLogin(username, ipAddress, sessionId);
+			int exitCode = this.isNewUserLogin(username, delegate, ipAddress, sessionId);
 			boolean isCluster = (exitCode == -2);
 			if( !isCluster ) {
 				String sql = LOG_USER_LOGOUT;
@@ -749,6 +797,8 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 				conn.commit();
 				logout = true;
 			}
+			
+			logoutProfiloSSOAccess(username, delegate);
 		} catch (Throwable t) {
 			processDaoException(t, "Error loggin the access for the user " + username, "logLogout");
 		} finally {
@@ -1063,6 +1113,543 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 		}
 	}
 	
+	/**
+	 * Carica e restituisce la lista completa dei soggetti impresa abilitati 
+	 * all'accesso dei dati di un operatore economico.
+	 *
+	 * @return La lista completa deri soggetti impresa
+	 */
+	@Override
+	public List<DelegateUser> loadProfiliSSO(String username, String delegate) {
+		List<DelegateUser> delegateUsers = null;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		ResultSet res = null;
+		try {
+			UserDetails user = null;
+			if(StringUtils.isNotEmpty(username)) {
+				user = this.loadUser(username);
+			}
+			
+			// prepara la quiri ed esegui l'sql...
+			String sql = LOAD_IMPRESE_DELEGATES +
+				(StringUtils.isNotEmpty(username) ? " AND upper(username) = '" + username.toUpperCase() + "'" : "") + 
+				(StringUtils.isNotEmpty(delegate) ? " AND upper(delegate) = '" + delegate.toUpperCase() + "'" : "");
+			sql = sql + " ORDER BY username, delegate";
+			
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			stat = conn.prepareStatement(sql);
+			res = stat.executeQuery();
+			
+			delegateUsers = new ArrayList<DelegateUser>();
+			while (res.next()) {
+				DelegateUser du = createDelegateUserSSOFromRecord(res, user);
+				delegateUsers.add(du);
+			}
+		} catch (Throwable t) {
+			processDaoException(t, "Error loading the OE users list", "loadProfiliSSO");
+		} finally {
+			closeDaoResources(res, stat, conn);
+		}
+		return delegateUsers;
+	}
+
+	/**
+	 * Restituisce il soggetto impresa associato ad un'impresa.
+	 *
+	 * @param delegateUser il delegate user associato all'impresa
+	 */
+	@Override
+	public DelegateUser loadProfiloSSO(String username, String delegate) {
+		DelegateUser du = null;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			UserDetails user = null;
+			if(StringUtils.isNotEmpty(username)) {
+				user = this.loadUser(username);
+			}
+
+			// NB: l'OWNER non viene definito nella "authusers_delegates"
+			//     se un soggetto e' OWNER significa che il user.delegateuser 
+			//     della ditta corrisponde all'id utente del soggetto
+			if(StringUtils.isNotEmpty(user.getDelegateUser()) && user.getDelegateUser().equalsIgnoreCase(delegate)) {
+				// OWNER della ditta
+				du = createDelegateUser(user.getUsername(), delegate, null, true, DelegateUser.Accesso.EDIT_SEND, null);
+			} else {
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(LOAD_IMPRESA_DELEGATE);
+				stat.setString(1, username);
+				stat.setString(2, delegate);
+				ResultSet res = stat.executeQuery();
+				if(res.next()) {
+					du = createDelegateUserSSOFromRecord(res, user);
+				}
+				closeDaoResources(null, stat, conn);
+			}
+			
+			// carica le info sull'ultimo lock attivo del soggetto impresa...
+			if(du != null) {
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(LOAD_IMPRESA_DELEGATE_ACCESS);
+				stat.setString(1, username);
+				stat.setString(2, delegate);
+				ResultSet res = stat.executeQuery();
+				if(res.next()) {
+					DelegateUser access = createDelegateUserSSOAccessFromRecord(res);
+					du.setFlusso(access.getFlusso());
+					du.setLoginTime(access.getLoginTime());
+					du.setLogoutTime(access.getLogoutTime());
+				}
+			}
+
+		} catch (Throwable t) {
+			processDaoException(t, "Error while loading the OE user " + username + "," + delegate, "loadProfiloSSO");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return du;
+	}	
+	
+	/**
+	 * restituisce un delegate user dato un record di authusers_delegate 
+	 * @throws SQLException 
+	 */
+	private DelegateUser createDelegateUserSSOFromRecord(ResultSet res, UserDetails user) throws SQLException {
+		DelegateUser du = null;
+		if (res != null) {
+			// SELECT username, delegate, description, rolename, email
+			boolean isOwner = (user != null 
+							   && StringUtils.isNotEmpty(user.getDelegateUser()) 
+							   && user.getDelegateUser().equalsIgnoreCase(res.getString(2)));
+			du = createDelegateUser(
+					res.getString(1)		// username
+					, res.getString(2)		// delegate
+					, res.getString(3)		// description 
+					, isOwner
+					, DelegateUser.valueOfDefault(res.getString(4), DelegateUser.Accesso.READONLY)
+					, res.getString(5));	// email
+		}
+		return du;
+	}
+	
+	private DelegateUser createDelegateUser(
+			String username
+			, String delegate
+			, String description
+			, boolean isOwner
+			, DelegateUser.Accesso role
+			, String email)
+	{
+		return DelegateUserBuilder.init()
+			.setUsername(username)
+			.setDelegate(delegate)
+			.setDescription(description)
+			.setOwner(isOwner)
+			.setRolename(isOwner ? DelegateUser.Accesso.EDIT_SEND : role)
+			.setEmail(email)
+			.build();
+	}
+	
+	/**
+	 * Cancella il soggetto impresa associato ad un operatore economico.
+	 * 
+	 * @param impresa Lo username dell'impresa
+	 * @param codiceFiscale Il codice fiscale del soggetto associato all'impresa(o username)
+	 */
+	@Override
+	public void deleteProfiloSSO(String username, String delegate) {
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			DelegateUser u = this.loadProfiloSSO(username, delegate);
+			if( u != null && !u.isOwner() ) {
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(DELETE_IMPRESA_DELEGATE);
+				// where params
+				stat.setString(1, username);
+				stat.setString(2, delegate);
+				stat.executeUpdate();
+				conn.commit();
+			}
+		} catch (Throwable t) {
+			this.executeRollback(conn);
+			processDaoException(t, "Error deleting a OE user", "deleteProfiloSSO");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+	}
+
+	/**
+	 * Aggiunge un nuovo soggetto impresa associato ad un'impresa.
+	 *
+	 * @param delegateUser il delegate user associato all'impresa
+	 */
+	@Override
+	public void addProfiloSSO(DelegateUser delegateUser) {
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			if( !delegateUser.isOwner() ) {
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(ADD_IMPRESA_DELEGATE);
+				stat.setString(1, delegateUser.getUsername());
+				stat.setString(2, delegateUser.getDelegate());
+				stat.setString(3, delegateUser.getDescription());
+				stat.setString(4, delegateUser.getRolename().name());
+				stat.setString(5, delegateUser.getEmail());
+				stat.executeUpdate();
+				conn.commit();
+			}
+		} catch (Throwable t) {
+			processDaoException(t, "Error adding a new OE user", "addProfiloSSO");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+	}
+
+	/**
+	 * Aggiorna un soggetto impresa gia' presente 
+	 *
+	 * @param delegateUser il delegate user associato all'impresa
+	 */
+	@Override
+	public void updateProfiloSSO(DelegateUser delegateUser) {
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			if( !delegateUser.isOwner() ) {
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(UPDATE_IMPRESA_DELEGATE);
+				stat.setString(1, delegateUser.getDescription());
+				stat.setString(2, delegateUser.getRolename().name());
+				stat.setString(3, delegateUser.getEmail());
+				// where params
+				stat.setString(4, delegateUser.getUsername());
+				stat.setString(5, delegateUser.getDelegate());
+				stat.executeUpdate();
+				conn.commit();
+			}
+		} catch (Throwable t) {
+			processDaoException(t, "Error while updating the OE user " + delegateUser.getUsername() + "," + delegateUser.getDelegate(), "updateProfiloSSO");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+	}
+	
+	/**
+	 * verifica se esiste un LOGIN per il soggetto impresa
+	 * 
+	 * @return true se il login viene effettuato con successo, false viceversa
+	 */
+	private boolean existsLoginProfiloSSO(String username, String delegate) {
+		boolean exists = false;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			String functionId = "LOGIN";
+
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			// SELECT * FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ?
+			stat = conn.prepareStatement(SELECT_IMPRESA_DELEGATES_ACCESSES);
+			stat.setString(1, username);
+			stat.setString(2, delegate);
+			stat.setString(3, "LOGIN");
+			ResultSet res = stat.executeQuery();
+			if(res != null && res.next())
+				exists = true;
+		} catch (Throwable t) {
+			exists = false;
+			processDaoException(t, "Error while login OE user " + username + "," + delegate, "existsLoginProfiloSSO");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return exists;
+	}
+
+	/**
+	 * effettua il LOGIN per il soggetto impresa
+	 * 
+	 * @return true se il login viene effettuato con successo, false viceversa
+	 */
+	private boolean loginProfiloSSOAccess(String username, String delegate) {
+		boolean login = false;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			String functionId = "LOGIN";
+			
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			// DELETE FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ?
+			stat = conn.prepareStatement(DELETE_IMPRESA_DELEGATES_ACCESSES);
+			stat.setString(1, username);
+			stat.setString(2, delegate);
+			stat.setString(3, functionId);
+			stat.executeUpdate();
+			conn.commit();
+			closeDaoResources(null, stat, conn);
+			
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			// INSERT INTO ppcommon_delegate_accesses (username, delegate, functionid, logintime, logouttime) VALUES ( ? , ? , ? , ? , ? )
+			stat = conn.prepareStatement(INSERT_IMPRESA_DELEGATES_ACCESSES);
+			stat.setString(1, username);
+			stat.setString(2, delegate);
+			stat.setString(3, functionId);
+			stat.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+			stat.setTimestamp(5, null);
+			stat.executeUpdate();
+			conn.commit();
+			
+			login = true;
+		} catch (Throwable t) {
+			login = false;
+			processDaoException(t, "Error while login OE user " + username + "," + delegate, "loginProfiloSSOAccess");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return login;
+	}
+	
+	/**
+	 * effettua il LOGOUT per il soggetto impresa
+	 * 
+	 * @return true se il login viene effettuato con successo, false viceversa
+	 */
+	private boolean logoutProfiloSSOAccess(String username, String delegate) {
+		boolean logout = true;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			// rimuovi tutti gli eventuali lock ancora aperti
+			unlockProfiloSSOAccess(username, delegate);
+
+			// esegui il LOGOUT
+			// ed elimina tutte le occorrenze relative alle funzioni utilizzate
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+//			// DELETE FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ?
+//			stat = conn.prepareStatement(DELETE_IMPRESA_DELEGATES_ACCESSES);
+			// DELETE FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) 
+			stat = conn.prepareStatement(DELETE_IMPRESA_ALL_DELEGATES_ACCESSES);
+			stat.setString(1, username);
+			stat.setString(2, delegate);
+//			stat.setString(3, "LOGIN");
+			stat.executeUpdate();
+			conn.commit();
+			
+			logout = true;
+		} catch (Throwable t) {
+			logout = false;
+			processDaoException(t, "Error while logout OE user " + username + "," + delegate, "logoutProfiloSSOAccess");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return logout;
+	}
+
+	/**
+	 * effettua un LOCK sulla risorsa "functionId" per il soggetto impresa
+	 * 
+	 * @return true se il lock viene portato a termine, false viceversa
+	 */
+	@Override
+	public boolean lockProfiloSSOAccess(String username, String delegate, String functionId) {
+		boolean locked = false;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			if(StringUtils.isEmpty(delegate)) {
+				// acceso standard solo per "username"
+				// si simula un lock andato a buon fine senza inserire nulla
+				locked = true;
+			} else {
+				// NB: 
+				// ogni metodo di un DAO viene sempre eseguito in modo atomico perche' 
+				// e' l'oggetto manager che gestisce la concorrenza tra le varie request
+				boolean canLock = true;
+				boolean update = false;
+				
+				// carica tutti i lock attivi per l'impresa (username, funzione) 
+				// SELECT username, delegate, functionid, logintime, logouttime FROM ppcommon_delegate_accesses 
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(LOAD_IMPRESE_DELEGATES_LOCKS);
+				stat.setString(1, username);
+				stat.setString(2, functionId);
+				//stat.setString(3, delegate);
+				ResultSet res = stat.executeQuery();
+				while (res.next()) {
+					if(res.getString(2).equalsIgnoreCase(delegate)) {
+						// esiste gia' un LOCK per il soggetto corrente 
+						update = true;
+					} else if(res.getString(5) == null) {
+						// esiste gia' un LOCK di un altro soggetto impresa
+						canLock = false;
+					}
+				}
+				closeDaoResources(null, stat, conn);
+			
+				if(canLock) {
+					conn = this.getConnection();
+					conn.setAutoCommit(false);
+					if(update) {
+						// UPDATE ppcommon_delegate_accesses SET functionid = ? AND logintime = ? AND logouttime = ? WHERE upper(username) = ? AND upper(delegate) = ?
+						stat = conn.prepareStatement(UPDATE_IMPRESA_DELEGATES_ACCESSES);
+						stat.setString(1, functionId);
+						stat.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
+						stat.setTimestamp(3, null);
+						// where params
+						stat.setString(4, username);
+						stat.setString(5, delegate);
+						stat.setString(6, functionId);
+					} else {
+						// INSERT INTO ppcommon_delegate_accesses (username, delegate, functionid, logintime, logouttime) VALUES ( ? , ? , ? , ? , ? )
+						stat = conn.prepareStatement(INSERT_IMPRESA_DELEGATES_ACCESSES);
+						stat.setString(1, username);
+						stat.setString(2, delegate);
+						stat.setString(3, functionId);
+						stat.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+						stat.setTimestamp(5, null);
+					}
+					stat.executeUpdate();
+					conn.commit();
+					locked = true;
+				}
+			}
+		} catch (Throwable t) {
+			locked = false;
+			processDaoException(t, "Error while locking OE user " + username + "," + delegate + " on " + functionId, "lockProfiloSSOAccess");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return locked;
+	}
+	
+	/**
+	 * effettua un UNLOCK sulla risorsa "functionId" per il soggetto impresa
+	 * 
+	 * @return true se l'unlock viene portato a termine, false viceversa
+	 */
+	@Override
+	public boolean unlockProfiloSSOAccess(String username, String delegate) {
+		boolean unlocked = false; 
+		Connection conn = null;
+		PreparedStatement stat = null;
+		try {
+			if(StringUtils.isNotEmpty(delegate)) {
+				// UPDATE ppcommon_delegate_accesses SET logouttime = ? WHERE logouttime IS NULL AND upper(username) = upper(?) AND upper(delegate) = upper(?)
+				String sql = UNLOCK_IMPRESA_DELEGATES_ACCESSES + " AND functionid <> 'LOGIN'";
+				conn = this.getConnection();
+				conn.setAutoCommit(false);
+				stat = conn.prepareStatement(sql);
+				stat.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+				// where param
+				stat.setString(2, username);
+				stat.setString(3, delegate);
+				stat.executeUpdate();
+				conn.commit();
+			}
+			unlocked = true;
+		} catch (Throwable t) {
+			processDaoException(t, "Error while unlocking OE user " + username + "," + delegate, "unlockProfiloSSOAccess");
+		} finally {
+			closeDaoResources(null, stat, conn);
+		}
+		return unlocked;
+	}
+
+	/**
+	 * Restituisce il lock del soggetto impresa di una ditta/OE 
+	 *
+	 * @return lock del soggetto impresa
+	 */
+	@Override
+	public DelegateUser loadProfiloSSOAccess(String username, String delegate) {
+		DelegateUser access = null;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		ResultSet res = null;
+		try {
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			stat = conn.prepareStatement(LOAD_IMPRESA_DELEGATE_ACCESS); 
+			stat.setString(1, username);
+			stat.setString(2, delegate);
+			
+			res = stat.executeQuery();
+			if(res.next()) {
+				access = createDelegateUserSSOAccessFromRecord(res);
+			}
+		} catch (Throwable t) {
+			processDaoException(t, "Error loading accesses for OE user", "loadProfiloSSOAccess");
+		} finally {
+			closeDaoResources(res, stat, conn);
+		}
+		return access;
+	}
+	
+	/**
+	 * @throws SQLException 
+	 */
+	private DelegateUser createDelegateUserSSOAccessFromRecord(ResultSet res) throws SQLException {
+		DelegateUser access = null;
+		if (res != null) {
+			// SELECT username, delegate, functionid, login, logout
+			access = new DelegateUser();
+			access.setUsername(res.getString(1));
+			access.setDelegate(res.getString(2));
+			access.setFlusso(res.getString(3));
+			access.setLoginTime(res.getTimestamp(4));
+			access.setLogoutTime(res.getTimestamp(5));
+			access.setDescription(res.getString(6));
+		}
+		return access;
+	}
+	
+	/**
+	 * Restituisce la lista degli accessi dei soggetti impresa di una ditta/OE 
+	 *
+	 * @return La lista completa deri soggetti impresa
+	 */
+	@Override
+	public List<DelegateUser> loadProfiliSSOAccesses(String username) {
+		List<DelegateUser> accesses = null;
+		Connection conn = null;
+		PreparedStatement stat = null;
+		ResultSet res = null;
+		try {
+			// prepara la quiri ed esegui l'sql...
+			conn = this.getConnection();
+			conn.setAutoCommit(false);
+			stat = conn.prepareStatement(LOAD_IMPRESA_DELEGATES_ACCESSES);
+			stat.setString(1, username);
+			res = stat.executeQuery();
+			
+			accesses = new ArrayList<DelegateUser>();
+			while (res.next()) {
+				DelegateUser a = createDelegateUserSSOAccessFromRecord(res);
+				accesses.add(a);
+			}
+		} catch (Throwable t) {
+			processDaoException(t, "Error loading accesses for OE user", "loadProfiliSSOAccesses");
+		} finally {
+			closeDaoResources(res, stat, conn);
+		}
+		return accesses;
+	}
+
+	/**
+	 * restituisce la password decifrata   
+	 */
 	protected String getEncryptedPassword(String password) throws ApsSystemException {
 		String encrypted = password;
 		if (null != this.getEncrypter())
@@ -1183,5 +1770,64 @@ public class UserDAO extends AbstractDAO implements IUserDAO {
 
 	private final String SEARCH_USERS
 					= "SELECT a.username, b.active FROM jpuserprofile_authuserprofiles a JOIN authusers b ON a.username=b.username ";
+	
+	// profilazione accessi per ditta con account SSO (delegate users)
+	//
+	private final String PREFIX_LOAD_IMPRESE_DELEGATES
+					= "SELECT username, delegate, description, rolename, email "
+					+ "FROM authusers_delegates ";
+	
+	private final String LOAD_IMPRESE_DELEGATES 
+					= PREFIX_LOAD_IMPRESE_DELEGATES + "WHERE 1=1 ";
+	
+	private final String LOAD_IMPRESA_DELEGATE
+					= PREFIX_LOAD_IMPRESE_DELEGATES + "WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) ";
+	
+	private final String DELETE_IMPRESA_DELEGATE
+					= "DELETE FROM authusers_delegates WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) ";
+
+	private final String ADD_IMPRESA_DELEGATE
+					= "INSERT INTO authusers_delegates (username, delegate, description, rolename, email) VALUES ( ? , ? , ? , ? , ? )";
+	
+	private final String UPDATE_IMPRESA_DELEGATE
+					= "UPDATE authusers_delegates SET description = ?, rolename = ?, email = ? WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) ";
+
+	private final String PREFIX_LOAD_IMPRESE_DELEGATES_ACCESSES 
+					= "SELECT a.username, a.delegate, a.functionid, a.logintime, a.logouttime, d.description "
+					+ "FROM ppcommon_delegate_accesses a LEFT JOIN authusers_delegates d ON a.username=d.username AND a.delegate=d.delegate ";
+
+	private final String LOAD_IMPRESE_DELEGATES_LOCKS 
+					= "SELECT username, delegate, functionid, logintime, logouttime "
+					+ "FROM ppcommon_delegate_accesses " 
+					+ "WHERE upper(username) = upper(?) AND functionid = ? "; //AND upper(delegate) <> upper(?) AND logouttime IS NULL  
+
+	private final String INSERT_IMPRESA_DELEGATES_ACCESSES
+					= "INSERT INTO ppcommon_delegate_accesses (username, delegate, functionid, logintime, logouttime) VALUES ( ? , ? , ? , ? , ? )";
+
+	private final String UPDATE_IMPRESA_DELEGATES_ACCESSES
+					= "UPDATE ppcommon_delegate_accesses SET functionid = ?, logintime = ?, logouttime = ? WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ? ";
+
+	private final String SELECT_IMPRESA_DELEGATES_ACCESSES
+					= "SELECT username, delegate, functionid, logintime, logouttime "
+					+ "FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ? ";
+	
+	private final String DELETE_IMPRESA_DELEGATES_ACCESSES
+					= "DELETE FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) AND functionid = ? ";
+	
+	private final String DELETE_IMPRESA_ALL_DELEGATES_ACCESSES
+					= "DELETE FROM ppcommon_delegate_accesses WHERE upper(username) = upper(?) AND upper(delegate) = upper(?) ";
+
+	private final String UNLOCK_IMPRESA_DELEGATES_ACCESSES 
+					= "UPDATE ppcommon_delegate_accesses SET logouttime = ? WHERE logouttime IS NULL AND upper(username) = upper(?) AND upper(delegate) = upper(?) ";
+
+	private final String LOAD_IMPRESA_DELEGATE_ACCESS 
+					= PREFIX_LOAD_IMPRESE_DELEGATES_ACCESSES
+					+ "WHERE logouttime IS NULL AND upper(a.username) = upper(?) AND upper(a.delegate) = upper(?) "
+					+ "ORDER BY logintime DESC ";
+	
+	private final String LOAD_IMPRESA_DELEGATES_ACCESSES 
+					= PREFIX_LOAD_IMPRESE_DELEGATES_ACCESSES 
+					+ "WHERE a.logouttime IS NULL AND upper(a.username) = upper(?) "
+					+ "ORDER BY a.username, a.delegate ";
 
 }

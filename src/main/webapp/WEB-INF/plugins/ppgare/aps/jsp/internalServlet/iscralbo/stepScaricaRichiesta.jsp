@@ -202,22 +202,22 @@ $(document).ready(function () {
 							<s:if test="%{#status.index==0}">
 								<s:if test="%{modificaFirmatarioVisible}">
 									<c:if test="${sessionIdObj eq 'dettIscrAlbo'}">
-										<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editFirmatarioMandataria.action"/>&amp;${tokenHrefParams}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
+										<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editFirmatarioMandataria.action"/>' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
 										</a>
 									</c:if>
 									<c:if test="${sessionIdObj eq 'dettRinnAlbo'}">
-										<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editRinnovoFirmatarioMandataria.action"/>&amp;${tokenHrefParams}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
+										<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editRinnovoFirmatarioMandataria.action"/>' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
 										</a>
 									</c:if>
 								</s:if>
 							</s:if>
 							<s:else>
 								<c:if test="${sessionIdObj eq 'dettIscrAlbo'}">
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editFirmatarioMandante.action"/>&amp;id=${status.index}&amp;${tokenHrefParams}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
+									<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editFirmatarioMandante.action"/>&amp;id=${status.index}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
 									</a>
 								</c:if>
 								<c:if test="${sessionIdObj eq 'dettRinnAlbo'}">
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editRinnovoFirmatarioMandante.action"/>&amp;id=${status.index}&amp;${tokenHrefParams}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
+									<a href='<wp:action path="/ExtStr2/do/FrontEnd/IscrAlbo/editRinnovoFirmatarioMandante.action"/>&amp;id=${status.index}' class="bkg modify" title="<wp:i18n key="BUTTON_EDIT"/>">
 									</a>
 								</c:if>	
 							</s:else>
@@ -246,7 +246,7 @@ $(document).ready(function () {
 													<wp:i18n key="LABEL_NOTA_ND_NON_PREVISTO" />
 												</c:when>
 												<c:otherwise>
-													<wp:i18n key="LABEL_NOTA_INDICARE_ND_SE_NON_PREVISTO" />											
+													<wp:i18n key="LABEL_NOTA_INDICARE_ND_SE_NON_PREVISTO" />
 												</c:otherwise>
 											</c:choose>
 										</div>
@@ -560,10 +560,9 @@ $(document).ready(function () {
 					</div>
 					<div class="element">
 						<div class="contents-group">
-							<label for="indirizzo"><wp:i18n key="LABEL_INDIRIZZO" /> : <span
-								class="required-field">*</span></label>
+							<label for="indirizzo"><wp:i18n key="LABEL_INDIRIZZO" /> : <span class="required-field">*</span></label>
 							<s:textfield name="indirizzo" id="indirizzo" value="%{#key.indirizzo}"
-								size="40" maxlength="60" />
+								size="50" maxlength="100" />
 							<label for="numCivico"><wp:i18n key="LABEL_NUM_CIVICO" /> : <span class="required-field">*</span></label>
 							<s:textfield name="numCivico" id="numCivico" value="%{#key.numCivico}"
 								size="4" maxlength="10" />

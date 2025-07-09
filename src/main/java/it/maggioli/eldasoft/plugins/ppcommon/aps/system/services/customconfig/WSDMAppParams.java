@@ -258,7 +258,7 @@ public class WSDMAppParams {
 							this.addParam(item.getCodice(), item, portale);
 						} catch (Exception e) {
 							// errore di conversione del parametro
-							ApsSystemUtils.getLogger().info("Errore nella codifica del parametro applicativo " + item.getCodice() + 
+							ApsSystemUtils.getLogger().warn("Errore nella codifica del parametro applicativo " + item.getCodice() + 
 									                        " ('" + item.getValore() +  "'?)" +
 									                        " per la configurazione di default " + item.getId());
 						}
@@ -287,7 +287,7 @@ public class WSDMAppParams {
 							this.addParam(stazioneAppaltante + "." + item.getCodice(), item, portale);
 						} catch (Exception e) {
 							// errore di conversione del parametro
-							ApsSystemUtils.getLogger().info("Errore nella codifica del parametro applicativo " + item.getCodice() + 
+							ApsSystemUtils.getLogger().warn("Errore nella codifica del parametro applicativo " + item.getCodice() + 
 									                        " ('" + item.getValore() +  "'?)" +
 									                        " per la SA " + stazioneAppaltante);
 						}

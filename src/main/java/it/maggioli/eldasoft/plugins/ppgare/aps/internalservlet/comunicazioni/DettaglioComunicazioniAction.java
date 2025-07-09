@@ -4,16 +4,22 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 import com.agiletec.aps.system.exception.ApsSystemException;
 import com.agiletec.plugins.jpuserprofile.aps.system.services.profile.model.UserProfile;
+
+import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.ComunicazioneType;
 import it.eldasoft.www.sil.WSGareAppalto.DettaglioGaraType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.EncodedDataAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.ntp.INtpManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IComunicazioniManager;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.beans.ComunicazioniConstants;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.RichiesteRettificaList;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper.FasiRettifica;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -29,7 +35,9 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DettaglioComunicazioniAction extends EncodedDataAction implements SessionAware {
 	/**
@@ -44,6 +52,8 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 	private IComunicazioniManager comunicazioniManager;
 	private IContrattiManager contrattiManager;
 	private IAvvisiManager avvisiManager;
+	private IStipuleManager stipuleManager;
+	
 	@Validate(EParamValidation.ENTITA)
 	private String entita;
 	private Long idComunicazione;
@@ -68,9 +78,9 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 	private Long idDestinatario;
 	@Validate(EParamValidation.GENERIC)
 	private String mittente;
-	private Boolean soccorsoIstruttorio;
-	private boolean soccorsoScaduto;		// TRUE in caso di soccorso istruttorio scaduto 
-	private IStipuleManager stipuleManager;
+	private Boolean soccorsoIstruttorio;			// TRUE in caso di soccorso istruttorio
+	private boolean soccorsoScaduto;				// TRUE in caso di soccorso istruttorio scaduto 
+	private boolean rettifica;						// TRUE in di richiesta di rettifica	
 	@Validate(EParamValidation.GENERIC)
 	private String applicativo;
 
@@ -96,6 +106,10 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 	
 	public void setAvvisiManager(IAvvisiManager avvisiManager) {
 		this.avvisiManager = avvisiManager;
+	}
+
+	public void setStipuleManager(IStipuleManager stipuleManager) {
+		this.stipuleManager = stipuleManager;
 	}
 
 	public boolean isDettaglioPresente() {
@@ -242,12 +256,12 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 		this.soccorsoScaduto = soccorsoScaduto;
 	}
 
-	public IStipuleManager getStipuleManager() {
-		return stipuleManager;
+	public boolean isRettifica() {
+		return rettifica;
 	}
 
-	public void setStipuleManager(IStipuleManager stipuleManager) {
-		this.stipuleManager = stipuleManager;
+	public void setRettifica(boolean rettifica) {
+		this.rettifica = rettifica;
 	}
 
 	public String getApplicativo() {
@@ -258,6 +272,18 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 		this.applicativo = applicativo;
 	}
 
+	/**
+	 * espone alla jsp le costanti BUSTA_ECONOMICA, BUSTA_TECNICA  
+	 */
+	public int getBUSTA_TECNICA() { 
+		return PortGareSystemConstants.BUSTA_TECNICA; 
+	}
+	
+	public int getBUSTA_ECONOMICA() { 
+		return PortGareSystemConstants.BUSTA_ECONOMICA; 
+	}
+	
+	
 	/**
 	 * Inizializza il dettaglio di una comunicazione inviata/ricevuta
 	 */
@@ -283,6 +309,7 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 		this.setInviata(false);
 		this.setSoccorsoIstruttorio(false);
 		this.setSoccorsoScaduto(false);
+		this.setRettifica(false);
 	}
 	
 	/**
@@ -456,21 +483,22 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 	 * Controllo se il dettaglio e' consultabile per la procedura
 	 */
 	private void existsDettaglio() throws ApsException {
-			
+		DettaglioGaraType dettaglioGara = null; 
 		this.genere = (Long) this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_GENERE_PROCEDURA);
 		if (this.genere == null) {
 			//codice null se si arriva da area personale
-			if(this.codice == null){
+			if(this.codice == null) {
 				this.codice = this.comunicazione.getCodice();
 			}
 			this.genere = this.bandiManager.getGenere(this.codice);
 		}
-		if(this.genere == null && "G1STIPULA".equals(this.comunicazione.getEntita())){
-			this.setDettaglioPresente(this.stipuleManager.dettaglioStipulacontratto(this.codice, this.getCurrentUser().getUsername(), true) != null);
-		}else if(this.genere == null && "APPA".equals(this.comunicazione.getEntita())){
+		if(this.genere == null && "G1STIPULA".equals(this.comunicazione.getEntita())) {
+			boolean dettPresente = (this.stipuleManager.getDettaglioStipulaContratto(this.codice, this.getCurrentUser().getUsername(), true) != null);
+			this.setDettaglioPresente(dettPresente);
+		} else if(this.genere == null && "APPA".equals(this.comunicazione.getEntita())) {
 			this.setDettaglioPresente(true);
 		}
-		else if(this.genere != null){
+		else if(this.genere != null) {
 			if(this.genere == 10) {
 				// ELENCO
 				this.setDettaglioPresente(this.bandiManager.getDettaglioBandoIscrizione(this.codice) != null);
@@ -485,12 +513,15 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 				this.setDettaglioPresente(this.avvisiManager.getDettaglioAvviso(this.codice) != null);
 			} else if(genere == 100) {
 				// LOTTO DI GARA
-				DettaglioGaraType dettaglioGaraFromLotto = this.bandiManager.getDettaglioGaraFromLotto(this.comunicazione.getCodice());
-				this.codice = dettaglioGaraFromLotto.getDatiGeneraliGara().getCodice();
-				this.setDettaglioPresente(dettaglioGaraFromLotto != null);
+				dettaglioGara = this.bandiManager.getDettaglioGaraFromLotto(this.comunicazione.getCodice());
+				this.setDettaglioPresente(dettaglioGara != null);
+				if (this.dettaglioPresente) {
+					this.codice = dettaglioGara.getDatiGeneraliGara().getCodice();
+				}
 			} else {
 				// GARA
-				this.setDettaglioPresente(this.bandiManager.getDettaglioGara(this.comunicazione.getCodice()) != null);
+				dettaglioGara = this.bandiManager.getDettaglioGara(this.comunicazione.getCodice());
+				this.setDettaglioPresente(dettaglioGara != null);
 			}
 		}
 		// abilita il pulsante "vai a procedura"...
@@ -498,6 +529,13 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 				   			  	  this.codice != null && 
 				   			  	  this.session.get(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_CODICE_PROCEDURA) == null );
 
+		// per le gare verifica se ci sono delle richieste di rettifica in corso...
+		this.rettifica = false;
+		if(dettaglioGara != null && WizardRettificaHelper.isModelloRettifica(comunicazione.getModello())) {
+			DettaglioComunicazioneType richiesta = RichiesteRettificaList.getRichiestaRettificaInCorso(getCurrentUser().getUsername(), comunicazione);
+			this.rettifica = (richiesta != null);  
+		}
+		
 		// aggiorna i parametri in sessione...
 		//this.session.remove(PortGareSystemConstants.SESSION_ID_FROM_PAGE);
 		if(this.abilitaProcedura) {
@@ -556,5 +594,5 @@ public class DettaglioComunicazioniAction extends EncodedDataAction implements S
 		}
 		return mittente;
 	}
-	
+
 }

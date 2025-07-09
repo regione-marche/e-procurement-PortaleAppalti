@@ -11,50 +11,50 @@
 			<div class = "container_cms">
 			
 				<h2><wp:i18n key="LABEL_TERM_OF_USE_TERMS_TITLE" /></h2>
-				<s:property value="termOfUseParam.termOfUse" escape="false"/>
+				<p><s:property value="termOfUseParam.termOfUse" escape="false"/></p>
 				<br>
 	
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_ACRONIMI_TITLE" /></h2>
-				<s:property value="termOfUseParam.acronimi" escape="false"/>
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_ACRONIMI_TITLE" /></h3>
+				<p><s:property value="termOfUseParam.acronimi" escape="false"/></p>
 				<br>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_DESCRIPTION" /></p>
 				<br>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_REGISTRATION" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_REGISTRATION_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_PLATFORM_REGISTRATION" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_ACCOUNT_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_ACCOUNT" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_ACCOUNT_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_ACCOUNT" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_SUBSCRIPTION" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_SUBSCRIPTION_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_SUBSCRIPTION" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_ELECTION_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_ELECTION" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_ELECTION_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_ELECTION" /></p>
 					
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_INTELLECTUAL_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_INTELLECTUAL" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_INTELLECTUAL_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_INTELLECTUAL" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_RESPONSABILITY_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_RESPONSABILITY" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_RESPONSABILITY_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_RESPONSABILITY" /></p>
 				<br>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_RIGHTS_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_RIGHTS" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_RIGHTS_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_RIGHTS" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_PERSONAL_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_PERSONAL" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_PERSONAL_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_PERSONAL" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_ACCESS_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_ACCESS" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_ACCESS_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_ACCESS" /></p>
 
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_LAW_TITLE" /></h2>
-				<s:property value="termOfUseParam.law" escape="false"/>
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_LAW_TITLE" /></h3>
+				<p><s:property value="termOfUseParam.law" escape="false"/></p>
 				
-				<h2><wp:i18n key="LABEL_TERM_OF_USE_CHANGES_TITLE" /></h2>
-				<wp:i18n key="LABEL_TERM_OF_USE_CHANGES" />
+				<h3><wp:i18n key="LABEL_TERM_OF_USE_CHANGES_TITLE" /></h3>
+				<p><wp:i18n key="LABEL_TERM_OF_USE_CHANGES" /></p>
 
 			</div>
 		</div>

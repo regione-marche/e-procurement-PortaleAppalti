@@ -1,0 +1,221 @@
+fieldset {
+  min-width: 0; }
+
+th, td {
+  padding: 0.5em;
+  border-left: 0px solid #ddd; 
+  border-right: 0px solid #ddd; 
+  border-top: 0px solid #ddd; 
+  border-bottom: 1px solid #ddd; 
+}
+
+th {
+  background: #0066cc;
+  color: #F6F6F4;
+}  
+  
+tr:nth-child(odd) {
+  background-color: #f6f7f9; }
+
+hr {
+  clear: both; }
+
+legend {	
+  font-size: 1.4em;	  
+  font-weight: normal;
+}
+  
+/* =ERRORS-AND-MESSAGES */
+.error, .errors, .required-field {
+  color: #E00000; }
+
+.warnings {
+  color: #856F00; }
+
+/* =BALLOON */
+.balloon {
+  background-color: #e8e8e8;
+  border: none;
+  border-radius: 0; }
+
+.last-update-list, .last-update-detail {
+  font-size: 0.75em;	
+  font-weight: 700;
+}  
+  
+/* =DETAIL-FORM */
+.detail-section-title {
+  font-size: 2rem; 
+  font-weight: 300;
+  text-transform: none;
+  margin: 0px 0px 20px 0px;
+  padding: 0px;
+  border-bottom: 2px solid #D5D6D8;
+  color: #222222;
+  text-align: left;
+  padding: 5px;
+}
+
+.detail-row label {
+  font-weight: normal; 
+}
+
+.element .no-editable {
+  background-color: #e6e6e6; }
+
+.portgare-list label, .portgare-view label {
+  font-weight: normal; 
+}
+
+.portgare-view h2 {
+  font-weight: 600; }
+
+div div.note {
+  border: 1px solid #999999; }
+
+.fieldset-row:nth-child(even) {
+  background-color: #f6f7f9; }
+
+div.sottosezione h4 {
+  border-bottom: 1px solid #999999; }
+
+.special {
+  background-color: #e7e0d0; }
+
+.special a {
+  /* color: #333; */ }
+
+.special .important {
+  background-color: #e3914c;
+  color: #fff;
+  padding: 3px;
+  border-radius: 4px; }
+
+/* =LIST-FORM */
+.list-item {
+  border: 1px solid #999999;
+  transition: transform 0.3s ease; }
+
+.list-item-row {
+  /*font-size: 0.9em;*/
+  display: block;
+  padding: 0em; }
+
+.list-item-row label {
+    font-weight: bold;
+    color: #06c;
+}
+
+.list-summary {
+  text-align: center;
+  padding: 20px;
+  background-color: #e8e8e8; }
+
+/* =FILTER-FORM */
+/* =CHANGE-PASSWORD-FORM */
+#change_password_form label.error {
+  color: #E00000; }
+
+#change_password_form label.success_msg {
+  color: #65b446; }
+
+/* =WIZARD-STEPS */
+.steps {
+  /* border-bottom: 5px solid #e3914c;
+  font-weight:bold;
+  text-transform:uppercase;
+  padding-bottom:5px; */ }
+
+.steps li {
+    /* color: #4C4D52;
+	border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+	background-color: #E6E1CE;
+    padding: 10px 15px;
+	border: 1px solid #e3914c;
+	margin-left:2px; */ }
+
+.current-step {
+  /* background-color: #e3914c;
+  border-radius: 4px 4px 0 0;
+  -webkit-border-radius: 4px 4px 0 0;
+  color:#fff;
+  border-bottom: 1px solid #e3914c;
+  margin: -15px;
+  padding: 10px 15px; */ }
+
+/* =PAGINATION */
+#pagination-navi .selected {
+  /* background-color: #FFF;
+  color: #043F56; */ }
+
+/* =MENU-FORM */
+.menu-gestione {
+  background-color: #e6e6e6;
+  border-radius: 10px;  }
+
+.menu-gestione ul {
+  padding: 0; }
+
+.menu-gestione li:hover, .menu-gestione li:focus {
+  background-color: #cccccc; }
+
+.menu-gestione li.disabled {
+  /* background-color: #F2F2F2; */ }
+
+.menu-gestione a {
+  /* color: #333; */ }
+
+.menu-gestione li:hover a, .menu-gestione li:focus a {
+  /* color: #b22825;
+  text-decoration: none; */ }
+
+.menu-gestione li.disabled a {
+  /* color: #C4C4C4; */ }
+
+.menu-gestione li.disabled:hover, .menu-gestione li.disabled:focus {
+  /* background-color: #F2F2F2; */ }
+
+.menu-gestione li.disabled:hover a, .menu-gestione li.disabled:focus a {
+  /* color: #C4C4C4; */ }
+
+.menu-gestione .info {
+  /* color: #333; */ }
+
+/* =PAGINATION */
+#pagination-navi .nav-page-button {
+  /* background: #FFF;
+  border: 1px solid #e3914c;
+  color: #00698c; */ }
+
+#pagination-navi .selected {
+  /* background-color: #e3914c;
+  color: #FFF; */ }
+
+.list-action a:hover {
+  /* color:#06465D;
+  text-decoration:none; */ }
+
+.off-step {
+  /* border */ }
+
+/* =TREE CONTENT */
+.tree-content {
+  /* line-height:1.2em; */ }
+
+
+.menu-gestione li.bkg {
+    background-position: 2em 50%;
+    background-size: 24px;
+}
+a.menu-item-link.go {
+    background-size: 24px!important;
+}
+
+.element{
+	font-size: 1.1em!important;
+}
+
+.sso_section {
+    border-radius: 10px;
+}

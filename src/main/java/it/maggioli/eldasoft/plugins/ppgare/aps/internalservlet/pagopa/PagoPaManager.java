@@ -95,9 +95,9 @@ public class PagoPaManager extends AbstractService {
 
 	@Override
 	public void init() throws Exception {
-		logger.info("PagoPaManager init");
+		logger.debug("PagoPaManager init");
 		this.reloadConfiguration();
-		logger.info("PagoPaManager init done");
+		logger.debug("PagoPaManager init done");
 	}
 	
 	@After ("execution(* it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager.update*(..))")
@@ -113,7 +113,7 @@ public class PagoPaManager extends AbstractService {
 			pagopaIntgration = PagoPAIntegration
 					.getInstance(PagoPAClient.valueOf(serviceKey))
 					.initService(hashParams);
-			logger.info("PagoPaManager Configuration loaded: {}",serviceKey);
+			logger.debug("PagoPaManager Configuration loaded: {}",serviceKey);
 		} catch (Exception e) {
 			logger.error("PagoPaManager Configuration not existing: {}",serviceKey,e);
 			pagopaIntgration = null;
@@ -188,19 +188,19 @@ public class PagoPaManager extends AbstractService {
 		pagamento.setServizio("UR");//->per adesso obbligatorio in questo modo
 		pagamento.setStatotip(1);
 		pagamento.setUsername(model.getUsername());
-		logger.info("Datafinevalidita: {}",pagamento.getDatafinevalidita());
-		logger.info("Datainiziovalidita: {}",pagamento.getDatainiziovalidita());
-		logger.info("Datascadenza: {}",pagamento.getDatascadenza());
+		logger.debug("Datafinevalidita: {}",pagamento.getDatafinevalidita());
+		logger.debug("Datainiziovalidita: {}",pagamento.getDatainiziovalidita());
+		logger.debug("Datascadenza: {}",pagamento.getDatascadenza());
 		model.setId(wsPagoPATableWrapper.getProxyWsPagoPa().saveOrUpdatePagamento(pagamento ));
 	}
 
 	public String eseguiPagamento(PagoPaPagamentoModel model, String applBaseUrl) throws Exception {
 		PagamentiOutType po = wsPagoPATableWrapper.getProxyWsPagoPa().getPagamentoById(model.getId());
 		String iuv = po.getIuv();
-		logger.info("Using iuv {}",iuv);
+		logger.debug("Using iuv {}",iuv);
 		populateModel(model,po);
 		pagopaIntgration.addConfigurations(getMappaturaJppa());
-		logger.info("model populated from db");
+		logger.debug("model populated from db");
 		
 		// creare gli url di callback
 		String id = po.getId().toString();
@@ -220,8 +220,8 @@ public class PagoPaManager extends AbstractService {
 		String causale = getElencoTipiCausalePagamento().get(model.getCausale()); 
 //		String iuv = model.getIuv();
 		PagoPAResponseUrl res = pagopaIntgration.generaPagamento(tipoFiscaleDebitore, idFiscaleDebitore, dataFineValidita, dataInizioValidita, dataScadenza, idDebito, idRata, importo, causale, urlCancel, urlKo, urlOk, urlS2S, iuv);
-//		if(StringUtils.isEmpty(iuv)){		
-		logger.info("Generate iuv");
+//		if(StringUtils.isEmpty(iuv)){
+		logger.debug("Generate iuv");
 		PagamentoInType pagamento = new PagamentoInType();
 		pagamento.setId(po.getId());
 		pagamento.setIuv(res.getIuv());
@@ -278,16 +278,16 @@ public class PagoPaManager extends AbstractService {
 			logger.warn("Ricevuta con id {} non presente a DB.",po.getId());
 		}
 		if(out!=null) {
-			logger.info("Ricevuta con id {} presente a DB.",po.getId());
+			logger.debug("Ricevuta con id {} presente a DB.",po.getId());
 			return new ByteArrayInputStream(out.getRicevuta());
 		}
 		
 		String ricevuta = null;
 		try {
-			logger.info("calling service.getRicevuta ");
+			logger.debug("calling service.getRicevuta ");
 			ricevuta = pagopaIntgration.getRicevuta(po.getIddebito(), po.getIdrata(), getElencoTipiCausalePagamento().get(po.getCausaletip()), po.getIuv());
 			if(StringUtils.isNotBlank(ricevuta)) {
-				logger.info("Ottenuta ricevuta, salvo in appalti ");
+				logger.debug("Ottenuta ricevuta, salvo in appalti ");
 				try {
 					PagopaRicevutaInType r = new PagopaRicevutaInType();
 					r.setId(po.getId());
@@ -305,7 +305,7 @@ public class PagoPaManager extends AbstractService {
 				return new ByteArrayInputStream(ricevuta.getBytes());
 			} 
 		}
-		logger.info("return null");
+		logger.debug("return null");
 		if(StringUtils.isEmpty(ricevuta)) {
 			throw new PagoPaException("Impossibile restituire la ricevuta.");
 		}
@@ -319,7 +319,7 @@ public class PagoPaManager extends AbstractService {
 	}
 	public InputStream getElencoRiferimenti(PagoPaRiferimentoFilterModel model) throws Exception{
 		try {
-			logger.info("getElencoRiferimenti");
+			logger.debug("getElencoRiferimenti");
 			RiferimentoFilterInType filtro = new RiferimentoFilterInType();
 			BeanUtils.copyProperties(filtro, model);
 			RiferimentoOutType[] refs = wsPagoPATableWrapper.getProxyWsPagoPa().getElencoRiferimenti(filtro );
@@ -329,7 +329,7 @@ public class PagoPaManager extends AbstractService {
 				jarr.add(JSONObject.fromObject(out));
 			}
 			obj.put("data", jarr);
-			logger.info("getElencoRiferimenti - finished");
+			logger.debug("getElencoRiferimenti - finished");
 			return new ByteArrayInputStream(obj.toString().getBytes());
 		} catch (Exception e) {
 			logger.error("Errore in getElencoRiferimenti",e);

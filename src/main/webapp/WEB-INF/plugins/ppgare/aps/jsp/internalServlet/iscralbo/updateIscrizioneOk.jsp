@@ -41,9 +41,22 @@
 	</s:if>
 
 	<div class="back-link">
-		<a href="<s:if test="%{tipologia == 2}"><wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" /></s:if>
-				<s:else><wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" /></s:else>&amp;codice=<s:property value="codice" />&amp;ext=${param.ext}&amp;${tokenHrefParams}">
-			<c:out value="${backTo}" />
-		</a>
+		<c:set var="urlBackto">
+			<s:if test="%{tipologia == 2}">
+				<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewIscrizione.action" />
+			</s:if>
+			<s:else>
+				<wp:action path="/ExtStr2/do/FrontEnd/Bandi/viewIscrizione.action" />
+			</s:else>
+		</c:set>
+		<form action='${urlBackto}' method="post">
+			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
+			<input type="hidden" name="codice" value='<s:property value="codice"/>' />
+			<input type="hidden" name="ext" value="${param.ext}" />
+			
+			<a href="javascript:;" onclick="parentNode.submit();" >
+				<c:out value="${backTo}" />
+			</a>
+		</form>
 	</div>
 </div>

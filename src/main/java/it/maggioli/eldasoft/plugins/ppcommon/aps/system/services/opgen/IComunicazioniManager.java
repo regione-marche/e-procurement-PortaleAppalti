@@ -34,6 +34,20 @@ public interface IComunicazioniManager {
 	    DettaglioComunicazioneType criteriRicerca) throws ApsException;
 
     /**
+     * Estrae l'elenco delle comunicazioni presenti nel backoffice che
+     * rispettano i criteri di ricerca (in like)
+     * 
+     * @param criteriRicerca
+     *            criteri di discriminazione delle comunicazioni
+     * @return elenco di oggetti che identificano le testate delle comunicazioni
+     *         estratte
+     * @throws ApsException
+     *             In caso di errori in accesso al servizio web.
+     */
+    List<DettaglioComunicazioneType> searchElencoComunicazioni(
+	    DettaglioComunicazioneType criteriRicerca) throws ApsException;
+
+    /**
      * Estrae i dati relativi ad una comunicazione a partire dalla sua
      * chiave.
      * Se idDocumento e' nullo vengono recuperati tutti i dati della 

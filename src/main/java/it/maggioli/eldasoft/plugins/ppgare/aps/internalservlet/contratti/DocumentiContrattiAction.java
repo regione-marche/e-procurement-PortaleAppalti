@@ -10,17 +10,19 @@ import com.agiletec.aps.system.services.page.IPage;
 import com.agiletec.aps.system.services.page.IPageManager;
 import com.agiletec.aps.system.services.url.IURLManager;
 import com.agiletec.aps.system.services.url.PageURL;
+import com.agiletec.aps.system.services.user.DelegateUser;
+
 import it.eldasoft.utils.utility.UtilityDate;
 import it.eldasoft.www.WSOperazioniGenerali.AllegatoComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.ComunicazioneType;
 import it.eldasoft.www.WSOperazioniGenerali.WSDocumentoType;
-import it.eldasoft.www.sil.WSGareAppalto.DettaglioStazioneAppaltanteType;
-import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
 import it.eldasoft.www.sil.WSStipule.DocumentazioneStipulaContrattiType;
 import it.eldasoft.www.sil.WSStipule.StipulaContrattoType;
+import it.eldasoft.www.sil.WSGareAppalto.DettaglioStazioneAppaltanteType;
+import it.eldasoft.www.sil.WSGareAppalto.FascicoloProtocolloType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.IDownloadAction;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiHelper;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.Event;
@@ -28,6 +30,8 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.opgen.IDocument
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ImpresaAction;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.ProcessPageProtocollazioneAction;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
@@ -52,9 +56,7 @@ import java.io.InputStream;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.text.MessageFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +66,7 @@ import java.util.Map;
  * @author michele.dinapoli
  * @since 1.11.5
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.STIPULA })
 public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction 
 	implements SessionAware, ServletResponseAware, IDownloadAction 
 {
@@ -80,6 +83,8 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	private static final String ENTITA_STIPULE 							= "G1STIPULA";
 	private static final String NOME_OPERAZIONE 						= "Stipula Contratti";
 	
+	// memorizza in sessione lo stato del processo di invio dei documenti 
+	// (nessuno -> invia FS12 -> elimina info protocollazione documenti -> aggiorna stato documenti)
 	private static final String SESSION_ID_STATO_INVIO					= "statoInvioStipula";
 	private int STATO_NESSUNO											= 0;
 	private int STATO_INVIA_FS12 										= 1;
@@ -133,15 +138,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	
 	protected boolean esisteFileConFirmaNonVerificata = Boolean.FALSE;
 	
-	/**
-	 * @return the esisteFileConFirmaNonVerificata
-	 */
-	public boolean isEsisteFileConFirmaNonVerificata() {
-		return esisteFileConFirmaNonVerificata;
-	}
-
-
-	// info sul dettaglio della stipula 
+	// info sul dettaglio della stipula
 	private StipulaContrattoType dettaglioStipula;
 	
 	// elenco dei documenti da aggiungere alla protocollazione
@@ -362,6 +359,10 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 		this.mailSent = mailSent;
 	}
 	
+	public boolean isEsisteFileConFirmaNonVerificata() {
+		return esisteFileConFirmaNonVerificata;
+	}
+	
 	@Override
 	public void setUrlPage(String urlPage) {
 	}
@@ -375,7 +376,9 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 		this.currentFrame = currentFrame;
 	}
 
-	
+	/**
+	 * ...
+	 */
 	public String getUrlErrori() {
 		HttpServletRequest request = this.getRequest();
 		RequestContext reqCtx = new RequestContext();
@@ -399,6 +402,12 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	 */
 	public String confirmInvio() {
 		String target = SUCCESS;
+		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return "reopen";
+		}
+
 		try {
 			this.documenti = this.stipuleManager.getDocumentiRichiestiStipulaContratto(this.codice);
 			boolean canConfirm = true;
@@ -412,7 +421,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 			if( !canConfirm ) {
 				this.addActionError(this.getText("Errors.stipule.confirm", new String[] { NOME_OPERAZIONE }));
 				prepareView();
-			}else {
+			} else {
 				this.invioStipula = true;
 			}
 		} catch (ApsException e) {
@@ -454,6 +463,12 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	 */
 	public String open() {
 		String target = SUCCESS;
+		
+		// verifica il profilo di accesso ed esegui un LOCK alla funzione
+		if( !lockAccessoFunzione(EFlussiAccessiDistinti.STIPULA, this.codiceStipula) ) {
+			return INPUT;
+		}
+		
 		try {
 			this.session.remove(PortGareSystemConstants.SESSION_ID_FROM_PAGE);
 			prepareView();
@@ -465,7 +480,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	}
 
 	/**
-	 * ... 
+	 * carica il dettaglio dei documenti della stipula
 	 */
 	private void prepareView() throws ApsException {
 		this.fasiDocReadonly = new ArrayList<String>();
@@ -473,10 +488,18 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 		this.documentiUpload = new ArrayList<DocumentazioneStipulaContrattiType>();
 		this.documentiReadOnly = new ArrayList<DocumentazioneStipulaContrattiType>();
 		
+		// se lo stato della stipula e' "annullata" (6 in A1185) il dettaglio dei documenti dve essere in sola consultazione 
+		this.dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(
+				this.codiceStipula, 
+				this.getCurrentUser().getUsername(), 
+				true);
+		boolean annullata = (this.dettaglioStipula != null && "6".equals(this.dettaglioStipula.getStato()));
+		
 		this.documenti = this.stipuleManager.getDocumentiRichiestiStipulaContratto(this.codice);
 		if(this.documenti != null) {
 			for(DocumentazioneStipulaContrattiType allegato : documenti) {
-				if(allegato.getVisibilita() == 3 && allegato.getStato() == 3) {
+				// se la stipula e' "annullata" allora tutti i documenti rimangono in sola consultazione (readolny)
+				if( !annullata && (allegato.getVisibilita() == 3 && allegato.getStato() == 3) ) {
 					if(!this.fasiDocUpload.contains(allegato.getFase() + "")) {
 						this.fasiDocUpload.add(allegato.getFase() + "");
 					}
@@ -504,7 +527,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	public String downloadAllegatoStipula() {
 		String target = SUCCESS;
 		try {
-			AllegatoComunicazioneType allegato = this.stipuleManager.getAllegatoStipula(this.docId);
+			AllegatoComunicazioneType allegato = this.stipuleManager.getDocumentoStipula(this.docId);
 			this.id = this.iddocdig;
 			if (isDocumentoFirmato(allegato.getNomeFile())) {
 				return "successFileFirmato";
@@ -548,7 +571,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 			evento.setIpAddress(this.getCurrentUser().getIpAddress());
 			evento.setSessionId(this.getRequest().getSession().getId());
 			evento.setMessage("Stipula contratto: cancellazione documento richiesto, stipula=" + this.docId);
-			this.stipuleManager.deleteAllegatoStipula(this.docId);
+			this.stipuleManager.deleteDocumentoStipula(this.docId);
 		} catch (ApsException e) {
 			this.addActionError(this.getText("Errors.stipule.configuration", new String[] { NOME_OPERAZIONE }));
 			ApsSystemUtils.logThrowable(e, this, "deleteAllegatoStipula");
@@ -568,65 +591,47 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	 */
 	public String addDocRich() {
 		String target = SUCCESS;
-		Event evento = new Event();
-		boolean controlliOk = true;
+		Event evento = null;
 		try {
 			int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docToUpload);
-			evento.setUsername(this.getCurrentUser().getUsername());
-			evento.setDestination(this.codiceStipula);
-			evento.setLevel(Event.Level.INFO);
-			evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-			evento.setIpAddress(this.getCurrentUser().getIpAddress());
-			evento.setSessionId(this.getRequest().getSession().getId());
-			evento.setMessage("Stipula contratto: documento richiesto" 
-							  + " con id=" + this.docId
-							  + ", file=" + this.docToUploadFileName
-							  + ", dimensione=" + dimensioneDocumento + "KB");
-
-			boolean onlyP7m = this.customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-
-			controlliOk = controlliOk
-					&& checkFileSize(docToUpload, docToUploadFileName, 0, appParamManager, evento)
-					&& checkFileName(docToUploadFileName, evento)
-					&& checkFileFormat(docToUpload, docToUploadFileName, formato, evento, onlyP7m);
+			evento = getUploadValidator().getEvento();
 			
-			if(controlliOk) {
-				//check stipule
-				Date checkDate = Date.from(Instant.now());
-				DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-						docToUpload
-						, docToUploadFileName
-						, formato
-						, checkDate
-						, evento
-						, onlyP7m
-						, appParamManager
-						, customConfigManager
-				);
-				stipuleManager.insertAllegatoStipula(
+			// valida l'upload del documento...
+			getUploadValidator()
+					.setDocumento(docToUpload)
+					.setDocumentoFileName(docToUploadFileName)
+					.setDocumentoFormato(formato)
+					.setOnlyP7m( customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M") )
+					.setCheckFileSignature(true)
+					.setEventoDestinazione(codiceStipula)
+					.setEventoMessaggio("Stipula contratto: documento richiesto" 
+							  			+ " con id=" + this.docId
+							  			+ ", file=" + this.docToUploadFileName
+							  			+ ", dimensione=" + dimensioneDocumento + "KB");
+			
+			if ( getUploadValidator().validate() ) {
+				stipuleManager.insertAllegato(
 						docToUploadFileName,
 						Long.valueOf(docId),
 						FileUtils.readFileToByteArray(docToUpload),
 						noteDoc,
-						checkFirma
+						getUploadValidator().getCheckFirma(),
+						DocumentiAllegatiHelper.validateContentType(null, getUploadValidator().getCheckFirma(), docToUploadFileName)
 				);
 			}
 		} catch (NumberFormatException | ApsException | IOException e) {
 			this.addActionError(this.getText("Errors.stipule.configuration", new String[] { "Stipula Contratti" }));
 			ApsSystemUtils.logThrowable(e, this, "upload");
-			if(evento != null) {
+			if (evento != null)
 				evento.setError(e);
-			}
 		} catch (Exception e) {
 			this.addActionError(this.getText("Errors.stipule.configuration", new String[] { NOME_OPERAZIONE }));
 			ApsSystemUtils.logThrowable(e, this, "upload");
-			if(evento != null) {
+			if (evento != null)
 				evento.setError(e);
-			}
 		} finally {
-			if(evento != null) {
-				this.eventManager.insertEvent(evento);
-			}
+			if (evento != null)
+				eventManager.insertEvent(evento);
 		}
 		return target;
 	}
@@ -637,6 +642,11 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	public String confermaStipula() {
 		String target = SUCCESS;
 		
+		if( !hasPermessiInvioFlusso() ) {
+			addActionErrorSoggettoImpresaPermessiAccessoInsufficienti();
+			return this.getTarget();
+		}
+
 		Integer statoInvio = new Integer(STATO_NESSUNO);
 		this.mailSent = true;
 		try {
@@ -726,6 +736,8 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 			target = CommonSystemConstants.PORTAL_ERROR;
 		}
 		
+		unlockAccessoFunzione();
+		
 		return target;
 	}	
 	
@@ -766,8 +778,8 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 		AllegatoComunicazioneType comunicazionePdf = null;
 		if(comunicazione != null) {
 			for(AllegatoComunicazioneType a : comunicazione.getAllegato()) {
-				if(a.getNomeFile().equals(NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF) || 
-				   a.getNomeFile().equals(NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD))
+				if(a.getNomeFile().equals(PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF) || 
+				   a.getNomeFile().equals(PortGareSystemConstants.NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD))
 				{
 					comunicazionePdf = a;
 					break;
@@ -796,7 +808,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 			if(this.documentiDaAggiornare != null) {
 				for(DocumentazioneStipulaContrattiType d : this.documentiDaAggiornare) {
 					// scarica lo stream binario del documento della stipula...
-					AllegatoComunicazioneType a = this.stipuleManager.getAllegatoStipula(Long.toString(d.getId()));
+					AllegatoComunicazioneType a = this.stipuleManager.getDocumentoStipula(Long.toString(d.getId()));
 					if(a != null) {
 						allegatiWSDM[i] = new AllegatoComunicazioneType();
 						// La descrizione nelle stipule non è sempre obbligatoria
@@ -839,7 +851,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	
 		String ragioneSociale = this.impresa.getDatiPrincipaliImpresa().getRagioneSociale();
 		
-		StipulaContrattoType dettaglioStipula = this.stipuleManager.dettaglioStipulacontratto(
+		StipulaContrattoType dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(
 				this.codiceStipula, 
 				this.getCurrentUser().getUsername(), 
 				true);
@@ -882,7 +894,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	protected String getComunicazionePdf() {
 		StringBuilder contenuto = new StringBuilder();
 		try {
-			StipulaContrattoType dettaglioStipula = this.stipuleManager.dettaglioStipulacontratto(
+			StipulaContrattoType dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(
 					this.getCodiceStipula(), 
 					this.getCurrentUser().getUsername(), 
 					false);
@@ -1077,7 +1089,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 		
 		if(this.codiceSA == null) {
 			// recupera il dettaglio della stipula/contratto
-			StipulaContrattoType dettaglioStipula = this.stipuleManager.dettaglioStipulacontratto(
+			StipulaContrattoType dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(
 					this.codiceStipula, 
 					this.getCurrentUser().getUsername(), 
 					true);
@@ -1098,7 +1110,7 @@ public class DocumentiContrattiAction extends ProcessPageProtocollazioneAction
 	protected FascicoloProtocolloType getFascicoloProtocollo() throws ApsException {
 		// NB: il fascicolo della stipula va recuperato in base all'id della stipula e non al codice del bando
 		// recupera il dettaglio della stipula/contratto 
-		StipulaContrattoType dettaglioStipula = this.stipuleManager.dettaglioStipulacontratto(
+		StipulaContrattoType dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(
 				this.codiceStipula, 
 				this.getCurrentUser().getUsername(), 
 				true);

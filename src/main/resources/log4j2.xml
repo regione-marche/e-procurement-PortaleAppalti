@@ -16,7 +16,7 @@
                 <TimeBasedTriggeringPolicy interval="1" />
             </Policies>
         </RollingFile>
-        <RollingFile name="eventLog" fileName="${sys:catalina.home}/logs/${nomeWebapp}-events.log" append="true" filePattern="${sys:catalina.home}/logs/${nomeWebapp}.log.%d{'.'yyyy-MM-dd}">
+        <RollingFile name="eventLog" fileName="${sys:catalina.home}/logs/${nomeWebapp}-events.log" append="true" filePattern="${sys:catalina.home}/logs/${nomeWebapp}-events.log.%d{'.'yyyy-MM-dd}">
             <PatternLayout pattern="%m%n"/>
             <Filters>
                 <ThresholdFilter level="${log4j.appender.applicationLog.threshold}" />

@@ -2,6 +2,7 @@ package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa;
 
 import it.eldasoft.sil.portgare.datatypes.IndirizzoEstesoAggiornabileType;
 import it.eldasoft.sil.portgare.datatypes.IndirizzoEstesoType;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.regimpresa.inc.MichelangeloCompanyAddress;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 
@@ -72,6 +73,18 @@ public class IndirizzoImpresaHelper implements IIndirizzoImpresa {
         nazione = indirizzo.getNazione();
         telefono = indirizzo.getTelefono();
         fax = indirizzo.getFax();
+    }
+
+    public IndirizzoImpresaHelper(MichelangeloCompanyAddress address) {
+        //tipoIndirizzo = address.tipo?;
+        indirizzo = (address.StreetName != null ? address.StreetName.trim() : null);
+        numCivico = (address.StreetNumber != null ? address.StreetNumber.trim() : null);
+        cap = (address.Zip != null ? address.Zip : null);
+        comune = (address.City != null ? address.City : null);
+        provincia = (address.Province != null ? address.Province : null);
+        nazione = (address.Country != null ? address.Country : null);
+        //telefono = address.tel?
+        //fax = address.fax?
     }
 
     /**

@@ -139,12 +139,12 @@
 			<wp:i18n key="TITLE_SCARICA_RIEPILOGO" var="titleScaricaButton" />
 			<c:choose>
 				<c:when test="${skin == 'highcontrast' || skin == 'text'}">
-					<s:a href="%{#urlDownloadPdf}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaButton}" cssClass="important">
+					<s:a href="%{#urlDownloadPdf}" title="%{#attr.titleScaricaButton}" cssClass="important">
 						<wp:i18n key="LABEL_SCARICA" />
 					</s:a>
 				</c:when>
 				<c:otherwise>
-					<s:a href="%{#urlDownloadPdf}&amp;%{#attr.tokenHrefParams}" title="%{#attr.titleScaricaButton}" cssClass="bkg pdf">
+					<s:a href="%{#urlDownloadPdf}" title="%{#attr.titleScaricaButton}" cssClass="bkg pdf">
 						<wp:i18n key="LABEL_SCARICA" />
 					</s:a>
 				</c:otherwise>
@@ -220,13 +220,13 @@
 										<c:choose>
 											<c:when test="${skin == 'highcontrast' || skin == 'text'}">
 												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;inCarrello=true&amp;${tokenHrefParams}' 
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;inCarrello=true' 
 														title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />' >
 														<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />
 													</a>
 												</li>
 												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmUndoProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;${tokenHrefParams}' 
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmUndoProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}' 
 														title='<wp:i18n key="LABEL_ANNULLA_MODIFICA" />'  >
 														<wp:i18n key="LABEL_ELIMINA_ELEMENTO_CARRELLO" />
 													</a>
@@ -234,12 +234,12 @@
 											</c:when>
 											<c:otherwise>
 												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;inCarrello=true&amp;${tokenHrefParams}' 
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/viewProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;inCarrello=true' 
 														title='<wp:i18n key="LABEL_VISUALIZZA_DETTAGLIO_PRODOTTO" />' class="bkg detail">
 													</a>
 												</li>
 												<li>
-													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmUndoProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}&amp;${tokenHrefParams}' 
+													<a href='<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/confirmUndoProdotto.action" />&amp;prodottoId=${prodotto.index}&amp;statoProdotto=${prodotto.statoProdotto}' 
 														title='<wp:i18n key="LABEL_ANNULLA_MODIFICA" />' class="bkg undo">
 													</a>
 												</li>
@@ -271,7 +271,7 @@
 		</s:else>
 	</s:else>
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/Cataloghi/openGestioneProdotti.action" />&amp;catalogo=<s:property value="%{catalogo}"/>&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_GESTIONE_PRODOTTI" />
 		</a>
 	</div>

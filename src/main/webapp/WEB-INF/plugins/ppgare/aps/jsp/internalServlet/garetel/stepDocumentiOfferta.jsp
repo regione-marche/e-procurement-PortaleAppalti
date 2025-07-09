@@ -228,7 +228,7 @@
 																<span>(<s:property value="%{#documenti.docRichiestiSize.get(#statusCaricato.index)}"/> KB)</span>
 															</li>
 															<li>
-																<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}' 
+																<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>' 
 																   title='<s:property value="%{#attr.titleEliminaAllegato}"/>'>
 																	<wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 																</a>
@@ -243,7 +243,7 @@
 																<span>(<s:property value="%{#documenti.docRichiestiSize.get(#statusCaricato.index)}"/> KB)</span>
 															</li>
 															<li>
-																<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}' 
+																<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoRichiesto.action"/>&amp;id=${statusCaricato.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>' 
 																   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 																</a>
 															</li>
@@ -317,7 +317,7 @@
 	 													<span>(<s:property value="%{#documenti.docUlterioriSize.get(#status.index)}" /> KB)</span> 
 													</li>
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoUlteriore.action"/>&amp;id=${status.inex}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoUlteriore.action"/>&amp;id=${status.inex}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>' 
 														   title='<s:property value="%{#attr.titleEliminaAllegato}"/>'>
 															<wp:i18n key="LABEL_ELIMINA_ALLEGATO" />
 														</a>
@@ -332,7 +332,7 @@
 														<span>(<s:property value="%{#documenti.docUlterioriSize.get(#status.index)}" /> KB)</span>  
 													</li>
 													<li>
-														<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>&amp;${tokenHrefParams}' 
+														<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/confirmDeleteOffertaAllegatoUlteriore.action"/>&amp;id=${status.index}&amp;ext=${param.ext}&amp;tipoBusta=<s:property value="%{#documenti.tipoBusta}"/>&amp;codice=<s:property value="%{#documenti.codice}"/>' 
 														   title='<s:property value="%{#attr.titleEliminaAllegato}"/>' class="bkg delete">
 														</a>
 													</li>
@@ -369,12 +369,10 @@
 					</tbody>
 				</table>
 			</div>
-			<s:set var="kbCaricati" value="%{dimensioneAttualeFileCaricati}"></s:set>
-			<s:set var="kbDisponibili" value="%{limiteTotaleUploadDocBusta - dimensioneAttualeFileCaricati}"></s:set>
 			<p>
-				<wp:i18n key="LABEL_MAX_FILE_SIZE" /> <strong><s:property value="%{limiteUploadFile}" /></strong> KB.<br/>
-				<wp:i18n key="LABEL_MAX_REQUEST_SIZE_1" /> <strong><s:property value="%{#kbCaricati}" /></strong> KB, <wp:i18n key="LABEL_MAX_REQUEST_SIZE_2" /> 
-				<strong><s:property value="%{#kbDisponibili}" /></strong> KB.
+				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/fileupload/infoUploadFile.jsp">
+					<jsp:param name="dimensioneAttualeFileCaricati" value="<s:property value='%{dimensioneAttualeFileCaricati}'/>"/>					
+				</jsp:include>
 			</p>
 		</fieldset>
 
@@ -397,6 +395,10 @@
 					<wp:i18n key="BUTTON_WIZARD_BACK_TO_MENU" var="valueBackToMenuButton" />
 					<s:submit value="< %{#attr.valueBackToMenuButton}" title="%{#attr.valueBackToMenuButton}" cssClass="button" method="quit"></s:submit>
 				</s:else>
+
+				<wp:i18n key="BUTTON_WIZARD_VERIFICA_BUSTA" var="valueVerificaButton" />
+				<wp:i18n key="TITLE_WIZARD_VERIFICA_BUSTA" var="titleVerificaButton" />
+				<s:submit value="%{#attr.valueVerificaButton}" title="%{#attr.titleVerificaButton}" cssClass="button" method="check" ></s:submit>
 				
 				<input type="hidden" name="codice" value="<s:property value="%{#helper.codice}"/>"/>
 				<input type="hidden" name="codiceGara" value="<s:property value="%{#helper.gara.codice}"/>"/>

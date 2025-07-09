@@ -14,7 +14,8 @@
 <wp:i18n key="OPT_CHOOSE_PROVINCIA" var="headerValueProvincia" />
 
 
-<script type="text/javascript" src="<wp:resourceURL/>static/js/jquery.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery.jsp" />
+
 <script>
 $(document).ready(function () {	
 	
@@ -89,12 +90,12 @@ $(document).ready(function () {
 						<td class="azioni">
 							<s:if test="%{#status.index==0}">
 								<s:if test="%{modificaFirmatarioVisible}">
-									<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/editFirmatarioTecMandataria.action"/>&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_EDIT" />' >
+									<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/editFirmatarioTecMandataria.action"/>' class="bkg modify" title='<wp:i18n key="BUTTON_EDIT" />' >
 									</a>
 								</s:if>
 							</s:if>
 							<s:else>
-								<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/editFirmatarioTecMandante.action"/>&amp;id=${status.index}&amp;${tokenHrefParams}' class="bkg modify" title='<wp:i18n key="BUTTON_EDIT" />' >
+								<a href='<wp:action path="/ExtStr2/do/FrontEnd/GareTel/editFirmatarioTecMandante.action"/>&amp;id=${status.index}' class="bkg modify" title='<wp:i18n key="BUTTON_EDIT" />' >
 								</a>
 							</s:else>
 						</td>
@@ -292,7 +293,7 @@ $(document).ready(function () {
 					<div class="element">
 						<div class="contents-group">
 							<label for="indirizzo"><wp:i18n key="LABEL_INDIRIZZO" /> : <span class="required-field">*</span></label>
-							<s:textfield name="indirizzo" id="indirizzo" value="%{#key.indirizzo}" size="40" maxlength="60" aria-required="true" />
+							<s:textfield name="indirizzo" id="indirizzo" value="%{#key.indirizzo}" size="50" maxlength="100" aria-required="true" />
 							<label for="numCivico">n : <span class="required-field">*</span></label>
 							<s:textfield name="numCivico" id="numCivico" value="%{#key.numCivico}" size="4" maxlength="10" aria-required="true" />
 						</div>

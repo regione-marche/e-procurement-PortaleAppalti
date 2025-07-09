@@ -105,11 +105,14 @@ public class SpidLoginResponseAction extends BaseResponseAction {
 			String serviceProvider = (String) appParamManager
 					.getConfigurationValue(AppParamManager.SPID_SERVICEPROVIDER);
 			Integer serviceIndex = (Integer) appParamManager
-			.getConfigurationValue(AppParamManager.SPID_SERVICEINDEX);
+					.getConfigurationValue(AppParamManager.SPID_SERVICEINDEX);
 			String authLevel = (String) appParamManager
 					.getConfigurationValue(AppParamManager.SPID_AUTHLEVEL);
 			//String idProvider = this.idp;
 
+			String saServiceProvider = getSpidServiceProviderPerSA(appParamManager);
+			serviceProvider = (StringUtils.isNotEmpty(saServiceProvider) ? saServiceProvider : serviceProvider);
+			
 			// valida i parametri...
 			if (StringUtils.isEmpty(url)) {
 				action.addActionError(action
@@ -170,8 +173,7 @@ public class SpidLoginResponseAction extends BaseResponseAction {
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");

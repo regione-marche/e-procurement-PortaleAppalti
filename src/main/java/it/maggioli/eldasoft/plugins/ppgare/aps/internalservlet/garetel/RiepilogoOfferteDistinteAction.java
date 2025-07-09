@@ -6,16 +6,21 @@ import it.eldasoft.sil.portgare.datatypes.RiepilogoLottoBustaType;
 import it.eldasoft.www.WSOperazioniGenerali.DettaglioComunicazioneType;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaAmministrativa;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaGara;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPartecipazione;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaPrequalifica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaRiepilogo;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.ComunicazioniUtilities;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardRettificaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.beans.RiepilogoBustaBean;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.SystemConstants;
@@ -34,8 +39,7 @@ public class RiepilogoOfferteDistinteAction extends RiepilogoOffertaAction {
 	private boolean almenoUnaBustaTecnica;
 	private List<Long> listaIdBusteTec;
 	private List<Long> listaIdBusteEco;
-
-
+	
 	public boolean isAlmenoUnaBustaTecnica() {
 		return almenoUnaBustaTecnica;
 	}
@@ -60,6 +64,7 @@ public class RiepilogoOfferteDistinteAction extends RiepilogoOffertaAction {
 		this.listaIdBusteEco = listaIdBusteEco;
 	}
 	
+
 	/**
 	 * ...
 	 */
@@ -159,7 +164,7 @@ public class RiepilogoOfferteDistinteAction extends RiepilogoOffertaAction {
 						// ---------- BUSTE TECNICHE ----------
 						if(this.isAlmenoUnaBustaTecnica()) {
 							this.listaIdBusteTec = new ArrayList<Long>();
-							for(int i = 0; i < this.getBustaRiepilogativa().getListaCompletaLotti().size(); i++) {								 
+							for(int i = 0; i < this.getBustaRiepilogativa().getListaCompletaLotti().size(); i++) {
 								DettaglioComunicazioneType comunicazioniTec = ComunicazioniUtilities.retrieveComunicazioneConStati(
 										this.getComunicazioniManager(), 
 										this.getCurrentUser().getUsername(), 
@@ -170,14 +175,17 @@ public class RiepilogoOfferteDistinteAction extends RiepilogoOffertaAction {
 							
 								if (comunicazioniTec != null) {
 									this.setBustaTecnicaCifrata(comunicazioniTec.getSessionKey() != null);
-									this.listaIdBusteTec.add(comunicazioniTec.getId());
 								}
+								
+								// per la JSP serve un "id" per ogni lotto, quindi aggiungo sempre l'informazione 
+								// e nel caso il lotto non esista, inserisco un id nullo 
+								listaIdBusteTec.add(comunicazioniTec != null ? comunicazioniTec.getId() : null);
 							}
 						}
 
 						// ---------- BUSTE ECONOMICHE ----------
 						this.listaIdBusteEco = new ArrayList<Long>();
-						for(int i = 0; i < this.getBustaRiepilogativa().getListaCompletaLotti().size(); i++) {						
+						for(int i = 0; i < this.getBustaRiepilogativa().getListaCompletaLotti().size(); i++) {
 							DettaglioComunicazioneType comunicazioniEco = ComunicazioniUtilities.retrieveComunicazioneConStati(
 									this.getComunicazioniManager(), 
 									this.getCurrentUser().getUsername(), 
@@ -188,13 +196,19 @@ public class RiepilogoOfferteDistinteAction extends RiepilogoOffertaAction {
 
 							if (comunicazioniEco != null) {
 								this.setBustaEconomicaCifrata(comunicazioniEco.getSessionKey() != null);
-								this.listaIdBusteEco.add(comunicazioniEco.getId());
 							}
+							
+							// per la JSP serve un "id" per ogni lotto, quindi aggiungo sempre l'informazione 
+							// e nel caso il lotto non esista, inserisco un id nullo 
+							listaIdBusteEco.add(comunicazioniEco != null ? comunicazioniEco.getId() : null);
 						}
 					}
 				}
 
-				this.setAbilitaRettifica( this.rettificaAbilitata() );
+				this.setAbilitaRettifica( rettificaAbilitata() );
+
+				// richieste soccorso istruttorio per rettifica buste
+				richiestaInvioRettificaAbilitata(buste);
 
 			} catch (ApsException t) {
 				ApsSystemUtils.logThrowable(t, this, "openPage");

@@ -29,6 +29,7 @@ public class OpenPageRinunciaOffertaAction extends AbstractOpenPageAction {
 	private boolean riepilogo;
 	@Validate(EParamValidation.DIGIT)
 	private String progressivoOfferta;
+	private boolean garaSospesa;
 	
 	
 	public void setComunicazioniManager(IComunicazioniManager comunicazioniManager) {
@@ -75,12 +76,19 @@ public class OpenPageRinunciaOffertaAction extends AbstractOpenPageAction {
 		this.progressivoOfferta = progressivoOfferta;
 	}
 
+	public boolean isGaraSospesa() {
+		return garaSospesa;
+	}
+
+	public void setGaraSospesa(boolean garaSospesa) {
+		this.garaSospesa = garaSospesa;
+	}
+
 	/**
 	 * ... 
 	 */
 	public String openPage() {
 		this.setTarget(SUCCESS);
-		
 		if (null != this.getCurrentUser()
 			&& !this.getCurrentUser().getUsername().equals(SystemConstants.GUEST_USER_NAME)) {
 			try {

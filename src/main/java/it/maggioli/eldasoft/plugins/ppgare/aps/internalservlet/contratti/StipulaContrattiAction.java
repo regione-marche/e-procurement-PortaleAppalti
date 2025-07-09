@@ -297,7 +297,7 @@ public class StipulaContrattiAction extends EncodedDataAction
 		String target = SUCCESS;
 		try {
 			String username = this.getCurrentUser().getUsername();
-			this.dettaglioStipula = this.stipuleManager.dettaglioStipulacontratto(this.codice, username, true);
+			this.dettaglioStipula = this.stipuleManager.getDettaglioStipulaContratto(this.codice, username, true);
 			StatisticheComunicazioniPersonaliType stat = null;
 			stat = this.bandiManager.getStatisticheComunicazioniPersonali(this.getCurrentUser().getUsername(), this.codice,null, null);
 			this.session.put(ComunicazioniConstants.SESSION_ID_COMUNICAZIONI_ENTITA_PROCEDURA, "G1STIPULA");

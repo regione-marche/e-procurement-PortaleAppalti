@@ -1,9 +1,12 @@
 package it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni;
 
 import it.eldasoft.www.sil.WSGareAppalto.DocumentazioneRichiestaType;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.AppParamManager;
+import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.DocumentiComunicazioneHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.comunicazioni.helpers.WizardSoccorsoIstruttorioHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -14,7 +17,9 @@ import java.util.List;
 
 /**
  * ... 
+ * 
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.COMUNICAZIONE })
 public class OpenPageDocumentiNuovoSoccorsoAction extends OpenPageDocumentiNuovaComunicazioneAction {
 	/**
 	 * UID
@@ -79,32 +84,19 @@ public class OpenPageDocumentiNuovoSoccorsoAction extends OpenPageDocumentiNuova
 		return documentiRichiesti;
 	}
 
-	public void setDocumentiRichiesti(
-			List<DocumentazioneRichiestaType> documentiRichiesti) {
+	public void setDocumentiRichiesti(List<DocumentazioneRichiestaType> documentiRichiesti) {
 		this.documentiRichiesti = documentiRichiesti;
 	}
 
-	// "costanti" per la pagina jsp
-	@Override
-	public String getSTEP_TESTO_COMUNICAZIONE() {
-		return WizardSoccorsoIstruttorioHelper.STEP_TESTO_COMUNICAZIONE;
-	}
-
-	@Override
-	public String getSTEP_DOCUMENTI() {
-		return WizardSoccorsoIstruttorioHelper.STEP_DOCUMENTI;
-	}
-
-	@Override
-	public String getSTEP_INVIO_COMUNICAZIONE() {
-		return WizardSoccorsoIstruttorioHelper.STEP_INVIO_COMUNICAZIONE;
-	}
-	
-	/**
-	 * @return the esisteFileConFirmaNonVerificata
-	 */
 	public boolean isEsisteFileConFirmaNonVerificata() {
 		return esisteFileConFirmaNonVerificata;
+	}
+
+	/**
+	 * costruttore
+	 */
+	public OpenPageDocumentiNuovoSoccorsoAction() {
+		super(new WizardSoccorsoIstruttorioHelper());
 	}
 
 	/**
@@ -112,36 +104,41 @@ public class OpenPageDocumentiNuovoSoccorsoAction extends OpenPageDocumentiNuova
 	 */
 	@Override
 	public String openPage() {
-		WizardSoccorsoIstruttorioHelper helper = (WizardSoccorsoIstruttorioHelper)this.session
-			.get(PortGareSystemConstants.SESSION_ID_NUOVA_COMUNICAZIONE);
+		helper = (WizardSoccorsoIstruttorioHelper) getWizardFromSession();
 
-		int dimensioneAttualeFileCaricati = 0;
+		dimensioneAttualeFileCaricati = 0;
 		if (helper != null) {
+			getUploadValidator()
+				.setHelper(helper.getDocumenti())
+				.setLimiteUploadFile( FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_UPLOAD_FILE) )
+				.setLimiteTotaleUploadFile( FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager, AppParamManager.COMUNICAZIONI_LIMITE_TOTALE_UPLOAD_FILE) );
+
 			DocumentiComunicazioneHelper documentiHelper = helper.getDocumenti();
+			
+			dimensioneAttualeFileCaricati += documentiHelper.getTotalSize();
 			logger.debug("esisteFileConFirmaNonVerificata: {}",esisteFileConFirmaNonVerificata);
 			if (CollectionUtils.isNotEmpty(documentiHelper.getRequiredDocs())) {
-//				esisteFileConFirmaNonVerificata = documentiHelper
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiHelper.getRequiredDocs());
 				esisteFileConFirmaNonVerificata =
 						documentiHelper.getRequiredDocs()
 								.stream()
 								.anyMatch(attachment -> attachment.getFirmaBean() != null && !attachment.getFirmaBean().getFirmacheck());
 			}
+			
 			logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 			if (CollectionUtils.isNotEmpty(documentiHelper.getAdditionalDocs())) {
-				dimensioneAttualeFileCaricati += Attachment.sumSize(documentiHelper.getRequiredDocs());
 				esisteFileConFirmaNonVerificata |=
-						documentiHelper.getRequiredDocs()
+						documentiHelper.getAdditionalDocs()
 								.stream()
 								.anyMatch(attachment -> attachment.getFirmaBean() != null && !attachment.getFirmaBean().getFirmacheck());
 				logger.debug("esisteFileConFirmaNonVerificata: {}", esisteFileConFirmaNonVerificata);
 			}
+			
 			// documentazione richiesta per tutte le buste
 			this.documentiRichiesti = helper.getDocumentiRichiesti();
 		}
 		this.setDimensioneAttualeFileCaricati(dimensioneAttualeFileCaricati); 
 		
-		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, WizardSoccorsoIstruttorioHelper.STEP_DOCUMENTI);
+		this.session.put(PortGareSystemConstants.SESSION_ID_PAGINA, helper.STEP_DOCUMENTI);
 
 		return SUCCESS;
 	}

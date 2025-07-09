@@ -4,7 +4,6 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.ExceptionUtils;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.AbstractProcessPageAction;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.Attachment;
-import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.docdig.DocumentiAllegatiFirmaBean;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.IAppParamManager;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.customconfig.ICustomConfigManager;
@@ -14,19 +13,16 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.Comunicaz
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.FileUploadUtilities;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.utils.StringUtilities;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.aste.helper.WizardOffertaAstaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.WizardDocumentiBustaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareEventsConstants;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 import it.maggioli.eldasoft.plugins.utils.PdfUtils;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.io.File;
 import java.io.InputStream;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Action di gestione delle operazioni nella pagina dell'updload di un pdf per 
@@ -34,6 +30,7 @@ import java.util.List;
  *
  * @author ...
  */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.ASTA })
 public class ProcessPageUploadPdfAction extends AbstractProcessPageAction {
 	/**
 	 * UID
@@ -202,7 +199,7 @@ public class ProcessPageUploadPdfAction extends AbstractProcessPageAction {
 
 	/**
 	 * Aggiunge un allegato all'elenco dei documenti.
-	 * Dato che è concesso inviare 1 sola offerta d'asta (1 allegato) 
+	 * Dato che e' concesso inviare 1 sola offerta d'asta (1 allegato) 
 	 * aggiungere un nuovo documento sostituisce quello esistente.
 	 */
 	public String addUltDoc() {
@@ -215,69 +212,55 @@ public class ProcessPageUploadPdfAction extends AbstractProcessPageAction {
 				target = CommonSystemConstants.PORTAL_ERROR;
 			} else {
 				WizardDocumentiBustaHelper documenti = helper.getDocumenti();
-				
-				int dimensioneDocumento = FileUploadUtilities.getFileSize(this.docUlteriore);
-				
-				// traccia l'evento di upload di un file...
-				Event evento = new Event();
-				evento.setUsername(this.getCurrentUser().getUsername());
-				evento.setDestination(helper.getAsta().getCodice());
-				evento.setLevel(Event.Level.INFO);
-				evento.setEventType(PortGareEventsConstants.UPLOAD_FILE);
-				evento.setIpAddress(this.getCurrentUser().getIpAddress());
-				evento.setSessionId(this.getRequest().getSession().getId());
-				evento.setMessage(FUNZIONE + ": conferma rilancio asta"
-								  + ", file=" + this.docUlterioreFileName
-								  + ", dimensione=" + dimensioneDocumento + "KB");
-	
+
 				// consenti di caricare un solo allegato per volta...
 				if(documenti.getAdditionalDocs().size() > 0) {
 					this.removeDocUlteriore(0);
-				}			
+				}
 		
-				boolean onlyP7m = customConfigManager.isActiveFunction("DOCUM-FIRMATO", "ACCETTASOLOP7M");
-				boolean controlliOk =
-							checkFileSize(docUlteriore, docUlterioreFileName, getActualTotalSize(documenti.getAdditionalDocs()), appParamManager, evento)
-							&& checkFileName(docUlterioreFileName, evento)
-							&& checkFileFormat(docUlteriore, docUlterioreFileName, PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO, evento, onlyP7m);
+				// valida l'upload del documento...
+				getUploadValidator()
+						.setHelper(helper)
+						.setDocumentoDescrizione(docUlterioreDesc)
+						.setDocumento(docUlteriore)
+						.setDocumentoFileName(docUlterioreFileName)
+						.setCheckFileSignature(true)
+						.setEventoDestinazione(helper.getAsta().getCodice())
+						.setEventoMessaggio(FUNZIONE + ": conferma rilancio asta"
+								  			+ ", file=" + this.docUlterioreFileName
+								  			+ ", dimensione=" + FileUploadUtilities.getFileSize(this.docUlteriore) + "KB");
 
-				if (controlliOk) {
-					Date checkDate = Date.from(Instant.now());
-					DocumentiAllegatiFirmaBean checkFirma = checkFileSignature(
-							docUlteriore
-							, docUlterioreFileName
-							, PortGareSystemConstants.DOCUMENTO_FORMATO_FIRMATO
-							, checkDate
-							, evento
-							, onlyP7m
-							, appParamManager
-							, customConfigManager
-					);
+				if ( getUploadValidator().validate() ) {
 					// si inseriscono i documenti in sessione
 					if (Attachment.indexOf(documenti.getAdditionalDocs(), Attachment::getDesc, docUlterioreDesc) != -1) {
 						this.addActionError(this.getText("Errors.docUlteriorePresent"));
 					} else {
 						// verifica se l'hash del documento caricato corrisponde 
 						// a quello inserito nella comunicazione FS13
-						if(!this.checkFileFirmato(this.docUlteriore, this.docUlterioreFileName, helper.getPdfUUID(), evento)) {
-							controlliOk = false;
-						} 
+						boolean controlliOk = checkFileFirmato(
+								this.docUlteriore, 
+								this.docUlterioreFileName, 
+								helper.getPdfUUID(), 
+								getUploadValidator().getEvento()
+						);
 						
 						if(controlliOk) {
-							// il documento ulteriore corrente è un qualsiasi altro documento
+							// il documento ulteriore corrente ï¿½ un qualsiasi altro documento
 							documenti.addDocUlteriore(
 									this.docUlterioreDesc, 
 									this.docUlteriore, 
 									this.docUlterioreContentType, 
 									this.docUlterioreFileName, 
-									evento, 
-									checkFirma);
+									getUploadValidator().getEvento(), 
+									getUploadValidator().getCheckFirma()
+							);
 							saveAllegati(helper);
 							helper.putToSession();
 						}
 					}
 				}
-				this.eventManager.insertEvent(evento);
+
+				this.eventManager.insertEvent(getUploadValidator().getEvento());
 			}
 		
 		} catch (Throwable t) {
@@ -352,28 +335,26 @@ public class ProcessPageUploadPdfAction extends AbstractProcessPageAction {
 		return target;
 	}
 		
-	/**
-	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
-	 *
-	 * @return totale in KB dei file caricati
-	 */
-	private int getActualTotalSize(List<Attachment> attachments) {
-		return CollectionUtils.isEmpty(attachments)
-			? 0
-			: Attachment.sumSize(attachments);
-	}
+//	/**
+//	 * Ritorna la dimensione in kilobyte di tutti i file finora uploadati.
+//	 *
+//	 * @return totale in KB dei file caricati
+//	 */
+//	private int getActualTotalSize(List<Attachment> attachments) {
+//		return Attachment.sumSize(attachments);
+//	}
 	
-	public Integer getLimiteTotaleUpload() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
-
-	public Integer getLimiteUploadFile() {
-		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
-	}
-
-	public Integer getLimiteTotaleUploadDocIscrizione() {
-		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
-	}
+//	public Integer getLimiteTotaleUpload() {
+//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+//	}
+//
+//	public Integer getLimiteUploadFile() {
+//		return FileUploadUtilities.getLimiteUploadFile(this.appParamManager);
+//	}
+//
+//	public Integer getLimiteTotaleUploadDocIscrizione() {
+//		return FileUploadUtilities.getLimiteTotaleUploadFile(appParamManager);
+//	}
 	
 	/**
 	 * Estrae il file presente nel file firmato digitalmente e verifica 

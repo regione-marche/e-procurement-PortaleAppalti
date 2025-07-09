@@ -7,6 +7,9 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.BustaTecnica;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.internalservlet.GestioneBuste;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.system.services.events.IEventManager;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.garetel.helpers.WizardOffertaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.Validate;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
@@ -17,6 +20,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import com.agiletec.aps.system.SystemConstants;
 
+/**
+ * ...
+ *  
+ */
+@FlussiAccessiDistinti({ EFlussiAccessiDistinti.OFFERTA_GARA })
 public class ProcessPageOffertaTecnicaAction extends AbstractProcessPageAction {	
 	/**
 	 * UID
@@ -224,7 +232,7 @@ public class ProcessPageOffertaTecnicaAction extends AbstractProcessPageAction {
 						}
 						
 						try {
-							WizardOffertaTecnicaHelper.setValoreCriterioValutazione(
+							WizardOffertaHelper.setValoreCriterioValutazione(
 										listaCriteriValutazione.get(i), 
 										valori[i],
 										validateAndSet);

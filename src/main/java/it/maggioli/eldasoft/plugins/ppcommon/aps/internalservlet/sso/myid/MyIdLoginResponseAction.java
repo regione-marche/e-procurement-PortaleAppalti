@@ -52,10 +52,10 @@ public class MyIdLoginResponseAction extends BaseResponseAction {
 		try {
 			
 			String url = (String) appParamManager
-			.getConfigurationValue(AppParamManager.MYID_WS_AUTHSERVICEMYID_URL);
+					.getConfigurationValue(AppParamManager.MYID_WS_AUTHSERVICEMYID_URL);
 			String authSystem = MYID_AUTHSYSTEM_DEFAULT;
 			String urlServizio = (String) appParamManager
-			.getConfigurationValue(AppParamManager.MYID_SERVICEMYID_URL);
+					.getConfigurationValue(AppParamManager.MYID_SERVICEMYID_URL);
 			
 			if (SUCCESS.equals(target)) {
 				// imposta dinamicamente l'endpoint del proxy prima di
@@ -67,8 +67,7 @@ public class MyIdLoginResponseAction extends BaseResponseAction {
 				// richiedi il token temporaneo al sevizio SPID...
 				// e salvalo in sessione per il login...
 				String authId = authServiceSPIDManager.getAuthId();
-
-				action.getRequest().getSession().setAttribute(SESSION_ID_SSO_AUTHID, authId);
+				setAuthId(authId);
 
 				// invia la richiesta di login al servizio SPID...
 				int i = url.indexOf("/services/");

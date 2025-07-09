@@ -46,11 +46,11 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/${sessionScope.fromPage}.action" />" method="post">
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/Esiti/${sessionScope.fromPage}.action" />" method="post" >
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 		
 		<!-- FILTRI DI RICERCA -->
-		<fieldset>
+		<fieldset >
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_SEARCH_CRITERIA" /></legend>
 
 			<div class="fieldset-row first-row">
@@ -71,7 +71,7 @@
 							<s:select name="model.stazioneAppaltante" id="model.stazioneAppaltante" list="maps['stazioniAppaltanti']" 
 									value="%{#searchForm.stazioneAppaltante}" 
 									headerKey="" headerValue="%{#attr.headerValueStazioneAppaltante}" 
-									cssStyle="width: 100%;" >
+									cssStyle="width: 100%;" autocomplete="off" >
 							</s:select>
 						</c:otherwise>
 					</c:choose>
@@ -84,7 +84,7 @@
 				</div>
 				<div class="element">
 					<s:textfield name="model.oggetto" id="model.oggetto" cssClass="text" 
-								value="%{#searchForm.oggetto}" size="50" />
+								value="%{#searchForm.oggetto}" size="50" autocomplete="off" />
 				</div>
 			</div>
 
@@ -94,12 +94,12 @@
 				</div>
 				<div class="element">
 					<s:textfield name="model.cig" id="model.cig" cssClass="text" 
-								value="%{#searchForm.cig}" size="50" maxlength="10" />
+								value="%{#searchForm.cig}" size="50" maxlength="10" autocomplete="off" />
 				</div>
 			</div>
 
 			<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/internalServlet/advancedFilter.jsp" />
-			<div id="advanced">
+			<div id="<s:property value='%{#ADVANCED_DIV_ID}' />" class="advanced">
 				<div class="fieldset-row">
 					<div class="label">
 						<label for="model.tipoAppalto"><wp:i18n key="LABEL_TIPO_APPALTO" /> : </label>
@@ -108,7 +108,7 @@
 						<wp:i18n key="OPT_CHOOSE_TIPO_APPALTO" var="headerValueTipoAppalto" />
 						<s:select name="model.tipoAppalto" id="model.tipoAppalto" list="maps['tipiAppalto']" 
 								value="%{#searchForm.tipoAppalto}"
-								headerKey="" headerValue="%{#attr.headerValueTipoAppalto}" >
+								headerKey="" headerValue="%{#attr.headerValueTipoAppalto}" autocomplete="off" >
 						</s:select>
 					</div>
 				</div>
@@ -120,10 +120,10 @@
 					<div class="element">
 						<label for="model.dataPubblicazioneDa"><wp:i18n key="LABEL_DA_DATA" /> : </label>
 						<s:textfield name="model.dataPubblicazioneDa" id="model.dataPubblicazioneDa" cssClass="text" 
-									value="%{#searchForm.dataPubblicazioneDa}" maxlength="10" size="10" />
+									value="%{#searchForm.dataPubblicazioneDa}" maxlength="10" size="10" autocomplete="off" />
 						<label for="model.dataPubblicazioneA"><wp:i18n key="LABEL_A_DATA" /> : </label>
 						<s:textfield name="model.dataPubblicazioneA" id="model.dataPubblicazioneA" cssClass="text" 
-									value="%{#searchForm.dataPubblicazioneA}" maxlength="10" size="10" />
+									value="%{#searchForm.dataPubblicazioneA}" maxlength="10" size="10" autocomplete="off" />
 						(<wp:i18n key="LABEL_FORMATO_DATA" />)
 					</div>
 				</div>
@@ -149,7 +149,7 @@
 						<wp:i18n key="OPT_CHOOSE_CUC_AGISCE_PER_CONTO" var="headerValueCUC"/>
 						<div class="element">
 							<s:select name="model.altriSoggetti" id="model.altriSoggetti" list="maps['tipoAltriSoggetti']" 
-									value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" >
+									value="%{#searchForm.altriSoggetti}" headerKey="" headerValue="%{#attr.headerValueCUC}" autocomplete="off" >
 							</s:select>
 						</div>
 					</div>
@@ -161,7 +161,7 @@
 					</div>
 					<div class="element">
 						<s:select name="model.sommaUrgenza" id="model.sommaUrgenza" list="maps['sino']" 
-											value="%{#searchForm.sommaUrgenza}" headerKey="" headerValue="" >
+											value="%{#searchForm.sommaUrgenza}" headerKey="" headerValue="" autocomplete="off" >
 						</s:select>
 					</div>
 				</div>
@@ -173,7 +173,7 @@
 	                <div class="element">
 	                    <s:select name="model.isGreen" id="model.isGreen" list="maps['sino']"
 	                            value="%{#searchForm.isGreen}"
-	                            headerKey="" headerValue="" >
+	                            headerKey="" headerValue="" autocomplete="off" >
 	                    </s:select>
 	                </div>
 	            </div>
@@ -185,7 +185,7 @@
 	                <div class="element">
 	                    <s:select name="model.isRecycle" id="model.isRecycle" list="maps['sino']"
 	                            value="%{#searchForm.isRecycle}"
-	                            headerKey="" headerValue="" >
+	                            headerKey="" headerValue="" autocomplete="off" >
 	                    </s:select>
 	                </div>
 	            </div>
@@ -197,7 +197,7 @@
 	                <div class="element">
 	                    <s:select name="model.isPnrr" id="model.isPnrr" list="maps['sino']"
 	                            value="%{#searchForm.isPnrr}"
-	                            headerKey="" headerValue="" >
+	                            headerKey="" headerValue="" autocomplete="off" >
 	                    </s:select>
 	                </div>
 	            </div>
@@ -207,7 +207,7 @@
 						<label for="model.iDisplayLength"><s:property value="%{getText('label.rowsPerPage')}" /> : </label>
 					</div>
 					<div class="element">
-						<select name="model.iDisplayLength" id="model.iDisplayLength" class="text">
+						<select name="model.iDisplayLength" id="model.iDisplayLength" class="text" autocomplete="off" >
 							<option <s:if test="%{model.iDisplayLength==10}">selected="selected"</s:if> value="10">10</option>
 							<option <s:if test="%{model.iDisplayLength==20}">selected="selected"</s:if> value="20">20</option>
 							<option <s:if test="%{model.iDisplayLength==50}">selected="selected"</s:if> value="50">50</option>
@@ -223,7 +223,7 @@
 				<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/button_reload_wp.jsp" />
 			</div>
 		</fieldset>
-	
+		
 		<!-- LISTA -->
 		<c:if test="${listaEsiti ne null}">
 			<jsp:include page="listaEsiti.jsp" />

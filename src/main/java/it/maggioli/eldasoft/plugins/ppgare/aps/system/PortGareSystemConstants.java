@@ -10,10 +10,17 @@ import it.maggioli.eldasoft.plugins.ppcommon.aps.system.CommonSystemConstants;
  */
 public interface PortGareSystemConstants {
 
+    /**
+     * Nome del manager che gestisce l'interfacciamento con il servizio web per
+     * la gestione degli eventi.
+     */
+    public static final String EVENTI_MANAGER = "EventManager";
+    
 	/**
 	 * Nome del bean proxy del servizio web per la gestione wsPagoPA.
 	 */
 	public static final String WS_PAGO_PA = "wsPagoPA";
+	
     /**
      * Nome del bean proxy del servizio web per la gestione dei bandi.
      */
@@ -27,36 +34,10 @@ public interface PortGareSystemConstants {
 
     /**
      * Nome del manager che gestisce l'interfacciamento con il servizio web per
-     * la gestione delle comunicazioni di gara.
-     */
-    public static final String COMUNICAZIONI_MANAGER = "ComunicazioniManager";
-
-    
-    /**
-     * Nome del manager che gestisce l'interfacciamento con il servizio web per
-     * la gestione degli eventi.
-     */
-    public static final String EVENTI_MANAGER = "EventManager";
-
-    /**
-     * Nome del manager che gestisce l'interfacciamento con il servizio web per
      * la gestione dei cataloghi.
      */
     public static final String CATALOGHI_MANAGER = "CataloghiManager";
-    
-    /**
-     * Nome del manager che gestisce l'interfacciamento con il servizio web per
-     * la gestione dei parametri applicativi.
-     */
-    public static final String NTP_MANAGER = "NtpManager";
-    
-    /**
-     * Nome del manager che gestisce l'interfacciamento con il servizio web per
-     * la gestione dei parametri applicativi.
-     */
-    public static final String APPPARAM_MANAGER = "AppParamManager";
 
-    
     /**
      * Nome del bean proxy del servizio web per la gestione delle aste.
      */
@@ -158,8 +139,12 @@ public interface PortGareSystemConstants {
      * Identificativo dell'attributo in sessione contenente i dati del form di
      * ricerca avvisi
      */
+    public static final String SESSION_ID_SEARCH_AVVISI_COMUNICAZIONI_ATTI = "formSearchAvvisiComunicazioniAtti";
+    
     public static final String SESSION_ID_SEARCH_AVVISI = "formSearchAvvisi";
 
+    public static final String SESSION_ID_LIST_ALL_AVVISI = "formListAllAvvisi";
+    
     public static final String SESSION_ID_LIST_ALL_IN_CORSO_AVVISI = "formListAllInCorsoAvvisi";
     
     public static final String SESSION_ID_LIST_ALL_SCADUTI_AVVISI = "formListAllScadutiAvvisi";
@@ -479,6 +464,12 @@ public interface PortGareSystemConstants {
      */
     public static final String WIZARD_PAGINA_RTI = "rti";
 
+    /**
+     * Costante che individua la pagina di indicazione avvalimento nel wizard
+     * partecipazione ad una gara.
+     */
+    public static final String WIZARD_PAGINA_AVVALIMENTO = "avvalimento";
+    
     /**
      * Costante che individua la pagina di indicazione componenti nel wizard
      * partecipazione ad una gara.
@@ -1127,6 +1118,14 @@ public interface PortGareSystemConstants {
     public static final String SESSION_ID_NUOVA_COMUNICAZIONE= "nuovaComunicazione";
 
 	public static final String SESSION_ID_SEARCH_CONSULENTI_COLLABORATORI = "consulentiCollaboratori";
+    /**
+     * The value in session is stored in the following way:<br/>
+     * <i>SESSION_ESPLET_ORDER<strong>#</strong>BUSTA_NAME<strong>#</strong>NGARA</i><br/>
+     * <br/>
+     * Example:<br/>
+     * esplet_order#ECONOMICA#03569
+     */
+    public static final String SESSION_ESPLET_ORDER = "esplet_order";
 
 	/** Estremi protocollo SSO **/
 	public static final String TIPO_PROTOCOLLO_SSO_SHIBBOLETH = "auth.sso.shibboleth";
@@ -1140,24 +1139,40 @@ public interface PortGareSystemConstants {
 	public static final String FILENAME_RIEPILOGO = "Riepilogo.pdf";
 	public static final String FILENAME_RIEPILOGO_MARCATURA_TEMPORALE = "Riepilogo.pdf.tsd";
 	
-	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO = "MAGGIOLI_AUTH_SSO";
-	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO_BUSINESS = "MAGGIOLI_AUTH_SSO_BUSINESS";
-	public static final String TIPOLOGIA_LOGIN_COHESION_SSO = "MAGGIOLI_COHESION_SSO";
-	public static final String TIPOLOGIA_LOGIN_SHIBBOLETH_SSO = "MAGGIOLI_SHIBBOLETH_SSO";
-	public static final String TIPOLOGIA_LOGIN_GATEWAY_SSO = "MAGGIOLI_GATEWAY_SSO";
-	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_FORM = "auth.form";
+	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO 				= "MAGGIOLI_AUTH_SSO";
+	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_SSO_BUSINESS 		= "MAGGIOLI_AUTH_SSO_BUSINESS";
+	public static final String TIPOLOGIA_LOGIN_COHESION_SSO 					= "MAGGIOLI_COHESION_SSO";
+	public static final String TIPOLOGIA_LOGIN_SHIBBOLETH_SSO 					= "MAGGIOLI_SHIBBOLETH_SSO";
+	public static final String TIPOLOGIA_LOGIN_GATEWAY_SSO 						= "MAGGIOLI_GATEWAY_SSO";
+	public static final String TIPOLOGIA_LOGIN_EIDAS_SSO 						= "MAGGIOLI_EIDAS_SSO";
+	public static final String TIPOLOGIA_LOGIN_MAGGIOLI_AUTH_FORM 				= "auth.form";
 	
 	// tipi di "entita" per le comunicazioni di W_INVCOM 
 	//public static final String ENTITA_GARA 				= "GARA";
 	//public static final String ENTITA_TORN 				= "TORN";
 	//public static final String ENTITA_TORN 				= "GARECONT";
-	public static final String ENTITA_STIPULA 			= "G1STIPULA";
-	public static final String ENTITA_CONTRATTO_LFS 	= "APPA";
+	public static final String ENTITA_GARE 					= "GARE";
+	public static final String ENTITA_STIPULA 				= "G1STIPULA";
+	public static final String ENTITA_CONTRATTO_LFS 		= "APPA";
+	public static final String ENTITA_GENERICA_RISERVATA	= "HOMEPG";
 	
 	//PDF-A
 	public static final String PDF_A_ICC_PATH 	= "/WEB-INF/plugins/ppgare/aps/jasper/sRGB2014.icc";
     public static final String PDF_HASH_DICTIONARY = "uuid";
     public static final String SHEET_PREZZI_UNITARI = "PREZZI UNITARI";
 
+    // comunicazione di riepilogo "comunicazione.pdf", "comunicazione.pdf.tsd"
+	public static final String NOME_FILE_RIEPILOGO_COMUNICAZIONE_PDF 	= "comunicazione.pdf";
+	public static final String NOME_FILE_RIEPILOGO_COMUNICAZIONE_TSD 	= "comunicazione.pdf.tsd";
 
+	// comunicazione di rettifica
+	public static final long RICHIESTA_RETTIFICA_BUSTA_TEC				= 10;	// richiesta per poter inviare documenti di rettifica 
+	public static final long ACCETTAZIONE_RETTIFICA_BUSTA_TEC			= 11;
+	public static final long RIFIUTO_RETTIFICA_BUSTA_TEC				= 12;
+	public static final long RETTIFICA_BUSTA_TEC						= 13;	// invio dei documenti di rettifica
+	public static final long RICHIESTA_RETTIFICA_BUSTA_ECO				= 15;	// richiesta per poter inviare documenti di rettifica
+	public static final long ACCETTAZIONE_RETTIFICA_BUSTA_ECO			= 16;
+	public static final long RIFIUTO_RETTIFICA_BUSTA_ECO				= 17;
+	public static final long RETTIFICA_BUSTA_ECO 						= 18;	// invio dei documenti di rettifica
+	
 }

@@ -4,9 +4,35 @@
     "http://struts.apache.org/dtds/struts-2.1.dtd">
 
 <struts>
-
 	<package name="portgare_do/FrontEnd/Avvisi" namespace="/do/FrontEnd/Avvisi"
 		extends="pp-common">
+
+		<action name="listAvvisiComunicazioniAtti" class="avvisiComunicazioniAttiFinderAction" method="listAvvisi">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/avvisi/avvisiComunicazioniAttiList.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAvviso,statiAvviso,tipiAvvisoGenerali,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="viewAvvisoComunicazioneAtto" class="avvisiComunicazioniAttiAction" method="view">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/avvisi/avvisoComunicazioneAttoView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+			<interceptor-ref name="encodedData">
+				<param name="types">stazioniAppaltanti,tipiAppalto,tipiAvviso,statiAvviso,tipiAvvisoGenerali,tipiElencoOperatori</param>
+			</interceptor-ref>
+		</action>
+
+		<action name="viewAltriDocumentiAvvisiComunicazioniAtti" class="avvisiComunicazioniAttiAction" method="viewAltriDocumenti">
+			<result type="dispatcher">
+				/WEB-INF/plugins/ppgare/aps/jsp/internalServlet/bandi/attiDocumentiView.jsp
+			</result>
+			<interceptor-ref name="japsFreeStack"></interceptor-ref>
+		</action>
 
 		<action name="listAll*" class="avvisiFinderAction" method="listAll{1}">
 			<result type="dispatcher">
@@ -14,7 +40,7 @@
 			</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
-				<param name="types">stazioniAppaltanti,tipiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
+				<param name="types">stazioniAppaltanti,tipiAvviso,statiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
 			</interceptor-ref>
 		</action>
 
@@ -24,7 +50,7 @@
 			</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
-				<param name="types">stazioniAppaltanti,tipiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
+				<param name="types">stazioniAppaltanti,tipiAvviso,statiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
 			</interceptor-ref>
 		</action>
 
@@ -35,7 +61,7 @@
 			<interceptor-ref name="japsFreeStack"> 
 			</interceptor-ref>
 			<interceptor-ref name="encodedData">
-				<param name="types">stazioniAppaltanti,tipiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
+				<param name="types">stazioniAppaltanti,tipiAvviso,statiAvviso,tipiElencoOperatori,tipoAltriSoggetti,sino</param>
 			</interceptor-ref>
 		</action>
 
@@ -45,7 +71,7 @@
 			</result>
 			<interceptor-ref name="japsFreeStack"></interceptor-ref>
 			<interceptor-ref name="encodedData">
-				<param name="types">stazioniAppaltanti,tipiAppalto,tipiAvviso,tipiElencoOperatori</param>
+				<param name="types">stazioniAppaltanti,tipiAppalto,tipiAvviso,statiAvviso,tipiElencoOperatori</param>
 			</interceptor-ref>
 		</action>
 		

@@ -4,7 +4,7 @@
 <%@ taglib prefix="s"    uri="/struts-tags" %>
 <%@ taglib prefix="es"   uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
-<script type="text/javascript" src='<wp:resourceURL/>static/js/jquery.treeview.js'></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_treeview.jsp" />
 
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
@@ -59,7 +59,6 @@ $(document).ready(function() {
 });	
 //--><!]]></script>
 
-<wp:headInfo type="CSS" info="jquery/treeview/jquery.treeview.css" />
 
 <!-- prepare il path per i pulsanti "Chiudi tutto" "Espandi tutto" -->
 <c:set var="imgPath"><wp:resourceURL/>static/css/jquery/treeview/images/</c:set> 
@@ -155,7 +154,7 @@ $(document).ready(function() {
  	</form>
 
 	<div class="back-link">
-		<a href="<wp:action path="/ExtStr2/do/FrontEnd/${backLink}/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}&amp;${tokenHrefParams}">
+		<a href="<wp:action path="/ExtStr2/do/FrontEnd/${backLink}/viewIscrizione.action" />&amp;codice=${param.codice}&amp;ext=${param.ext}">
 			<wp:i18n key="LINK_BACK_TO_ISCRIZIONE" />
 		</a>
 	</div>

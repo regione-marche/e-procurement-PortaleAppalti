@@ -8,8 +8,18 @@ import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.cataloghi.beans.C
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.ISoggettoImpresa;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.SoggettoFirmatarioImpresaHelper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.datiimpresa.WizardDatiImpresaHelper;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.EFlussiAccessiDistinti;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.flussiAccessiDistinti.FlussiAccessiDistinti;
 import it.maggioli.eldasoft.plugins.ppgare.aps.system.PortGareSystemConstants;
 
+/**
+ * ... 
+ * 
+ */
+@FlussiAccessiDistinti({ 
+	EFlussiAccessiDistinti.ISCRIZIONE_ELENCO, EFlussiAccessiDistinti.RINNOVO_ELENCO,
+	EFlussiAccessiDistinti.ISCRIZIONE_CATALOGO, EFlussiAccessiDistinti.RINNOVO_CATALOGO  
+	})
 public class ProcessPageScaricaDomandaRinnovoAction extends ProcessPageScaricaDomandaIscrizioneAction {
 	/**
 	 * UI
@@ -92,36 +102,10 @@ public class ProcessPageScaricaDomandaRinnovoAction extends ProcessPageScaricaDo
 	public String saveRinnovoFirmatarioMandataria() {
 		String target = "saveFirmatarioMandataria";
 		
-		boolean mandatariaTrovata = false;
-		
 		WizardRinnovoHelper helper = (WizardRinnovoHelper) session
 			.get(PortGareSystemConstants.SESSION_ID_DETT_RINN_ALBO);
-		WizardDatiImpresaHelper datiImpresaHelper = helper.getImpresa();
 		
-		SoggettoFirmatarioImpresaHelper firmatario = new SoggettoFirmatarioImpresaHelper();
-		
-		for(int i = 0; i < helper.getListaFirmatariMandataria().size() && !mandatariaTrovata; i++){
-			ISoggettoImpresa soggettoFromLista = null;
-			String listaFirmatarioSelezionato = StringUtils.substring(this.getFirmatarioSelezionato(), 0, this.getFirmatarioSelezionato().indexOf("-"));
-			int indiceFirmatarioSelezionato = Integer.parseInt(StringUtils.substring(this.getFirmatarioSelezionato(), this.getFirmatarioSelezionato().indexOf("-")+1, this.getFirmatarioSelezionato().length()));			
-			if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_ALTRE_CARICHE)) {
-				soggettoFromLista = datiImpresaHelper.getAltreCaricheImpresa().get(indiceFirmatarioSelezionato);
-			} else if(listaFirmatarioSelezionato.equals(CataloghiConstants.LISTA_DIRETTORI_TECNICI)) {
-				soggettoFromLista = datiImpresaHelper.getDirettoriTecniciImpresa().get(indiceFirmatarioSelezionato);
-			} else {
-				soggettoFromLista = datiImpresaHelper.getLegaliRappresentantiImpresa().get(indiceFirmatarioSelezionato);
-			}
-			
-			if(helper.getListaFirmatariMandataria().get(i).getNominativo().equalsIgnoreCase(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome()))
-				mandatariaTrovata = true;
-			
-			firmatario.copyFrom(soggettoFromLista);
-			firmatario.setNominativo(soggettoFromLista.getCognome() + " " + soggettoFromLista.getNome());
-			
-			helper.setIdFirmatarioSelezionatoInLista(i);
-		}
-		
-		helper.getComponentiRTI().addFirmatario(datiImpresaHelper.getDatiPrincipaliImpresa(), firmatario);
+		helper.saveFirmatarioMandataria(this.getFirmatarioSelezionato());
 		
 		helper.setDatiModificati(true);
 	

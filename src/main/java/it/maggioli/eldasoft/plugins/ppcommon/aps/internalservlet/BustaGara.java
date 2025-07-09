@@ -14,15 +14,22 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
 
+import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.exception.ApsException;
 
 
+/**
+ * generica busta per una partecipazione o offerta di gara 
+ */
 public abstract class BustaGara implements Serializable {
 	/**
 	 * UID
 	 */
 	private static final long serialVersionUID = -7874436563842346850L;
+	
+	protected static final Logger LOGGER = ApsSystemUtils.getLogger();
 	
     /**
      * Tipologia di busta 
@@ -54,10 +61,10 @@ public abstract class BustaGara implements Serializable {
     {
     	BustaGara.parametriBuste.put(BUSTA_INVIO_OFFERTA,	new String[] { "", ComunicazioneFlusso.RICHIESTA_TIPO_INVIO_OFFERTA_GT } );
     	BustaGara.parametriBuste.put(BUSTA_PARTECIPAZIONE,	new String[] { "", ComunicazioneFlusso.RICHIESTA_TIPO_PARTECIPAZIONE_GT });
-    	BustaGara.parametriBuste.put(BUSTA_AMMINISTRATIVA,	new String[] { BUSTA_AMM, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_PRE_QUALIFICA });
-    	BustaGara.parametriBuste.put(BUSTA_TECNICA, 		new String[] { BUSTA_TEC, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_AMMINISTRATIVA });
-    	BustaGara.parametriBuste.put(BUSTA_ECONOMICA, 	 	new String[] { BUSTA_ECO, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_TECNICA });
-    	BustaGara.parametriBuste.put(BUSTA_PRE_QUALIFICA,	new String[] { BUSTA_PRE, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_ECONOMICA });
+    	BustaGara.parametriBuste.put(BUSTA_AMMINISTRATIVA,	new String[] { BUSTA_AMM, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_AMMINISTRATIVA });
+    	BustaGara.parametriBuste.put(BUSTA_TECNICA, 		new String[] { BUSTA_TEC, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_TECNICA });
+    	BustaGara.parametriBuste.put(BUSTA_ECONOMICA, 	 	new String[] { BUSTA_ECO, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_ECONOMICA });
+    	BustaGara.parametriBuste.put(BUSTA_PRE_QUALIFICA,	new String[] { BUSTA_PRE, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_PRE_QUALIFICA });
     	BustaGara.parametriBuste.put(BUSTA_RIEPILOGO, 	 	new String[] { BUSTA_RIE, ComunicazioneFlusso.RICHIESTA_TIPO_BUSTA_RIEPILOGO });
     	BustaGara.parametriBuste.put(BUSTA_RIEPILOGO_PRE,	new String[] { BUSTA_RIE, ComunicazioneFlusso.RICHIESTA_TIPO_PREQUALIFICA_RIEPILOGO });    	
 	}
@@ -78,6 +85,16 @@ public abstract class BustaGara implements Serializable {
 		return (parametri != null ? parametri[1] : "");
 	}
 
+	/**
+	 * restituisce il tipo di busta associato al tipo di comunicazione 
+	 */
+	public static int getTipoBustaComunicazione(String tipoComunicazione) {
+		return (PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_PRE_QUALIFICA.equals(tipoComunicazione) ? PortGareSystemConstants.BUSTA_PRE_QUALIFICA
+			   : PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_AMMINISTRATIVA.equals(tipoComunicazione) ? PortGareSystemConstants.BUSTA_AMMINISTRATIVA
+			   : PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_TECNICA.equals(tipoComunicazione) ? PortGareSystemConstants.BUSTA_TECNICA
+			   : PortGareSystemConstants.RICHIESTA_TIPO_BUSTA_ECONOMICA.equals(tipoComunicazione) ? PortGareSystemConstants.BUSTA_ECONOMICA
+			   : 0);
+	}
 
     /**
      * Tipi di criteri di valutazione (tecnica/economica)
@@ -189,7 +206,7 @@ public abstract class BustaGara implements Serializable {
 
 	/**
 	 * deserializzazione dell'oggetto  
-	 * In ambiente cluster con integrazione di Redis le istanze dei manager non possono essere serializzate/deserializzate
+	 * In ambiente cluster con integrazione di REDIS (o similari) le istanze dei manager non possono essere serializzate/deserializzate
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
 	 */
@@ -207,7 +224,7 @@ public abstract class BustaGara implements Serializable {
 	 * @throws ApsException 
 	 */	
 	public boolean get(List<String> stati, boolean findInOrder, String codiceLotto, String progressivoOfferta) throws Throwable {
-		GestioneBuste.traceLog("BustaGara.get " + codiceLotto );
+		GestioneBuste.traceLog("BustaGara.get " + comunicazioneFlusso.getTipoComunicazione() + " " + codiceLotto );
 		boolean continua = true;
 		
 		//this.codiceLotto = codiceLotto;  <= da verificare
@@ -312,9 +329,7 @@ public abstract class BustaGara implements Serializable {
 	/**
 	 * invalida i dati dell'helper associato alla busta  
 	 */
-	protected /*??? abstract ???*/ void invalidateHelper() throws Throwable {
-		// DA RIDEFINIRE NELLE CLASSI FIGLIE !!!
-	}
+	protected abstract void invalidateHelper() throws Throwable;
 
 	/**
 	 * inizializza un nuovo helper associato alla busta  

@@ -6,28 +6,41 @@ import com.opensymphony.xwork2.ActionInvocation;
 import it.maggioli.eldasoft.plugins.ppcommon.aps.RequestParamRemoverWrapper;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ClassFieldValidator;
 import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.EParamValidation;
+import it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.ParamValidationResult;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.dispatcher.StrutsRequestWrapper;
 import org.slf4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static it.maggioli.eldasoft.plugins.ppgare.aps.internalservlet.validation.WithError.*;
+
 /**
  * Classe base dei validatori dei campi
+ * 
  */
 abstract class BaseFieldValidator implements FieldValidator {
 
-    protected ActionInvocation invocation;  //Oggetto dell'interceptor
-    protected Object           toCheck; //Istanza della classe
+    protected ActionInvocation invocation;  	//Oggetto dell'interceptor
+    protected Object           toCheck; 		//Istanza della classe
     //Ex di ampo valorizzato: model. (BandiFinder action); poi verr\u00E0 fatto un model.oggetto, model.cig...
     protected String           parentName = "";
-    protected Field            field;   //Campo da controllare
-    protected EParamValidation validator;   //Validatore per il campo
-    protected Object           fieldValue;  //Valore del campo
+    protected Field            field;   		//Campo da controllare
+    protected EParamValidation validator;   	//Validatore per il campo
+    protected Object           fieldValue;  	//Valore del campo
+    protected String           invalidPart;  	//parte non valida del campo
+    protected String 		   messageError;
+    protected String 		   errorFieldLabel;
     protected boolean          hasToCleanField = false; //Se a true, ripulisce i field non validi
 
     protected boolean          isValid = false;
@@ -35,6 +48,7 @@ abstract class BaseFieldValidator implements FieldValidator {
     protected BaseFieldValidator(Object toCheck, Field field) {
         this.toCheck = toCheck;
         this.field = field;
+        this.invalidPart = null;
     }
 
     protected abstract Logger getLogger();
@@ -48,18 +62,23 @@ abstract class BaseFieldValidator implements FieldValidator {
      * @return true=valido, false=non valido
      */
     protected boolean validateObjectValue(Object valToCheck) {
-        boolean isValid = true;
+        // Porzione della stringa in input non valida
+        invalidPart = null;
 
         //int/Integer, char/Character, long/Long, String...
         //Attenzione: il reset viene effettuato solo nei parametri di tipo String
-        if (ClassUtils.isPrimitiveOrWrapper(valToCheck.getClass()) || valToCheck instanceof String)  //Se \u00E8 primitivo e non valido setto a null
-            isValid = validator.validate(valToCheck);
-        else
-            ClassFieldValidator.validate(invocation, valToCheck, parentName + field.getName() + ".");    //Se \u00E8 un oggetto "custom" lo considero valido, in questo modo, non lo setter\u00F2 a null, ma, valido i campi all'interno
+        if (ClassUtils.isPrimitiveOrWrapper(valToCheck.getClass()) || valToCheck instanceof String) {
+        	//Se e' primitivo e non valido setto a null
+        	ParamValidationResult ret = validator.validate(valToCheck);
+       		invalidPart = ret.getInvalidPart();
+       		messageError = ret.getMessageError();
+        } else
+        	//Se e' un oggetto "custom" lo considero valido, in questo modo, non lo settero' a null, ma, valido i campi all'interno
+            ClassFieldValidator.validate(invocation, valToCheck, parentName + field.getName() + ".");
 
-        notifyIfNotValid(valToCheck, isValid);
+        notifyIfNotValid(valToCheck, invalidPart);
 
-        return isValid;
+        return StringUtils.isEmpty(invalidPart);
     }
 
     /**
@@ -100,13 +119,14 @@ abstract class BaseFieldValidator implements FieldValidator {
         if (invocation != null)
             cleanStackFromValue(parentName + field.getName());
     }
+    
     /**
      * Ripulisce stack, request e _params della BaseAction dal campo non valido.
      */
     protected void cleanStackFromValue(String paramName) {
         cleanValueFromStrutsStack(paramName);   //Stack di struts
-        cleanValueFromAction(paramName);    //Stack salvato sulla BaseAction
-        cleanValueFromRequest(paramName);   //Stack della request
+        cleanValueFromAction(paramName);    	//Stack salvato sulla BaseAction
+        cleanValueFromRequest(paramName);   	//Stack della request
         getLogger().error("Cleaned stack from the http param: {}", paramName);
     }
     /**
@@ -122,8 +142,14 @@ abstract class BaseFieldValidator implements FieldValidator {
 
     }
 
-    private Object computeEmpty(Object key, Object value) { return ""; }
-
+    private Object computeEmpty(Object key, Object value) {
+    	//return "";
+    	Object safeValue = ""; 
+    	if(key.equals(field.getName()))
+    		safeValue = fieldValue;		// recupera il valore filtrato dal validatore...
+    	return safeValue; 
+    }
+    
     /**
      * Ripulisce il _params della BaseAction dal campo non valido.
      */
@@ -131,6 +157,7 @@ abstract class BaseFieldValidator implements FieldValidator {
         //Se esiste la chiave richiesta, imposto a valore vuoto il campo designato
         ((BaseAction) invocation.getAction()).getParameters().computeIfPresent(name, (key, value) -> new String[0]);
     }
+    
     /**
      * Ripulisce la request.
      */
@@ -139,7 +166,7 @@ abstract class BaseFieldValidator implements FieldValidator {
         Object requestWrapper = invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
         if (requestWrapper instanceof StrutsRequestWrapper) {   //StrutsRequestWrapper o MultiParRequestWrapper
             StrutsRequestWrapper strutsRequestWrapper = ((StrutsRequestWrapper) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST));
-            //Taccone fatto perchè in caso di download i filtri non vengono richiamati (il filtro LayoutSettingsFilter crea il RequestParamRemoverWrapper)
+            //Taccone fatto perchÃ¨ in caso di download i filtri non vengono richiamati (il filtro LayoutSettingsFilter crea il RequestParamRemoverWrapper)
             if (!(strutsRequestWrapper.getRequest() instanceof RequestParamRemoverWrapper)) {
                 RequestParamRemoverWrapper wrapper = new RequestParamRemoverWrapper((HttpServletRequest) strutsRequestWrapper.getRequest());
                 strutsRequestWrapper.setRequest(wrapper);
@@ -150,9 +177,39 @@ abstract class BaseFieldValidator implements FieldValidator {
         } else
             throw new UnsupportedOperationException("Il wrapper di richiesta" + requestWrapper.getClass().getSimpleName() + " non \u00E8 supportato");
     }
-    protected void notifyIfNotValid(Object value, boolean isValid) {
-        if (!isValid)
+    
+    protected void notifyIfNotValid(Object value, String invalidPart) {
+        if (StringUtils.isNotEmpty(invalidPart)) {
             getLogger().error("The value \"{}\" is not valid for the field: {}.", value, parentName + field.getName());
+            sendActionError(value, invalidPart);
+        }
+    }
+
+    /**
+     * Mostro l'errore a video.
+     *
+     * @param value
+     * @param invalidPart
+     */
+    private void sendActionError(Object value, String invalidPart) {
+        if (invocation.getAction() instanceof BaseAction) {
+            BaseAction action = (BaseAction) invocation.getAction();
+            
+            if (DEFAULT_TEXT_ERROR.equals(messageError) || DEFAULT_TEXT_ERROR_MALWARE.equals(messageError)) {
+            	// messaggio fieldname, value, invalid part
+            	List<Object> args = Arrays.asList(
+            			action.getTextFromDB(StringUtils.isNotEmpty(errorFieldLabel) ? errorFieldLabel : field.getName())
+            			, StringEscapeUtils.escapeHtml(value.toString())
+            	);
+            	//if (DEFAULT_TEXT_ERROR.equals(messageError))
+            	//	args.add(StringEscapeUtils.escapeHtml(invalidPart));
+            	
+            	action.addFieldError(field.getName(), action.getText(messageError, args));
+            } else    
+            	// Messaggio custom, viene passato solo il fieldName
+                action.addFieldError(field.getName(), action.getText(messageError, Collections.singletonList(action.getTextFromDB(field.getName()))));
+        } else
+            getLogger().error("Non sono riuscito ad inviare una ActionError");
     }
 
 
@@ -174,6 +231,14 @@ abstract class BaseFieldValidator implements FieldValidator {
 
     void setFieldValue(Object fieldValue) {
         this.fieldValue = fieldValue;
+    }
+
+    public void setErrorMessage(String textError) {
+        this.messageError = textError;
+    }
+
+    public void setErrorFieldLabel(String errorFieldLabel) {
+        this.errorFieldLabel = errorFieldLabel;
     }
 
 }

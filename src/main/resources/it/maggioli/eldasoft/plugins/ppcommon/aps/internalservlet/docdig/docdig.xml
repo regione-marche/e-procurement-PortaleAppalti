@@ -2,22 +2,20 @@
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
     "http://struts.apache.org/dtds/struts-2.1.dtd">
-
-<struts>
-    	
+<struts>    	
 	<package name="portgare_do/FrontEnd/DocDig" namespace="/do/FrontEnd/DocDig"
 		extends="pp-common">
 		
 		<action name="view*" class="downloadAllegatoAction" method="view{1}">
-			<result type="chain" name="successFirmaDigitaleInvito">		    	
+			<result type="chain" name="successFirmaDigitaleInvito">
 		        <param name="actionName">viewInvito</param>
 		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
 		    </result>
-			<result type="chain" name="successFirmaDigitaleRiservato">		    	
+			<result type="chain" name="successFirmaDigitaleRiservato">
 		        <param name="actionName">viewRiservato</param>
 		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
 		    </result>
-		    <result type="chain" name="successFirmaDigitalePubblico">		    	
+		    <result type="chain" name="successFirmaDigitalePubblico">
 		        <param name="actionName">viewPubblico</param>
 		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
 		    </result>
@@ -30,17 +28,16 @@
 				<param name="contentDisposition">attachment;filename="${filename}"</param>
 			</result>
 			<result name="input" type="redirect">${urlErrori}</result>
-						
-			<result type="chain" name="successFirmaDigitaleRiservato">		    	
+			<result type="chain" name="successFirmaDigitaleRiservato">
 		        <param name="actionName">viewRiservato</param>
 		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
 		    </result>
-		    <result type="chain" name="successFirmaDigitalePubblico">		    	
+		    <result type="chain" name="successFirmaDigitalePubblico">
 		        <param name="actionName">viewPubblico</param>
 		        <param name="namespace">/do/FrontEnd/FirmaDigitale</param>
 		    </result>
+		    <result name="successLargefile" type="redirect">${url}</result>
 		</action>
 		
 	</package>
-
 </struts>

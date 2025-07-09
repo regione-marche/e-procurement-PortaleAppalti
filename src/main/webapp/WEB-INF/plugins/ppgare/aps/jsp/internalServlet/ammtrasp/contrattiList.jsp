@@ -4,17 +4,16 @@
 <%@ taglib prefix="es" uri="/WEB-INF/plugins/ppcommon/aps/tld/eldasoft-common-core.tld" %>
 
 <es:checkCustomization var="visImportoContratto" objectId="AMMTRASP-RIEPCONTRATTI" attribute="IMPCONTRATTO" feature="VIS" />
+<es:checkCustomization var="visExportCSV" objectId="AMMTRASP-RIEPCONTRATTI" attribute="EXPORT" feature="VIS" />
 <es:checkCustomization var="withAdvancedUI" objectId="UI-ADVANCED" attribute="DATATABLE" feature="ACT" />
 
 <s:set var="searchForm" value="%{#session.formSearchAmmTrasp}" />
 
-<wp:headInfo type="CSS" info="jquery/jquery-ui/jquery-ui.css" />
-
 <jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/send_blockUI.jsp" />
-
-<script src="<wp:resourceURL/>static/js/jquery-ui-1.12.1.min.js"></script>
+<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/jquery_ui.jsp" />
 <script src="<wp:resourceURL/>static/js/ppgare/dialogFullScreen.js"></script>
 <script src='<wp:resourceURL/>static/js/jquery.dataTables.min.js'></script>
+
 <c:if test="${withAdvancedUI}" >
 	<script>
 	
@@ -63,12 +62,10 @@
 
 	<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/action_errors.jsp" />
 
-	<form action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchContratti.action" />" method="post">
+	<form class="form-ricerca" action="<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/searchContratti.action" />" method="post">
 		<jsp:include page="/WEB-INF/plugins/ppcommon/aps/jsp/token_input.jsp" />
 		
-		<%-- ******************************************************************* 
-			 FILTRI 
-		--%>
+		<%-- ********** FILTRI ********** --%>
 		<fieldset>
 			<legend><span class="noscreen"><wp:i18n key="LABEL_SECTION" /> </span><wp:i18n key="LABEL_SEARCH_CRITERIA" /></legend>
 
@@ -99,10 +96,10 @@
 							<s:select name="model.stazioneAppaltante" id="model.stazioneAppaltante" list="maps['stazioniAppaltanti']" 
 									value="%{#searchForm.stazioneAppaltante}" 
 									headerKey="" headerValue="%{#attr.headerValueStazioneAppaltante}" 
-									cssStyle="width: 100%;" >		
+									cssStyle="width: 100%;" >
 							</s:select>
 						</c:otherwise>
-					</c:choose>				
+					</c:choose>
 				</div>
 			</div>
 			<div class="fieldset-row">
@@ -168,12 +165,39 @@
 				<s:submit value="%{#attr.valueSearchButton}" cssClass="button block-ui"/>
 			</div>
 		</fieldset>
+		
+		<%-- link BDNCP --%>
+		<div style="text-align: center;">
+			<s:set var="codiceSA" value="%{#searchForm.stazioneAppaltante}"/>
+			<c:choose>
+				<c:when test="${! empty stazAppUnica }">
+					<s:set var="codiceSA">${stazAppUnica}</s:set>
+				</c:when>
+				<c:when test="${! empty stazioneAppaltante}">
+					<s:set var="codiceSA">${stazioneAppaltante}</s:set>
+				</c:when>
+			</c:choose>
 			
-		<%-- ******************************************************************* 
-			 LISTA 
-		--%>		
+			<s:set var="descrSA" value=""/>
+			<s:iterator var="item" value="maps['stazioniAppaltanti']">
+				<s:if test="%{#item.key == #codiceSA}">
+					<s:set var="descrSA" value="#item.value"/>
+				</s:if>
+			</s:iterator>
+			
+			<s:if test='%{#codiceSA != null && #codiceSA != ""}'>
+				<span>
+					<s:property value="descrSA" /> - 
+					<a href='${URL_BDNCP_DETTAGLIO_SA}<s:property value="%{getCodiceFiscaleSA(#codiceSA)}"/>' title='<wp:i18n key="LINK_VIEW_DETAIL" />' target='_blank'>
+						<wp:i18n key="LABEL_LINK_BDNCP"/>
+					</a>
+				</span>
+				<p/>
+			</s:if>
+		</div>
+		
+		<%-- ********** LISTA ********** --%>
 		<c:if test="${listaContratti ne null}">
-
 			<s:if test="%{listaContratti.size() > 0}">
 			
 				<div class="list-summary">
@@ -185,6 +209,7 @@
 						<thead>
 							<tr>
 								<th scope="col"><wp:i18n key="LABEL_CIG" /></th>
+								<th scope="col"><wp:i18n key="LABEL_BDNCP" /></th>
 								<th scope="col" style="min-width: 20em;"><wp:i18n key="LABEL_STAZIONE_APPALTANTE" /></th>
 								<th scope="col" style="min-width: 20em;"><wp:i18n key="LABEL_190_OGGETTO" /></th>
 								<th scope="col" style="min-width: 20em;"><wp:i18n key="LABEL_190_SCELTA_CONTRAENTE" /></th>
@@ -195,19 +220,25 @@
 								</c:if>
 								<th scope="col" style="min-width: 12em;"><wp:i18n key="LABEL_190_TEMPI" /></th>
 								<th scope="col"><wp:i18n key="LABEL_190_IMPORTO_SOMME_LIQUIDATE" /></th>
+								<th scope="col"><wp:i18n key="LABEL_IMPORTO_SCOSTAMENTO" /></th>
 							</tr>
 						</thead>
 						<tbody>
 							<s:iterator var="riga" value="listaContratti">
-								<tr>									
+								<tr>
 									<td>
 										<strong>
-										<a href='<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/viewContratto.action" />&amp;codice=<s:property value="%{codice}"/>&amp;${tokenHrefParams}'
+										<a href='<wp:action path="/ExtStr2/do/FrontEnd/AmmTrasp/viewContratto.action" />&amp;codice=<s:property value="%{codice}"/>'
 										   title='<wp:i18n key="LINK_VIEW_DETAIL" />' >
 											<s:property value="cig" /> 
 										</a>
-										</strong>										
-									</td>								
+										</strong>
+									</td>
+									<td>
+										<a href='${URL_BDNCP_DETTAGLIO_CIG}<s:property value="cig" />' title='<wp:i18n key="LINK_VIEW_DETAIL" />' 
+											class="bkg detail-very-big" target='_blank'>
+										</a>
+									</td>
 									<td>
 										<s:if test="%{strutturaProponenteCF != null}">
 											<s:property value="strutturaProponenteCF" /> - 
@@ -256,7 +287,13 @@
 										<c:if test="${not empty importoSommeLiquidate}">
 											<s:text name="format.money"><s:param value="importoSommeLiquidate"/></s:text>
 										</c:if> 
-									</td>									
+									</td>
+									<td class="money-content">
+										<c:if test="${not empty importoAggiudicazione and not empty importoSommeLiquidate}">
+											<s:set var="importoScostamento" value="%{importoAggiudicazione - importoSommeLiquidate}"/>
+											<s:text name="format.money"><s:param value="%{#importoScostamento}"/></s:text>
+										</c:if>
+									</td>  
 								</tr>
 							</s:iterator>
 						</tbody>
@@ -267,13 +304,15 @@
 					<a href='javascript:' title="<wp:i18n key="LINK_VIEW_TABLE_DETAIL" />" class="bkg expand-fullscreen" id="openDialog"></a>
 				</c:if>
 
-				<s:url id="urlExport" namespace="/do/FrontEnd/AmmTrasp" action="exportContratti">
-					<s:param name="last" value="1"></s:param>
-				</s:url>
+                <c:if test="${visExportCSV}">
+                    <s:url id="urlExport" namespace="/do/FrontEnd/AmmTrasp" action="exportContratti">
+                        <s:param name="last" value="1"></s:param>
+                    </s:url>
 
-				<p>
-					<a href='<s:property value="%{#urlExport}" />&amp;${tokenHrefParams}' class="important"><wp:i18n key="LINK_EXPORT_CSV" /></a>
-				</p>
+                    <p>
+                        <a href='<s:property value="%{#urlExport}" />' class="important"><wp:i18n key="LINK_EXPORT_CSV" /></a>
+                    </p>
+				</c:if>
 			</s:if>
 			<s:else>
 				<div class="list-summary">
